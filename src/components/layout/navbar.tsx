@@ -116,7 +116,9 @@ export function Navbar({ user }: NavbarProps) {
               </button>
             </li>
             <li className="menu-title mt-1">
-              <span className="text-xs text-base-content/40 font-mono">v{packageJson.version}</span>
+              <span className="text-xs text-base-content/40 font-mono">
+                v{packageJson.version}
+              </span>
             </li>
           </ul>
         </div>

@@ -429,13 +429,12 @@ export default function LandingPage() {
                         infrastructure. Perfect for organizations with strict
                         data privacy requirements.
                       </p>
-                      <div className="mockup-code bg-neutral text-neutral-content text-sm mb-6">
-                        <pre data-prefix="$">
-                          <code>
-                            curl -fsSL
-                            https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install.sh
-                            | bash
-                          </code>
+                      <div className="mockup-code bg-neutral text-neutral-content text-sm mb-6 overflow-x-auto">
+                        <pre
+                          data-prefix="$"
+                          className="whitespace-pre-wrap break-all"
+                        >
+                          <code>curl -fsSL https://get.auktiva.org | bash</code>
                         </pre>
                       </div>
                       <a

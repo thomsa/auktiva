@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Have a question about Auktiva? We're happy to help!
-        
+
         Before asking, please check:
         - [Documentation](https://docs.auktiva.org)
         - [Existing issues](https://github.com/thomsa/auktiva/issues)

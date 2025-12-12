@@ -203,12 +203,12 @@ function getEndDate(type: "past" | "future" | "none"): Date | null {
     case "past":
       return new Date(
         now.getTime() -
-          faker.number.int({ min: 1, max: 30 }) * 24 * 60 * 60 * 1000
+          faker.number.int({ min: 1, max: 30 }) * 24 * 60 * 60 * 1000,
       );
     case "future":
       return new Date(
         now.getTime() +
-          faker.number.int({ min: 7, max: 60 }) * 24 * 60 * 60 * 1000
+          faker.number.int({ min: 7, max: 60 }) * 24 * 60 * 60 * 1000,
       );
     case "none":
       return null;
@@ -218,7 +218,7 @@ function getEndDate(type: "past" | "future" | "none"): Date | null {
 function getItemEndDate(
   auctionEndDate: Date | null,
   itemEndMode: ItemEndMode,
-  index: number
+  index: number,
 ): Date | null {
   const now = new Date();
 
@@ -235,25 +235,26 @@ function getItemEndDate(
     // Some items ended in the past
     return new Date(
       now.getTime() -
-        faker.number.int({ min: 1, max: 14 }) * 24 * 60 * 60 * 1000
+        faker.number.int({ min: 1, max: 14 }) * 24 * 60 * 60 * 1000,
     );
   } else if (index % 4 === 1) {
     // Some items ending soon
     return new Date(
-      now.getTime() + faker.number.int({ min: 1, max: 3 }) * 24 * 60 * 60 * 1000
+      now.getTime() +
+        faker.number.int({ min: 1, max: 3 }) * 24 * 60 * 60 * 1000,
     );
   } else if (index % 4 === 2) {
     // Some items ending later
     return new Date(
       now.getTime() +
-        faker.number.int({ min: 7, max: 30 }) * 24 * 60 * 60 * 1000
+        faker.number.int({ min: 7, max: 30 }) * 24 * 60 * 60 * 1000,
     );
   } else {
     // Some items with no end date (if auction allows)
     return auctionEndDate
       ? new Date(
           now.getTime() +
-            faker.number.int({ min: 14, max: 45 }) * 24 * 60 * 60 * 1000
+            faker.number.int({ min: 14, max: 45 }) * 24 * 60 * 60 * 1000,
         )
       : null;
   }
@@ -386,7 +387,7 @@ async function main() {
 
   // Create auctions
   console.log(
-    `🏛️  Creating ${auctionScenarios.length} auctions with different settings...\n`
+    `🏛️  Creating ${auctionScenarios.length} auctions with different settings...\n`,
   );
 
   for (const scenario of auctionScenarios) {
@@ -515,7 +516,7 @@ async function main() {
 
         // Get bidders (members who are not the item creator)
         const potentialBidders = membersToAdd.filter(
-          (m) => m.id !== creator.id
+          (m) => m.id !== creator.id,
         );
 
         if (potentialBidders.length > 0) {
@@ -537,7 +538,7 @@ async function main() {
                     : false,
                 createdAt: new Date(
                   Date.now() -
-                    faker.number.int({ min: 1, max: 30 }) * 24 * 60 * 60 * 1000
+                    faker.number.int({ min: 1, max: 30 }) * 24 * 60 * 60 * 1000,
                 ),
               },
             });
@@ -580,7 +581,7 @@ async function main() {
     console.log(
       `     ✅ ${itemsCreated} items, ${bidsCreated} bids, ${
         membersToAdd.length + 1
-      } members`
+      } members`,
     );
   }
 
@@ -592,10 +593,10 @@ async function main() {
   console.log(`\n👥 USERS (${summary.users.length} total)`);
   console.log("-".repeat(40));
   console.log(
-    `   Main User: ${MAIN_USER_EMAIL} (password: ${DEFAULT_PASSWORD})`
+    `   Main User: ${MAIN_USER_EMAIL} (password: ${DEFAULT_PASSWORD})`,
   );
   console.log(
-    `   Random Users: ${NUM_RANDOM_USERS} (all with password: ${DEFAULT_PASSWORD})`
+    `   Random Users: ${NUM_RANDOM_USERS} (all with password: ${DEFAULT_PASSWORD})`,
   );
 
   console.log(`\n🏛️  AUCTIONS (${summary.auctions.length} total)`);
@@ -604,7 +605,7 @@ async function main() {
     console.log(`   📦 ${auction.name}`);
     console.log(`      Settings: ${auction.settings}`);
     console.log(
-      `      Members: ${auction.memberCount} | Items: ${auction.itemCount}`
+      `      Members: ${auction.memberCount} | Items: ${auction.itemCount}`,
     );
   }
 
@@ -613,11 +614,14 @@ async function main() {
 
   console.log(`\n👔 MEMBERSHIP MATRIX (sample)`);
   console.log("-".repeat(40));
-  const membershipsByAuction = summary.memberships.reduce((acc, m) => {
-    if (!acc[m.auctionName]) acc[m.auctionName] = [];
-    acc[m.auctionName].push(m);
-    return acc;
-  }, {} as Record<string, typeof summary.memberships>);
+  const membershipsByAuction = summary.memberships.reduce(
+    (acc, m) => {
+      if (!acc[m.auctionName]) acc[m.auctionName] = [];
+      acc[m.auctionName].push(m);
+      return acc;
+    },
+    {} as Record<string, typeof summary.memberships>,
+  );
 
   // Show first 3 auctions' memberships
   const auctionNames = Object.keys(membershipsByAuction).slice(0, 3);
@@ -633,7 +637,7 @@ async function main() {
   console.log("=".repeat(80));
   console.log(`\n🔑 Login with: ${MAIN_USER_EMAIL} / ${DEFAULT_PASSWORD}`);
   console.log(
-    `   Or any random user email with password: ${DEFAULT_PASSWORD}\n`
+    `   Or any random user email with password: ${DEFAULT_PASSWORD}\n`,
   );
 }
 
