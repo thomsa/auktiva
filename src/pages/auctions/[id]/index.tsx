@@ -564,19 +564,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  // If not a member, check if this is an OPEN auction
+  // If not a member, check if this is an OPEN or LINK auction
   if (!membership) {
-    if (auction.joinMode === "FREE") {
-      // Auto-join the user to the open auction
+    if (auction.joinMode === "FREE" || auction.joinMode === "LINK") {
+      // Auto-join the user to the open/link auction
       membership = await prisma.auctionMember.create({
         data: {
           auctionId,
           userId: session.user.id,
-          role: MemberRole.CREATOR,
+          role: MemberRole.BIDDER,
         },
       });
     } else {
-      // Not a member and not an open auction - redirect
+      // Not a member and not an open/link auction - redirect
       return {
         redirect: {
           destination: "/dashboard",
