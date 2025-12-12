@@ -1,0 +1,159 @@
+# Database Configuration
+
+Auktiva supports two database options: **SQLite** for simple local deployments and **Turso** for cloud-based, distributed databases.
+
+## SQLite (Default)
+
+SQLite is the simplest option, storing data in a local file. Perfect for:
+
+- Development environments
+- Single-server deployments
+- Small to medium workloads
+
+### Configuration
+
+```bash
+DATABASE_URL="file:./data/auktiva.db"
+```
+
+The path is relative to the project root. The directory will be created automatically.
+
+### Advantages
+
+- Zero configuration
+- No external dependencies
+- Fast for local access
+- Easy backups (just copy the file)
+
+### Limitations
+
+- Single server only (no horizontal scaling)
+- File must be on local filesystem
+- Not suitable for serverless deployments (Vercel, etc.)
+
+## Turso (Recommended for Production)
+
+[Turso](https://turso.tech/) is a distributed SQLite database built on libSQL. It provides:
+
+- Edge-replicated databases
+- Serverless-friendly
+- SQLite compatibility
+- Generous free tier
+
+### Setting Up Turso
+
+1. **Create a Turso account** at [turso.tech](https://turso.tech/)
+
+2. **Install the Turso CLI**:
+
+```bash
+# macOS
+brew install tursodatabase/tap/turso
+
+# Linux
+curl -sSfL https://get.tur.so/install.sh | bash
+```
+
+3. **Authenticate**:
+
+```bash
+turso auth login
+```
+
+4. **Create a database**:
+
+```bash
+turso db create auktiva
+```
+
+5. **Get the connection URL**:
+
+```bash
+turso db show auktiva --url
+# Output: libsql://auktiva-yourusername.turso.io
+```
+
+6. **Create an auth token**:
+
+```bash
+turso db tokens create auktiva
+# Output: eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9...
+```
+
+### Configuration
+
+```bash
+DATABASE_URL="libsql://auktiva-yourusername.turso.io"
+DATABASE_AUTH_TOKEN="eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9..."
+```
+
+## Database Commands
+
+Auktiva provides several npm scripts for database management:
+
+| Command | Description |
+|---------|-------------|
+| `npm run db:generate` | Generate Prisma client |
+| `npm run db:push` | Push schema to database |
+| `npm run db:studio` | Open Prisma Studio (GUI) |
+| `npm run seed:currencies` | Seed currency data |
+| `npm run seed` | Seed sample data (development) |
+
+### Initial Setup
+
+After configuring your database:
+
+```bash
+# Generate the Prisma client
+npm run db:generate
+
+# Push the schema to your database
+npm run db:push
+
+# Seed required data
+npm run seed:currencies
+```
+
+### Viewing Data
+
+Use Prisma Studio to browse and edit data:
+
+```bash
+npm run db:studio
+```
+
+This opens a web interface at `http://localhost:5555`.
+
+## Schema Overview
+
+Auktiva uses the following main tables:
+
+- **users** - User accounts
+- **accounts** - OAuth provider accounts (NextAuth)
+- **sessions** - Active sessions
+- **auctions** - Auction listings
+- **auction_members** - Auction membership and roles
+- **auction_items** - Items within auctions
+- **item_images** - Images for auction items
+- **bids** - Bid history
+- **currencies** - Supported currencies
+- **notifications** - User notifications
+- **user_settings** - User preferences
+
+## Backups
+
+### SQLite Backups
+
+Simply copy the database file:
+
+```bash
+cp ./data/auktiva.db ./backups/auktiva-$(date +%Y%m%d).db
+```
+
+### Turso Backups
+
+Turso automatically handles backups. You can also export data:
+
+```bash
+turso db shell auktiva ".dump" > backup.sql
+```

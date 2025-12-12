@@ -1,0 +1,56 @@
+# Auktiva Documentation
+
+Welcome to the official documentation for **Auktiva** - a self-hosted, real-time auction platform built with Next.js.
+
+## What is Auktiva?
+
+Auktiva is an open-source auction platform that allows you to create and manage private or public auctions. It's designed to be self-hosted, giving you full control over your data and customization.
+
+### Key Features
+
+- **Real-time bidding** - Live updates using polling
+- **Multiple auction types** - Private (invite-only), link-based, or open auctions
+- **Flexible item management** - Custom end dates, starting bids, multiple images
+- **Role-based access** - Owner, Admin, Creator, and Bidder roles
+- **Anonymous bidding** - Optional bidder anonymity per auction or per bid
+- **Notifications** - In-app notifications for outbids and auction events
+- **Self-hosted** - Full control over your data with SQLite or Turso database
+- **S3 compatible storage** - Local storage or any S3-compatible service for images
+
+## Documentation Sections
+
+### [For Developers](/developers)
+
+Technical documentation for setting up, configuring, and deploying Auktiva:
+
+- Installation & Setup
+- Configuration options
+- Database setup (SQLite & Turso)
+- Storage configuration (Local & S3)
+- Deployment guides
+- Troubleshooting
+
+### [For Users](/users)
+
+User guides for using the Auktiva platform:
+
+- Getting started
+- Creating and managing auctions
+- Adding items and images
+- Bidding on items
+- Understanding roles and permissions
+- Managing invitations
+
+## Quick Start
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install.sh | bash
+```
+
+This will guide you through the interactive setup process.
+
+## Links
+
+- [GitHub Repository](https://github.com/thomsa/auktiva)
+- [Report Issues](https://github.com/thomsa/auktiva/issues)
+- [Live Demo](https://auktiva.org)

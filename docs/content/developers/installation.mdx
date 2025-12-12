@@ -1,0 +1,113 @@
+# Installation
+
+There are two ways to install Auktiva: using the automated installer or manual installation.
+
+## Automated Installation (Recommended)
+
+The easiest way to get started is using our one-line installer:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install.sh | bash
+```
+
+This script will:
+
+1. Check for Node.js (18+) and Git
+2. Clone the repository to your current directory
+3. Install dependencies
+4. Launch an interactive setup wizard
+
+### Setup Wizard
+
+The setup wizard guides you through configuring:
+
+- **Storage**: Local filesystem or S3-compatible storage
+- **Database**: SQLite (local) or Turso (cloud)
+- **Authentication**: Generates secure secrets
+- **Feature flags**: Enable/disable open auctions
+
+After configuration, it automatically:
+
+1. Generates the Prisma client
+2. Pushes the database schema
+3. Seeds initial data (currencies)
+4. Builds the application
+5. Optionally installs and starts PM2
+
+## Manual Installation
+
+If you prefer manual setup:
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/thomsa/auktiva.git
+cd auktiva
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure Environment
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your configuration. See [Configuration](/developers/configuration) for details.
+
+### 4. Set Up Database
+
+Generate the Prisma client:
+
+```bash
+npm run db:generate
+```
+
+Push the schema to your database:
+
+```bash
+npm run db:push
+```
+
+Seed initial data:
+
+```bash
+npm run seed:currencies
+```
+
+### 5. Build and Run
+
+For development:
+
+```bash
+npm run dev
+```
+
+For production:
+
+```bash
+npm run build
+npm start
+```
+
+## Verifying Installation
+
+After installation, open your browser to:
+
+- Development: `http://localhost:3000`
+- Production: Your configured `AUTH_URL`
+
+You should see the Auktiva landing page. Click "Get Started" to create your first account.
+
+## Next Steps
+
+- [Configure your environment](/developers/configuration)
+- [Set up your database](/developers/database)
+- [Configure storage](/developers/storage)
+- [Deploy to production](/developers/deployment)

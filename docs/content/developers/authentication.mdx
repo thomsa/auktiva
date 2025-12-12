@@ -1,0 +1,77 @@
+# Authentication
+
+Auktiva uses [NextAuth.js](https://next-auth.js.org/) v4 for authentication, providing secure session management with credentials-based login.
+
+## Configuration
+
+### Required Environment Variables
+
+```bash
+# Secret key for encrypting sessions
+AUTH_SECRET="your-secret-key-here"
+
+# Base URL of your application
+AUTH_URL="http://localhost:3000"
+```
+
+### Generating AUTH_SECRET
+
+Always generate a unique, random secret for production:
+
+```bash
+# Using OpenSSL
+openssl rand -base64 32
+
+# Using Node.js
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
+import { Callout } from 'nextra/components'
+
+<Callout type="error">
+  Never use the example secret in production. Always generate a unique value.
+</Callout>
+
+## How It Works
+
+### Registration
+
+1. User submits email, name, and password
+2. Password is hashed using bcrypt (10 rounds)
+3. User record is created in the database
+4. User is automatically logged in
+
+### Login
+
+1. User submits email and password
+2. Password is verified against stored hash
+3. Session is created and stored in database
+4. Session cookie is set in browser
+
+### Sessions
+
+- Sessions are stored in the database (`sessions` table)
+- Session token is stored in an HTTP-only cookie
+- Sessions expire after 30 days by default
+
+## Security Features
+
+- **Password hashing** with bcrypt
+- **CSRF protection** via NextAuth
+- **HTTP-only cookies** for session tokens
+- **Database-stored sessions** for security
+
+## Session Data
+
+The session object contains:
+
+```ts
+{
+  user: {
+    id: string;      // User's database ID
+    name: string;    // User's display name
+    email: string;   // User's email address
+  },
+  expires: string;   // Session expiration date
+}
+```

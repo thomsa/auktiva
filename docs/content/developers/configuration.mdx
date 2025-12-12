@@ -1,0 +1,136 @@
+# Configuration
+
+Auktiva is configured through environment variables in a `.env` file. This page documents all available options.
+
+## Environment File
+
+Create a `.env` file in the project root by copying the example:
+
+```bash
+cp .env.example .env
+```
+
+## Required Variables
+
+### Database
+
+```bash
+# SQLite (local file)
+DATABASE_URL="file:./data/auktiva.db"
+
+# OR Turso (cloud database)
+DATABASE_URL="libsql://your-database.turso.io"
+DATABASE_AUTH_TOKEN="your-turso-auth-token"
+```
+
+See [Database Configuration](/developers/database) for detailed setup instructions.
+
+### Authentication
+
+```bash
+# Secret key for encrypting sessions (generate with: openssl rand -base64 32)
+AUTH_SECRET="your-secret-key-here"
+
+# Base URL of your application
+AUTH_URL="http://localhost:3000"
+```
+
+import { Callout } from 'nextra/components'
+
+<Callout type="warning">
+  Always generate a unique `AUTH_SECRET` for production. Never use the example value.
+</Callout>
+
+## Storage Configuration
+
+### Local Storage (Default)
+
+```bash
+STORAGE_PROVIDER="local"
+STORAGE_LOCAL_PATH="./uploads"
+```
+
+### S3-Compatible Storage
+
+```bash
+STORAGE_PROVIDER="s3"
+S3_BUCKET="your-bucket-name"
+S3_REGION="us-east-1"
+S3_ACCESS_KEY_ID="your-access-key"
+S3_SECRET_ACCESS_KEY="your-secret-key"
+
+# Optional: Custom endpoint for S3-compatible services (MinIO, Cloudflare R2, etc.)
+S3_ENDPOINT="https://your-endpoint.com"
+
+# Optional: Custom public URL for serving files
+S3_PUBLIC_URL="https://cdn.yourdomain.com"
+```
+
+See [Storage Configuration](/developers/storage) for detailed setup instructions.
+
+## Feature Flags
+
+```bash
+# Allow users to create open (public) auctions
+ALLOW_OPEN_AUCTIONS="true"
+```
+
+## All Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `DATABASE_URL` | Yes | - | Database connection string |
+| `DATABASE_AUTH_TOKEN` | Turso only | - | Turso authentication token |
+| `AUTH_SECRET` | Yes | - | Session encryption secret |
+| `AUTH_URL` | Yes | - | Application base URL |
+| `STORAGE_PROVIDER` | No | `local` | Storage provider (`local` or `s3`) |
+| `STORAGE_LOCAL_PATH` | Local only | `./uploads` | Path for local file storage |
+| `S3_BUCKET` | S3 only | - | S3 bucket name |
+| `S3_REGION` | S3 only | - | S3 region |
+| `S3_ACCESS_KEY_ID` | S3 only | - | S3 access key |
+| `S3_SECRET_ACCESS_KEY` | S3 only | - | S3 secret key |
+| `S3_ENDPOINT` | No | - | Custom S3 endpoint |
+| `S3_PUBLIC_URL` | No | - | Custom public URL for files |
+| `ALLOW_OPEN_AUCTIONS` | No | `false` | Enable open auction creation |
+
+## Example Configurations
+
+### Development (SQLite + Local Storage)
+
+```bash
+DATABASE_URL="file:./data/dev.db"
+AUTH_SECRET="dev-secret-change-in-production"
+AUTH_URL="http://localhost:3000"
+STORAGE_PROVIDER="local"
+STORAGE_LOCAL_PATH="./uploads"
+ALLOW_OPEN_AUCTIONS="true"
+```
+
+### Production (Turso + S3)
+
+```bash
+DATABASE_URL="libsql://myapp-myorg.turso.io"
+DATABASE_AUTH_TOKEN="eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9..."
+AUTH_SECRET="generated-with-openssl-rand-base64-32"
+AUTH_URL="https://auctions.mydomain.com"
+STORAGE_PROVIDER="s3"
+S3_BUCKET="myapp-uploads"
+S3_REGION="us-east-1"
+S3_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"
+S3_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+ALLOW_OPEN_AUCTIONS="false"
+```
+
+## Generating Secrets
+
+Generate a secure `AUTH_SECRET`:
+
+```bash
+openssl rand -base64 32
+```
+
+Or using Node.js:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```

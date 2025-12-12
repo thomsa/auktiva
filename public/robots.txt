@@ -1,0 +1,11 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow private/authenticated areas
+Disallow: /dashboard
+Disallow: /auctions/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://auktiva.org/sitemap.xml

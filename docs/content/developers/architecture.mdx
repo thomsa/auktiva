@@ -1,0 +1,89 @@
+# Architecture
+
+This page describes Auktiva's technical architecture and project structure.
+
+## Project Structure
+
+```
+auktiva/
+├── cli/                    # CLI setup wizard
+├── docs/                   # Documentation (Nextra)
+├── prisma/
+│   ├── schema.prisma      # Database schema
+│   └── seed-currencies.ts # Currency seed data
+├── src/
+│   ├── components/        # React components
+│   ├── generated/         # Generated Prisma client
+│   ├── hooks/             # Custom React hooks
+│   ├── lib/               # Utility libraries
+│   └── pages/             # Next.js pages
+├── .env.example           # Environment template
+└── package.json           # Dependencies
+```
+
+## Tech Stack
+
+### Frontend
+
+- **Next.js 16** - React framework with Pages Router
+- **React 19** - UI library
+- **Tailwind CSS** - Utility-first CSS
+- **DaisyUI** - Tailwind component library
+- **SWR** - Data fetching and caching
+
+### Backend
+
+- **Next.js API Routes** - Serverless API endpoints
+- **Prisma ORM** - Database access layer
+- **NextAuth.js v4** - Authentication
+
+### Database
+
+- **SQLite** - Local file-based database
+- **Turso/LibSQL** - Cloud-distributed SQLite
+
+## Data Flow
+
+### Page Request Flow
+
+```
+Browser → Next.js Server → getServerSideProps
+                              ↓
+                         Prisma Query
+                              ↓
+                         Database
+                              ↓
+                         Props → React Component → HTML
+```
+
+### Real-Time Updates
+
+Auktiva uses polling for real-time updates:
+
+```
+Browser → SWR (5s interval) → API Route → Database
+                ↓
+         Update UI on change
+```
+
+## Database Schema
+
+### Core Entities
+
+- **User** has many **AuctionMembers** (memberships)
+- **Auction** has many **AuctionMembers** and **AuctionItems**
+- **AuctionItem** has many **Bids** and **ItemImages**
+- **Bid** belongs to **User** and **AuctionItem**
+
+## API Structure
+
+### RESTful Endpoints
+
+```
+/api/auth/*              # NextAuth endpoints
+/api/auctions            # List/create auctions
+/api/auctions/[id]       # Get/update/delete auction
+/api/auctions/[id]/items # List/create items
+/api/notifications       # User notifications
+/api/upload              # File uploads
+```

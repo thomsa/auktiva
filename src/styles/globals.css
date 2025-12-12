@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* Iconify */
+@plugin "@iconify/tailwind4" {
+  prefixes: tabler
+}
+
+/* Base styles */
+body {
+  min-height: 100vh;
+}

@@ -1,0 +1,73 @@
+{
+  "name": "auktiva",
+  "version": "0.1.0",
+  "description": "A comprehensive auction platform for hosting private and public auctions with real-time bidding, multi-currency support, and role-based member management.",
+  "author": "thomsa",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thomsa/auktiva.git"
+  },
+  "homepage": "https://github.com/thomsa/auktiva",
+  "bugs": {
+    "url": "https://github.com/thomsa/auktiva/issues"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "eslint",
+    "setup": "npx tsx cli/setup.ts",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:turso": "./scripts/migrate-turso.sh",
+    "db:studio": "prisma studio",
+    "db:generate": "prisma generate",
+    "seed:currencies": "npx tsx prisma/seed-currencies.ts",
+    "seed:test-db": "npx tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@inquirer/prompts": "^7.10.1",
+    "@libsql/client": "^0.15.15",
+    "@prisma/adapter-better-sqlite3": "^7.1.0",
+    "@prisma/adapter-libsql": "^7.1.0",
+    "@prisma/client": "^7.1.0",
+    "@tweedegolf/sab-adapter-amazon-s3": "^3.0.2",
+    "@tweedegolf/sab-adapter-local": "^3.0.1",
+    "@tweedegolf/storage-abstraction": "^3.0.3",
+    "bcryptjs": "^3.0.3",
+    "chalk": "^5.6.2",
+    "daisyui": "^5.5.11",
+    "dotenv": "^17.2.3",
+    "formidable": "^3.5.4",
+    "lucide-react": "^0.559.0",
+    "next": "16.0.8",
+    "next-auth": "^4.24.13",
+    "ora": "^9.0.0",
+    "prisma": "^7.1.0",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
+    "react-hook-form": "^7.68.0",
+    "sharp": "^0.34.5",
+    "swr": "^2.3.7",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.9.0",
+    "@iconify-json/tabler": "^1.2.23",
+    "@iconify/tailwind4": "^1.2.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/formidable": "^3.4.6",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.8",
+    "tailwindcss": "^4",
+    "tsx": "^4.21.0",
+    "typescript": "^5"
+  }
+}

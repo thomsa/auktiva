@@ -1,0 +1,65 @@
+# Roles & Permissions
+
+Auktiva uses a role-based permission system. Each member has a role that determines what they can do.
+
+## Role Hierarchy
+
+From most to least permissions:
+
+1. **Owner** - Full control
+2. **Admin** - Management access
+3. **Creator** - Can add items
+4. **Bidder** - Can only bid
+
+## Role Details
+
+### Owner
+The auction creator. There can only be one Owner.
+- All Admin permissions
+- Delete the auction
+- Cannot be removed
+
+### Admin
+Helps manage the auction.
+- All Creator permissions
+- Edit auction settings
+- Manage members
+- Send invitations
+- View all bidder identities
+
+### Creator
+Can contribute items.
+- All Bidder permissions
+- Add new items
+- Edit/delete their own items
+
+### Bidder
+Default role for new members.
+- View auction and items
+- Place bids
+- Receive notifications
+
+## Permission Matrix
+
+| Action | Owner | Admin | Creator | Bidder |
+|--------|:-----:|:-----:|:-------:|:------:|
+| View auction | ✓ | ✓ | ✓ | ✓ |
+| Place bids | ✓ | ✓ | ✓ | ✓ |
+| Add items | ✓ | ✓ | ✓ | ✗ |
+| Edit any item | ✓ | ✓ | ✗ | ✗ |
+| Edit settings | ✓ | ✓ | ✗ | ✗ |
+| Manage members | ✓ | ✓ | ✗ | ✗ |
+| Delete auction | ✓ | ✗ | ✗ | ✗ |
+
+## Changing Roles
+
+1. Go to the auction's **Members** page
+2. Find the member
+3. Click the role dropdown
+4. Select the new role
+
+import { Callout } from 'nextra/components'
+
+<Callout type="info">
+  Role changes take effect immediately.
+</Callout>

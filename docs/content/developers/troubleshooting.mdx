@@ -1,0 +1,89 @@
+# Troubleshooting
+
+Common issues and their solutions when running Auktiva.
+
+## Installation Issues
+
+### "Cannot find module '@/generated/prisma/client'"
+
+**Cause:** Prisma client hasn't been generated.
+
+**Solution:**
+```bash
+npm run db:generate
+```
+
+### Setup wizard exits immediately
+
+**Cause:** When running via `curl | bash`, stdin is consumed by the pipe.
+
+**Solution:** The install script handles this automatically. If running manually:
+```bash
+npx tsx cli/setup.ts </dev/tty
+```
+
+## Database Issues
+
+### "Unable to connect to database"
+
+**SQLite:**
+- Check the path in `DATABASE_URL` is correct
+- Ensure the directory exists and is writable
+
+**Turso:**
+- Verify `DATABASE_URL` format: `libsql://your-db.turso.io`
+- Check `DATABASE_AUTH_TOKEN` is set and valid
+
+### "Table does not exist"
+
+**Cause:** Schema hasn't been pushed to database.
+
+**Solution:**
+```bash
+npm run db:push
+```
+
+## Authentication Issues
+
+### Session not persisting
+
+**Causes:**
+- `AUTH_SECRET` not set or changed
+- `AUTH_URL` mismatch
+
+**Solutions:**
+1. Verify `.env` has `AUTH_SECRET` set
+2. Ensure `AUTH_URL` matches your actual URL
+3. Clear browser cookies and try again
+
+## Storage Issues
+
+### Images not uploading
+
+**Local storage:**
+- Check `STORAGE_LOCAL_PATH` directory exists
+- Verify write permissions
+
+**S3:**
+- Verify all S3 environment variables are set
+- Check bucket permissions and CORS configuration
+
+## Runtime Issues
+
+### Port 3000 already in use
+
+**Solution:**
+```bash
+lsof -ti:3000 | xargs kill -9
+```
+
+## Getting Help
+
+If you can't resolve an issue:
+
+1. Check logs: `pm2 logs auktiva`
+2. Search [GitHub Issues](https://github.com/thomsa/auktiva/issues)
+3. Create a new issue with:
+   - Error message
+   - Steps to reproduce
+   - Environment details

@@ -1,0 +1,66 @@
+name: Question / Support
+description: Ask a question or get help with Auktiva
+title: "[Question]: "
+labels: ["question", "help wanted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about Auktiva? We're happy to help!
+        
+        Before asking, please check:
+        - [Documentation](https://docs.auktiva.org)
+        - [Existing issues](https://github.com/tamaslorincz/auktiva/issues)
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What would you like to know?
+      placeholder: Describe your question...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What is your question about?
+      options:
+        - Setup / Installation
+        - Configuration
+        - Self-hosting
+        - Usage / How-to
+        - Troubleshooting
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Are you using the hosted version or self-hosting?
+      options:
+        - Hosted (auktiva.org)
+        - Self-hosted
+        - Not applicable
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you tried?
+      description: Describe any steps you've already taken to find an answer.
+      placeholder: I've tried...
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or details that might help.
+    validations:
+      required: false

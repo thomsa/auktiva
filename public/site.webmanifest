@@ -1,0 +1,21 @@
+{
+  "name": "Auktiva",
+  "short_name": "Auktiva",
+  "description": "Free, open-source auction platform for fundraisers, charities, and internal events.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

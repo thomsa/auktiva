@@ -1,0 +1,65 @@
+# Auctions
+
+Auctions are the core of Auktiva. This guide explains how to create and configure auctions.
+
+## Creating an Auction
+
+1. Click **"Create Auction"** on your dashboard
+2. Fill in the basic information:
+   - **Name** - A clear, descriptive title
+   - **Description** - Details about the auction
+   - **Thumbnail** - Optional cover image
+
+## Auction Settings
+
+### Join Mode
+
+| Mode | Description |
+|------|-------------|
+| **Invite Only** | Only invited users can join |
+| **Link** | Anyone with the link can join |
+| **Open** | Anyone can join |
+
+### Bidder Visibility
+
+| Setting | Description |
+|---------|-------------|
+| **Visible** | Bidders can see who placed each bid |
+| **Anonymous** | Bidder names are hidden |
+| **Per-Bid Choice** | Each bidder chooses per bid |
+
+import { Callout } from 'nextra/components'
+
+<Callout type="info">
+  Auction owners and admins can always see bidder identities.
+</Callout>
+
+### Item End Mode
+
+| Mode | Description |
+|------|-------------|
+| **Auction End** | All items end when auction ends |
+| **Custom** | Each item has its own end date |
+| **None** | Items don't automatically end |
+
+## Managing Your Auction
+
+### Ending an Auction Early
+
+1. Go to auction **Settings**
+2. Click **"End Auction Now"**
+3. Confirm the action
+
+<Callout type="warning">
+  Ending an auction is irreversible.
+</Callout>
+
+### Deleting an Auction
+
+1. Go to auction **Settings**
+2. Click **"Delete Auction"**
+3. Confirm by typing the auction name
+
+<Callout type="error">
+  Deleting removes all items, bids, and member data permanently.
+</Callout>

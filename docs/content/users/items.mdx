@@ -1,0 +1,69 @@
+# Items
+
+Items are the things being auctioned. This guide explains how to create and manage auction items.
+
+## Creating an Item
+
+1. Navigate to your auction
+2. Click **"Add Item"**
+3. Fill in the item details:
+   - **Name** - Clear, descriptive title
+   - **Description** - Detailed information
+   - **Starting Bid** - Minimum bid amount
+   - **Currency** - Select from available currencies
+   - **Images** - Upload one or more photos
+
+## Item Details
+
+### Name
+Choose a clear, descriptive name.
+
+### Description
+Include condition, dimensions, history, and any defects.
+
+### Starting Bid
+The minimum amount for the first bid.
+
+### Images
+- First image becomes the thumbnail
+- Drag to reorder
+- Supported: JPEG, PNG, GIF, WebP
+
+## Managing Items
+
+### Editing an Item
+
+1. Click on the item
+2. Click **"Edit"**
+3. Modify the details
+4. Click **"Save Changes"**
+
+import { Callout } from 'nextra/components'
+
+<Callout type="warning">
+  You cannot change currency or starting bid after bids have been placed.
+</Callout>
+
+### Ending an Item Early
+
+1. Go to item edit page
+2. Click **"End Item Now"**
+3. Confirm the action
+
+### Deleting an Item
+
+1. Go to item edit page
+2. Click **"Delete Item"**
+3. Confirm the action
+
+<Callout type="error">
+  Deleting an item removes all bids permanently.
+</Callout>
+
+## Item States
+
+### Active
+Item is accepting bids.
+
+### Ended
+Bidding is closed, shows winning bid.

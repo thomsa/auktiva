@@ -1,0 +1,104 @@
+# Storage Configuration
+
+Auktiva supports two storage backends for uploaded images: **local filesystem** and **S3-compatible storage**.
+
+## Local Storage (Default)
+
+Local storage saves files directly to the server's filesystem. Best for:
+
+- Development environments
+- Single-server deployments
+- Simple setups without cloud dependencies
+
+### Configuration
+
+```bash
+STORAGE_PROVIDER="local"
+STORAGE_LOCAL_PATH="./uploads"
+```
+
+### Advantages
+
+- Simple setup
+- No external dependencies
+- No additional costs
+- Fast local access
+
+### Limitations
+
+- Files are tied to the server
+- No CDN or edge caching
+- Must backup files separately
+- Not suitable for serverless or multi-server deployments
+
+## S3-Compatible Storage
+
+S3 storage works with Amazon S3 and any S3-compatible service:
+
+- **Amazon S3**
+- **Cloudflare R2**
+- **MinIO**
+- **DigitalOcean Spaces**
+- **Backblaze B2**
+
+### Basic Configuration
+
+```bash
+STORAGE_PROVIDER="s3"
+S3_BUCKET="your-bucket-name"
+S3_REGION="us-east-1"
+S3_ACCESS_KEY_ID="your-access-key"
+S3_SECRET_ACCESS_KEY="your-secret-key"
+```
+
+### Optional Settings
+
+```bash
+# Custom endpoint for S3-compatible services
+S3_ENDPOINT="https://your-endpoint.com"
+
+# Custom public URL (for CDN or custom domain)
+S3_PUBLIC_URL="https://cdn.yourdomain.com"
+```
+
+## Provider-Specific Setup
+
+### Amazon S3
+
+1. Create an S3 bucket in AWS Console
+2. Create an IAM user with S3 access
+3. Configure CORS for your bucket
+4. Set environment variables
+
+### Cloudflare R2
+
+```bash
+STORAGE_PROVIDER="s3"
+S3_BUCKET="my-auktiva-bucket"
+S3_REGION="auto"
+S3_ACCESS_KEY_ID="your-r2-access-key"
+S3_SECRET_ACCESS_KEY="your-r2-secret-key"
+S3_ENDPOINT="https://<account-id>.r2.cloudflarestorage.com"
+```
+
+### MinIO (Self-Hosted)
+
+```bash
+STORAGE_PROVIDER="s3"
+S3_BUCKET="auktiva"
+S3_REGION="us-east-1"
+S3_ACCESS_KEY_ID="minioadmin"
+S3_SECRET_ACCESS_KEY="minioadmin"
+S3_ENDPOINT="http://localhost:9000"
+```
+
+## Supported Image Formats
+
+Auktiva accepts the following image formats:
+
+- JPEG / JPG
+- PNG
+- GIF
+- WebP
+
+Images are stored in their original format without server-side processing.

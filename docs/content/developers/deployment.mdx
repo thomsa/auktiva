@@ -1,0 +1,98 @@
+# Deployment
+
+This guide covers deploying Auktiva to various environments.
+
+## Deployment Options
+
+| Platform | Database | Storage | Difficulty |
+|----------|----------|---------|------------|
+| VPS with PM2 | SQLite or Turso | Local or S3 | Easy |
+| Docker | SQLite or Turso | Local or S3 | Medium |
+| Vercel | Turso only | S3 only | Easy |
+
+import { Callout } from 'nextra/components'
+
+<Callout type="warning">
+  Serverless platforms (Vercel, Netlify) require Turso database and S3 storage. SQLite and local storage won't work.
+</Callout>
+
+## VPS Deployment (Recommended)
+
+Deploy to any VPS provider (DigitalOcean, Linode, Hetzner, AWS EC2, etc.).
+
+### Step 1: Install Dependencies
+
+```bash
+# Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+
+# Install PM2 globally
+sudo npm install -g pm2
+```
+
+### Step 2: Clone and Setup
+
+```bash
+git clone https://github.com/thomsa/auktiva.git
+cd auktiva
+npm ci
+npm run setup
+```
+
+### Step 3: Build and Start
+
+```bash
+npm run build
+pm2 start npm --name "auktiva" -- start
+pm2 save
+pm2 startup
+```
+
+### Step 4: Configure Nginx
+
+```nginx
+server {
+    listen 80;
+    server_name auctions.yourdomain.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+### Enable HTTPS
+
+```bash
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d auctions.yourdomain.com
+```
+
+## Vercel Deployment
+
+<Callout type="info">
+  Vercel requires Turso database and S3 storage due to its serverless nature.
+</Callout>
+
+1. Push your code to GitHub
+2. Import project in Vercel Dashboard
+3. Set environment variables
+4. Deploy
+
+## Updates
+
+To update Auktiva:
+
+```bash
+cd /path/to/auktiva
+git pull
+npm ci
+npm run build
+pm2 restart auktiva
+```

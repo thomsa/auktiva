@@ -1,0 +1,305 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  auctionMemberships AuctionMember[]
+  createdAuctions    Auction[]         @relation("AuctionCreator")
+  createdItems       AuctionItem[]     @relation("ItemCreator")
+  bids               Bid[]
+  sentInvites        AuctionInvite[]   @relation("InviteSender")
+  notifications      Notification[]
+  settings           UserSettings?
+
+  @@map("users")
+}
+
+// ============================================
+// USER SETTINGS
+// ============================================
+
+model UserSettings {
+  id                    String   @id @default(cuid())
+  
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // UI Preferences
+  itemSidebarCollapsed  Boolean  @default(false)  // Split view sidebar state
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("user_settings")
+}
+
+// ============================================
+// AUCTION
+// ============================================
+
+enum JoinMode {
+  FREE          // Anyone can join
+  INVITE_ONLY   // Only invited users can join
+  LINK          // Anyone with link can join
+}
+
+enum BidderVisibility {
+  VISIBLE       // Bidder name always visible to everyone
+  ANONYMOUS     // Bidder always anonymous to other bidders
+  PER_BID       // Let each bidder decide per bid
+}
+
+enum ItemEndMode {
+  AUCTION_END   // Items end when auction ends
+  CUSTOM        // Each item can have custom end date
+  NONE          // No end date for items
+}
+
+model Auction {
+  id                String            @id @default(cuid())
+  name              String
+  description       String?
+  
+  // Join settings
+  joinMode          JoinMode          @default(INVITE_ONLY)
+  memberCanInvite   Boolean           @default(false)
+  inviteToken       String?           @unique  // For link-based joining
+  
+  // Bidder visibility settings
+  bidderVisibility  BidderVisibility  @default(VISIBLE)
+  
+  // Timing settings
+  endDate           DateTime?         // null = indefinite
+  itemEndMode       ItemEndMode       @default(CUSTOM)
+  
+  // Thumbnail image
+  thumbnailUrl      String?           // Path to thumbnail image
+  
+  // Metadata
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  // Creator (only this user can edit auction settings)
+  creatorId         String
+  creator           User              @relation("AuctionCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  // Relations
+  members           AuctionMember[]
+  items             AuctionItem[]
+  invites           AuctionInvite[]
+
+  @@map("auctions")
+}
+
+// ============================================
+// AUCTION MEMBERSHIP & ROLES
+// ============================================
+
+enum MemberRole {
+  OWNER     // Can do everything (assigned to creator)
+  ADMIN     // Can manage members and items
+  CREATOR   // Can create auction items
+  BIDDER    // Can only bid
+}
+
+model AuctionMember {
+  id          String      @id @default(cuid())
+  
+  auctionId   String
+  auction     Auction     @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  role        MemberRole  @default(BIDDER)
+  
+  joinedAt    DateTime    @default(now())
+  invitedById String?     // Who invited this member
+
+  @@unique([auctionId, userId])
+  @@map("auction_members")
+}
+
+// ============================================
+// AUCTION INVITES
+// ============================================
+
+model AuctionInvite {
+  id          String      @id @default(cuid())
+  
+  auctionId   String
+  auction     Auction     @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  
+  email       String      // Email to invite
+  role        MemberRole  @default(BIDDER)
+  
+  token       String      @unique @default(cuid())
+  
+  expiresAt   DateTime?
+  usedAt      DateTime?   // When the invite was accepted
+  
+  createdAt   DateTime    @default(now())
+  
+  // Who sent the invite
+  senderId    String
+  sender      User        @relation("InviteSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@unique([auctionId, email])
+  @@map("auction_invites")
+}
+
+// ============================================
+// CURRENCY
+// ============================================
+
+model Currency {
+  code    String  @id           // ISO 4217 code: "USD", "EUR", "HUF"
+  name    String                // "US Dollar", "Euro", "Hungarian Forint"
+  symbol  String                // "$", "€", "Ft"
+  
+  // Relations
+  items   AuctionItem[]
+
+  @@map("currencies")
+}
+
+// ============================================
+// AUCTION ITEMS
+// ============================================
+
+model AuctionItem {
+  id              String    @id @default(cuid())
+  
+  auctionId       String
+  auction         Auction   @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  
+  // Item details
+  name            String
+  description     String?
+  
+  // Pricing
+  currencyCode    String    @default("USD")
+  currency        Currency  @relation(fields: [currencyCode], references: [code])
+  startingBid     Float     @default(0)
+  minBidIncrement Float     @default(1)
+  
+  // Current state
+  currentBid      Float?    // null if no bids yet
+  highestBidderId String?   // User ID of highest bidder
+  
+  // Deprecated - kept for migration, use Bid.isAnonymous instead
+  bidderAnonymous Boolean   @default(false)
+  
+  // Timing
+  endDate         DateTime? // null = follows auction end or no end
+  
+  // Metadata
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Creator
+  creatorId       String
+  creator         User      @relation("ItemCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  // Relations
+  images          AuctionItemImage[]
+  bids            Bid[]
+
+  @@map("auction_items")
+}
+
+// ============================================
+// AUCTION ITEM IMAGES
+// ============================================
+
+model AuctionItemImage {
+  id            String      @id @default(cuid())
+  
+  auctionItemId String
+  auctionItem   AuctionItem @relation(fields: [auctionItemId], references: [id], onDelete: Cascade)
+  
+  url           String      // Path or URL to image
+  order         Int         @default(0)  // For ordering images
+  
+  createdAt     DateTime    @default(now())
+
+  @@map("auction_item_images")
+}
+
+// ============================================
+// BIDS
+// ============================================
+
+model Bid {
+  id            String      @id @default(cuid())
+  
+  auctionItemId String
+  auctionItem   AuctionItem @relation(fields: [auctionItemId], references: [id], onDelete: Cascade)
+  
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  amount        Float
+  
+  // Per-bid anonymity (only used when auction.bidderVisibility = PER_BID)
+  isAnonymous   Boolean     @default(false)
+  
+  createdAt     DateTime    @default(now())
+
+  @@index([auctionItemId, amount])
+  @@map("bids")
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+enum NotificationType {
+  OUTBID          // Someone outbid you
+  AUCTION_WON     // You won an auction item
+  AUCTION_ENDED   // Auction has ended
+  INVITE_RECEIVED // You received an invite
+  MEMBER_JOINED   // Someone joined your auction
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type        NotificationType
+  title       String
+  message     String
+  
+  // Optional references
+  auctionId   String?
+  itemId      String?
+  
+  read        Boolean          @default(false)
+  
+  createdAt   DateTime         @default(now())
+
+  @@index([userId, read])
+  @@map("notifications")
+}
