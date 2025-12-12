@@ -98,7 +98,7 @@ export default function TermsPage() {
               You may use, modify, and distribute the software according to the
               terms of that license. See our{" "}
               <a
-                href="https://github.com/tamaslorincz/auktiva/blob/main/LICENSE"
+                href="https://github.com/thomsa/auktiva/blob/main/LICENSE"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary"
@@ -133,7 +133,7 @@ export default function TermsPage() {
               For questions about these Terms of Service, please contact us
               through our{" "}
               <a
-                href="https://github.com/tamaslorincz/auktiva/issues"
+                href="https://github.com/thomsa/auktiva/issues"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary"

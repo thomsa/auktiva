@@ -10,7 +10,7 @@ body:
         
         Before asking, please check:
         - [Documentation](https://docs.auktiva.org)
-        - [Existing issues](https://github.com/tamaslorincz/auktiva/issues)
+        - [Existing issues](https://github.com/thomsa/auktiva/issues)
 
   - type: textarea
     id: question

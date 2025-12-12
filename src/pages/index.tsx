@@ -153,7 +153,7 @@ export default function LandingPage() {
                 )}
               </button>
               <a
-                href="https://github.com/tamaslorincz/auktiva"
+                href="https://github.com/thomsa/auktiva"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-ghost btn-sm"
@@ -193,7 +193,7 @@ export default function LandingPage() {
                   Start Free Auction
                 </Link>
                 <a
-                  href="https://github.com/tamaslorincz/auktiva"
+                  href="https://github.com/thomsa/auktiva"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-outline btn-lg"
@@ -439,7 +439,7 @@ export default function LandingPage() {
                         </pre>
                       </div>
                       <a
-                        href="https://github.com/tamaslorincz/auktiva"
+                        href="https://github.com/thomsa/auktiva"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn btn-primary"
@@ -476,7 +476,7 @@ export default function LandingPage() {
                 Create Free Account
               </Link>
               <a
-                href="https://github.com/tamaslorincz/auktiva"
+                href="https://github.com/thomsa/auktiva"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-outline border-primary-content text-primary-content hover:bg-primary-content hover:text-primary btn-lg"
@@ -507,7 +507,7 @@ export default function LandingPage() {
                 </p>
                 <div className="flex gap-2">
                   <a
-                    href="https://github.com/tamaslorincz/auktiva"
+                    href="https://github.com/thomsa/auktiva"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-ghost btn-sm btn-square"
@@ -538,7 +538,7 @@ export default function LandingPage() {
                   </li>
                   <li>
                     <a
-                      href="https://github.com/tamaslorincz/auktiva"
+                      href="https://github.com/thomsa/auktiva"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hover:text-primary transition-colors"
@@ -589,7 +589,7 @@ export default function LandingPage() {
                   </li>
                   <li>
                     <a
-                      href="https://github.com/tamaslorincz/auktiva/blob/main/LICENSE"
+                      href="https://github.com/thomsa/auktiva/blob/main/LICENSE"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hover:text-primary transition-colors"

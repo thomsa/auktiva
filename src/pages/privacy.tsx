@@ -88,7 +88,7 @@ export default function PrivacyPage() {
             <p>
               Auktiva is open source software. You can review our code on{" "}
               <a
-                href="https://github.com/tamaslorincz/auktiva"
+                href="https://github.com/thomsa/auktiva"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary"
@@ -112,7 +112,7 @@ export default function PrivacyPage() {
               If you have questions about this Privacy Policy, please contact us
               through our{" "}
               <a
-                href="https://github.com/tamaslorincz/auktiva/issues"
+                href="https://github.com/thomsa/auktiva/issues"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary"
