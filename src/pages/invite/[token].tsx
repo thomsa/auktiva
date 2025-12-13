@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 
 interface InviteInfo {
@@ -183,6 +183,12 @@ export default function AcceptInvitePage() {
                   </p>
                 </div>
               </div>
+              <button
+                onClick={() => signOut({ callbackUrl: `/invite/${token}` })}
+                className="btn btn-primary w-full"
+              >
+                Log out & switch account
+              </button>
               <Link href="/dashboard" className="btn btn-ghost w-full">
                 Go to Dashboard
               </Link>
