@@ -1,12 +1,12 @@
 {
   "buildCommand": "prisma generate && npx tsx scripts/migrate-turso.ts && next build",
-  "installCommand": "npm install",
+  "installCommand": "npm ci",
   "framework": "nextjs",
   "outputDirectory": ".next",
   "crons": [
     {
       "path": "/api/cron/retry-emails",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 1 * * *"
     }
   ]
 }
