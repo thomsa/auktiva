@@ -8,6 +8,7 @@ interface Notification {
   type: string;
   title: string;
   message: string;
+  imageUrl: string | null;
   auctionId: string | null;
   itemId: string | null;
   read: boolean;
@@ -221,21 +222,27 @@ export function NotificationBell() {
                   >
                     <div className="flex gap-3">
                       <div className="shrink-0">
-                        {notification.type === "OUTBID" && (
+                        {notification.type === "NEW_ITEM" && notification.imageUrl ? (
+                          <img
+                            src={notification.imageUrl}
+                            alt=""
+                            className="size-10 rounded object-cover"
+                          />
+                        ) : notification.type === "NEW_ITEM" ? (
+                          <div className="size-10 rounded bg-base-200 flex items-center justify-center">
+                            <span className="icon-[tabler--package] size-5 text-primary"></span>
+                          </div>
+                        ) : notification.type === "OUTBID" ? (
                           <span className="icon-[tabler--arrow-up] size-5 text-warning"></span>
-                        )}
-                        {notification.type === "AUCTION_WON" && (
+                        ) : notification.type === "AUCTION_WON" ? (
                           <span className="icon-[tabler--trophy] size-5 text-success"></span>
-                        )}
-                        {notification.type === "MEMBER_JOINED" && (
+                        ) : notification.type === "MEMBER_JOINED" ? (
                           <span className="icon-[tabler--user-plus] size-5 text-info"></span>
-                        )}
-                        {notification.type === "AUCTION_ENDED" && (
+                        ) : notification.type === "AUCTION_ENDED" ? (
                           <span className="icon-[tabler--clock-off] size-5 text-error"></span>
-                        )}
-                        {notification.type === "INVITE_RECEIVED" && (
+                        ) : notification.type === "INVITE_RECEIVED" ? (
                           <span className="icon-[tabler--mail] size-5 text-primary"></span>
-                        )}
+                        ) : null}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm truncate">

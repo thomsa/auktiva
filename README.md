@@ -176,10 +176,62 @@ STORAGE_LOCAL_URL_PREFIX="/uploads"
 # S3_ENDPOINT=""  # For S3-compatible services (MinIO, R2, etc.)
 
 # =============================================================================
+# EMAIL (Optional)
+# =============================================================================
+# BREVO_API_KEY="your-brevo-api-key"
+# MAIL_FROM="noreply@yourdomain.com"
+# MAIL_FROM_NAME="Your App Name"
+# NEXT_PUBLIC_APP_URL="https://yourdomain.com"
+# CRON_SECRET="your-cron-secret"  # For securing the retry-emails endpoint
+
+# =============================================================================
 # FEATURES
 # =============================================================================
 ALLOW_OPEN_AUCTIONS="true"  # Set to "false" for hosted environments
 ```
+
+### Email Notifications (Optional)
+
+Auktiva can send email notifications for:
+- **Welcome emails** when users register
+- **Auction invites** when users are invited to auctions
+- **New item notifications** when items are added to auctions you're a member of
+- **Outbid notifications** when someone outbids you
+
+#### Setting up Email with Brevo
+
+[Brevo](https://www.brevo.com/) (formerly Sendinblue) offers a free tier with **300 emails/day** - perfect for small to medium deployments.
+
+1. **Create a Brevo account** at [brevo.com](https://www.brevo.com/)
+
+2. **Get your API key**
+   - Go to [Settings → API Keys](https://app.brevo.com/settings/keys/api)
+   - Create a new API key
+
+3. **Configure environment variables**
+   ```env
+   BREVO_API_KEY="your-brevo-api-key"
+   MAIL_FROM="noreply@yourdomain.com"
+   MAIL_FROM_NAME="Auktiva"
+   NEXT_PUBLIC_APP_URL="https://yourdomain.com"
+   CRON_SECRET="generate-with-openssl-rand-base64-32"
+   ```
+
+4. **Verify your sender domain** (recommended)
+   - In Brevo, go to Settings → Senders & IP
+   - Add and verify your domain for better deliverability
+
+#### Email Retry System
+
+Failed emails are automatically retried via a cron job. On Vercel, this runs every 15 minutes. The system will retry up to 5 times before marking an email as abandoned.
+
+#### User Email Preferences
+
+Users can manage their email notification preferences in **Settings → Email Notifications**:
+- Toggle notifications for new items in auctions (disabled by default)
+- Toggle notifications when outbid (disabled by default)
+
+Email notifications are disabled by default to conserve email quota. Users can enable them if they want email alerts in addition to in-app notifications.
 
 ## Deployment
 
@@ -193,7 +245,12 @@ ALLOW_OPEN_AUCTIONS="true"  # Set to "false" for hosted environments
    - `DATABASE_AUTH_TOKEN` - Your Turso token
    - `AUTH_SECRET` - Generate with `openssl rand -base64 32`
    - `AUTH_URL` - Your production URL
+   - `BREVO_API_KEY` - (Optional) For email notifications
+   - `MAIL_FROM` - (Optional) Sender email address
+   - `CRON_SECRET` - (Optional) For email retry cron job
 5. Deploy
+
+**Note:** Database migrations are automatically applied during the Vercel build process.
 
 ### Self-Hosted
 

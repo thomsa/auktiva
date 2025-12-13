@@ -7,15 +7,24 @@ import { Navbar } from "@/components/layout/navbar";
 import { useTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
 
+interface UserSettings {
+  emailOnNewItem: boolean;
+  emailOnOutbid: boolean;
+}
+
 interface SettingsPageProps {
   user: {
     id: string;
     name: string | null;
     email: string;
   };
+  initialSettings: UserSettings;
 }
 
-export default function SettingsPage({ user }: SettingsPageProps) {
+export default function SettingsPage({
+  user,
+  initialSettings,
+}: SettingsPageProps) {
   const { theme, setTheme } = useTheme();
 
   // Profile form state
@@ -31,6 +40,55 @@ export default function SettingsPage({ user }: SettingsPageProps) {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
   const [passwordLoading, setPasswordLoading] = useState(false);
+
+  // Email notification settings
+  const [emailOnNewItem, setEmailOnNewItem] = useState(
+    initialSettings.emailOnNewItem,
+  );
+  const [emailOnOutbid, setEmailOnOutbid] = useState(
+    initialSettings.emailOnOutbid,
+  );
+  const [emailSettingsLoading, setEmailSettingsLoading] = useState(false);
+  const [emailSettingsSuccess, setEmailSettingsSuccess] = useState<
+    string | null
+  >(null);
+
+  const handleEmailSettingChange = async (
+    setting: "emailOnNewItem" | "emailOnOutbid",
+    value: boolean,
+  ) => {
+    if (setting === "emailOnNewItem") {
+      setEmailOnNewItem(value);
+    } else {
+      setEmailOnOutbid(value);
+    }
+
+    setEmailSettingsLoading(true);
+    setEmailSettingsSuccess(null);
+
+    try {
+      const res = await fetch("/api/user/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [setting]: value }),
+      });
+
+      if (res.ok) {
+        setEmailSettingsSuccess("Settings saved");
+        setTimeout(() => setEmailSettingsSuccess(null), 2000);
+      }
+    } catch (err) {
+      console.error("Failed to update email settings:", err);
+      // Revert on error
+      if (setting === "emailOnNewItem") {
+        setEmailOnNewItem(!value);
+      } else {
+        setEmailOnOutbid(!value);
+      }
+    } finally {
+      setEmailSettingsLoading(false);
+    }
+  };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -254,6 +312,76 @@ export default function SettingsPage({ user }: SettingsPageProps) {
           </div>
         </div>
 
+        {/* Email Notifications Section */}
+        <div className="card bg-base-100 shadow-xl mb-6">
+          <div className="card-body">
+            <h2 className="card-title">
+              <span className="icon-[tabler--mail] size-6"></span>
+              Email Notifications
+            </h2>
+
+            {emailSettingsSuccess && (
+              <div className="alert alert-success py-2">
+                <span className="icon-[tabler--check] size-5"></span>
+                <span>{emailSettingsSuccess}</span>
+              </div>
+            )}
+
+            <div className="space-y-4 mt-4">
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-4">
+                  <input
+                    type="checkbox"
+                    checked={emailOnNewItem}
+                    onChange={(e) =>
+                      handleEmailSettingChange(
+                        "emailOnNewItem",
+                        e.target.checked,
+                      )
+                    }
+                    className="toggle toggle-primary"
+                    disabled={emailSettingsLoading}
+                  />
+                  <div>
+                    <span className="label-text font-medium">
+                      New item notifications
+                    </span>
+                    <p className="text-sm text-base-content/60">
+                      Receive an email when a new item is added to an auction
+                      you&apos;re a member of
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-4">
+                  <input
+                    type="checkbox"
+                    checked={emailOnOutbid}
+                    onChange={(e) =>
+                      handleEmailSettingChange(
+                        "emailOnOutbid",
+                        e.target.checked,
+                      )
+                    }
+                    className="toggle toggle-primary"
+                    disabled={emailSettingsLoading}
+                  />
+                  <div>
+                    <span className="label-text font-medium">
+                      Outbid notifications
+                    </span>
+                    <p className="text-sm text-base-content/60">
+                      Receive an email when someone outbids you on an item
+                    </p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Appearance Section */}
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
@@ -323,9 +451,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  // Get or create user settings
+  let settings = await prisma.userSettings.findUnique({
+    where: { userId: session.user.id },
+    select: { emailOnNewItem: true, emailOnOutbid: true },
+  });
+
+  if (!settings) {
+    settings = await prisma.userSettings.create({
+      data: { userId: session.user.id },
+      select: { emailOnNewItem: true, emailOnOutbid: true },
+    });
+  }
+
   return {
     props: {
       user,
+      initialSettings: {
+        emailOnNewItem: settings.emailOnNewItem,
+        emailOnOutbid: settings.emailOnOutbid,
+      },
     },
   };
 };

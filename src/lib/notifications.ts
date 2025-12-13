@@ -6,6 +6,7 @@ interface CreateNotificationParams {
   type: NotificationType;
   title: string;
   message: string;
+  imageUrl?: string;
   auctionId?: string;
   itemId?: string;
 }
@@ -17,6 +18,7 @@ export async function createNotification(params: CreateNotificationParams) {
       type: params.type,
       title: params.title,
       message: params.message,
+      imageUrl: params.imageUrl,
       auctionId: params.auctionId,
       itemId: params.itemId,
     },
@@ -71,5 +73,31 @@ export async function notifyMemberJoined(
     title: "New member joined",
     message: `${memberName} joined your auction "${auctionName}"`,
     auctionId,
+  });
+}
+
+export async function notifyNewItem(
+  userId: string,
+  itemName: string,
+  itemDescription: string | null,
+  imageUrl: string | null,
+  auctionId: string,
+  itemId: string,
+) {
+  // Truncate description to 50 chars
+  const truncatedDescription = itemDescription
+    ? itemDescription.length > 50
+      ? itemDescription.substring(0, 50) + "..."
+      : itemDescription
+    : "No description";
+
+  return createNotification({
+    userId,
+    type: "NEW_ITEM",
+    title: itemName,
+    message: truncatedDescription,
+    imageUrl: imageUrl || undefined,
+    auctionId,
+    itemId,
   });
 }

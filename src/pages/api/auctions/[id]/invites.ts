@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { eventBus } from "@/lib/events/event-bus";
+import "@/lib/email/handlers";
 
 const createInviteSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -127,7 +129,21 @@ export default async function handler(
           sender: {
             select: { id: true, name: true, email: true },
           },
+          auction: {
+            select: { name: true },
+          },
         },
+      });
+
+      // Emit event for invite email
+      eventBus.emit("invite.created", {
+        inviteId: invite.id,
+        email: invite.email,
+        auctionId: invite.auctionId,
+        auctionName: invite.auction.name,
+        senderName: invite.sender.name || invite.sender.email,
+        token: invite.token,
+        role: invite.role,
       });
 
       return res.status(201).json(invite);

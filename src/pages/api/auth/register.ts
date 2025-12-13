@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { eventBus } from "@/lib/events/event-bus";
+import "@/lib/email/handlers";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -46,12 +48,19 @@ export default async function handler(
     // Hash password and create user
     const passwordHash = await hash(password, 12);
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         name,
         email: email.toLowerCase(),
         passwordHash,
       },
+    });
+
+    // Emit event for welcome email
+    eventBus.emit("user.registered", {
+      userId: user.id,
+      email: user.email,
+      name: user.name || "",
     });
 
     return res.status(201).json({ message: "User created successfully" });

@@ -40,6 +40,12 @@ interface EnvConfig {
   S3_SECRET_ACCESS_KEY?: string;
   S3_ENDPOINT?: string;
   ALLOW_OPEN_AUCTIONS: string;
+  // Email configuration
+  BREVO_API_KEY?: string;
+  MAIL_FROM?: string;
+  MAIL_FROM_NAME?: string;
+  NEXT_PUBLIC_APP_URL?: string;
+  CRON_SECRET?: string;
 }
 
 // =============================================================================
@@ -273,6 +279,59 @@ async function setupFeatures(): Promise<Partial<EnvConfig>> {
   };
 }
 
+async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
+  const wantEmail = await confirm({
+    message: "Do you want to enable email notifications?",
+    default: false,
+  });
+
+  if (!wantEmail) {
+    return {};
+  }
+
+  console.log();
+  console.log(chalk.dim("Auktiva uses Brevo (formerly Sendinblue) for sending emails."));
+  console.log(chalk.dim("Brevo offers a free tier with 300 emails/day."));
+  console.log();
+  console.log(chalk.cyan("1. Create a free account at: ") + chalk.bold("https://www.brevo.com/"));
+  console.log(chalk.cyan("2. Get your API key from: ") + chalk.bold("https://app.brevo.com/settings/keys/api"));
+  console.log();
+
+  const brevoKey = await password({
+    message: "Brevo API Key:",
+  });
+
+  if (!brevoKey) {
+    printInfo("Skipping email configuration. You can add it later to .env");
+    return {};
+  }
+
+  const mailFrom = await input({
+    message: "Sender email address:",
+    default: "noreply@auktiva.org",
+    validate: (value) => {
+      if (!value.includes("@")) return "Please enter a valid email address";
+      return true;
+    },
+  });
+
+  const mailFromName = await input({
+    message: "Sender name:",
+    default: "Auktiva",
+  });
+
+  // Generate CRON_SECRET for securing the retry endpoint
+  const cronSecret = crypto.randomBytes(32).toString("base64");
+
+  return {
+    BREVO_API_KEY: brevoKey,
+    MAIL_FROM: mailFrom,
+    MAIL_FROM_NAME: mailFromName,
+    NEXT_PUBLIC_APP_URL: authUrl,
+    CRON_SECRET: cronSecret,
+  };
+}
+
 // =============================================================================
 // ENV FILE GENERATION
 // =============================================================================
@@ -325,6 +384,20 @@ STORAGE_PROVIDER="${config.STORAGE_PROVIDER}"
 # =============================================================================
 ALLOW_OPEN_AUCTIONS="${config.ALLOW_OPEN_AUCTIONS}"
 `;
+
+  // Email configuration (optional)
+  if (config.BREVO_API_KEY) {
+    env += `
+# =============================================================================
+# EMAIL (Brevo)
+# =============================================================================
+BREVO_API_KEY="${config.BREVO_API_KEY}"
+MAIL_FROM="${config.MAIL_FROM}"
+MAIL_FROM_NAME="${config.MAIL_FROM_NAME}"
+NEXT_PUBLIC_APP_URL="${config.NEXT_PUBLIC_APP_URL}"
+CRON_SECRET="${config.CRON_SECRET}"
+`;
+  }
 
   return env;
 }
@@ -454,20 +527,24 @@ async function main() {
   const config: Partial<EnvConfig> = {};
 
   // Step 1: Storage
-  printHeader("Image Storage", { current: 1, total: 4 });
+  printHeader("Image Storage", { current: 1, total: 5 });
   Object.assign(config, await setupStorage());
 
   // Step 2: Database
-  printHeader("Database", { current: 2, total: 4 });
+  printHeader("Database", { current: 2, total: 5 });
   Object.assign(config, await setupDatabase());
 
   // Step 3: Authentication
-  printHeader("Authentication & Domain", { current: 3, total: 4 });
+  printHeader("Authentication & Domain", { current: 3, total: 5 });
   Object.assign(config, await setupAuth());
 
   // Step 4: Features
-  printHeader("Features", { current: 4, total: 4 });
+  printHeader("Features", { current: 4, total: 5 });
   Object.assign(config, await setupFeatures());
+
+  // Step 5: Email
+  printHeader("Email Notifications", { current: 5, total: 5 });
+  Object.assign(config, await setupEmail(config.AUTH_URL || "http://localhost:3000"));
 
   // Summary
   console.log();
@@ -484,6 +561,9 @@ async function main() {
   console.log(`  ${chalk.dim("URL:")}           ${chalk.magenta(config.AUTH_URL)}`);
   console.log(
     `  ${chalk.dim("Open Auctions:")} ${config.ALLOW_OPEN_AUCTIONS === "true" ? chalk.green("Enabled") : chalk.yellow("Disabled")}`
+  );
+  console.log(
+    `  ${chalk.dim("Email:")}         ${config.BREVO_API_KEY ? chalk.green("Enabled (Brevo)") : chalk.yellow("Disabled")}`
   );
   console.log();
 

@@ -6,6 +6,8 @@ import { z } from "zod";
 
 const updateSettingsSchema = z.object({
   itemSidebarCollapsed: z.boolean().optional(),
+  emailOnNewItem: z.boolean().optional(),
+  emailOnOutbid: z.boolean().optional(),
 });
 
 export default async function handler(

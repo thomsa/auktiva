@@ -47,6 +47,10 @@ model UserSettings {
   // UI Preferences
   itemSidebarCollapsed  Boolean  @default(false)  // Split view sidebar state
   
+  // Email Notification Preferences
+  emailOnNewItem        Boolean  @default(false)  // Notify when new item added to auction
+  emailOnOutbid         Boolean  @default(false)  // Notify when outbid
+  
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
@@ -280,6 +284,7 @@ enum NotificationType {
   AUCTION_ENDED   // Auction has ended
   INVITE_RECEIVED // You received an invite
   MEMBER_JOINED   // Someone joined your auction
+  NEW_ITEM        // New item added to an auction you're in
 }
 
 model Notification {
@@ -291,6 +296,7 @@ model Notification {
   type        NotificationType
   title       String
   message     String
+  imageUrl    String?          // Optional image for rich notifications
   
   // Optional references
   auctionId   String?
@@ -302,4 +308,50 @@ model Notification {
 
   @@index([userId, read])
   @@map("notifications")
+}
+
+// ============================================
+// EMAIL LOG (for failed emails and retry)
+// ============================================
+
+enum EmailStatus {
+  PENDING       // Queued for sending
+  SENT          // Successfully sent
+  FAILED        // Failed to send (will retry)
+  ABANDONED     // Too many retries, gave up
+}
+
+enum EmailType {
+  WELCOME       // Welcome email on registration
+  INVITE        // Auction invite
+  NEW_ITEM      // New item added to auction
+  OUTBID        // User was outbid
+}
+
+model EmailLog {
+  id            String       @id @default(cuid())
+  
+  // Recipient info
+  toEmail       String
+  toName        String?
+  
+  // Email content
+  type          EmailType
+  subject       String
+  htmlContent   String       // Rendered HTML content
+  
+  // Status tracking
+  status        EmailStatus  @default(PENDING)
+  retryCount    Int          @default(0)
+  lastError     String?      // Last error message
+  
+  // Metadata (JSON string for flexibility)
+  metadata      String?      // JSON payload for debugging
+  
+  sentAt        DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([status, createdAt])
+  @@map("email_logs")
 }

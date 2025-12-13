@@ -68,6 +68,41 @@ S3_PUBLIC_URL="https://cdn.yourdomain.com"
 
 See [Storage Configuration](/developers/storage) for detailed setup instructions.
 
+## Email Configuration (Optional)
+
+Auktiva can send email notifications using [Brevo](https://www.brevo.com/) (formerly Sendinblue). Brevo offers a free tier with **300 emails/day**.
+
+```bash
+# Brevo API key (get from https://app.brevo.com/settings/keys/api)
+BREVO_API_KEY="your-brevo-api-key"
+
+# Sender email and name
+MAIL_FROM="noreply@yourdomain.com"
+MAIL_FROM_NAME="Auktiva"
+
+# App URL for links in emails
+NEXT_PUBLIC_APP_URL="https://yourdomain.com"
+
+# Secret for securing the email retry cron endpoint
+CRON_SECRET="generate-with-openssl-rand-base64-32"
+```
+
+### Email Types
+
+When configured, Auktiva sends:
+- **Welcome emails** - On user registration
+- **Auction invites** - When users are invited to auctions
+- **New item notifications** - When items are added (user can disable)
+- **Outbid notifications** - When someone outbids a user (user can disable)
+
+### Email Retry System
+
+Failed emails are logged to the database and automatically retried via a cron job at `/api/cron/retry-emails`. On Vercel, this runs every 15 minutes. The system retries up to 5 times before abandoning.
+
+<Callout type="info">
+  Email is optional. If `BREVO_API_KEY` is not set, no emails will be sent and the app will function normally.
+</Callout>
+
 ## Feature Flags
 
 ```bash
@@ -91,6 +126,11 @@ ALLOW_OPEN_AUCTIONS="true"
 | `S3_SECRET_ACCESS_KEY` | S3 only | - | S3 secret key |
 | `S3_ENDPOINT` | No | - | Custom S3 endpoint |
 | `S3_PUBLIC_URL` | No | - | Custom public URL for files |
+| `BREVO_API_KEY` | No | - | Brevo API key for emails |
+| `MAIL_FROM` | No | `noreply@auktiva.org` | Sender email address |
+| `MAIL_FROM_NAME` | No | `Auktiva.org` | Sender display name |
+| `NEXT_PUBLIC_APP_URL` | No | - | App URL for email links |
+| `CRON_SECRET` | No | - | Secret for cron endpoint auth |
 | `ALLOW_OPEN_AUCTIONS` | No | `false` | Enable open auction creation |
 
 ## Example Configurations

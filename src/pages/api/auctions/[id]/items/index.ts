@@ -3,6 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { eventBus } from "@/lib/events/event-bus";
+import "@/lib/email/handlers";
+import { notifyNewItem } from "@/lib/notifications";
 
 const createItemSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
@@ -80,6 +83,12 @@ export default async function handler(
           .json({ errors: { currencyCode: "Invalid currency" } });
       }
 
+      // Get auction name for the event
+      const auction = await prisma.auction.findUnique({
+        where: { id: auctionId },
+        select: { name: true },
+      });
+
       // Create item
       const item = await prisma.auctionItem.create({
         data: {
@@ -98,11 +107,60 @@ export default async function handler(
           creator: {
             select: { id: true, name: true, email: true },
           },
+          images: {
+            orderBy: { order: "asc" },
+            take: 1,
+            select: { url: true },
+          },
           _count: {
             select: { bids: true },
           },
         },
       });
+
+      // Get the first image URL if exists - construct full URL for emails
+      const appUrl =
+        process.env.NEXT_PUBLIC_APP_URL || "https://www.auktiva.org";
+      const firstImageUrl =
+        item.images.length > 0
+          ? item.images[0].url.startsWith("http")
+            ? item.images[0].url
+            : `${appUrl}${item.images[0].url}`
+          : null;
+
+      // Emit event for new item notification emails
+      eventBus.emit("item.created", {
+        itemId: item.id,
+        itemName: item.name,
+        itemDescription: item.description,
+        itemImageUrl: firstImageUrl,
+        auctionId,
+        auctionName: auction?.name || "Auction",
+        creatorId: session.user.id,
+      });
+
+      // Send in-app notifications to all auction members (except creator)
+      const members = await prisma.auctionMember.findMany({
+        where: {
+          auctionId,
+          userId: { not: session.user.id },
+        },
+        select: { userId: true },
+      });
+
+      // Send notifications in background (don't await)
+      Promise.all(
+        members.map((member) =>
+          notifyNewItem(
+            member.userId,
+            item.name,
+            item.description,
+            firstImageUrl,
+            auctionId,
+            item.id,
+          ),
+        ),
+      ).catch((err) => console.error("Failed to send new item notifications:", err));
 
       return res.status(201).json(item);
     } catch (error) {

@@ -3,7 +3,8 @@
 # Apply Prisma migrations to Turso database
 # Usage: npm run db:migrate:turso
 #
-# This script applies ALL migrations in chronological order to your Turso database.
+# This script applies ONLY NEW migrations to your Turso database.
+# It tracks applied migrations in a _prisma_migrations table.
 # Requires: turso CLI installed and authenticated
 #
 # The database name is extracted from DATABASE_URL automatically.
@@ -63,9 +64,24 @@ fi
 echo "🚀 Applying migrations to Turso database: $TURSO_DATABASE_NAME"
 echo ""
 
+# Create migrations tracking table if it doesn't exist
+echo "📋 Checking migration tracking table..."
+turso db shell "$TURSO_DATABASE_NAME" <<EOF 2>/dev/null || true
+CREATE TABLE IF NOT EXISTS _prisma_migrations (
+  id TEXT PRIMARY KEY,
+  migration_name TEXT NOT NULL UNIQUE,
+  applied_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+EOF
+
+# Get list of already applied migrations
+APPLIED_MIGRATIONS=$(turso db shell "$TURSO_DATABASE_NAME" "SELECT migration_name FROM _prisma_migrations;" 2>/dev/null | tail -n +2 | awk '{print $1}' || echo "")
+
 # Count migrations
 TOTAL=$(echo "$MIGRATION_FOLDERS" | wc -l | tr -d ' ')
 CURRENT=0
+APPLIED=0
+SKIPPED=0
 
 # Apply each migration in order
 for MIGRATION_FOLDER in $MIGRATION_FOLDERS; do
@@ -73,20 +89,32 @@ for MIGRATION_FOLDER in $MIGRATION_FOLDERS; do
   MIGRATION_FILE="$MIGRATIONS_DIR/$MIGRATION_FOLDER/migration.sql"
   
   if [ ! -f "$MIGRATION_FILE" ]; then
-    echo "⚠️  Skipping $MIGRATION_FOLDER (no migration.sql found)"
+    echo "⚠️  [$CURRENT/$TOTAL] Skipping $MIGRATION_FOLDER (no migration.sql found)"
     continue
   fi
   
-  echo "[$CURRENT/$TOTAL] Applying: $MIGRATION_FOLDER"
+  # Check if migration was already applied
+  if echo "$APPLIED_MIGRATIONS" | grep -q "^${MIGRATION_FOLDER}$"; then
+    echo "⏭️  [$CURRENT/$TOTAL] Already applied: $MIGRATION_FOLDER"
+    SKIPPED=$((SKIPPED + 1))
+    continue
+  fi
+  
+  echo "🔄 [$CURRENT/$TOTAL] Applying: $MIGRATION_FOLDER"
   
   if turso db shell "$TURSO_DATABASE_NAME" < "$MIGRATION_FILE"; then
+    # Record the migration as applied
+    MIGRATION_ID=$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo "$(date +%s)-$RANDOM")
+    turso db shell "$TURSO_DATABASE_NAME" "INSERT INTO _prisma_migrations (id, migration_name) VALUES ('$MIGRATION_ID', '$MIGRATION_FOLDER');"
     echo "   ✓ Done"
+    APPLIED=$((APPLIED + 1))
   else
     echo "   ❌ Failed to apply migration: $MIGRATION_FOLDER"
-    echo "   Note: If tables already exist, this may be expected."
     exit 1
   fi
 done
 
 echo ""
-echo "✅ All migrations applied successfully!"
+echo "✅ Migration complete!"
+echo "   Applied: $APPLIED new migration(s)"
+echo "   Skipped: $SKIPPED already applied"

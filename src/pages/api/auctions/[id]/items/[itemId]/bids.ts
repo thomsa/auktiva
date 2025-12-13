@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { notifyOutbid } from "@/lib/notifications";
+import { eventBus } from "@/lib/events/event-bus";
+import "@/lib/email/handlers";
 
 const createBidSchema = z.object({
   amount: z.number().positive("Bid amount must be positive"),
@@ -120,6 +122,7 @@ export default async function handler(
 
       // Notify previous bidder they've been outbid
       if (previousBidderId && previousBidderId !== session.user.id) {
+        // In-app notification
         await notifyOutbid(
           previousBidderId,
           item.name,
@@ -128,6 +131,33 @@ export default async function handler(
           amount,
           item.currency.symbol,
         );
+
+        // Get previous bidder info for email
+        const previousBidder = await prisma.user.findUnique({
+          where: { id: previousBidderId },
+          select: { email: true, name: true },
+        });
+
+        // Get auction name for email
+        const auction = await prisma.auction.findUnique({
+          where: { id: auctionId },
+          select: { name: true },
+        });
+
+        if (previousBidder) {
+          // Emit event for outbid email
+          eventBus.emit("bid.outbid", {
+            previousBidderId,
+            previousBidderEmail: previousBidder.email,
+            previousBidderName: previousBidder.name || "",
+            itemId,
+            itemName: item.name,
+            auctionId,
+            auctionName: auction?.name || "Auction",
+            newAmount: amount,
+            currencySymbol: item.currency.symbol,
+          });
+        }
       }
 
       return res.status(201).json(bid);
