@@ -55,6 +55,13 @@ export const currencies = [
 ];
 
 export async function seedCurrencies(prismaClient: PrismaClient = prisma) {
+  // Check if currencies already exist
+  const existingCount = await prismaClient.currency.count();
+  if (existingCount > 0) {
+    console.log(`⏭️  Currencies already seeded (${existingCount} found), skipping`);
+    return;
+  }
+
   console.log("💰 Seeding currencies...");
   for (const currency of currencies) {
     await prismaClient.currency.upsert({

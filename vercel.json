@@ -1,5 +1,5 @@
 {
-  "buildCommand": "prisma generate && npx tsx scripts/migrate-turso.ts && next build",
+  "buildCommand": "prisma generate && npx tsx scripts/migrate-turso.ts && npx tsx prisma/seed-currencies.ts && next build",
   "installCommand": "npm ci",
   "framework": "nextjs",
   "outputDirectory": ".next",
