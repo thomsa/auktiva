@@ -97,18 +97,9 @@ async function main() {
       // Read and execute migration SQL
       const sql = fs.readFileSync(migrationFile, "utf-8");
 
-      // Split by semicolons and execute each statement
-      // Filter out empty statements and comments-only statements
-      const statements = sql
-        .split(";")
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0 && !s.startsWith("--"));
-
-      for (const statement of statements) {
-        if (statement.length > 0) {
-          await client.execute(statement);
-        }
-      }
+      // Use executeMultiple to run the entire migration as a batch
+      // This handles PRAGMA statements and table dependencies correctly
+      await client.executeMultiple(sql);
 
       // Record the migration as applied
       const migrationId = randomUUID();
