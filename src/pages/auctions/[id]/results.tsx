@@ -1,10 +1,10 @@
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
+import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Navbar } from "@/components/layout/navbar";
+import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { StatsCard } from "@/components/ui/stats-card";
-import Link from "next/link";
 
 interface Winner {
   itemId: string;
@@ -60,24 +60,17 @@ export default function ResultsPage({
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <Navbar user={user} />
-
-      <main className="container mx-auto px-4 py-8 pb-12">
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <Link href="/dashboard" className="btn btn-ghost btn-sm gap-2">
-            <span className="icon-[tabler--arrow-left] size-4"></span>
-            <span className="hidden sm:inline">Back to Dashboard</span>
-            <span className="sm:hidden">Back</span>
-          </Link>
-          <Link
-            href={`/auctions/${auction.id}`}
-            className="btn btn-outline btn-sm gap-2"
-          >
-            <span className="icon-[tabler--list-details] size-4"></span>
-            View All Items
-          </Link>
-        </div>
+    <PageLayout user={user}>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <BackLink href="/dashboard" label="Back to Dashboard" shortLabel="Back" />
+        <Link
+          href={`/auctions/${auction.id}`}
+          className="btn btn-outline btn-sm gap-2"
+        >
+          <span className="icon-[tabler--list-details] size-4"></span>
+          View All Items
+        </Link>
+      </div>
 
         {/* Header */}
         <div className="card bg-base-100 shadow-xl mb-6">
@@ -208,10 +201,10 @@ export default function ResultsPage({
             </h2>
 
             {winners.length === 0 ? (
-              <div className="text-center py-12">
-                <span className="icon-[tabler--mood-sad] size-16 text-base-content/20"></span>
-                <p className="mt-4 text-base-content/60">No bids placed yet</p>
-              </div>
+              <EmptyState
+                icon="icon-[tabler--mood-sad]"
+                title="No bids placed yet"
+              />
             ) : (
               <div className="overflow-x-auto mt-4">
                 <table className="table">
@@ -286,8 +279,7 @@ export default function ResultsPage({
             )}
           </div>
         </div>
-      </main>
-    </div>
+    </PageLayout>
   );
 }
 

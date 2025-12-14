@@ -5,9 +5,10 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Navbar } from "@/components/layout/navbar";
+import { PageLayout, BackLink, AlertMessage, ConfirmDialog } from "@/components/common";
 import { ImageUpload } from "@/components/upload/image-upload";
 import { Button } from "@/components/ui/button";
+import { useConfirmDialog } from "@/hooks/ui";
 
 interface Currency {
   code: string;
@@ -63,11 +64,11 @@ export default function EditItemPage({
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [images, setImages] = useState<ItemImage[]>(initialImages);
-  const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [isEnding, setIsEnding] = useState(false);
+  const deleteDialog = useConfirmDialog();
+  const endDialog = useConfirmDialog();
   const [itemEndDate, setItemEndDate] = useState(
     item.endDate ? item.endDate.slice(0, 16) : "",
   );
@@ -156,31 +157,22 @@ export default function EditItemPage({
         const result = await res.json();
         setError(result.message || "Failed to end item");
         setIsEnding(false);
-        setShowEndConfirm(false);
+        endDialog.close();
       } else {
         router.push(`/auctions/${auction.id}/items/${item.id}`);
       }
     } catch {
       setError("An error occurred. Please try again.");
       setIsEnding(false);
-      setShowEndConfirm(false);
+      endDialog.close();
     }
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <Navbar user={user} />
-
-      <main className="container mx-auto px-4 py-8 pb-12 max-w-2xl">
-        <div className="mb-6">
-          <Link
-            href={`/auctions/${auction.id}/items/${item.id}`}
-            className="btn btn-ghost btn-sm gap-2"
-          >
-            <span className="icon-[tabler--arrow-left] size-4"></span>
-            Back to Item
-          </Link>
-        </div>
+    <PageLayout user={user} maxWidth="2xl">
+      <div className="mb-6">
+        <BackLink href={`/auctions/${auction.id}/items/${item.id}`} label="Back to Item" />
+      </div>
 
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
@@ -195,10 +187,7 @@ export default function EditItemPage({
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="alert alert-error">
-                  <span className="icon-[tabler--alert-circle] size-5"></span>
-                  <span>{error}</span>
-                </div>
+                <AlertMessage type="error">{error}</AlertMessage>
               )}
 
               {/* Basic Info */}
@@ -509,43 +498,25 @@ export default function EditItemPage({
                 accepted after this.
               </p>
 
-              {!showEndConfirm ? (
+              {!endDialog.isOpen ? (
                 <button
-                  onClick={() => setShowEndConfirm(true)}
+                  onClick={endDialog.open}
                   className="btn btn-warning btn-outline mt-4"
                 >
                   <span className="icon-[tabler--flag-filled] size-5"></span>
                   End Item Now
                 </button>
               ) : (
-                <div className="mt-4 p-4 bg-warning/10 rounded-lg">
-                  <p className="font-semibold mb-3">
-                    Are you sure you want to end bidding on &quot;{item.name}
-                    &quot;?
-                  </p>
-                  <p className="text-sm text-base-content/60 mb-3">
-                    {hasBids
-                      ? "The current highest bidder will win this item."
-                      : "This item has no bids yet."}
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleEndNow}
-                      variant="warning"
-                      isLoading={isEnding}
-                      loadingText="Ending..."
-                    >
-                      Yes, End Now
-                    </Button>
-                    <button
-                      onClick={() => setShowEndConfirm(false)}
-                      className="btn btn-ghost"
-                      disabled={isEnding}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
+                <ConfirmDialog
+                  isOpen={endDialog.isOpen}
+                  title={`Are you sure you want to end bidding on "${item.name}"?`}
+                  message={hasBids ? "The current highest bidder will win this item." : "This item has no bids yet."}
+                  confirmLabel="Yes, End Now"
+                  variant="warning"
+                  isLoading={isEnding}
+                  onConfirm={handleEndNow}
+                  onCancel={endDialog.close}
+                />
               )}
             </div>
           </div>
@@ -572,37 +543,24 @@ export default function EditItemPage({
                 Delete this item permanently. This action cannot be undone.
               </p>
 
-              {!showDeleteConfirm ? (
+              {!deleteDialog.isOpen ? (
                 <button
-                  onClick={() => setShowDeleteConfirm(true)}
+                  onClick={deleteDialog.open}
                   className="btn btn-error btn-outline mt-4"
                 >
                   <span className="icon-[tabler--trash] size-5"></span>
                   Delete Item
                 </button>
               ) : (
-                <div className="mt-4 p-4 bg-error/10 rounded-lg">
-                  <p className="font-semibold mb-3">
-                    Are you sure you want to delete &quot;{item.name}&quot;?
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleDelete}
-                      variant="error"
-                      isLoading={isDeleting}
-                      loadingText="Deleting..."
-                    >
-                      Yes, Delete
-                    </Button>
-                    <button
-                      onClick={() => setShowDeleteConfirm(false)}
-                      className="btn btn-ghost"
-                      disabled={isDeleting}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
+                <ConfirmDialog
+                  isOpen={deleteDialog.isOpen}
+                  title={`Are you sure you want to delete "${item.name}"?`}
+                  confirmLabel="Yes, Delete"
+                  variant="error"
+                  isLoading={isDeleting}
+                  onConfirm={handleDelete}
+                  onCancel={deleteDialog.close}
+                />
               )}
             </div>
           </div>
@@ -614,8 +572,7 @@ export default function EditItemPage({
             <span>Items with bids cannot be deleted.</span>
           </div>
         )}
-      </main>
-    </div>
+    </PageLayout>
   );
 }
 

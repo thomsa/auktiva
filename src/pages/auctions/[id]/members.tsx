@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
+import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Navbar } from "@/components/layout/navbar";
+import { PageLayout, BackLink, AlertMessage } from "@/components/common";
+import { MemberCard, MemberRow } from "@/components/member";
 import { useToast } from "@/components/ui/toast";
-import Link from "next/link";
 
 interface Member {
   id: string;
@@ -36,14 +37,6 @@ interface MembersPageProps {
   isOwner: boolean;
   isAdmin: boolean;
 }
-
-const ROLE_OPTIONS = ["ADMIN", "CREATOR", "BIDDER"];
-const ROLE_COLORS: Record<string, string> = {
-  OWNER: "badge-primary",
-  ADMIN: "badge-secondary",
-  CREATOR: "badge-accent",
-  BIDDER: "badge-ghost",
-};
 
 export default function MembersPage({
   user,
@@ -124,29 +117,23 @@ export default function MembersPage({
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <Navbar user={user} />
-
-      <main className="container mx-auto px-4 py-8 pb-12 max-w-4xl">
-        <div className="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+    <PageLayout user={user} maxWidth="4xl">
+      <div className="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+        <BackLink
+          href={`/auctions/${auction.id}`}
+          label={`Back to ${auction.name}`}
+          shortLabel="Back"
+        />
+        {(isOwner || isAdmin) && (
           <Link
-            href={`/auctions/${auction.id}`}
-            className="btn btn-ghost btn-sm gap-2"
+            href={`/auctions/${auction.id}/invite`}
+            className="btn btn-primary btn-sm w-full sm:w-auto"
           >
-            <span className="icon-[tabler--arrow-left] size-4"></span>
-            <span className="hidden sm:inline">Back to {auction.name}</span>
-            <span className="sm:hidden">Back</span>
+            <span className="icon-[tabler--user-plus] size-4"></span>
+            Invite
           </Link>
-          {(isOwner || isAdmin) && (
-            <Link
-              href={`/auctions/${auction.id}/invite`}
-              className="btn btn-primary btn-sm w-full sm:w-auto"
-            >
-              <span className="icon-[tabler--user-plus] size-4"></span>
-              Invite
-            </Link>
-          )}
-        </div>
+        )}
+      </div>
 
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
@@ -156,96 +143,24 @@ export default function MembersPage({
             </h1>
 
             {error && (
-              <div className="alert alert-error mb-4">
-                <span className="icon-[tabler--alert-circle] size-5"></span>
-                <span>{error}</span>
-              </div>
+              <AlertMessage type="error" className="mb-4">
+                {error}
+              </AlertMessage>
             )}
 
             {/* Mobile Card View */}
             <div className="space-y-3 md:hidden">
-              {members.map((member) => {
-                const isCurrentUser = member.user.id === user.id;
-                const canModify =
-                  isAdmin && !isCurrentUser && member.role !== "OWNER";
-
-                return (
-                  <div
-                    key={member.id}
-                    className={`p-3 rounded-lg ${isCurrentUser ? "bg-base-200" : "bg-base-100 border border-base-200"}`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="avatar placeholder">
-                          <div className="bg-neutral text-neutral-content w-10 h-10 rounded-full">
-                            <span>
-                              {member.user.name?.charAt(0) ||
-                                member.user.email.charAt(0)}
-                            </span>
-                          </div>
-                        </div>
-                        <div>
-                          <div className="font-bold text-sm">
-                            {member.user.name || "No name"}
-                            {isCurrentUser && (
-                              <span className="badge badge-xs ml-2">You</span>
-                            )}
-                          </div>
-                          <div className="text-xs text-base-content/60 break-all">
-                            {member.user.email}
-                          </div>
-                        </div>
-                      </div>
-                      {canModify && isAdmin && (
-                        <button
-                          onClick={() =>
-                            handleRemoveMember(
-                              member.id,
-                              member.user.name || member.user.email,
-                            )
-                          }
-                          disabled={loadingMemberId === member.id}
-                          className="btn btn-ghost btn-xs text-error"
-                          title="Remove member"
-                        >
-                          {loadingMemberId === member.id ? (
-                            <span className="loading loading-spinner loading-xs"></span>
-                          ) : (
-                            <span className="icon-[tabler--trash] size-4"></span>
-                          )}
-                        </button>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2 mt-2">
-                      {canModify ? (
-                        <select
-                          value={member.role}
-                          onChange={(e) =>
-                            handleRoleChange(member.id, e.target.value)
-                          }
-                          disabled={loadingMemberId === member.id}
-                          className="select select-bordered select-xs"
-                        >
-                          {ROLE_OPTIONS.map((role) => (
-                            <option key={role} value={role}>
-                              {role}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <span
-                          className={`badge badge-sm ${ROLE_COLORS[member.role] || "badge-ghost"}`}
-                        >
-                          {member.role}
-                        </span>
-                      )}
-                      <span className="text-xs text-base-content/60">
-                        Joined {new Date(member.joinedAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+              {members.map((member) => (
+                <MemberCard
+                  key={member.id}
+                  member={member}
+                  currentUserId={user.id}
+                  isAdmin={isAdmin}
+                  isLoading={loadingMemberId === member.id}
+                  onRoleChange={handleRoleChange}
+                  onRemove={handleRemoveMember}
+                />
+              ))}
             </div>
 
             {/* Desktop Table View */}
@@ -261,108 +176,25 @@ export default function MembersPage({
                   </tr>
                 </thead>
                 <tbody>
-                  {members.map((member) => {
-                    const isCurrentUser = member.user.id === user.id;
-                    const canModify =
-                      isAdmin && !isCurrentUser && member.role !== "OWNER";
-
-                    return (
-                      <tr
-                        key={member.id}
-                        className={isCurrentUser ? "bg-base-200" : ""}
-                      >
-                        <td>
-                          <div className="flex items-center gap-3">
-                            <div className="avatar placeholder">
-                              <div className="bg-neutral text-neutral-content w-10 h-10 rounded-full">
-                                <span>
-                                  {member.user.name?.charAt(0) ||
-                                    member.user.email.charAt(0)}
-                                </span>
-                              </div>
-                            </div>
-                            <div>
-                              <div className="font-bold">
-                                {member.user.name || "No name"}
-                                {isCurrentUser && (
-                                  <span className="badge badge-sm ml-2">
-                                    You
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-sm text-base-content/60">
-                                {member.user.email}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td>
-                          {canModify ? (
-                            <select
-                              value={member.role}
-                              onChange={(e) =>
-                                handleRoleChange(member.id, e.target.value)
-                              }
-                              disabled={loadingMemberId === member.id}
-                              className="select select-bordered select-sm"
-                            >
-                              {ROLE_OPTIONS.map((role) => (
-                                <option key={role} value={role}>
-                                  {role}
-                                </option>
-                              ))}
-                            </select>
-                          ) : (
-                            <span
-                              className={`badge ${ROLE_COLORS[member.role] || "badge-ghost"}`}
-                            >
-                              {member.role}
-                            </span>
-                          )}
-                        </td>
-                        <td className="text-sm text-base-content/60">
-                          {new Date(member.joinedAt).toLocaleDateString()}
-                        </td>
-                        <td className="text-sm text-base-content/60">
-                          {member.invitedBy
-                            ? member.invitedBy.name || member.invitedBy.email
-                            : "—"}
-                        </td>
-                        {isAdmin && (
-                          <td className="text-right">
-                            {canModify && (
-                              <button
-                                onClick={() =>
-                                  handleRemoveMember(
-                                    member.id,
-                                    member.user.name || member.user.email,
-                                  )
-                                }
-                                disabled={loadingMemberId === member.id}
-                                className="btn btn-ghost btn-sm text-error"
-                                title="Remove member"
-                              >
-                                {loadingMemberId === member.id ? (
-                                  <span className="loading loading-spinner loading-sm"></span>
-                                ) : (
-                                  <span className="icon-[tabler--trash] size-4"></span>
-                                )}
-                              </button>
-                            )}
-                          </td>
-                        )}
-                      </tr>
-                    );
-                  })}
+                  {members.map((member) => (
+                    <MemberRow
+                      key={member.id}
+                      member={member}
+                      currentUserId={user.id}
+                      isAdmin={isAdmin}
+                      isLoading={loadingMemberId === member.id}
+                      onRoleChange={handleRoleChange}
+                      onRemove={handleRemoveMember}
+                    />
+                  ))}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-      </main>
-    </div>
-  );
-}
+      </PageLayout>
+    );
+  }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);

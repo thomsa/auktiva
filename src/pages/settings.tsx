@@ -3,7 +3,7 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Navbar } from "@/components/layout/navbar";
+import { PageLayout } from "@/components/common";
 import { useTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
 
@@ -161,11 +161,8 @@ export default function SettingsPage({
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <Navbar user={user} />
-
-      <main className="container mx-auto px-4 py-8 pb-12 max-w-2xl">
-        <h1 className="text-3xl font-bold mb-8">Settings</h1>
+    <PageLayout user={user} maxWidth="2xl">
+      <h1 className="text-3xl font-bold mb-8">Settings</h1>
 
         {/* Profile Section */}
         <div className="card bg-base-100 shadow-xl mb-6">
@@ -420,8 +417,7 @@ export default function SettingsPage({
             </div>
           </div>
         </div>
-      </main>
-    </div>
+    </PageLayout>
   );
 }
 

@@ -4,11 +4,11 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Navbar } from "@/components/layout/navbar";
+import { PageLayout, BackLink, AlertMessage, ConfirmDialog } from "@/components/common";
 import { ThumbnailUpload } from "@/components/upload/thumbnail-upload";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { useConfirmDialog } from "@/hooks/ui";
 
 interface AuctionSettingsProps {
   user: {
@@ -50,9 +50,9 @@ export default function AuctionSettingsPage({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isEnding, setIsEnding] = useState(false);
-  const [showEndConfirm, setShowEndConfirm] = useState(false);
+  const deleteDialog = useConfirmDialog();
+  const endDialog = useConfirmDialog();
   const [isEnded, setIsEnded] = useState(auction.isEnded);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(
     auction.thumbnailUrl,
@@ -123,19 +123,10 @@ export default function AuctionSettingsPage({
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <Navbar user={user} />
-
-      <main className="container mx-auto px-4 py-8 pb-12 max-w-2xl">
-        <div className="mb-6">
-          <Link
-            href={`/auctions/${auction.id}`}
-            className="btn btn-ghost btn-sm gap-2"
-          >
-            <span className="icon-[tabler--arrow-left] size-4"></span>
-            Back to Auction
-          </Link>
-        </div>
+    <PageLayout user={user} maxWidth="2xl">
+      <div className="mb-6">
+        <BackLink href={`/auctions/${auction.id}`} label="Back to Auction" />
+      </div>
 
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
@@ -146,10 +137,7 @@ export default function AuctionSettingsPage({
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="alert alert-error">
-                  <span className="icon-[tabler--alert-circle] size-5"></span>
-                  <span>{error}</span>
-                </div>
+                <AlertMessage type="error">{error}</AlertMessage>
               )}
 
               {/* Basic Info */}
@@ -415,64 +403,46 @@ export default function AuctionSettingsPage({
                 winners will be determined. This action cannot be undone.
               </p>
 
-              {!showEndConfirm ? (
+              {!endDialog.isOpen ? (
                 <button
-                  onClick={() => setShowEndConfirm(true)}
+                  onClick={endDialog.open}
                   className="btn btn-warning btn-outline mt-4"
                 >
                   <span className="icon-[tabler--clock-off] size-5"></span>
                   End Auction Now
                 </button>
               ) : (
-                <div className="mt-4 p-4 bg-warning/10 rounded-lg">
-                  <p className="font-semibold mb-3">
-                    Are you sure you want to end &quot;{auction.name}&quot; now?
-                  </p>
-                  <p className="text-sm text-base-content/60 mb-3">
-                    All bidding will stop immediately and winners will be
-                    finalized.
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={async () => {
-                        setIsEnding(true);
-                        setError(null);
-                        try {
-                          const res = await fetch(
-                            `/api/auctions/${auction.id}/close`,
-                            {
-                              method: "POST",
-                            },
-                          );
-                          if (!res.ok) {
-                            const result = await res.json();
-                            setError(result.message || "Failed to end auction");
-                          } else {
-                            setIsEnded(true);
-                            setShowEndConfirm(false);
-                            showToast("Auction ended successfully", "success");
-                          }
-                        } catch {
-                          setError("An error occurred. Please try again.");
-                        } finally {
-                          setIsEnding(false);
-                        }
-                      }}
-                      variant="warning"
-                      isLoading={isEnding}
-                      loadingText="Ending..."
-                    >
-                      Yes, End Now
-                    </Button>
-                    <button
-                      onClick={() => setShowEndConfirm(false)}
-                      className="btn btn-ghost"
-                      disabled={isEnding}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
+                <ConfirmDialog
+                  isOpen={endDialog.isOpen}
+                  title={`Are you sure you want to end "${auction.name}" now?`}
+                  message="All bidding will stop immediately and winners will be finalized."
+                  confirmLabel="Yes, End Now"
+                  variant="warning"
+                  isLoading={isEnding}
+                  onConfirm={async () => {
+                    setIsEnding(true);
+                    setError(null);
+                    try {
+                      const res = await fetch(
+                        `/api/auctions/${auction.id}/close`,
+                        { method: "POST" }
+                      );
+                      if (!res.ok) {
+                        const result = await res.json();
+                        setError(result.message || "Failed to end auction");
+                      } else {
+                        setIsEnded(true);
+                        endDialog.close();
+                        showToast("Auction ended successfully", "success");
+                      }
+                    } catch {
+                      setError("An error occurred. Please try again.");
+                    } finally {
+                      setIsEnding(false);
+                    }
+                  }}
+                  onCancel={endDialog.close}
+                />
               )}
             </div>
           </div>
@@ -503,45 +473,32 @@ export default function AuctionSettingsPage({
               member data. This action cannot be undone.
             </p>
 
-            {!showDeleteConfirm ? (
+            {!deleteDialog.isOpen ? (
               <button
-                onClick={() => setShowDeleteConfirm(true)}
+                onClick={deleteDialog.open}
                 className="btn btn-error btn-outline mt-4"
               >
                 <span className="icon-[tabler--trash] size-5"></span>
                 Delete Auction
               </button>
             ) : (
-              <div className="mt-4 p-4 bg-error/10 rounded-lg">
-                <p className="font-semibold mb-3">
-                  Are you sure you want to delete &quot;{auction.name}&quot;?
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={handleDelete}
-                    variant="error"
-                    isLoading={isDeleting}
-                    loadingText="Deleting..."
-                  >
-                    Yes, Delete
-                  </Button>
-                  <button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    className="btn btn-ghost"
-                    disabled={isDeleting}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
+              <ConfirmDialog
+                isOpen={deleteDialog.isOpen}
+                title={`Are you sure you want to delete "${auction.name}"?`}
+                confirmLabel="Yes, Delete"
+                variant="error"
+                isLoading={isDeleting}
+                onConfirm={handleDelete}
+                onCancel={deleteDialog.close}
+              />
             )}
           </div>
         </div>
-      </main>
-    </div>
+    </PageLayout>
   );
 }
 
+// ...
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 

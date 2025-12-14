@@ -4,7 +4,7 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { Navbar } from "@/components/layout/navbar";
+import { PageLayout, BackLink, AlertMessage } from "@/components/common";
 import { Button } from "@/components/ui/button";
 
 interface CreateAuctionProps {
@@ -68,16 +68,10 @@ export default function CreateAuctionPage({
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <Navbar user={user} />
-
-      <main className="container mx-auto px-4 py-8 pb-12 max-w-2xl">
-        <div className="mb-6">
-          <Link href="/dashboard" className="btn btn-ghost btn-sm gap-2">
-            <span className="icon-[tabler--arrow-left] size-4"></span>
-            Back to Dashboard
-          </Link>
-        </div>
+    <PageLayout user={user} maxWidth="2xl">
+      <div className="mb-6">
+        <BackLink href="/dashboard" label="Back to Dashboard" />
+      </div>
 
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
@@ -85,10 +79,7 @@ export default function CreateAuctionPage({
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="alert alert-error">
-                  <span className="icon-[tabler--alert-circle] size-5"></span>
-                  <span>{error}</span>
-                </div>
+                <AlertMessage type="error">{error}</AlertMessage>
               )}
 
               {/* Basic Info */}
@@ -281,8 +272,7 @@ export default function CreateAuctionPage({
             </form>
           </div>
         </div>
-      </main>
-    </div>
+    </PageLayout>
   );
 }
 

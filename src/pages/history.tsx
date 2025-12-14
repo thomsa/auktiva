@@ -1,10 +1,11 @@
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
+import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Navbar } from "@/components/layout/navbar";
+import { PageLayout, EmptyState } from "@/components/common";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
-import Link from "next/link";
+import { formatDate } from "@/utils/formatters";
 
 interface BidHistory {
   id: string;
@@ -47,8 +48,8 @@ interface HistoryPageProps {
 }
 
 export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("en-US", {
+  const formatBidDate = (dateStr: string) => {
+    return formatDate(dateStr, {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -58,11 +59,8 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <Navbar user={user} />
-
-      <main className="container mx-auto px-4 py-8 pb-12">
-        <h1 className="text-3xl font-bold mb-8">Bid History</h1>
+    <PageLayout user={user}>
+      <h1 className="text-3xl font-bold mb-8">Bid History</h1>
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -96,13 +94,15 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
             </h2>
 
             {bids.length === 0 ? (
-              <div className="text-center py-12">
-                <span className="icon-[tabler--gavel] size-16 text-base-content/20"></span>
-                <p className="mt-4 text-base-content/60">No bids yet</p>
-                <Link href="/dashboard" className="btn btn-primary mt-4">
-                  Browse Auctions
-                </Link>
-              </div>
+              <EmptyState
+                icon="icon-[tabler--gavel]"
+                title="No bids yet"
+                action={
+                  <Link href="/dashboard" className="btn btn-primary">
+                    Browse Auctions
+                  </Link>
+                }
+              />
             ) : (
               <>
                 {/* Mobile Card View */}
@@ -150,7 +150,7 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
                           </span>
                         </div>
                         <div className="text-xs text-base-content/50 mt-2">
-                          {formatDate(bid.createdAt)}
+                          {formatBidDate(bid.createdAt)}
                         </div>
                       </Link>
                     );
@@ -215,7 +215,7 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
                               )}
                             </td>
                             <td className="text-sm text-base-content/60">
-                              {formatDate(bid.createdAt)}
+                              {formatBidDate(bid.createdAt)}
                             </td>
                           </tr>
                         );
@@ -227,8 +227,7 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
             )}
           </div>
         </div>
-      </main>
-    </div>
+    </PageLayout>
   );
 }
 

@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# Get the current branch
+current_branch=$(git symbolic-ref --short HEAD)
+
+# Only run on main branch
+if [ "$current_branch" != "main" ]; then
+  exit 0
+fi
+
+# Check if we're in an interactive terminal
+if [ -t 0 ]; then
+  echo ""
+  echo "🚀 Pushing to main - Version bump required"
+  echo ""
+  echo "Current version: $(node -p "require('./package.json').version")"
+  echo ""
+  echo "Select version increment:"
+  echo "  1) patch (0.1.0 -> 0.1.1) - bug fixes"
+  echo "  2) minor (0.1.0 -> 0.2.0) - new features"
+  echo "  3) major (0.1.0 -> 1.0.0) - breaking changes"
+  echo "  4) skip - no version bump"
+  echo ""
+  printf "Enter choice [1-4]: "
+  read choice
+
+  case $choice in
+    1)
+      npm version patch --no-git-tag-version
+      git add package.json package-lock.json
+      git commit -m "chore: bump version to $(node -p "require('./package.json').version")"
+      echo "✅ Version bumped to $(node -p "require('./package.json').version")"
+      ;;
+    2)
+      npm version minor --no-git-tag-version
+      git add package.json package-lock.json
+      git commit -m "chore: bump version to $(node -p "require('./package.json').version")"
+      echo "✅ Version bumped to $(node -p "require('./package.json').version")"
+      ;;
+    3)
+      npm version major --no-git-tag-version
+      git add package.json package-lock.json
+      git commit -m "chore: bump version to $(node -p "require('./package.json').version")"
+      echo "✅ Version bumped to $(node -p "require('./package.json').version")"
+      ;;
+    4)
+      echo "⏭️  Skipping version bump"
+      ;;
+    *)
+      echo "❌ Invalid choice. Aborting push."
+      exit 1
+      ;;
+  esac
+else
+  echo "⚠️  Non-interactive terminal - skipping version bump prompt"
+fi

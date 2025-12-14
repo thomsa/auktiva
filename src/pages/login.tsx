@@ -5,6 +5,7 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { AlertMessage } from "@/components/common";
 import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
@@ -53,17 +54,13 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="alert alert-error">
-                <span className="icon-[tabler--alert-circle] size-5"></span>
-                <span>{error}</span>
-              </div>
+              <AlertMessage type="error">{error}</AlertMessage>
             )}
 
             {router.query.registered && (
-              <div className="alert alert-success">
-                <span className="icon-[tabler--check] size-5"></span>
-                <span>Account created successfully! Please sign in.</span>
-              </div>
+              <AlertMessage type="success">
+                Account created successfully! Please sign in.
+              </AlertMessage>
             )}
 
             <div className="form-control">
