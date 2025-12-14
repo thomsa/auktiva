@@ -42,20 +42,53 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-200 px-4">
-      <div className="card bg-base-100 shadow-xl w-full max-w-md">
-        <div className="card-body">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-base-content">
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Left side - Branding (hidden on mobile) */}
+      <div
+        className="hidden lg:flex lg:w-1/2 bg-base-100 items-center justify-center p-12 relative"
+        style={{
+          backgroundImage: "url('/pictures/login-bg.png')",
+          backgroundPosition: "bottom center",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="absolute inset-0 bg-base-100/80"></div>
+        <Link
+          href="/"
+          className="relative z-10 flex flex-col items-center gap-4 hover:opacity-80 transition-opacity"
+        >
+          <div className="flex items-center gap-3">
+            <span className="icon-[tabler--gavel] size-12 text-primary"></span>
+            <h1 className="text-4xl font-bold text-base-content">Auktiva</h1>
+          </div>
+          <p className="text-base-content/60 text-lg text-center">
+            The free auction platform for fundraisers and charities
+          </p>
+        </Link>
+      </div>
+
+      {/* Right side - Form */}
+      <div className="flex-1 lg:w-1/2 bg-base-300 flex flex-col items-center justify-center p-6 sm:p-12">
+        {/* Mobile logo */}
+        <Link
+          href="/"
+          className="lg:hidden mb-8 flex items-center gap-2 hover:opacity-80 transition-opacity"
+        >
+          <span className="icon-[tabler--gavel] size-8 text-primary"></span>
+          <span className="text-xl font-bold text-base-content">Auktiva</span>
+        </Link>
+
+        <div className="w-full max-w-md">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-base-content">
               Welcome back
-            </h1>
+            </h2>
             <p className="text-base-content/60 mt-1">Sign in to your account</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <AlertMessage type="error">{error}</AlertMessage>
-            )}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {error && <AlertMessage type="error">{error}</AlertMessage>}
 
             {router.query.registered && (
               <AlertMessage type="success">
@@ -65,28 +98,30 @@ export default function LoginPage() {
 
             <div className="form-control">
               <label className="label" htmlFor="email">
-                <span className="label-text">Email</span>
+                <span className="label-text text-base-content/80">Email</span>
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
                 placeholder="you@example.com"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-base-100"
                 required
               />
             </div>
 
             <div className="form-control">
               <label className="label" htmlFor="password">
-                <span className="label-text">Password</span>
+                <span className="label-text text-base-content/80">
+                  Password
+                </span>
               </label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 placeholder="••••••••"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-base-100"
                 required
               />
             </div>
@@ -102,7 +137,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="divider">or</div>
+          <div className="divider my-6">or</div>
 
           <p className="text-center text-sm text-base-content/60">
             Don&apos;t have an account?{" "}
