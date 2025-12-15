@@ -46,25 +46,32 @@ export function Navbar({ user }: NavbarProps) {
 
         {/* User Menu */}
         <div className="dropdown dropdown-end">
-          <div
+          <button
             tabIndex={0}
-            role="button"
-            className="btn btn-ghost btn-circle avatar placeholder"
+            className="w-10 h-10 rounded-full bg-primary text-primary-content flex items-center justify-center text-sm font-medium cursor-pointer hover:opacity-80 transition-opacity"
           >
-            <div className="bg-primary text-primary-content w-10 h-10 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium">
-                {user.name?.charAt(0).toUpperCase() ||
-                  user.email?.charAt(0).toUpperCase() ||
-                  "U"}
-              </span>
-            </div>
-          </div>
+            {(() => {
+              const name = user.name?.trim();
+              if (name) {
+                const parts = name.split(/\s+/);
+                if (parts.length >= 2) {
+                  return (
+                    parts[0].charAt(0) + parts[parts.length - 1].charAt(0)
+                  ).toUpperCase();
+                }
+                return name.substring(0, 2).toUpperCase();
+              }
+              return user.email?.charAt(0).toUpperCase() || "U";
+            })()}
+          </button>
           <ul
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow-lg border border-base-300"
           >
             <li className="menu-title">
-              <span className="text-xs text-base-content/60">{user.email}</span>
+              <span className="text-xs text-base-content/60 truncate max-w-[180px]">
+                {user.email}
+              </span>
             </li>
             <li>
               <Link href="/dashboard">

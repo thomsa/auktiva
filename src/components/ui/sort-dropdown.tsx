@@ -11,6 +11,7 @@ interface SortDropdownProps {
   paramName?: string;
   className?: string;
   fullWidth?: boolean;
+  dropdownEnd?: boolean;
 }
 
 export function SortDropdown({
@@ -19,6 +20,7 @@ export function SortDropdown({
   paramName = "sort",
   className = "",
   fullWidth = false,
+  dropdownEnd = true,
 }: SortDropdownProps) {
   const router = useRouter();
 
@@ -30,7 +32,7 @@ export function SortDropdown({
         query,
       },
       undefined,
-      { shallow: true },
+      { shallow: true }
     );
   };
 
@@ -38,10 +40,14 @@ export function SortDropdown({
     options.find((o) => o.value === currentSort)?.label || options[0]?.label;
 
   return (
-    <div className={`dropdown dropdown-end ${className}`}>
+    <div
+      className={`dropdown ${dropdownEnd ? "dropdown-end" : ""} ${className}`}
+    >
       <label
         tabIndex={0}
-        className={`btn btn-ghost btn-sm gap-1 ${fullWidth ? "w-full justify-between" : ""}`}
+        className={`btn btn-ghost btn-sm gap-1 ${
+          fullWidth ? "w-full justify-between" : ""
+        }`}
       >
         <span className="icon-[tabler--arrows-sort] size-4"></span>
         <span className="text-sm">{currentLabel}</span>
@@ -112,7 +118,7 @@ export function sortItems<
     startingBid?: number;
     endDate?: string | null;
     _count?: { bids: number };
-  },
+  }
 >(items: T[], sortValue: string): T[] {
   const sorted = [...items];
 
@@ -121,25 +127,25 @@ export function sortItems<
       return sorted.sort(
         (a, b) =>
           new Date(b.createdAt || 0).getTime() -
-          new Date(a.createdAt || 0).getTime(),
+          new Date(a.createdAt || 0).getTime()
       );
     case "date-asc":
       return sorted.sort(
         (a, b) =>
           new Date(a.createdAt || 0).getTime() -
-          new Date(b.createdAt || 0).getTime(),
+          new Date(b.createdAt || 0).getTime()
       );
     case "price-desc":
       return sorted.sort(
         (a, b) =>
           (b.currentBid ?? b.startingBid ?? 0) -
-          (a.currentBid ?? a.startingBid ?? 0),
+          (a.currentBid ?? a.startingBid ?? 0)
       );
     case "price-asc":
       return sorted.sort(
         (a, b) =>
           (a.currentBid ?? a.startingBid ?? 0) -
-          (b.currentBid ?? b.startingBid ?? 0),
+          (b.currentBid ?? b.startingBid ?? 0)
       );
     case "name-asc":
       return sorted.sort((a, b) => a.name.localeCompare(b.name));
@@ -161,11 +167,11 @@ export function sortItems<
       });
     case "bids-desc":
       return sorted.sort(
-        (a, b) => (b._count?.bids ?? 0) - (a._count?.bids ?? 0),
+        (a, b) => (b._count?.bids ?? 0) - (a._count?.bids ?? 0)
       );
     case "bids-asc":
       return sorted.sort(
-        (a, b) => (a._count?.bids ?? 0) - (b._count?.bids ?? 0),
+        (a, b) => (a._count?.bids ?? 0) - (b._count?.bids ?? 0)
       );
     default:
       return sorted;
@@ -177,7 +183,7 @@ export function sortAuctions<
     name: string;
     createdAt?: string;
     endDate?: string | null;
-  },
+  }
 >(auctions: T[], sortValue: string): T[] {
   const sorted = [...auctions];
 
@@ -186,13 +192,13 @@ export function sortAuctions<
       return sorted.sort(
         (a, b) =>
           new Date(b.createdAt || 0).getTime() -
-          new Date(a.createdAt || 0).getTime(),
+          new Date(a.createdAt || 0).getTime()
       );
     case "date-asc":
       return sorted.sort(
         (a, b) =>
           new Date(a.createdAt || 0).getTime() -
-          new Date(b.createdAt || 0).getTime(),
+          new Date(b.createdAt || 0).getTime()
       );
     case "name-asc":
       return sorted.sort((a, b) => a.name.localeCompare(b.name));
