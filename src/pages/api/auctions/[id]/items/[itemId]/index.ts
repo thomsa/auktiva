@@ -16,7 +16,7 @@ const updateItemSchema = z.object({
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse
 ) {
   const session = await getServerSession(req, res, authOptions);
 
@@ -69,16 +69,30 @@ export default async function handler(
         where: { auctionItemId: itemId },
         include: {
           user: {
-            select: { id: true, name: true, email: true },
+            select: { id: true, name: true },
           },
         },
         orderBy: { amount: "desc" },
       });
 
-      // Filter user info based on visibility settings
+      // Check if item has ended and determine winner
+      const isItemEnded = item.endDate && new Date(item.endDate) < new Date();
       const isItemOwner = item.creatorId === session.user.id;
+      const highestBid = bidsRaw[0] || null;
+
+      // Get winner email only if item ended and viewer is item owner
+      let winnerEmail: string | null = null;
+      if (isItemEnded && isItemOwner && highestBid) {
+        const winner = await prisma.user.findUnique({
+          where: { id: highestBid.userId },
+          select: { email: true },
+        });
+        winnerEmail = winner?.email || null;
+      }
+
+      // Filter user info based on visibility settings (never include email)
       const bids = bidsRaw.map((bid) => {
-        // Item owner always sees bidder info
+        // Item owner always sees bidder names
         if (isItemOwner) {
           return { ...bid, isAnonymous: bid.isAnonymous };
         }
@@ -114,6 +128,7 @@ export default async function handler(
           isAnonymous: b.isAnonymous,
           user: b.user,
         })),
+        winnerEmail: winnerEmail,
       });
     } catch (error) {
       console.error("Get item error:", error);

@@ -23,7 +23,6 @@ interface Bid {
   user: {
     id: string;
     name: string | null;
-    email: string;
   } | null; // null if anonymous to viewer
 }
 
@@ -81,6 +80,7 @@ interface ItemDetailProps {
   canBid: boolean;
   canEdit: boolean;
   isItemOwner: boolean;
+  winnerEmail: string | null;
   images: Array<{
     id: string;
     url: string;
@@ -104,6 +104,7 @@ export default function ItemDetailPage({
   canBid,
   canEdit,
   isItemOwner,
+  winnerEmail,
   images,
 }: ItemDetailProps) {
   const router = useRouter();
@@ -113,7 +114,7 @@ export default function ItemDetailPage({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    initialSidebarCollapsed,
+    initialSidebarCollapsed
   );
 
   // Sidebar sorting
@@ -133,7 +134,7 @@ export default function ItemDetailPage({
       fallbackData: { item: initialItem, bids: initialBids },
       refreshInterval: isEnded ? 0 : 5000,
       revalidateOnFocus: true,
-    },
+    }
   );
 
   const item = data?.item ?? initialItem;
@@ -180,7 +181,7 @@ export default function ItemDetailPage({
                 ? bidAsAnonymous
                 : undefined,
           }),
-        },
+        }
       );
 
       const result = await res.json();
@@ -260,11 +261,15 @@ export default function ItemDetailPage({
                             <img
                               src={auctionItem.thumbnailUrl}
                               alt={auctionItem.name}
-                              className={`w-12 h-12 object-cover rounded ${isEnded ? "grayscale" : ""}`}
+                              className={`w-12 h-12 object-cover rounded ${
+                                isEnded ? "grayscale" : ""
+                              }`}
                             />
                           ) : (
                             <div
-                              className={`w-12 h-12 bg-base-300 rounded flex items-center justify-center ${isEnded ? "grayscale" : ""}`}
+                              className={`w-12 h-12 bg-base-300 rounded flex items-center justify-center ${
+                                isEnded ? "grayscale" : ""
+                              }`}
                             >
                               <span className="icon-[tabler--photo] size-6 text-base-content/40"></span>
                             </div>
@@ -282,7 +287,9 @@ export default function ItemDetailPage({
                             {auctionItem.name}
                           </div>
                           <div
-                            className={`text-sm font-semibold ${isEnded ? "text-base-content/50" : "text-primary"}`}
+                            className={`text-sm font-semibold ${
+                              isEnded ? "text-base-content/50" : "text-primary"
+                            }`}
                           >
                             {auctionItem.currency.symbol}
                             {(
@@ -309,13 +316,17 @@ export default function ItemDetailPage({
           }
         >
           <span
-            className={`icon-[tabler--chevron-${sidebarCollapsed ? "right" : "left"}] size-5`}
+            className={`icon-[tabler--chevron-${
+              sidebarCollapsed ? "right" : "left"
+            }] size-5`}
           ></span>
         </button>
 
         {/* Main Content Area */}
         <main
-          className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? "" : "lg:ml-0"}`}
+          className={`flex-1 transition-all duration-300 ${
+            sidebarCollapsed ? "" : "lg:ml-0"
+          }`}
         >
           <div className="container mx-auto px-4 py-8 pb-12">
             <div className="mb-6 flex items-center justify-between">
@@ -376,7 +387,9 @@ export default function ItemDetailPage({
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={images[selectedImageIndex]?.publicUrl}
-                            alt={`${item.name} - Image ${selectedImageIndex + 1}`}
+                            alt={`${item.name} - Image ${
+                              selectedImageIndex + 1
+                            }`}
                             className="w-full h-full object-contain"
                           />
                           {/* Navigation Buttons */}
@@ -385,7 +398,7 @@ export default function ItemDetailPage({
                               <button
                                 onClick={() =>
                                   setSelectedImageIndex((prev) =>
-                                    prev === 0 ? images.length - 1 : prev - 1,
+                                    prev === 0 ? images.length - 1 : prev - 1
                                   )
                                 }
                                 className="absolute left-2 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-black/50 hover:bg-black/70 border-none text-white"
@@ -396,7 +409,7 @@ export default function ItemDetailPage({
                               <button
                                 onClick={() =>
                                   setSelectedImageIndex((prev) =>
-                                    prev === images.length - 1 ? 0 : prev + 1,
+                                    prev === images.length - 1 ? 0 : prev + 1
                                   )
                                 }
                                 className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-black/50 hover:bg-black/70 border-none text-white"
@@ -471,7 +484,7 @@ export default function ItemDetailPage({
                               <div className="flex items-center gap-2">
                                 <span className="font-medium">
                                   {bid.user
-                                    ? bid.user.name || bid.user.email
+                                    ? bid.user.name || "Anonymous"
                                     : "Anonymous"}
                                 </span>
                                 {index === 0 && (
@@ -614,8 +627,19 @@ export default function ItemDetailPage({
                         </Button>
                       </form>
                     ) : isEnded ? (
-                      <div className="text-center py-4 text-base-content/60">
-                        This item&apos;s bidding has ended.
+                      <div className="space-y-3">
+                        <div className="text-center py-2 text-base-content/60">
+                          This item&apos;s bidding has ended.
+                        </div>
+                        {winnerEmail && (
+                          <div className="alert alert-info">
+                            <span className="icon-[tabler--trophy] size-5"></span>
+                            <div>
+                              <div className="font-medium">Winner Contact</div>
+                              <div className="text-sm">{winnerEmail}</div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ) : isItemOwner ? (
                       <div className="alert alert-info">
@@ -722,21 +746,35 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  // Get bids with user info - we'll filter based on visibility settings
+  // Get bids with user info - we'll filter based on visibility settings (no email)
   const bidsRaw = await prisma.bid.findMany({
     where: { auctionItemId: itemId },
     include: {
       user: {
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true },
       },
     },
     orderBy: { amount: "desc" },
   });
 
-  // Filter user info based on visibility settings
+  // Check if item has ended and determine winner
+  const isItemEnded = item.endDate && new Date(item.endDate) < new Date();
   const isItemOwner = item.creatorId === session.user.id;
+  const highestBid = bidsRaw[0] || null;
+
+  // Get winner email only if item ended and viewer is item owner
+  let winnerEmail: string | null = null;
+  if (isItemEnded && isItemOwner && highestBid) {
+    const winner = await prisma.user.findUnique({
+      where: { id: highestBid.userId },
+      select: { email: true },
+    });
+    winnerEmail = winner?.email || null;
+  }
+
+  // Filter user info based on visibility settings (never include email)
   const bids = bidsRaw.map((bid) => {
-    // Item owner always sees bidder info
+    // Item owner always sees bidder names
     if (isItemOwner) {
       return { ...bid, isAnonymous: bid.isAnonymous };
     }
@@ -813,7 +851,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     itemThumbnails.map((i) => [
       i.id,
       i.images[0]?.url ? getPublicUrl(i.images[0].url) : null,
-    ]),
+    ])
   );
 
   return {
@@ -848,6 +886,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       canBid: !isCreator, // Item creators cannot bid on their own items
       canEdit,
       isItemOwner: isCreator,
+      winnerEmail,
       images: images.map((img) => ({
         id: img.id,
         url: img.url,

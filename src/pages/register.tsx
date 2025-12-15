@@ -67,11 +67,11 @@ export default function RegisterPage() {
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left side - Branding (hidden on mobile) */}
       <div
-        className="hidden lg:flex lg:w-1/2 bg-base-100 items-center justify-center p-12 relative"
+        className="hidden lg:flex lg:w-1/2 bg-[#fff2d4] items-center justify-center p-12 relative"
         style={{
           backgroundImage: "url('/pictures/login-bg.png')",
           backgroundPosition: "bottom center",
-          backgroundSize: "cover",
+          backgroundSize: "contain",
           backgroundRepeat: "no-repeat",
         }}
       >

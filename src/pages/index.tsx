@@ -434,7 +434,7 @@ export default function LandingPage() {
                           data-prefix="$"
                           className="whitespace-pre-wrap break-all"
                         >
-                          <code>curl -fsSL https://get.auktiva.org | bash</code>
+                          <code>curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install.sh | bash</code>
                         </pre>
                       </div>
                       <a

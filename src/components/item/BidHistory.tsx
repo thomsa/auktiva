@@ -8,7 +8,6 @@ interface Bid {
   user: {
     id: string;
     name: string | null;
-    email: string;
   } | null;
 }
 
@@ -40,7 +39,7 @@ export function BidHistory({ bids, currencySymbol }: BidHistoryProps) {
             >
               <div className="flex items-center gap-2">
                 <span className="font-medium">
-                  {bid.user ? bid.user.name || bid.user.email : "Anonymous"}
+                  {bid.user ? bid.user.name || "Anonymous" : "Anonymous"}
                 </span>
                 {index === 0 && (
                   <span className="badge badge-primary badge-sm text-center">
