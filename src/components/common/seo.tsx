@@ -83,7 +83,7 @@ export function SEO({
   canonical,
   noindex = false,
   ogType = "website",
-  ogImage = `${SITE_URL}/og-image.png`,
+  ogImage = `${SITE_URL}/pictures/og-image.png`,
   ogImageAlt = "Auktiva - Open Source Auction Platform",
   article,
   structuredData,
