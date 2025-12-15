@@ -81,7 +81,9 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
                 : `${item.startingBid} ${item.currencyCode}`}
             </div>
             <div className="flex justify-between items-center text-xs mt-1">
-              <span className="text-base-content/60">{item._count.bids} bids</span>
+              <span className="text-base-content/60">
+                {item._count.bids} bids
+              </span>
               {item.endDate && (
                 <span className={ended ? "text-error" : "text-base-content/60"}>
                   {ended ? "Ended" : "Ends"} {formatShortDate(item.endDate)}

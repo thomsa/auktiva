@@ -28,19 +28,25 @@ export interface UseMembersReturn {
 export function useMembers(auctionId: string | undefined): UseMembersReturn {
   const { data, error, isLoading, mutate } = useSWR<Member[]>(
     auctionId ? `/api/auctions/${auctionId}/members` : null,
-    fetcher
+    fetcher,
   );
 
-  const updateRole = async (memberId: string, newRole: string): Promise<boolean> => {
+  const updateRole = async (
+    memberId: string,
+    newRole: string,
+  ): Promise<boolean> => {
     if (!auctionId) return false;
-    
+
     try {
-      const res = await fetch(`/api/auctions/${auctionId}/members/${memberId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role: newRole }),
-      });
-      
+      const res = await fetch(
+        `/api/auctions/${auctionId}/members/${memberId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: newRole }),
+        },
+      );
+
       if (res.ok) {
         await mutate();
         return true;
@@ -53,12 +59,15 @@ export function useMembers(auctionId: string | undefined): UseMembersReturn {
 
   const removeMember = async (memberId: string): Promise<boolean> => {
     if (!auctionId) return false;
-    
+
     try {
-      const res = await fetch(`/api/auctions/${auctionId}/members/${memberId}`, {
-        method: "DELETE",
-      });
-      
+      const res = await fetch(
+        `/api/auctions/${auctionId}/members/${memberId}`,
+        {
+          method: "DELETE",
+        },
+      );
+
       if (res.ok) {
         await mutate();
         return true;

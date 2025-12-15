@@ -4,7 +4,12 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageLayout, BackLink, AlertMessage, ConfirmDialog } from "@/components/common";
+import {
+  PageLayout,
+  BackLink,
+  AlertMessage,
+  ConfirmDialog,
+} from "@/components/common";
 import { ThumbnailUpload } from "@/components/upload/thumbnail-upload";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
@@ -128,372 +133,369 @@ export default function AuctionSettingsPage({
         <BackLink href={`/auctions/${auction.id}`} label="Back to Auction" />
       </div>
 
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h1 className="card-title text-2xl mb-6">
-              <span className="icon-[tabler--settings] size-6"></span>
-              Auction Settings
-            </h1>
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          <h1 className="card-title text-2xl mb-6">
+            <span className="icon-[tabler--settings] size-6"></span>
+            Auction Settings
+          </h1>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <AlertMessage type="error">{error}</AlertMessage>
-              )}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && <AlertMessage type="error">{error}</AlertMessage>}
 
-              {/* Basic Info */}
-              <div className="space-y-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <span className="icon-[tabler--info-circle] size-5 text-primary"></span>
-                  Basic Information
-                </h2>
+            {/* Basic Info */}
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <span className="icon-[tabler--info-circle] size-5 text-primary"></span>
+                Basic Information
+              </h2>
 
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Auction Name</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="input input-bordered w-full"
-                    required
-                  />
-                </div>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Description</span>
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    className="textarea textarea-bordered w-full h-24"
-                    placeholder="Optional description..."
-                  />
-                </div>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Thumbnail Image</span>
-                  </label>
-                  <ThumbnailUpload
-                    auctionId={auction.id}
-                    currentThumbnail={thumbnailUrl}
-                    onThumbnailChange={setThumbnailUrl}
-                  />
-                </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Auction Name</span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="input input-bordered w-full"
+                  required
+                />
               </div>
 
-              {/* Access Settings */}
-              <div className="divider"></div>
-              <div className="space-y-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <span className="icon-[tabler--lock] size-5 text-primary"></span>
-                  Access Settings
-                </h2>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Description</span>
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="textarea textarea-bordered w-full h-24"
+                  placeholder="Optional description..."
+                />
+              </div>
 
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Join Mode</span>
-                  </label>
-                  <select
-                    name="joinMode"
-                    value={formData.joinMode}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Thumbnail Image</span>
+                </label>
+                <ThumbnailUpload
+                  auctionId={auction.id}
+                  currentThumbnail={thumbnailUrl}
+                  onThumbnailChange={setThumbnailUrl}
+                />
+              </div>
+            </div>
+
+            {/* Access Settings */}
+            <div className="divider"></div>
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <span className="icon-[tabler--lock] size-5 text-primary"></span>
+                Access Settings
+              </h2>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Join Mode</span>
+                </label>
+                <select
+                  name="joinMode"
+                  value={formData.joinMode}
+                  onChange={handleChange}
+                  className="select select-bordered w-full"
+                >
+                  <option value="INVITE_ONLY">Invite Only</option>
+                  <option value="LINK">Anyone with Link</option>
+                  {allowOpenAuctions && (
+                    <option value="FREE">Open to All</option>
+                  )}
+                </select>
+              </div>
+
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-3">
+                  <input
+                    type="checkbox"
+                    name="memberCanInvite"
+                    checked={formData.memberCanInvite}
                     onChange={handleChange}
-                    className="select select-bordered w-full"
-                  >
-                    <option value="INVITE_ONLY">Invite Only</option>
-                    <option value="LINK">Anyone with Link</option>
-                    {allowOpenAuctions && (
-                      <option value="FREE">Open to All</option>
-                    )}
-                  </select>
-                </div>
+                    className="checkbox checkbox-primary"
+                  />
+                  <div>
+                    <span className="label-text">
+                      Members can invite others
+                    </span>
+                    <p className="text-xs text-base-content/60">
+                      Allow non-admin members to send invites
+                    </p>
+                  </div>
+                </label>
+              </div>
+            </div>
 
-                <div className="form-control">
-                  <label className="label cursor-pointer justify-start gap-3">
+            {/* Bidding Settings */}
+            <div className="divider"></div>
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <span className="icon-[tabler--gavel] size-5 text-primary"></span>
+                Bidding Settings
+              </h2>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Bid Visibility</span>
+                </label>
+                <div className="space-y-2">
+                  <label className="flex items-start gap-3 p-3 rounded-lg border border-base-300 cursor-pointer hover:bg-base-200 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
                     <input
-                      type="checkbox"
-                      name="memberCanInvite"
-                      checked={formData.memberCanInvite}
+                      type="radio"
+                      name="bidderVisibility"
+                      value="VISIBLE"
+                      checked={formData.bidderVisibility === "VISIBLE"}
                       onChange={handleChange}
-                      className="checkbox checkbox-primary"
+                      className="radio radio-primary mt-0.5"
                     />
-                    <div>
-                      <span className="label-text">
-                        Members can invite others
-                      </span>
-                      <p className="text-xs text-base-content/60">
-                        Allow non-admin members to send invites
-                      </p>
+                    <div className="flex-1">
+                      <div className="font-medium">Always Visible</div>
+                      <div className="text-sm text-base-content/60">
+                        Bidder names are always shown to all auction members
+                      </div>
+                    </div>
+                  </label>
+                  <label className="flex items-start gap-3 p-3 rounded-lg border border-base-300 cursor-pointer hover:bg-base-200 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                    <input
+                      type="radio"
+                      name="bidderVisibility"
+                      value="ANONYMOUS"
+                      checked={formData.bidderVisibility === "ANONYMOUS"}
+                      onChange={handleChange}
+                      className="radio radio-primary mt-0.5"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium">Always Anonymous</div>
+                      <div className="text-sm text-base-content/60">
+                        Bidder names are hidden from other members. Only item
+                        owners can see bidder details.
+                      </div>
+                    </div>
+                  </label>
+                  <label className="flex items-start gap-3 p-3 rounded-lg border border-base-300 cursor-pointer hover:bg-base-200 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                    <input
+                      type="radio"
+                      name="bidderVisibility"
+                      value="PER_BID"
+                      checked={formData.bidderVisibility === "PER_BID"}
+                      onChange={handleChange}
+                      className="radio radio-primary mt-0.5"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium">Per Bid Choice</div>
+                      <div className="text-sm text-base-content/60">
+                        Each bidder can choose whether to show their name or bid
+                        anonymously. Item owners always see bidder details.
+                      </div>
                     </div>
                   </label>
                 </div>
               </div>
+            </div>
 
-              {/* Bidding Settings */}
-              <div className="divider"></div>
-              <div className="space-y-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <span className="icon-[tabler--gavel] size-5 text-primary"></span>
-                  Bidding Settings
-                </h2>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Bid Visibility</span>
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-start gap-3 p-3 rounded-lg border border-base-300 cursor-pointer hover:bg-base-200 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-                      <input
-                        type="radio"
-                        name="bidderVisibility"
-                        value="VISIBLE"
-                        checked={formData.bidderVisibility === "VISIBLE"}
-                        onChange={handleChange}
-                        className="radio radio-primary mt-0.5"
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium">Always Visible</div>
-                        <div className="text-sm text-base-content/60">
-                          Bidder names are always shown to all auction members
-                        </div>
-                      </div>
-                    </label>
-                    <label className="flex items-start gap-3 p-3 rounded-lg border border-base-300 cursor-pointer hover:bg-base-200 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-                      <input
-                        type="radio"
-                        name="bidderVisibility"
-                        value="ANONYMOUS"
-                        checked={formData.bidderVisibility === "ANONYMOUS"}
-                        onChange={handleChange}
-                        className="radio radio-primary mt-0.5"
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium">Always Anonymous</div>
-                        <div className="text-sm text-base-content/60">
-                          Bidder names are hidden from other members. Only item
-                          owners can see bidder details.
-                        </div>
-                      </div>
-                    </label>
-                    <label className="flex items-start gap-3 p-3 rounded-lg border border-base-300 cursor-pointer hover:bg-base-200 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-                      <input
-                        type="radio"
-                        name="bidderVisibility"
-                        value="PER_BID"
-                        checked={formData.bidderVisibility === "PER_BID"}
-                        onChange={handleChange}
-                        className="radio radio-primary mt-0.5"
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium">Per Bid Choice</div>
-                        <div className="text-sm text-base-content/60">
-                          Each bidder can choose whether to show their name or
-                          bid anonymously. Item owners always see bidder
-                          details.
-                        </div>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Timing */}
-              <div className="divider"></div>
-              <div className="space-y-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <span className="icon-[tabler--clock] size-5 text-primary"></span>
-                  Timing
-                </h2>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">
-                      Auction End Date (optional)
-                    </span>
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="datetime-local"
-                      name="endDate"
-                      value={formData.endDate}
-                      onChange={handleChange}
-                      className="input input-bordered flex-1"
-                    />
-                    {formData.endDate && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setFormData((prev) => ({ ...prev, endDate: "" }))
-                        }
-                        className="btn btn-ghost btn-square"
-                        title="Clear end date"
-                      >
-                        <span className="icon-[tabler--x] size-5"></span>
-                      </button>
-                    )}
-                  </div>
-                  <label className="label">
-                    <span className="label-text-alt text-base-content/60">
-                      Leave empty for no end date
-                    </span>
-                  </label>
-                </div>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Item End Mode</span>
-                  </label>
-                  <select
-                    name="itemEndMode"
-                    value={formData.itemEndMode}
-                    onChange={handleChange}
-                    className="select select-bordered w-full"
-                  >
-                    {formData.endDate && (
-                      <option value="AUCTION_END">End with Auction</option>
-                    )}
-                    <option value="CUSTOM">Custom per Item</option>
-                    {!formData.endDate && (
-                      <option value="NONE">No End Date</option>
-                    )}
-                  </select>
-                  <label className="label">
-                    <span className="label-text-alt text-base-content/60">
-                      {formData.endDate
-                        ? "Items can end with auction or have custom end dates"
-                        : "Set an auction end date to enable 'End with Auction'"}
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Save Button */}
-              <div className="divider"></div>
-              <Button
-                type="submit"
-                variant="primary"
-                modifier="block"
-                isLoading={isLoading}
-                loadingText="Saving..."
-                icon={
-                  <span className="icon-[tabler--device-floppy] size-5"></span>
-                }
-              >
-                Save Settings
-              </Button>
-            </form>
-          </div>
-        </div>
-
-        {/* End Auction Now */}
-        {!isEnded && (
-          <div className="card bg-base-100 shadow-xl mt-6 border-2 border-warning/20">
-            <div className="card-body">
-              <h2 className="card-title text-warning">
-                <span className="icon-[tabler--clock-off] size-6"></span>
-                End Auction Now
+            {/* Timing */}
+            <div className="divider"></div>
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <span className="icon-[tabler--clock] size-5 text-primary"></span>
+                Timing
               </h2>
 
-              <p className="text-base-content/60 text-sm">
-                End this auction immediately. All items will be closed and
-                winners will be determined. This action cannot be undone.
-              </p>
-
-              {!endDialog.isOpen ? (
-                <button
-                  onClick={endDialog.open}
-                  className="btn btn-warning btn-outline mt-4"
-                >
-                  <span className="icon-[tabler--clock-off] size-5"></span>
-                  End Auction Now
-                </button>
-              ) : (
-                <ConfirmDialog
-                  isOpen={endDialog.isOpen}
-                  title={`Are you sure you want to end "${auction.name}" now?`}
-                  message="All bidding will stop immediately and winners will be finalized."
-                  confirmLabel="Yes, End Now"
-                  variant="warning"
-                  isLoading={isEnding}
-                  onConfirm={async () => {
-                    setIsEnding(true);
-                    setError(null);
-                    try {
-                      const res = await fetch(
-                        `/api/auctions/${auction.id}/close`,
-                        { method: "POST" }
-                      );
-                      if (!res.ok) {
-                        const result = await res.json();
-                        setError(result.message || "Failed to end auction");
-                      } else {
-                        setIsEnded(true);
-                        endDialog.close();
-                        showToast("Auction ended successfully", "success");
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">
+                    Auction End Date (optional)
+                  </span>
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="datetime-local"
+                    name="endDate"
+                    value={formData.endDate}
+                    onChange={handleChange}
+                    className="input input-bordered flex-1"
+                  />
+                  {formData.endDate && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({ ...prev, endDate: "" }))
                       }
-                    } catch {
-                      setError("An error occurred. Please try again.");
-                    } finally {
-                      setIsEnding(false);
-                    }
-                  }}
-                  onCancel={endDialog.close}
-                />
-              )}
+                      className="btn btn-ghost btn-square"
+                      title="Clear end date"
+                    >
+                      <span className="icon-[tabler--x] size-5"></span>
+                    </button>
+                  )}
+                </div>
+                <label className="label">
+                  <span className="label-text-alt text-base-content/60">
+                    Leave empty for no end date
+                  </span>
+                </label>
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Item End Mode</span>
+                </label>
+                <select
+                  name="itemEndMode"
+                  value={formData.itemEndMode}
+                  onChange={handleChange}
+                  className="select select-bordered w-full"
+                >
+                  {formData.endDate && (
+                    <option value="AUCTION_END">End with Auction</option>
+                  )}
+                  <option value="CUSTOM">Custom per Item</option>
+                  {!formData.endDate && (
+                    <option value="NONE">No End Date</option>
+                  )}
+                </select>
+                <label className="label">
+                  <span className="label-text-alt text-base-content/60">
+                    {formData.endDate
+                      ? "Items can end with auction or have custom end dates"
+                      : "Set an auction end date to enable 'End with Auction'"}
+                  </span>
+                </label>
+              </div>
             </div>
-          </div>
-        )}
 
-        {isEnded && (
-          <div className="alert alert-info mt-6">
-            <span className="icon-[tabler--info-circle] size-5"></span>
-            <span>
-              This auction has ended.{" "}
-              <a href={`/auctions/${auction.id}/results`} className="link">
-                View results
-              </a>
-            </span>
-          </div>
-        )}
+            {/* Save Button */}
+            <div className="divider"></div>
+            <Button
+              type="submit"
+              variant="primary"
+              modifier="block"
+              isLoading={isLoading}
+              loadingText="Saving..."
+              icon={
+                <span className="icon-[tabler--device-floppy] size-5"></span>
+              }
+            >
+              Save Settings
+            </Button>
+          </form>
+        </div>
+      </div>
 
-        {/* Danger Zone */}
-        <div className="card bg-base-100 shadow-xl mt-6 border-2 border-error/20">
+      {/* End Auction Now */}
+      {!isEnded && (
+        <div className="card bg-base-100 shadow-xl mt-6 border-2 border-warning/20">
           <div className="card-body">
-            <h2 className="card-title text-error">
-              <span className="icon-[tabler--alert-triangle] size-6"></span>
-              Danger Zone
+            <h2 className="card-title text-warning">
+              <span className="icon-[tabler--clock-off] size-6"></span>
+              End Auction Now
             </h2>
 
             <p className="text-base-content/60 text-sm">
-              Deleting this auction will permanently remove all items, bids, and
-              member data. This action cannot be undone.
+              End this auction immediately. All items will be closed and winners
+              will be determined. This action cannot be undone.
             </p>
 
-            {!deleteDialog.isOpen ? (
+            {!endDialog.isOpen ? (
               <button
-                onClick={deleteDialog.open}
-                className="btn btn-error btn-outline mt-4"
+                onClick={endDialog.open}
+                className="btn btn-warning btn-outline mt-4"
               >
-                <span className="icon-[tabler--trash] size-5"></span>
-                Delete Auction
+                <span className="icon-[tabler--clock-off] size-5"></span>
+                End Auction Now
               </button>
             ) : (
               <ConfirmDialog
-                isOpen={deleteDialog.isOpen}
-                title={`Are you sure you want to delete "${auction.name}"?`}
-                confirmLabel="Yes, Delete"
-                variant="error"
-                isLoading={isDeleting}
-                onConfirm={handleDelete}
-                onCancel={deleteDialog.close}
+                isOpen={endDialog.isOpen}
+                title={`Are you sure you want to end "${auction.name}" now?`}
+                message="All bidding will stop immediately and winners will be finalized."
+                confirmLabel="Yes, End Now"
+                variant="warning"
+                isLoading={isEnding}
+                onConfirm={async () => {
+                  setIsEnding(true);
+                  setError(null);
+                  try {
+                    const res = await fetch(
+                      `/api/auctions/${auction.id}/close`,
+                      { method: "POST" },
+                    );
+                    if (!res.ok) {
+                      const result = await res.json();
+                      setError(result.message || "Failed to end auction");
+                    } else {
+                      setIsEnded(true);
+                      endDialog.close();
+                      showToast("Auction ended successfully", "success");
+                    }
+                  } catch {
+                    setError("An error occurred. Please try again.");
+                  } finally {
+                    setIsEnding(false);
+                  }
+                }}
+                onCancel={endDialog.close}
               />
             )}
           </div>
         </div>
+      )}
+
+      {isEnded && (
+        <div className="alert alert-info mt-6">
+          <span className="icon-[tabler--info-circle] size-5"></span>
+          <span>
+            This auction has ended.{" "}
+            <a href={`/auctions/${auction.id}/results`} className="link">
+              View results
+            </a>
+          </span>
+        </div>
+      )}
+
+      {/* Danger Zone */}
+      <div className="card bg-base-100 shadow-xl mt-6 border-2 border-error/20">
+        <div className="card-body">
+          <h2 className="card-title text-error">
+            <span className="icon-[tabler--alert-triangle] size-6"></span>
+            Danger Zone
+          </h2>
+
+          <p className="text-base-content/60 text-sm">
+            Deleting this auction will permanently remove all items, bids, and
+            member data. This action cannot be undone.
+          </p>
+
+          {!deleteDialog.isOpen ? (
+            <button
+              onClick={deleteDialog.open}
+              className="btn btn-error btn-outline mt-4"
+            >
+              <span className="icon-[tabler--trash] size-5"></span>
+              Delete Auction
+            </button>
+          ) : (
+            <ConfirmDialog
+              isOpen={deleteDialog.isOpen}
+              title={`Are you sure you want to delete "${auction.name}"?`}
+              confirmLabel="Yes, Delete"
+              variant="error"
+              isLoading={isDeleting}
+              onConfirm={handleDelete}
+              onCancel={deleteDialog.close}
+            />
+          )}
+        </div>
+      </div>
     </PageLayout>
   );
 }

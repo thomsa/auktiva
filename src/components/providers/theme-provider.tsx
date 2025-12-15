@@ -4,6 +4,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useMemo,
 } from "react";
 
 type Theme = "light" | "dark" | "system";
@@ -19,51 +20,35 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const STORAGE_KEY = "auktiva-theme";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("system");
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
-  const [mounted, setMounted] = useState(false);
-
-  // Initialize on mount
-  useEffect(() => {
-    setMounted(true);
-    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    if (stored) {
-      setThemeState(stored);
-    }
-  }, []);
-
-  // Apply theme when it changes
-  useEffect(() => {
-    if (!mounted) return;
-
-    const root = document.documentElement;
-    let resolved: "light" | "dark";
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window === "undefined") return "system";
+    return (localStorage.getItem(STORAGE_KEY) as Theme) || "system";
+  });
+  // Derive resolved theme from theme state
+  const resolvedTheme = useMemo<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "light";
     if (theme === "system") {
-      resolved = window.matchMedia("(prefers-color-scheme: dark)").matches
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
-    } else {
-      resolved = theme;
     }
-    root.setAttribute("data-theme", resolved);
-    setResolvedTheme(resolved);
-  }, [theme, mounted]);
+    return theme;
+  }, [theme]);
 
-  // Listen for system theme changes
+  // Apply theme to DOM when resolved theme changes
   useEffect(() => {
-    if (!mounted) return;
+    document.documentElement.setAttribute("data-theme", resolvedTheme);
+  }, [resolvedTheme]);
 
+  // Track system theme changes with state to trigger re-render
+  const [, forceUpdate] = useState(0);
+  useEffect(() => {
+    if (theme !== "system") return;
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => {
-      if (theme === "system") {
-        const resolved = mediaQuery.matches ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", resolved);
-        setResolvedTheme(resolved);
-      }
-    };
+    const handler = () => forceUpdate((n) => n + 1);
     mediaQuery.addEventListener("change", handler);
     return () => mediaQuery.removeEventListener("change", handler);
-  }, [theme, mounted]);
+  }, [theme]);
 
   const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme);

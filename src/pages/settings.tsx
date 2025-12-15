@@ -164,259 +164,253 @@ export default function SettingsPage({
     <PageLayout user={user} maxWidth="2xl">
       <h1 className="text-3xl font-bold mb-8">Settings</h1>
 
-        {/* Profile Section */}
-        <div className="card bg-base-100 shadow-xl mb-6">
-          <div className="card-body">
-            <h2 className="card-title">
-              <span className="icon-[tabler--user] size-6"></span>
-              Profile
-            </h2>
+      {/* Profile Section */}
+      <div className="card bg-base-100 shadow-xl mb-6">
+        <div className="card-body">
+          <h2 className="card-title">
+            <span className="icon-[tabler--user] size-6"></span>
+            Profile
+          </h2>
 
-            <form onSubmit={handleProfileSubmit} className="space-y-4 mt-4">
-              {profileError && (
-                <div className="alert alert-error">
-                  <span className="icon-[tabler--alert-circle] size-5"></span>
-                  <span>{profileError}</span>
-                </div>
-              )}
-
-              {profileSuccess && (
-                <div className="alert alert-success">
-                  <span className="icon-[tabler--check] size-5"></span>
-                  <span>{profileSuccess}</span>
-                </div>
-              )}
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Email</span>
-                </label>
-                <input
-                  type="email"
-                  value={user.email}
-                  className="input input-bordered w-full"
-                  disabled
-                />
-                <label className="label">
-                  <span className="label-text-alt text-base-content/60">
-                    Email cannot be changed
-                  </span>
-                </label>
-              </div>
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Display Name</span>
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  className="input input-bordered w-full"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={profileLoading}
-                loadingText="Saving..."
-                icon={
-                  <span className="icon-[tabler--device-floppy] size-5"></span>
-                }
-              >
-                Save Profile
-              </Button>
-            </form>
-          </div>
-        </div>
-
-        {/* Password Section */}
-        <div className="card bg-base-100 shadow-xl mb-6">
-          <div className="card-body">
-            <h2 className="card-title">
-              <span className="icon-[tabler--lock] size-6"></span>
-              Change Password
-            </h2>
-
-            <form onSubmit={handlePasswordSubmit} className="space-y-4 mt-4">
-              {passwordError && (
-                <div className="alert alert-error">
-                  <span className="icon-[tabler--alert-circle] size-5"></span>
-                  <span>{passwordError}</span>
-                </div>
-              )}
-
-              {passwordSuccess && (
-                <div className="alert alert-success">
-                  <span className="icon-[tabler--check] size-5"></span>
-                  <span>{passwordSuccess}</span>
-                </div>
-              )}
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Current Password</span>
-                </label>
-                <input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="input input-bordered w-full"
-                  required
-                />
-              </div>
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">New Password</span>
-                </label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="At least 8 characters"
-                  className="input input-bordered w-full"
-                  required
-                  minLength={8}
-                />
-              </div>
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Confirm New Password</span>
-                </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="input input-bordered w-full"
-                  required
-                />
-              </div>
-
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={passwordLoading}
-                loadingText="Changing..."
-                icon={<span className="icon-[tabler--key] size-5"></span>}
-              >
-                Change Password
-              </Button>
-            </form>
-          </div>
-        </div>
-
-        {/* Email Notifications Section */}
-        <div className="card bg-base-100 shadow-xl mb-6">
-          <div className="card-body">
-            <h2 className="card-title">
-              <span className="icon-[tabler--mail] size-6"></span>
-              Email Notifications
-            </h2>
-
-            {emailSettingsSuccess && (
-              <div className="alert alert-success py-2">
-                <span className="icon-[tabler--check] size-5"></span>
-                <span>{emailSettingsSuccess}</span>
+          <form onSubmit={handleProfileSubmit} className="space-y-4 mt-4">
+            {profileError && (
+              <div className="alert alert-error">
+                <span className="icon-[tabler--alert-circle] size-5"></span>
+                <span>{profileError}</span>
               </div>
             )}
 
-            <div className="space-y-4 mt-4">
-              <div className="form-control">
-                <label className="label cursor-pointer justify-start gap-4">
-                  <input
-                    type="checkbox"
-                    checked={emailOnNewItem}
-                    onChange={(e) =>
-                      handleEmailSettingChange(
-                        "emailOnNewItem",
-                        e.target.checked,
-                      )
-                    }
-                    className="toggle toggle-primary"
-                    disabled={emailSettingsLoading}
-                  />
-                  <div>
-                    <span className="label-text font-medium">
-                      New item notifications
-                    </span>
-                    <p className="text-sm text-base-content/60">
-                      Receive an email when a new item is added to an auction
-                      you&apos;re a member of
-                    </p>
-                  </div>
-                </label>
+            {profileSuccess && (
+              <div className="alert alert-success">
+                <span className="icon-[tabler--check] size-5"></span>
+                <span>{profileSuccess}</span>
               </div>
+            )}
 
-              <div className="form-control">
-                <label className="label cursor-pointer justify-start gap-4">
-                  <input
-                    type="checkbox"
-                    checked={emailOnOutbid}
-                    onChange={(e) =>
-                      handleEmailSettingChange(
-                        "emailOnOutbid",
-                        e.target.checked,
-                      )
-                    }
-                    className="toggle toggle-primary"
-                    disabled={emailSettingsLoading}
-                  />
-                  <div>
-                    <span className="label-text font-medium">
-                      Outbid notifications
-                    </span>
-                    <p className="text-sm text-base-content/60">
-                      Receive an email when someone outbids you on an item
-                    </p>
-                  </div>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Appearance Section */}
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">
-              <span className="icon-[tabler--palette] size-6"></span>
-              Appearance
-            </h2>
-
-            <div className="form-control mt-4">
+            <div className="form-control">
               <label className="label">
-                <span className="label-text">Theme</span>
+                <span className="label-text">Email</span>
               </label>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setTheme("light")}
-                  className={`btn flex-1 ${theme === "light" ? "btn-primary" : "btn-ghost"}`}
-                >
-                  <span className="icon-[tabler--sun] size-5"></span>
-                  Light
-                </button>
-                <button
-                  onClick={() => setTheme("dark")}
-                  className={`btn flex-1 ${theme === "dark" ? "btn-primary" : "btn-ghost"}`}
-                >
-                  <span className="icon-[tabler--moon] size-5"></span>
-                  Dark
-                </button>
-                <button
-                  onClick={() => setTheme("system")}
-                  className={`btn flex-1 ${theme === "system" ? "btn-primary" : "btn-ghost"}`}
-                >
-                  <span className="icon-[tabler--device-desktop] size-5"></span>
-                  System
-                </button>
+              <input
+                type="email"
+                value={user.email}
+                className="input input-bordered w-full"
+                disabled
+              />
+              <label className="label">
+                <span className="label-text-alt text-base-content/60">
+                  Email cannot be changed
+                </span>
+              </label>
+            </div>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Display Name</span>
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                className="input input-bordered w-full"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              variant="primary"
+              isLoading={profileLoading}
+              loadingText="Saving..."
+              icon={
+                <span className="icon-[tabler--device-floppy] size-5"></span>
+              }
+            >
+              Save Profile
+            </Button>
+          </form>
+        </div>
+      </div>
+
+      {/* Password Section */}
+      <div className="card bg-base-100 shadow-xl mb-6">
+        <div className="card-body">
+          <h2 className="card-title">
+            <span className="icon-[tabler--lock] size-6"></span>
+            Change Password
+          </h2>
+
+          <form onSubmit={handlePasswordSubmit} className="space-y-4 mt-4">
+            {passwordError && (
+              <div className="alert alert-error">
+                <span className="icon-[tabler--alert-circle] size-5"></span>
+                <span>{passwordError}</span>
               </div>
+            )}
+
+            {passwordSuccess && (
+              <div className="alert alert-success">
+                <span className="icon-[tabler--check] size-5"></span>
+                <span>{passwordSuccess}</span>
+              </div>
+            )}
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Current Password</span>
+              </label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">New Password</span>
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="At least 8 characters"
+                className="input input-bordered w-full"
+                required
+                minLength={8}
+              />
+            </div>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Confirm New Password</span>
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <Button
+              type="submit"
+              variant="primary"
+              isLoading={passwordLoading}
+              loadingText="Changing..."
+              icon={<span className="icon-[tabler--key] size-5"></span>}
+            >
+              Change Password
+            </Button>
+          </form>
+        </div>
+      </div>
+
+      {/* Email Notifications Section */}
+      <div className="card bg-base-100 shadow-xl mb-6">
+        <div className="card-body">
+          <h2 className="card-title">
+            <span className="icon-[tabler--mail] size-6"></span>
+            Email Notifications
+          </h2>
+
+          {emailSettingsSuccess && (
+            <div className="alert alert-success py-2">
+              <span className="icon-[tabler--check] size-5"></span>
+              <span>{emailSettingsSuccess}</span>
+            </div>
+          )}
+
+          <div className="space-y-4 mt-4">
+            <div className="form-control">
+              <label className="label cursor-pointer justify-start gap-4">
+                <input
+                  type="checkbox"
+                  checked={emailOnNewItem}
+                  onChange={(e) =>
+                    handleEmailSettingChange("emailOnNewItem", e.target.checked)
+                  }
+                  className="toggle toggle-primary"
+                  disabled={emailSettingsLoading}
+                />
+                <div>
+                  <span className="label-text font-medium">
+                    New item notifications
+                  </span>
+                  <p className="text-sm text-base-content/60">
+                    Receive an email when a new item is added to an auction
+                    you&apos;re a member of
+                  </p>
+                </div>
+              </label>
+            </div>
+
+            <div className="form-control">
+              <label className="label cursor-pointer justify-start gap-4">
+                <input
+                  type="checkbox"
+                  checked={emailOnOutbid}
+                  onChange={(e) =>
+                    handleEmailSettingChange("emailOnOutbid", e.target.checked)
+                  }
+                  className="toggle toggle-primary"
+                  disabled={emailSettingsLoading}
+                />
+                <div>
+                  <span className="label-text font-medium">
+                    Outbid notifications
+                  </span>
+                  <p className="text-sm text-base-content/60">
+                    Receive an email when someone outbids you on an item
+                  </p>
+                </div>
+              </label>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Appearance Section */}
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title">
+            <span className="icon-[tabler--palette] size-6"></span>
+            Appearance
+          </h2>
+
+          <div className="form-control mt-4">
+            <label className="label">
+              <span className="label-text">Theme</span>
+            </label>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setTheme("light")}
+                className={`btn flex-1 ${theme === "light" ? "btn-primary" : "btn-ghost"}`}
+              >
+                <span className="icon-[tabler--sun] size-5"></span>
+                Light
+              </button>
+              <button
+                onClick={() => setTheme("dark")}
+                className={`btn flex-1 ${theme === "dark" ? "btn-primary" : "btn-ghost"}`}
+              >
+                <span className="icon-[tabler--moon] size-5"></span>
+                Dark
+              </button>
+              <button
+                onClick={() => setTheme("system")}
+                className={`btn flex-1 ${theme === "system" ? "btn-primary" : "btn-ghost"}`}
+              >
+                <span className="icon-[tabler--device-desktop] size-5"></span>
+                System
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </PageLayout>
   );
 }

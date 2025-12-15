@@ -3,7 +3,7 @@
 
 /* Iconify */
 @plugin "@iconify/tailwind4" {
-  prefixes: tabler
+  prefixes: tabler;
 }
 
 /* Base styles */

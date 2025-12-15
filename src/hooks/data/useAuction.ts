@@ -34,7 +34,7 @@ export interface UseAuctionReturn {
 export function useAuction(auctionId: string | undefined): UseAuctionReturn {
   const { data, error, isLoading, mutate } = useSWR<Auction>(
     auctionId ? `/api/auctions/${auctionId}` : null,
-    fetcher
+    fetcher,
   );
 
   return {

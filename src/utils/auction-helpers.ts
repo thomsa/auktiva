@@ -15,7 +15,7 @@ export function isItemEnded(endDate: string | null): boolean {
 export function canUserBid(
   userId: string,
   itemCreatorId: string,
-  isItemEnded: boolean
+  isItemEnded: boolean,
 ): boolean {
   if (isItemEnded) return false;
   if (userId === itemCreatorId) return false;
@@ -25,7 +25,7 @@ export function canUserBid(
 export function canUserEditItem(
   userId: string,
   itemCreatorId: string,
-  memberRole: string
+  memberRole: string,
 ): boolean {
   if (userId === itemCreatorId) return true;
   if (["OWNER", "ADMIN"].includes(memberRole)) return true;
@@ -36,7 +36,10 @@ export function canUserCreateItems(memberRole: string): boolean {
   return ["OWNER", "ADMIN", "CREATOR"].includes(memberRole);
 }
 
-export function canUserInvite(memberRole: string, memberCanInvite: boolean): boolean {
+export function canUserInvite(
+  memberRole: string,
+  memberCanInvite: boolean,
+): boolean {
   if (["OWNER", "ADMIN"].includes(memberRole)) return true;
   return memberCanInvite;
 }
@@ -56,14 +59,14 @@ export function isUserAdmin(memberRole: string): boolean {
 export function calculateMinBid(
   currentBid: number | null,
   startingBid: number,
-  minBidIncrement: number
+  minBidIncrement: number,
 ): number {
   return currentBid ? currentBid + minBidIncrement : startingBid;
 }
 
 export function getBidStatus(
   isHighestBidder: boolean,
-  isEnded: boolean
+  isEnded: boolean,
 ): "winning" | "won" | "outbid" | "lost" {
   if (isEnded) {
     return isHighestBidder ? "won" : "lost";

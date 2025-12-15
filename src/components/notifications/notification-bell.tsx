@@ -222,7 +222,8 @@ export function NotificationBell() {
                   >
                     <div className="flex gap-3">
                       <div className="shrink-0">
-                        {notification.type === "NEW_ITEM" && notification.imageUrl ? (
+                        {notification.type === "NEW_ITEM" &&
+                        notification.imageUrl ? (
                           <img
                             src={notification.imageUrl}
                             alt=""

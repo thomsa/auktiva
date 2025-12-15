@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { isItemEnded } from "@/utils/auction-helpers";
-import { SortDropdown, sidebarItemSortOptions } from "@/components/ui/sort-dropdown";
+import {
+  SortDropdown,
+  sidebarItemSortOptions,
+} from "@/components/ui/sort-dropdown";
 
 interface AuctionItemSummary {
   id: string;

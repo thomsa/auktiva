@@ -13,7 +13,11 @@ const alertConfig = {
   info: { class: "alert-info", icon: "icon-[tabler--info-circle]" },
 };
 
-export function AlertMessage({ type, children, className = "" }: AlertMessageProps) {
+export function AlertMessage({
+  type,
+  children,
+  className = "",
+}: AlertMessageProps) {
   const config = alertConfig[type];
 
   return (

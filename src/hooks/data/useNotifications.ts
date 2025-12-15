@@ -32,7 +32,7 @@ export function useNotifications(limit = 20): UseNotificationsReturn {
   const { data, error, isLoading, mutate } = useSWR<NotificationsResponse>(
     `/api/notifications?limit=${limit}`,
     fetcher,
-    { refreshInterval: 30000 }
+    { refreshInterval: 30000 },
   );
 
   const markAsRead = async (id: string): Promise<void> => {
@@ -43,12 +43,12 @@ export function useNotifications(limit = 20): UseNotificationsReturn {
           ? {
               ...current,
               notifications: current.notifications.map((n) =>
-                n.id === id ? { ...n, read: true } : n
+                n.id === id ? { ...n, read: true } : n,
               ),
               unreadCount: Math.max(0, current.unreadCount - 1),
             }
           : current,
-      false
+      false,
     );
 
     try {
@@ -74,7 +74,7 @@ export function useNotifications(limit = 20): UseNotificationsReturn {
               unreadCount: 0,
             }
           : current,
-      false
+      false,
     );
 
     try {

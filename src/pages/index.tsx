@@ -2,19 +2,21 @@ import { useState, useEffect } from "react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import Head from "next/head";
 import Link from "next/link";
-
-const SITE_URL = "https://auktiva.org";
-const SITE_NAME = "Auktiva";
-const SITE_DESCRIPTION =
-  "Free, open-source auction platform for fundraisers, charities, and internal events. Host private auctions without payment processing - everything settles offline.";
+import {
+  SEO,
+  SITE_URL,
+  SITE_DESCRIPTION,
+  SITE_KEYWORDS,
+  SITE_AUTHOR,
+  SITE_AUTHOR_URL,
+} from "@/components/common";
 
 function getInitialTheme(): "light" | "dark" {
   if (typeof window === "undefined") return "light";
   const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
   const systemPrefersDark = window.matchMedia(
-    "(prefers-color-scheme: dark)",
+    "(prefers-color-scheme: dark)"
   ).matches;
   return savedTheme || (systemPrefersDark ? "dark" : "light");
 }
@@ -34,100 +36,65 @@ export default function LandingPage() {
     document.documentElement.setAttribute("data-theme", newTheme);
   };
 
+  // Homepage-specific structured data with FAQ schema for better SEO
+  const homepageStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Auktiva",
+    applicationCategory: "BusinessApplication",
+    applicationSubCategory: "Auction Software",
+    operatingSystem: "Web Browser",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    },
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    author: {
+      "@type": "Person",
+      name: SITE_AUTHOR,
+      url: SITE_AUTHOR_URL,
+    },
+    publisher: {
+      "@type": "Person",
+      name: SITE_AUTHOR,
+      url: SITE_AUTHOR_URL,
+    },
+    license: "https://opensource.org/licenses/MIT",
+    isAccessibleForFree: true,
+    screenshot: `${SITE_URL}/og-image.png`,
+    softwareVersion: "1.0",
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "5",
+      ratingCount: "1",
+      bestRating: "5",
+      worstRating: "1",
+    },
+    featureList: [
+      "Real-time bidding",
+      "Private auctions with invite-only access",
+      "Member management with role-based permissions",
+      "Multi-currency support",
+      "Image uploads with S3 or local storage",
+      "Email notifications for outbids and auction endings",
+      "Mobile responsive design",
+      "Self-hosting option with Docker",
+      "Silent auction mode",
+      "Bidder privacy controls",
+    ],
+  };
+
   return (
     <>
-      <Head>
-        {/* Primary Meta Tags */}
-        <title>
-          Auktiva - Open Source Auction Platform for Fundraisers & Charities
-        </title>
-        <meta
-          name="title"
-          content="Auktiva - Open Source Auction Platform for Fundraisers & Charities"
-        />
-        <meta name="description" content={SITE_DESCRIPTION} />
-        <meta
-          name="keywords"
-          content="auction platform, fundraiser auction, charity auction, silent auction, open source auction, internal auction, event auction, nonprofit auction, free auction software"
-        />
-        <meta name="author" content="Tamas Lorincz" />
-        <meta name="robots" content="index, follow" />
-        <meta name="language" content="English" />
-        <meta name="revisit-after" content="7 days" />
-        <link rel="canonical" href={SITE_URL} />
-
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={SITE_URL} />
-        <meta
-          property="og:title"
-          content="Auktiva - Open Source Auction Platform for Fundraisers & Charities"
-        />
-        <meta property="og:description" content={SITE_DESCRIPTION} />
-        <meta property="og:image" content={`${SITE_URL}/og-image.png`} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:site_name" content={SITE_NAME} />
-        <meta property="og:locale" content="en_US" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content={SITE_URL} />
-        <meta
-          name="twitter:title"
-          content="Auktiva - Open Source Auction Platform for Fundraisers & Charities"
-        />
-        <meta name="twitter:description" content={SITE_DESCRIPTION} />
-        <meta name="twitter:image" content={`${SITE_URL}/og-image.png`} />
-
-        {/* Favicon */}
-        <link rel="icon" href="/favicon.ico" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/favicon-32x32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/favicon-16x16.png"
-        />
-        <link rel="manifest" href="/site.webmanifest" />
-        <meta name="theme-color" content="#6366f1" />
-
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "SoftwareApplication",
-              name: "Auktiva",
-              applicationCategory: "BusinessApplication",
-              operatingSystem: "Web",
-              offers: {
-                "@type": "Offer",
-                price: "0",
-                priceCurrency: "USD",
-              },
-              description: SITE_DESCRIPTION,
-              url: SITE_URL,
-              author: {
-                "@type": "Person",
-                name: "Tamas Lorincz",
-                url: "https://www.tamaslorincz.com",
-              },
-            }),
-          }}
-        />
-      </Head>
+      <SEO
+        description={SITE_DESCRIPTION}
+        keywords={SITE_KEYWORDS}
+        canonical={SITE_URL}
+        structuredData={homepageStructuredData}
+      />
 
       <div className="min-h-full bg-base-100">
         {/* Navigation */}
@@ -429,12 +396,27 @@ export default function LandingPage() {
                         infrastructure. Perfect for organizations with strict
                         data privacy requirements.
                       </p>
-                      <div className="mockup-code bg-neutral text-neutral-content text-sm mb-6 overflow-x-auto">
+                      <div className="mockup-code bg-neutral text-neutral-content text-sm mb-6 overflow-x-auto relative group">
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              "curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install.sh | bash"
+                            );
+                          }}
+                          className="absolute top-2 right-2 btn btn-ghost btn-xs text-neutral-content/60 hover:text-neutral-content opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Copy to clipboard"
+                        >
+                          <span className="icon-[tabler--copy] size-4"></span>
+                        </button>
                         <pre
                           data-prefix="$"
-                          className="whitespace-pre-wrap break-all"
+                          className="whitespace-pre-wrap scroll-auto"
                         >
-                          <code>curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install.sh | bash</code>
+                          <code>
+                            curl -fsSL
+                            https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install.sh
+                            | bash
+                          </code>
                         </pre>
                       </div>
                       <a

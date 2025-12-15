@@ -12,7 +12,7 @@ interface ItemGalleryProps {
 
 export function ItemGallery({ images, itemName }: ItemGalleryProps) {
   const { selectedIndex, setSelectedIndex, next, previous } = useImageGallery(
-    images.length
+    images.length,
   );
 
   if (images.length === 0) return null;

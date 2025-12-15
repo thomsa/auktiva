@@ -160,7 +160,9 @@ export default async function handler(
             item.id,
           ),
         ),
-      ).catch((err) => console.error("Failed to send new item notifications:", err));
+      ).catch((err) =>
+        console.error("Failed to send new item notifications:", err),
+      );
 
       return res.status(201).json(item);
     } catch (error) {

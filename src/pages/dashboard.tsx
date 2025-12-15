@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageLayout, EmptyState } from "@/components/common";
+import { PageLayout, EmptyState, SEO, pageSEO } from "@/components/common";
 import { AuctionCard } from "@/components/auction";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
 import {
@@ -70,13 +70,7 @@ interface DashboardProps {
   bidStats: BidStats;
 }
 
-function BidItemCard({
-  item,
-  userId,
-}: {
-  item: BidItem;
-  userId: string;
-}) {
+function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
   const ended = isItemEnded(item.endDate);
   const isWinning = item.highestBidderId === userId;
   const status = getBidStatus(isWinning, ended);
@@ -150,129 +144,138 @@ export default function DashboardPage({
   bidItems,
   bidStats,
 }: DashboardProps) {
-  const { currentSort: auctionSort } = useSortFilter("auctionSort", "date-desc");
+  const { currentSort: auctionSort } = useSortFilter(
+    "auctionSort",
+    "date-desc",
+  );
   const { currentSort: bidSort } = useSortFilter("bidSort", "date-desc");
 
   const sortedAuctions = useMemo(
     () => sortAuctions(auctions, auctionSort),
-    [auctions, auctionSort]
+    [auctions, auctionSort],
   );
 
   const sortedBidItems = useMemo(
     () => sortItems(bidItems, bidSort),
-    [bidItems, bidSort]
+    [bidItems, bidSort],
   );
 
   return (
-    <PageLayout user={user}>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-base-content">
-            Dashboard
-          </h1>
-          <p className="text-base-content/60 mt-1 text-sm sm:text-base">
-            Welcome back, {user.name || user.email}!
-          </p>
+    <>
+      <SEO {...pageSEO.dashboard} />
+      <PageLayout user={user}>
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-base-content">
+              Dashboard
+            </h1>
+            <p className="text-base-content/60 mt-1 text-sm sm:text-base">
+              Welcome back, {user.name || user.email}!
+            </p>
+          </div>
+          <Link
+            href="/auctions/create"
+            className="btn btn-primary w-full sm:w-auto"
+          >
+            <span className="icon-[tabler--plus] size-5"></span>
+            Create Auction
+          </Link>
         </div>
-        <Link href="/auctions/create" className="btn btn-primary w-full sm:w-auto">
-          <span className="icon-[tabler--plus] size-5"></span>
-          Create Auction
-        </Link>
-      </div>
 
-      {/* Stats Cards */}
-      {bidStats.totalBids > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <StatsCard
-            icon="icon-[tabler--gavel]"
-            iconColor="primary"
-            value={bidStats.totalBids}
-            label="Total Bids"
-          />
-          <CurrencyStatsCard
-            icon="icon-[tabler--currency-dollar]"
-            iconColor="secondary"
-            currencyTotals={bidStats.currencyTotals}
-            label="Total Bid Amount"
-          />
-          <StatsCard
-            icon="icon-[tabler--package]"
-            iconColor="accent"
-            value={bidStats.itemsBidOn}
-            label="Items Bid On"
-          />
-          <StatsCard
-            icon="icon-[tabler--trophy]"
-            iconColor="success"
-            value={bidStats.currentlyWinning}
-            label="Currently Winning"
-          />
-        </div>
-      )}
-
-      {/* Your Bids Section */}
-      {bidItems.length > 0 && (
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-            <h2 className="text-lg sm:text-xl font-semibold text-base-content">
-              Your Active Bids
-            </h2>
-            <SortDropdown
-              options={sidebarItemSortOptions}
-              currentSort={bidSort}
-              paramName="bidSort"
+        {/* Stats Cards */}
+        {bidStats.totalBids > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <StatsCard
+              icon="icon-[tabler--gavel]"
+              iconColor="primary"
+              value={bidStats.totalBids}
+              label="Total Bids"
+            />
+            <CurrencyStatsCard
+              icon="icon-[tabler--currency-dollar]"
+              iconColor="secondary"
+              currencyTotals={bidStats.currencyTotals}
+              label="Total Bid Amount"
+            />
+            <StatsCard
+              icon="icon-[tabler--package]"
+              iconColor="accent"
+              value={bidStats.itemsBidOn}
+              label="Items Bid On"
+            />
+            <StatsCard
+              icon="icon-[tabler--trophy]"
+              iconColor="success"
+              value={bidStats.currentlyWinning}
+              label="Currently Winning"
             />
           </div>
-          <div className="card bg-base-100 shadow">
-            <div className="card-body p-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 max-h-80 overflow-y-auto">
-                {sortedBidItems.map((item) => (
-                  <BidItemCard key={item.id} item={item} userId={user.id} />
-                ))}
+        )}
+
+        {/* Your Bids Section */}
+        {bidItems.length > 0 && (
+          <div className="mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-base-content">
+                Your Active Bids
+              </h2>
+              <SortDropdown
+                options={sidebarItemSortOptions}
+                currentSort={bidSort}
+                paramName="bidSort"
+              />
+            </div>
+            <div className="card bg-base-100 shadow">
+              <div className="card-body p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 max-h-80 overflow-y-auto">
+                  {sortedBidItems.map((item) => (
+                    <BidItemCard key={item.id} item={item} userId={user.id} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Auctions Section */}
-      {auctions.length === 0 ? (
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <EmptyState
-              icon="icon-[tabler--gavel]"
-              title="No auctions yet"
-              description="You haven't joined or created any auctions yet. Create your first auction or join one using an invite link."
-              action={
-                <Link href="/auctions/create" className="btn btn-primary">
-                  <span className="icon-[tabler--plus] size-5"></span>
-                  Create Your First Auction
-                </Link>
-              }
-            />
+        {/* Auctions Section */}
+        {auctions.length === 0 ? (
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <EmptyState
+                icon="icon-[tabler--gavel]"
+                title="No auctions yet"
+                description="You haven't joined or created any auctions yet. Create your first auction or join one using an invite link."
+                action={
+                  <Link href="/auctions/create" className="btn btn-primary">
+                    <span className="icon-[tabler--plus] size-5"></span>
+                    Create Your First Auction
+                  </Link>
+                }
+              />
+            </div>
           </div>
-        </div>
-      ) : (
-        <div>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-            <h2 className="text-lg sm:text-xl font-semibold text-base-content">
-              Auctions you have joined
-            </h2>
-            <SortDropdown
-              options={auctionSortOptions}
-              currentSort={auctionSort}
-              paramName="auctionSort"
-            />
+        ) : (
+          <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-base-content">
+                Auctions you have joined
+              </h2>
+              <SortDropdown
+                options={auctionSortOptions}
+                currentSort={auctionSort}
+                paramName="auctionSort"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sortedAuctions.map((auction) => (
+                <AuctionCard key={auction.id} auction={auction} />
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedAuctions.map((auction) => (
-              <AuctionCard key={auction.id} auction={auction} />
-            ))}
-          </div>
-        </div>
-      )}
-    </PageLayout>
+        )}
+      </PageLayout>
+    </>
   );
 }
 
@@ -386,7 +389,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
   const currencyTotals = Array.from(currencyMap.values()).sort(
-    (a, b) => b.total - a.total
+    (a, b) => b.total - a.total,
   );
 
   const itemsMap = new Map<
@@ -406,7 +409,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const uniqueItems = Array.from(itemsMap.values());
   const itemsBidOn = uniqueItems.length;
   const currentlyWinning = uniqueItems.filter(
-    (item) => item.highestBidderId === session.user.id
+    (item) => item.highestBidderId === session.user.id,
   ).length;
 
   const bidItems = uniqueItems.map((item) => ({

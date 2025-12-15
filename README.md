@@ -1,39 +1,55 @@
 # Auktiva
 
-A comprehensive auction platform for hosting private and public auctions. Perfect for charity events, estate sales, club fundraisers, or any group needing a simple yet powerful auction solution.
+A free, open-source auction platform for hosting private and public auctions. Perfect for charity events, fundraisers, schools, churches, company events, and community organizations.
+
+**No payment processing** - all transactions are settled offline between participants.
+
+🌐 **Live Demo**: [auktiva.org](https://auktiva.org)  
+📚 **Documentation**: [docs.auktiva.org](https://docs.auktiva.org)
 
 ## Features
 
 ### Auction Management
+
 - **Create unlimited auctions** with customizable names, descriptions, and thumbnail images
 - **Flexible timing** - set auction-wide end dates or individual end dates per item
 - **Multiple access modes** - invite-only, link sharing, or open to all
 - **Close auctions early** when needed
 
 ### Bidding
-- **Real-time bid updates** - see the latest bids instantly
-- **Multi-currency support** - USD, EUR, GBP, and 10+ currencies included
-- **Bid history tracking** - view all your past bids and their status
-- **Anonymous bidding option** - hide bidder identities if desired
+
+- **Real-time bid updates** - see the latest bids instantly with SWR
+- **Multi-currency support** - USD, EUR, GBP, HUF, and 10+ currencies included
+- **Bid history tracking** - view all your past bids and their status on the dashboard
+- **Anonymous bidding** - three modes: always visible, always anonymous, or per-bid choice
 
 ### Items
+
 - **Rich item listings** with multiple images, descriptions, and starting bids
 - **Minimum bid increments** to ensure meaningful bid increases
 - **Individual item timing** - end items at different times within the same auction
-- **Grid or list view** for browsing items
+- **Split view** - browse items in a sidebar while viewing details
 
 ### Member Management
+
 - **Role-based access control**:
-  - **Owner** - full control over the auction
-  - **Admin** - manage members and items
+  - **Owner** - full control over the auction including deletion
+  - **Admin** - manage members, items, and auction settings
   - **Creator** - add and edit their own items
-  - **Bidder** - place bids only
+  - **Bidder** - view items and place bids
 - **Invite system** with email invitations and shareable links
 - **Member can invite** option for viral growth
 
+### Notifications
+
+- **In-app notifications** for outbids, auction wins, new items, and invites
+- **Email notifications** (optional) via Brevo with user-controlled preferences
+- **Email retry system** for failed deliveries with automatic retries
+
 ### Results & Export
+
 - **Detailed results page** showing all winners
-- **Personal win tracking** - see what you've won
+- **Personal win tracking** - see what you've won across all auctions
 - **Export to JSON or CSV** for record keeping
 
 ## Installation
@@ -56,6 +72,7 @@ npm run setup
 ```
 
 The setup wizard will guide you through:
+
 - **Storage configuration** - Local filesystem or S3-compatible storage
 - **Database setup** - SQLite (local) or Turso (production)
 - **Domain configuration** - Auto-generates secure AUTH_SECRET
@@ -90,6 +107,7 @@ DATABASE_URL="file:./dev.db"
 ```
 
 **Commands:**
+
 ```bash
 npm run db:push        # Apply schema changes
 npm run db:migrate     # Create and apply migrations
@@ -103,12 +121,14 @@ npm run db:studio      # Open database GUI
 #### Setup Steps:
 
 1. **Install Turso CLI**
+
    ```bash
    curl -sSfL https://get.tur.so/install.sh | bash
    turso auth login
    ```
 
 2. **Create a database**
+
    ```bash
    turso db create auktiva
    turso db show auktiva --url    # Get the URL
@@ -116,6 +136,7 @@ npm run db:studio      # Open database GUI
    ```
 
 3. **Configure environment**
+
    ```env
    DATABASE_URL="libsql://auktiva-yourorg.turso.io"
    DATABASE_AUTH_TOKEN="your-auth-token"
@@ -128,12 +149,13 @@ npm run db:studio      # Open database GUI
 
 #### How it works:
 
-| Environment | DATABASE_URL | Prisma CLI | Runtime |
-|-------------|--------------|------------|---------|
-| Development | `file:./dev.db` | ✅ Direct | SQLite adapter |
-| Production | `libsql://...` | Uses local SQLite | Turso adapter |
+| Environment | DATABASE_URL    | Prisma CLI        | Runtime        |
+| ----------- | --------------- | ----------------- | -------------- |
+| Development | `file:./dev.db` | ✅ Direct         | SQLite adapter |
+| Production  | `libsql://...`  | Uses local SQLite | Turso adapter  |
 
 The app automatically detects the database type from `DATABASE_URL` and uses the appropriate adapter:
+
 - `file:./...` → BetterSqlite3 adapter
 - `libsql://...` or `https://...` → LibSQL adapter (Turso)
 
@@ -193,6 +215,7 @@ ALLOW_OPEN_AUCTIONS="true"  # Set to "false" for hosted environments
 ### Email Notifications (Optional)
 
 Auktiva can send email notifications for:
+
 - **Welcome emails** when users register
 - **Auction invites** when users are invited to auctions
 - **New item notifications** when items are added to auctions you're a member of
@@ -209,6 +232,7 @@ Auktiva can send email notifications for:
    - Create a new API key
 
 3. **Configure environment variables**
+
    ```env
    BREVO_API_KEY="your-brevo-api-key"
    MAIL_FROM="noreply@yourdomain.com"
@@ -223,15 +247,32 @@ Auktiva can send email notifications for:
 
 #### Email Retry System
 
-Failed emails are automatically retried via a cron job. On Vercel, this runs every 15 minutes. The system will retry up to 5 times before marking an email as abandoned.
+Failed emails are automatically retried via a cron job. On Vercel, this runs daily at 1:00 AM UTC. The system will retry up to 5 times before marking an email as abandoned.
 
 #### User Email Preferences
 
 Users can manage their email notification preferences in **Settings → Email Notifications**:
+
 - Toggle notifications for new items in auctions (disabled by default)
 - Toggle notifications when outbid (disabled by default)
 
 Email notifications are disabled by default to conserve email quota. Users can enable them if they want email alerts in addition to in-app notifications.
+
+### reCAPTCHA (Optional)
+
+Protect registration from bots with Google reCAPTCHA v2 checkbox. If not configured, reCAPTCHA is completely disabled (useful for local development and self-hosting).
+
+1. **Get reCAPTCHA keys** at [google.com/recaptcha/admin](https://www.google.com/recaptcha/admin)
+   - Choose reCAPTCHA v2 → "I'm not a robot" Checkbox
+   - Add your domain(s)
+
+2. **Configure environment variables**
+   ```env
+   NEXT_PUBLIC_RECAPTCHA_SITE_KEY="your-site-key"
+   RECAPTCHA_SECRET_KEY="your-secret-key"
+   ```
+
+The registration form will automatically show the reCAPTCHA checkbox widget.
 
 ## Deployment
 
@@ -264,26 +305,35 @@ Use a reverse proxy (nginx, caddy) for HTTPS.
 ## Tech Stack
 
 - **Framework**: Next.js 16 with React 19
-- **Database**: Prisma ORM with SQLite/Turso (LibSQL)
-- **Authentication**: NextAuth.js
+- **Database**: Prisma ORM 7 with SQLite/Turso (LibSQL)
+- **Authentication**: NextAuth.js v4
 - **Styling**: Tailwind CSS 4 + DaisyUI 5
-- **Storage**: Local filesystem or S3-compatible
+- **Icons**: Tabler Icons via Iconify
+- **Forms**: React Hook Form + Zod validation
+- **Data Fetching**: SWR for real-time updates
+- **Email**: Brevo (formerly Sendinblue) with MJML templates
+- **Storage**: Local filesystem or S3-compatible (AWS S3, MinIO, Cloudflare R2)
+- **Image Processing**: Sharp for thumbnails and optimization
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run setup` | Interactive setup wizard |
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm start` | Start production server |
-| `npm run db:push` | Push schema to database |
-| `npm run db:migrate` | Create migration (local SQLite) |
-| `npm run db:migrate:turso` | Apply migrations to Turso |
-| `npm run db:studio` | Open Prisma Studio |
-| `npm run db:generate` | Regenerate Prisma client |
-| `npm run seed:currencies` | Seed currency data |
-| `npm run seed:test-db` | Seed test data |
+| Command                    | Description                     |
+| -------------------------- | ------------------------------- |
+| `npm run setup`            | Interactive setup wizard        |
+| `npm run dev`              | Start development server        |
+| `npm run build`            | Build for production            |
+| `npm start`                | Start production server         |
+| `npm run db:push`          | Push schema to database         |
+| `npm run db:migrate`       | Create migration (local SQLite) |
+| `npm run db:migrate:turso` | Apply migrations to Turso       |
+| `npm run db:studio`        | Open Prisma Studio              |
+| `npm run db:generate`      | Regenerate Prisma client        |
+| `npm run seed:currencies`  | Seed currency data              |
+| `npm run seed:test-db`     | Seed test data                  |
+
+## Screenshots
+
+_Coming soon_
 
 ## License
 
@@ -292,3 +342,7 @@ MIT License - feel free to use this for your own projects!
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Author
+
+Created by [Tamas Lorincz](https://www.tamaslorincz.com)

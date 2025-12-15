@@ -50,7 +50,7 @@ export function BidForm({
   const minBid = calculateMinBid(
     item.currentBid,
     item.startingBid,
-    item.minBidIncrement
+    item.minBidIncrement,
   );
   const isHighestBidder = item.highestBidderId === userId;
   const canBid = !isItemOwner && !isEnded;
@@ -74,7 +74,7 @@ export function BidForm({
             isAnonymous:
               bidderVisibility === "PER_BID" ? data.isAnonymous : undefined,
           }),
-        }
+        },
       );
 
       const result = await res.json();

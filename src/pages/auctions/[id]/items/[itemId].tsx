@@ -114,7 +114,7 @@ export default function ItemDetailPage({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    initialSidebarCollapsed
+    initialSidebarCollapsed,
   );
 
   // Sidebar sorting
@@ -134,7 +134,7 @@ export default function ItemDetailPage({
       fallbackData: { item: initialItem, bids: initialBids },
       refreshInterval: isEnded ? 0 : 5000,
       revalidateOnFocus: true,
-    }
+    },
   );
 
   const item = data?.item ?? initialItem;
@@ -181,7 +181,7 @@ export default function ItemDetailPage({
                 ? bidAsAnonymous
                 : undefined,
           }),
-        }
+        },
       );
 
       const result = await res.json();
@@ -398,7 +398,7 @@ export default function ItemDetailPage({
                               <button
                                 onClick={() =>
                                   setSelectedImageIndex((prev) =>
-                                    prev === 0 ? images.length - 1 : prev - 1
+                                    prev === 0 ? images.length - 1 : prev - 1,
                                   )
                                 }
                                 className="absolute left-2 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-black/50 hover:bg-black/70 border-none text-white"
@@ -409,7 +409,7 @@ export default function ItemDetailPage({
                               <button
                                 onClick={() =>
                                   setSelectedImageIndex((prev) =>
-                                    prev === images.length - 1 ? 0 : prev + 1
+                                    prev === images.length - 1 ? 0 : prev + 1,
                                   )
                                 }
                                 className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-black/50 hover:bg-black/70 border-none text-white"
@@ -851,7 +851,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     itemThumbnails.map((i) => [
       i.id,
       i.images[0]?.url ? getPublicUrl(i.images[0].url) : null,
-    ])
+    ]),
   );
 
   return {

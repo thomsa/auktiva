@@ -54,7 +54,7 @@ export function useItem(
   auctionId: string | undefined,
   itemId: string | undefined,
   initialData?: ItemResponse,
-  options?: { refreshInterval?: number }
+  options?: { refreshInterval?: number },
 ): UseItemReturn {
   const { data, error, isLoading, mutate } = useSWR<ItemResponse>(
     auctionId && itemId ? `/api/auctions/${auctionId}/items/${itemId}` : null,
@@ -63,7 +63,7 @@ export function useItem(
       fallbackData: initialData,
       refreshInterval: options?.refreshInterval ?? 0,
       revalidateOnFocus: true,
-    }
+    },
   );
 
   return {

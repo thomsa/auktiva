@@ -9,7 +9,11 @@ import { MemberRole } from "@/generated/prisma/enums";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { AuctionSidebar } from "@/components/auction";
 import { ItemCard, ItemListItem } from "@/components/item";
-import { SortDropdown, itemSortOptions, sortItems } from "@/components/ui/sort-dropdown";
+import {
+  SortDropdown,
+  itemSortOptions,
+  sortItems,
+} from "@/components/ui/sort-dropdown";
 import { useSortFilter } from "@/hooks/ui";
 import { isUserAdmin, canUserCreateItems } from "@/utils/auction-helpers";
 
@@ -71,7 +75,10 @@ export default function AuctionDetailPage({
   const { currentSort } = useSortFilter("sort", "date-desc");
   const viewMode = (router.query.view as "grid" | "list") || "grid";
 
-  const sortedItems = useMemo(() => sortItems(items, currentSort), [items, currentSort]);
+  const sortedItems = useMemo(
+    () => sortItems(items, currentSort),
+    [items, currentSort],
+  );
 
   const setViewMode = (mode: "grid" | "list") => {
     router.push(
@@ -88,107 +95,114 @@ export default function AuctionDetailPage({
     <PageLayout user={user}>
       {/* Header */}
       <div className="mb-6">
-        <BackLink href="/dashboard" label="Back to Dashboard" shortLabel="Back" />
+        <BackLink
+          href="/dashboard"
+          label="Back to Dashboard"
+          shortLabel="Back"
+        />
         <h1 className="text-xl sm:text-2xl font-bold text-center sm:text-left mt-2">
           {auction.name}
         </h1>
       </div>
 
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Main Content - Items */}
-          <div className="flex-1">
-            <div className="card bg-base-100 shadow-xl">
-              <div className="card-body">
-                {/* Items Header */}
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-                  <h2 className="card-title">
-                    <span className="icon-[tabler--package] size-5"></span>
-                    Items
-                    <span className="badge badge-ghost">{items.length}</span>
-                  </h2>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <SortDropdown options={itemSortOptions} currentSort={currentSort} />
-                    <div className="join">
-                      <button
-                        className={`btn btn-sm join-item ${viewMode === "grid" ? "btn-active" : ""}`}
-                        onClick={() => setViewMode("grid")}
-                        title="Grid view"
-                      >
-                        <span className="icon-[tabler--layout-grid] size-4"></span>
-                      </button>
-                      <button
-                        className={`btn btn-sm join-item ${viewMode === "list" ? "btn-active" : ""}`}
-                        onClick={() => setViewMode("list")}
-                        title="List view"
-                      >
-                        <span className="icon-[tabler--list] size-4"></span>
-                      </button>
-                    </div>
-                    {canCreate && (
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Main Content - Items */}
+        <div className="flex-1">
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              {/* Items Header */}
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+                <h2 className="card-title">
+                  <span className="icon-[tabler--package] size-5"></span>
+                  Items
+                  <span className="badge badge-ghost">{items.length}</span>
+                </h2>
+                <div className="flex flex-wrap items-center gap-2">
+                  <SortDropdown
+                    options={itemSortOptions}
+                    currentSort={currentSort}
+                  />
+                  <div className="join">
+                    <button
+                      className={`btn btn-sm join-item ${viewMode === "grid" ? "btn-active" : ""}`}
+                      onClick={() => setViewMode("grid")}
+                      title="Grid view"
+                    >
+                      <span className="icon-[tabler--layout-grid] size-4"></span>
+                    </button>
+                    <button
+                      className={`btn btn-sm join-item ${viewMode === "list" ? "btn-active" : ""}`}
+                      onClick={() => setViewMode("list")}
+                      title="List view"
+                    >
+                      <span className="icon-[tabler--list] size-4"></span>
+                    </button>
+                  </div>
+                  {canCreate && (
+                    <Link
+                      href={`/auctions/${auction.id}/items/create`}
+                      className="btn btn-primary btn-sm"
+                    >
+                      <span className="icon-[tabler--plus] size-4"></span>
+                      <span className="hidden sm:inline">Add Item</span>
+                      <span className="sm:hidden">Add</span>
+                    </Link>
+                  )}
+                </div>
+              </div>
+
+              {/* Items Content */}
+              {sortedItems.length === 0 ? (
+                <EmptyState
+                  icon="icon-[tabler--package-off]"
+                  title="No items yet"
+                  action={
+                    canCreate ? (
                       <Link
                         href={`/auctions/${auction.id}/items/create`}
-                        className="btn btn-primary btn-sm"
+                        className="btn btn-primary"
                       >
-                        <span className="icon-[tabler--plus] size-4"></span>
-                        <span className="hidden sm:inline">Add Item</span>
-                        <span className="sm:hidden">Add</span>
+                        <span className="icon-[tabler--plus] size-5"></span>
+                        Add First Item
                       </Link>
-                    )}
-                  </div>
+                    ) : undefined
+                  }
+                />
+              ) : viewMode === "grid" ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {sortedItems.map((item) => (
+                    <ItemCard
+                      key={item.id}
+                      item={item}
+                      auctionId={auction.id}
+                      userId={user.id}
+                      isAdmin={isAdmin}
+                    />
+                  ))}
                 </div>
-
-                {/* Items Content */}
-                {sortedItems.length === 0 ? (
-                  <EmptyState
-                    icon="icon-[tabler--package-off]"
-                    title="No items yet"
-                    action={
-                      canCreate ? (
-                        <Link
-                          href={`/auctions/${auction.id}/items/create`}
-                          className="btn btn-primary"
-                        >
-                          <span className="icon-[tabler--plus] size-5"></span>
-                          Add First Item
-                        </Link>
-                      ) : undefined
-                    }
-                  />
-                ) : viewMode === "grid" ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {sortedItems.map((item) => (
-                      <ItemCard
-                        key={item.id}
-                        item={item}
-                        auctionId={auction.id}
-                        userId={user.id}
-                        isAdmin={isAdmin}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {sortedItems.map((item) => (
-                      <ItemListItem
-                        key={item.id}
-                        item={item}
-                        auctionId={auction.id}
-                        userId={user.id}
-                        isAdmin={isAdmin}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
+              ) : (
+                <div className="space-y-2">
+                  {sortedItems.map((item) => (
+                    <ItemListItem
+                      key={item.id}
+                      item={item}
+                      auctionId={auction.id}
+                      userId={user.id}
+                      isAdmin={isAdmin}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-
-          {/* Sidebar */}
-          <AuctionSidebar auction={auction} membership={membership} />
         </div>
-      </PageLayout>
-    );
-  }
+
+        {/* Sidebar */}
+        <AuctionSidebar auction={auction} membership={membership} />
+      </div>
+    </PageLayout>
+  );
+}
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);

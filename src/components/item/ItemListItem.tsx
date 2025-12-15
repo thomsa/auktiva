@@ -22,7 +22,12 @@ interface ItemListItemProps {
   isAdmin: boolean;
 }
 
-export function ItemListItem({ item, auctionId, userId, isAdmin }: ItemListItemProps) {
+export function ItemListItem({
+  item,
+  auctionId,
+  userId,
+  isAdmin,
+}: ItemListItemProps) {
   const ended = isItemEnded(item.endDate);
   const canEditItem = item.creatorId === userId || isAdmin;
 
@@ -75,7 +80,9 @@ export function ItemListItem({ item, auctionId, userId, isAdmin }: ItemListItemP
               ? `${item.currentBid} ${item.currencyCode}`
               : `${item.startingBid} ${item.currencyCode}`}
           </div>
-          <div className="text-xs text-base-content/60">{item._count.bids} bids</div>
+          <div className="text-xs text-base-content/60">
+            {item._count.bids} bids
+          </div>
         </div>
         {item.endDate && (
           <div

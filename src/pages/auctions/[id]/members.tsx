@@ -135,66 +135,66 @@ export default function MembersPage({
         )}
       </div>
 
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h1 className="card-title text-2xl mb-4">
-              <span className="icon-[tabler--users] size-6"></span>
-              Members ({members.length})
-            </h1>
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          <h1 className="card-title text-2xl mb-4">
+            <span className="icon-[tabler--users] size-6"></span>
+            Members ({members.length})
+          </h1>
 
-            {error && (
-              <AlertMessage type="error" className="mb-4">
-                {error}
-              </AlertMessage>
-            )}
+          {error && (
+            <AlertMessage type="error" className="mb-4">
+              {error}
+            </AlertMessage>
+          )}
 
-            {/* Mobile Card View */}
-            <div className="space-y-3 md:hidden">
-              {members.map((member) => (
-                <MemberCard
-                  key={member.id}
-                  member={member}
-                  currentUserId={user.id}
-                  isAdmin={isAdmin}
-                  isLoading={loadingMemberId === member.id}
-                  onRoleChange={handleRoleChange}
-                  onRemove={handleRemoveMember}
-                />
-              ))}
-            </div>
+          {/* Mobile Card View */}
+          <div className="space-y-3 md:hidden">
+            {members.map((member) => (
+              <MemberCard
+                key={member.id}
+                member={member}
+                currentUserId={user.id}
+                isAdmin={isAdmin}
+                isLoading={loadingMemberId === member.id}
+                onRoleChange={handleRoleChange}
+                onRemove={handleRemoveMember}
+              />
+            ))}
+          </div>
 
-            {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Member</th>
-                    <th>Role</th>
-                    <th>Joined</th>
-                    <th>Invited By</th>
-                    {isAdmin && <th className="text-right">Actions</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {members.map((member) => (
-                    <MemberRow
-                      key={member.id}
-                      member={member}
-                      currentUserId={user.id}
-                      isAdmin={isAdmin}
-                      isLoading={loadingMemberId === member.id}
-                      onRoleChange={handleRoleChange}
-                      onRemove={handleRemoveMember}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Member</th>
+                  <th>Role</th>
+                  <th>Joined</th>
+                  <th>Invited By</th>
+                  {isAdmin && <th className="text-right">Actions</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {members.map((member) => (
+                  <MemberRow
+                    key={member.id}
+                    member={member}
+                    currentUserId={user.id}
+                    isAdmin={isAdmin}
+                    isLoading={loadingMemberId === member.id}
+                    onRoleChange={handleRoleChange}
+                    onRemove={handleRemoveMember}
+                  />
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </PageLayout>
-    );
-  }
+      </div>
+    </PageLayout>
+  );
+}
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);

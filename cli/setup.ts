@@ -20,7 +20,8 @@ ${chalk.cyan.bold(` / ___ / /_/ / ,< / /_/ /| |/ / /_/ / `)}
 ${chalk.cyan.bold(`/_/  |_\\__,_/_/|_|\\__/_/ |___/\\__,_/  `)}
 `;
 
-const TAGLINE = "A comprehensive auction platform for hosting private and public auctions";
+const TAGLINE =
+  "A comprehensive auction platform for hosting private and public auctions";
 
 // =============================================================================
 // TYPES
@@ -58,7 +59,7 @@ function printHeader(title: string, step?: { current: number; total: number }) {
     console.log(
       chalk.blue(`━━━ Step ${step.current}/${step.total}: `) +
         chalk.bold(title) +
-        chalk.blue(" " + "━".repeat(Math.max(0, 50 - title.length)))
+        chalk.blue(" " + "━".repeat(Math.max(0, 50 - title.length))),
     );
   } else {
     console.log(chalk.blue("━".repeat(60)));
@@ -100,12 +101,14 @@ async function setupStorage(): Promise<Partial<EnvConfig>> {
       {
         value: "local",
         name: "Local filesystem",
-        description: "Store images on this server. Good for single-server deployments.",
+        description:
+          "Store images on this server. Good for single-server deployments.",
       },
       {
         value: "s3",
         name: "S3-compatible storage",
-        description: "AWS S3, Cloudflare R2, MinIO, etc. Recommended for production.",
+        description:
+          "AWS S3, Cloudflare R2, MinIO, etc. Recommended for production.",
       },
     ],
   });
@@ -202,7 +205,7 @@ async function setupDatabase(): Promise<Partial<EnvConfig>> {
     chalk.dim("Get these from: ") +
       chalk.cyan("turso db show <dbname> --url") +
       chalk.dim(" and ") +
-      chalk.cyan("turso db tokens create <dbname>")
+      chalk.cyan("turso db tokens create <dbname>"),
   );
   console.log();
 
@@ -290,11 +293,19 @@ async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
   }
 
   console.log();
-  console.log(chalk.dim("Auktiva uses Brevo (formerly Sendinblue) for sending emails."));
+  console.log(
+    chalk.dim("Auktiva uses Brevo (formerly Sendinblue) for sending emails."),
+  );
   console.log(chalk.dim("Brevo offers a free tier with 300 emails/day."));
   console.log();
-  console.log(chalk.cyan("1. Create a free account at: ") + chalk.bold("https://www.brevo.com/"));
-  console.log(chalk.cyan("2. Get your API key from: ") + chalk.bold("https://app.brevo.com/settings/keys/api"));
+  console.log(
+    chalk.cyan("1. Create a free account at: ") +
+      chalk.bold("https://www.brevo.com/"),
+  );
+  console.log(
+    chalk.cyan("2. Get your API key from: ") +
+      chalk.bold("https://app.brevo.com/settings/keys/api"),
+  );
   console.log();
 
   const brevoKey = await password({
@@ -419,11 +430,16 @@ async function runPostSetupTasks(config: EnvConfig): Promise<void> {
 
   // Create database directory if SQLite
   if (config.DATABASE_URL?.startsWith("file:")) {
-    const dbPath = config.DATABASE_URL.replace("file:", "").replace(/^\.\//, "");
+    const dbPath = config.DATABASE_URL.replace("file:", "").replace(
+      /^\.\//,
+      "",
+    );
     const dbDir = path.dirname(path.join(process.cwd(), dbPath));
     if (!fs.existsSync(dbDir)) {
       fs.mkdirSync(dbDir, { recursive: true });
-      printSuccess(`Created database directory: ${path.relative(process.cwd(), dbDir)}`);
+      printSuccess(
+        `Created database directory: ${path.relative(process.cwd(), dbDir)}`,
+      );
     }
   }
 
@@ -461,7 +477,8 @@ async function runPostSetupTasks(config: EnvConfig): Promise<void> {
   if (!commandExists("pm2")) {
     console.log();
     const installPm2 = await confirm({
-      message: "PM2 is not installed. Install it now? (recommended for production)",
+      message:
+        "PM2 is not installed. Install it now? (recommended for production)",
       default: true,
     });
 
@@ -507,7 +524,9 @@ async function main() {
   console.log();
   console.log(chalk.dim(`  ${TAGLINE}`));
   console.log();
-  console.log(chalk.dim("  This wizard will guide you through configuring your"));
+  console.log(
+    chalk.dim("  This wizard will guide you through configuring your"),
+  );
   console.log(chalk.dim("  self-hosted Auktiva instance."));
   console.log();
   console.log(chalk.blue("━".repeat(60)));
@@ -544,7 +563,10 @@ async function main() {
 
   // Step 5: Email
   printHeader("Email Notifications", { current: 5, total: 5 });
-  Object.assign(config, await setupEmail(config.AUTH_URL || "http://localhost:3000"));
+  Object.assign(
+    config,
+    await setupEmail(config.AUTH_URL || "http://localhost:3000"),
+  );
 
   // Summary
   console.log();
@@ -553,17 +575,19 @@ async function main() {
   console.log(chalk.bold("Configuration Summary:"));
   console.log();
   console.log(
-    `  ${chalk.dim("Database:")}      ${config.DATABASE_URL?.startsWith("libsql") ? chalk.cyan("Turso") : chalk.green("SQLite")}`
+    `  ${chalk.dim("Database:")}      ${config.DATABASE_URL?.startsWith("libsql") ? chalk.cyan("Turso") : chalk.green("SQLite")}`,
   );
   console.log(
-    `  ${chalk.dim("Storage:")}       ${config.STORAGE_PROVIDER === "s3" ? chalk.cyan(`S3 (${config.S3_BUCKET})`) : chalk.green("Local")}`
-  );
-  console.log(`  ${chalk.dim("URL:")}           ${chalk.magenta(config.AUTH_URL)}`);
-  console.log(
-    `  ${chalk.dim("Open Auctions:")} ${config.ALLOW_OPEN_AUCTIONS === "true" ? chalk.green("Enabled") : chalk.yellow("Disabled")}`
+    `  ${chalk.dim("Storage:")}       ${config.STORAGE_PROVIDER === "s3" ? chalk.cyan(`S3 (${config.S3_BUCKET})`) : chalk.green("Local")}`,
   );
   console.log(
-    `  ${chalk.dim("Email:")}         ${config.BREVO_API_KEY ? chalk.green("Enabled (Brevo)") : chalk.yellow("Disabled")}`
+    `  ${chalk.dim("URL:")}           ${chalk.magenta(config.AUTH_URL)}`,
+  );
+  console.log(
+    `  ${chalk.dim("Open Auctions:")} ${config.ALLOW_OPEN_AUCTIONS === "true" ? chalk.green("Enabled") : chalk.yellow("Disabled")}`,
+  );
+  console.log(
+    `  ${chalk.dim("Email:")}         ${config.BREVO_API_KEY ? chalk.green("Enabled (Brevo)") : chalk.yellow("Disabled")}`,
   );
   console.log();
 
@@ -574,7 +598,9 @@ async function main() {
 
   if (!confirmSave) {
     console.log();
-    console.log(chalk.dim("Configuration not saved. Run `npm run setup` to reconfigure."));
+    console.log(
+      chalk.dim("Configuration not saved. Run `npm run setup` to reconfigure."),
+    );
     console.log();
     process.exit(0);
   }

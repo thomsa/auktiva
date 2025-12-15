@@ -2,15 +2,21 @@
  * Date and currency formatting utilities
  */
 
-export function formatDate(dateStr: string | null, options?: Intl.DateTimeFormatOptions): string {
+export function formatDate(
+  dateStr: string | null,
+  options?: Intl.DateTimeFormatOptions,
+): string {
   if (!dateStr) return "No end date";
-  return new Date(dateStr).toLocaleDateString("en-US", options ?? {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return new Date(dateStr).toLocaleDateString(
+    "en-US",
+    options ?? {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    },
+  );
 }
 
 export function formatShortDate(dateStr: string | null): string {
@@ -36,7 +42,11 @@ export function formatRelativeTime(dateStr: string): string {
   return `${days}d ago`;
 }
 
-export function formatCurrency(amount: number, symbol: string, decimals = 2): string {
+export function formatCurrency(
+  amount: number,
+  symbol: string,
+  decimals = 2,
+): string {
   return `${symbol}${amount.toFixed(decimals)}`;
 }
 

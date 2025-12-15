@@ -8,7 +8,7 @@ export interface UseSortFilterReturn {
 
 export function useSortFilter(
   paramName = "sort",
-  defaultSort = "date-desc"
+  defaultSort = "date-desc",
 ): UseSortFilterReturn {
   const router = useRouter();
   const currentSort = (router.query[paramName] as string) || defaultSort;
@@ -21,10 +21,10 @@ export function useSortFilter(
           query: { ...router.query, [paramName]: sort },
         },
         undefined,
-        { shallow: true }
+        { shallow: true },
       );
     },
-    [router, paramName]
+    [router, paramName],
   );
 
   return {

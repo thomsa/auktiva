@@ -5,11 +5,23 @@ interface StatusBadgeProps {
 }
 
 const statusConfig = {
-  winning: { color: "badge-success", icon: "icon-[tabler--trophy]", label: "Winning" },
+  winning: {
+    color: "badge-success",
+    icon: "icon-[tabler--trophy]",
+    label: "Winning",
+  },
   won: { color: "badge-success", icon: "icon-[tabler--trophy]", label: "Won" },
-  outbid: { color: "badge-warning", icon: "icon-[tabler--arrow-up]", label: "Outbid" },
+  outbid: {
+    color: "badge-warning",
+    icon: "icon-[tabler--arrow-up]",
+    label: "Outbid",
+  },
   lost: { color: "badge-ghost", icon: null, label: "Lost" },
-  ended: { color: "badge-error", icon: "icon-[tabler--flag-filled]", label: "Ended" },
+  ended: {
+    color: "badge-error",
+    icon: "icon-[tabler--flag-filled]",
+    label: "Ended",
+  },
   active: { color: "badge-success", icon: null, label: "Active" },
 };
 
@@ -19,12 +31,18 @@ const sizeClasses = {
   md: "",
 };
 
-export function StatusBadge({ status, size = "sm", showIcon = true }: StatusBadgeProps) {
+export function StatusBadge({
+  status,
+  size = "sm",
+  showIcon = true,
+}: StatusBadgeProps) {
   const config = statusConfig[status];
 
   return (
     <span className={`badge ${config.color} ${sizeClasses[size]} gap-1`}>
-      {showIcon && config.icon && <span className={`${config.icon} size-3`}></span>}
+      {showIcon && config.icon && (
+        <span className={`${config.icon} size-3`}></span>
+      )}
       {config.label}
     </span>
   );

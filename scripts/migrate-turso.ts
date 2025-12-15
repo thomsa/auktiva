@@ -28,8 +28,13 @@ async function main() {
   }
 
   // Check if it's a Turso/libsql URL
-  if (!DATABASE_URL.startsWith("libsql://") && !DATABASE_URL.startsWith("https://")) {
-    console.log("ℹ️  DATABASE_URL is not a Turso URL, skipping remote migrations");
+  if (
+    !DATABASE_URL.startsWith("libsql://") &&
+    !DATABASE_URL.startsWith("https://")
+  ) {
+    console.log(
+      "ℹ️  DATABASE_URL is not a Turso URL, skipping remote migrations",
+    );
     console.log("   For local SQLite, use: npm run db:migrate");
     process.exit(0);
   }
@@ -45,7 +50,11 @@ async function main() {
   // Get all migration folders sorted chronologically
   const migrationFolders = fs
     .readdirSync(migrationsDir)
-    .filter((f) => f !== "migration_lock.toml" && fs.statSync(path.join(migrationsDir, f)).isDirectory())
+    .filter(
+      (f) =>
+        f !== "migration_lock.toml" &&
+        fs.statSync(path.join(migrationsDir, f)).isDirectory(),
+    )
     .sort();
 
   if (migrationFolders.length === 0) {
@@ -67,8 +76,12 @@ async function main() {
   `);
 
   // Get list of already applied migrations
-  const appliedResult = await client.execute("SELECT migration_name FROM _prisma_migrations");
-  const appliedMigrations = new Set(appliedResult.rows.map((row) => row.migration_name as string));
+  const appliedResult = await client.execute(
+    "SELECT migration_name FROM _prisma_migrations",
+  );
+  const appliedMigrations = new Set(
+    appliedResult.rows.map((row) => row.migration_name as string),
+  );
 
   let applied = 0;
   let skipped = 0;
@@ -77,16 +90,24 @@ async function main() {
   // Apply each migration in order
   for (let i = 0; i < migrationFolders.length; i++) {
     const migrationFolder = migrationFolders[i];
-    const migrationFile = path.join(migrationsDir, migrationFolder, "migration.sql");
+    const migrationFile = path.join(
+      migrationsDir,
+      migrationFolder,
+      "migration.sql",
+    );
 
     if (!fs.existsSync(migrationFile)) {
-      console.log(`⚠️  [${i + 1}/${total}] Skipping ${migrationFolder} (no migration.sql found)`);
+      console.log(
+        `⚠️  [${i + 1}/${total}] Skipping ${migrationFolder} (no migration.sql found)`,
+      );
       continue;
     }
 
     // Check if migration was already applied
     if (appliedMigrations.has(migrationFolder)) {
-      console.log(`⏭️  [${i + 1}/${total}] Already applied: ${migrationFolder}`);
+      console.log(
+        `⏭️  [${i + 1}/${total}] Already applied: ${migrationFolder}`,
+      );
       skipped++;
       continue;
     }

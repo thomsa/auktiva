@@ -4,13 +4,13 @@
 
 ## Quick Reference
 
-| Aspect | Value |
-|--------|-------|
+| Aspect    | Value                            |
+| --------- | -------------------------------- |
 | Framework | Next.js 16 with **Pages Router** |
-| Auth | NextAuth **v4** (NOT v5) |
-| ORM | Prisma **7** with SQLite |
-| Styling | Tailwind v4 + FlyonUI |
-| Icons | Tabler via @iconify/tailwind4 |
+| Auth      | NextAuth **v4** (NOT v5)         |
+| ORM       | Prisma **7** with SQLite         |
+| Styling   | Tailwind v4 + FlyonUI            |
+| Icons     | Tabler via @iconify/tailwind4    |
 
 ## Critical Rules
 
@@ -33,6 +33,7 @@ src/styles/globals.css  # Tailwind v4 + FlyonUI
 ## Common Patterns
 
 ### Protected Page
+
 ```typescript
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
@@ -48,12 +49,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 ```
 
 ### API Route
+
 ```typescript
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   const session = await getServerSession(req, res, authOptions);
   if (!session) return res.status(401).json({ error: "Unauthorized" });
   // ...
@@ -61,6 +66,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 ```
 
 ### FlyonUI Components
+
 ```tsx
 // Buttons
 <button className="btn btn-primary">Primary</button>
@@ -84,12 +90,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 ## Current State
 
 ### Completed
+
 - Authentication (login/register)
 - Dashboard page
 - Theme switching
 - Database schema with all models
 
 ### Next Steps
+
 - Create auction flow
 - Auction detail page
 - Item management

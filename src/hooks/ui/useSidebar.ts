@@ -9,7 +9,7 @@ export interface UseSidebarReturn {
 
 export function useSidebar(
   initialCollapsed = false,
-  onToggle?: (collapsed: boolean) => void
+  onToggle?: (collapsed: boolean) => void,
 ): UseSidebarReturn {
   const [isCollapsed, setIsCollapsed] = useState(initialCollapsed);
 

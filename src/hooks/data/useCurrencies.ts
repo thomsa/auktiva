@@ -20,7 +20,7 @@ export function useCurrencies(): UseCurrenciesReturn {
     {
       revalidateOnFocus: false,
       dedupingInterval: 60000, // Cache for 1 minute
-    }
+    },
   );
 
   return {

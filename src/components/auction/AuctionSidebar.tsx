@@ -49,7 +49,9 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
         )}
         <div className="card-body p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="badge badge-primary badge-sm">{membership.role}</span>
+            <span className="badge badge-primary badge-sm">
+              {membership.role}
+            </span>
             {ended && <span className="badge badge-error badge-sm">Ended</span>}
           </div>
           {auction.description && (
@@ -60,11 +62,15 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-sm text-base-content/60">Items</span>
-              <span className="font-bold text-primary">{auction._count.items}</span>
+              <span className="font-bold text-primary">
+                {auction._count.items}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-base-content/60">Members</span>
-              <span className="font-bold text-secondary">{auction._count.members}</span>
+              <span className="font-bold text-secondary">
+                {auction._count.members}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-base-content/60">Ends</span>

@@ -24,10 +24,12 @@ export interface UseAuctionItemsReturn {
   mutate: () => Promise<void>;
 }
 
-export function useAuctionItems(auctionId: string | undefined): UseAuctionItemsReturn {
+export function useAuctionItems(
+  auctionId: string | undefined,
+): UseAuctionItemsReturn {
   const { data, error, isLoading, mutate } = useSWR<AuctionItem[]>(
     auctionId ? `/api/auctions/${auctionId}/items` : null,
-    fetcher
+    fetcher,
   );
 
   return {

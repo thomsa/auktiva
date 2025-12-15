@@ -1,5 +1,5 @@
 export default {
-  index: 'Introduction',
-  developers: 'For Developers',
-  users: 'For Users'
-}
+  index: "Introduction",
+  developers: "For Developers",
+  users: "For Users",
+};

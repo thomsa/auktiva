@@ -9,11 +9,13 @@
 ## Tech Stack
 
 ### Core Framework
+
 - **Next.js 16** with **Pages Router** (NOT App Router)
 - **TypeScript** for type safety
 - **React 19** for UI components
 
 ### Database & ORM
+
 - **Prisma 7** with SQLite (development)
 - **Better SQLite3 adapter** (`@prisma/adapter-better-sqlite3`)
 - Database file: `./dev.db` (project root)
@@ -21,18 +23,21 @@
 - Config: `prisma.config.ts` (Prisma 7 style)
 
 ### Authentication
+
 - **NextAuth v4** (NOT v5 - downgraded for Next.js 16 compatibility)
 - Credentials provider (email/password)
 - JWT session strategy
 - Password hashing with `bcryptjs`
 
 ### Styling & UI
+
 - **Tailwind CSS v4** with `@tailwindcss/postcss`
 - **FlyonUI** component library (DaisyUI-like semantic classes)
 - **Tabler Icons** via `@iconify/tailwind4`
 - Themes: `light` and `dark` (FlyonUI defaults)
 
 ### Validation
+
 - **Zod** for schema validation
 
 ## Project Structure
@@ -160,16 +165,19 @@ enum MemberRole {
 ## Authentication Flow
 
 ### NextAuth v4 Configuration (`src/lib/auth.ts`)
+
 - Uses `CredentialsProvider` with email/password
 - JWT session strategy
 - Custom pages: `/login`, `/login` (error)
 - Session includes `user.id`
 
 ### Protected Routes
+
 - Use `getServerSession(context.req, context.res, authOptions)` in `getServerSideProps`
 - Redirect to `/login` if not authenticated
 
 ### Registration
+
 - API route: `POST /api/auth/register`
 - Validates with Zod schema
 - Hashes password with bcryptjs (12 rounds)
@@ -178,25 +186,30 @@ enum MemberRole {
 ## Styling Guidelines
 
 ### CSS Configuration (`src/styles/globals.css`)
+
 ```css
 @import "tailwindcss";
 
 @plugin "flyonui" {
-  themes: ["light", "dark"]
+  themes:
+    [ "light",
+    "dark"];
 }
 
 @plugin "@iconify/tailwind4" {
-  prefixes: tabler
+  prefixes: tabler;
 }
 ```
 
 ### Theme System
+
 - Uses `data-theme` attribute on `<html>`
 - ThemeProvider manages state and localStorage
 - Storage key: `auktiva-theme`
 - Values: `light`, `dark`, `system`
 
 ### FlyonUI Classes
+
 - Semantic classes like `btn`, `card`, `input`, `alert`
 - Color classes: `btn-primary`, `bg-base-100`, `text-base-content`
 - Icon classes: `icon-[tabler--icon-name]`
@@ -228,29 +241,34 @@ npm start
 ## Important Notes
 
 ### Pages Router (NOT App Router)
+
 - All pages in `src/pages/`
 - No `"use client"` directives needed (except for components using hooks)
 - Use `getServerSideProps` for server-side data fetching
 - API routes in `src/pages/api/`
 
 ### Prisma 7 Specifics
+
 - Configuration in `prisma.config.ts` (not in schema.prisma)
 - Requires adapter for SQLite: `@prisma/adapter-better-sqlite3`
 - Client generated to `src/generated/prisma`
 - Import from `@/generated/prisma` or `@prisma/client`
 
 ### NextAuth v4 (NOT v5)
+
 - v5 beta has compatibility issues with Next.js 16
 - Use `getServerSession` from `next-auth` (not `next-auth/next`)
 - Export `authOptions` from `src/lib/auth.ts`
 
 ### Known Lint Warnings (Non-blocking)
+
 - CSS `@plugin` warnings: IDE doesn't recognize Tailwind v4 syntax
 - `setState in useEffect` in theme-provider: Intentional for localStorage sync
 
 ## Feature Roadmap
 
 ### Phase 1 (Completed)
+
 - [x] Project setup with Next.js 16 + Pages Router
 - [x] Prisma 7 with SQLite
 - [x] NextAuth v4 authentication
@@ -260,6 +278,7 @@ npm start
 - [x] FlyonUI styling
 
 ### Phase 2 (Completed)
+
 - [x] Create auction flow (`/auctions/create`)
 - [x] Auction detail page (`/auctions/[id]`)
 - [x] Invite system (`/auctions/[id]/invite`, `/invite/[token]`)
@@ -267,12 +286,14 @@ npm start
 - [x] Bidding system (`/auctions/[id]/items/[itemId]`)
 
 ### Phase 3 (Pending)
+
 - [ ] Real-time updates (WebSocket/polling)
 - [ ] Auction closing logic
 - [ ] Winner determination
 - [ ] Member management page
 
 ### Phase 4 (Pending)
+
 - [ ] User settings
 - [ ] Notifications
 - [ ] Auction history
@@ -281,6 +302,7 @@ npm start
 ## Code Patterns
 
 ### Server-Side Auth Check
+
 ```typescript
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
@@ -294,14 +316,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 ```
 
 ### API Route with Validation
+
 ```typescript
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 
-const schema = z.object({ /* ... */ });
+const schema = z.object({
+  /* ... */
+});
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
@@ -316,12 +344,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 ```
 
 ### Component with Theme
+
 ```typescript
 import { useTheme } from "@/components/providers/theme-provider";
 
 export function MyComponent() {
   const { theme, setTheme, resolvedTheme } = useTheme();
-  
+
   return (
     <button onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}>
       Toggle Theme
