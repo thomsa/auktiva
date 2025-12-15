@@ -23,13 +23,14 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   // Relations
-  auctionMemberships AuctionMember[]
-  createdAuctions    Auction[]         @relation("AuctionCreator")
-  createdItems       AuctionItem[]     @relation("ItemCreator")
-  bids               Bid[]
-  sentInvites        AuctionInvite[]   @relation("InviteSender")
-  notifications      Notification[]
-  settings           UserSettings?
+  auctionMemberships  AuctionMember[]
+  createdAuctions     Auction[]            @relation("AuctionCreator")
+  createdItems        AuctionItem[]        @relation("ItemCreator")
+  bids                Bid[]
+  sentInvites         AuctionInvite[]      @relation("InviteSender")
+  notifications       Notification[]
+  settings            UserSettings?
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -322,10 +323,11 @@ enum EmailStatus {
 }
 
 enum EmailType {
-  WELCOME       // Welcome email on registration
-  INVITE        // Auction invite
-  NEW_ITEM      // New item added to auction
-  OUTBID        // User was outbid
+  WELCOME         // Welcome email on registration
+  INVITE          // Auction invite
+  NEW_ITEM        // New item added to auction
+  OUTBID          // User was outbid
+  PASSWORD_RESET  // Password reset request
 }
 
 model EmailLog {
@@ -354,4 +356,23 @@ model EmailLog {
 
   @@index([status, createdAt])
   @@map("email_logs")
+}
+
+// ============================================
+// PASSWORD RESET TOKENS
+// ============================================
+
+model PasswordResetToken {
+  id          String   @id @default(cuid())
+  
+  token       String   @unique  // Hashed token for security
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("password_reset_tokens")
 }
