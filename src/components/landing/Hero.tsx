@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 export function Hero() {
   const [mounted, setMounted] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,18 +67,21 @@ export function Hero() {
 
           <div className="mt-16 p-4 rounded-2xl bg-base-200/30 border border-base-content/5 backdrop-blur-sm max-w-4xl mx-auto shadow-2xl transform hover:scale-[1.01] transition-transform duration-500">
             {/* Mock UI/Screenshot placeholder */}
-            <div className="aspect-video rounded-xl bg-linear-to-br from-base-100 to-base-200 overflow-hidden relative group">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <span className="icon-[tabler--photo-scan] size-16 text-base-content/20 mb-4 group-hover:scale-110 transition-transform duration-300"></span>
-                  <p className="text-base-content/40 font-medium">
-                    Interactive Demo Preview
-                  </p>
-                </div>
-              </div>
+            <div className="aspect-video rounded-xl overflow-hidden relative group bg-base-200">
+              {!imageLoaded && (
+                <div className="absolute inset-0 skeleton w-full h-full rounded-none"></div>
+              )}
+              <img
+                src="/pictures/recording.gif"
+                alt="Interactive Demo Preview"
+                className={`w-full h-full object-cover transition-opacity duration-500 ${
+                  imageLoaded ? "opacity-100" : "opacity-0"
+                }`}
+                onLoad={() => setImageLoaded(true)}
+              />
 
               {/* Floating Cards Animation */}
-              <div className="absolute top-10 left-10 w-64 h-40 bg-base-100 rounded-lg shadow-lg border border-base-content/5 p-4 transform -rotate-6 group-hover:-rotate-3 transition-transform duration-500">
+              <div className="absolute top-10 left-10 w-64 h-40 bg-base-100 rounded-lg shadow-lg border border-base-content/5 p-4 transform -rotate-6 group-hover:-rotate-3 transition-transform duration-500 hidden sm:block">
                 <div className="flex gap-3 mb-3">
                   <div className="w-12 h-12 rounded bg-primary/20"></div>
                   <div className="space-y-2">
@@ -93,7 +97,7 @@ export function Hero() {
                 </div>
               </div>
 
-              <div className="absolute bottom-10 right-10 w-64 h-40 bg-base-100 rounded-lg shadow-lg border border-base-content/5 p-4 transform rotate-3 group-hover:rotate-1 transition-transform duration-500 z-10">
+              <div className="absolute bottom-10 right-10 w-64 h-40 bg-base-100 rounded-lg shadow-lg border border-base-content/5 p-4 transform rotate-3 group-hover:rotate-1 transition-transform duration-500 z-10 hidden sm:block">
                 <div className="flex gap-3 mb-3">
                   <div className="w-12 h-12 rounded bg-secondary/20"></div>
                   <div className="space-y-2">
