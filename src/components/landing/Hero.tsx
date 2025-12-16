@@ -65,9 +65,9 @@ export function Hero() {
             </Link>
           </div>
 
-          <div className="mt-16 p-4 rounded-2xl bg-base-200/30 border border-base-content/5 backdrop-blur-sm max-w-4xl mx-auto shadow-2xl transform hover:scale-[1.01] transition-transform duration-500">
+          <div className="mt-16 p-4 mb-18 rounded-2xl bg-base-200/30 border border-base-content/5 backdrop-blur-sm max-w-4xl mx-auto shadow-2xl transform hover:scale-[1.01] transition-transform duration-500">
             {/* Mock UI/Screenshot placeholder */}
-            <div className="aspect-video rounded-xl overflow-hidden relative group bg-base-200">
+            <div className="aspect-video rounded-xl overflow-hidden relative group bg-base-200 ">
               {!imageLoaded && (
                 <div className="absolute inset-0 skeleton w-full h-full rounded-none"></div>
               )}
