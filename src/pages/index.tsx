@@ -15,6 +15,7 @@ import { FeatureGrid } from "@/components/landing/FeatureGrid";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { CallToAction } from "@/components/landing/CallToAction";
 import { Footer } from "@/components/landing/Footer";
+import { ImpactVisualization } from "@/components/landing/ImpactVisualization";
 
 export default function LandingPage() {
   // Homepage-specific structured data with FAQ schema for better SEO
@@ -84,6 +85,7 @@ export default function LandingPage() {
           <Hero />
           <FeatureGrid />
           <HowItWorks />
+          <ImpactVisualization />
           <CallToAction />
         </main>
 

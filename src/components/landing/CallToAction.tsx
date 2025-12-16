@@ -84,6 +84,7 @@ export function CallToAction() {
             <Link
               href="https://docs.auktiva.org/developers"
               className="link link-primary"
+              target="_blank"
             >
               developer documentation
             </Link>{" "}

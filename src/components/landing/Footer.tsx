@@ -36,6 +36,7 @@ export function Footer() {
                 <Link
                   href="https://docs.auktiva.org"
                   className="hover:text-primary transition-colors"
+                  target="_blank"
                 >
                   Documentation
                 </Link>

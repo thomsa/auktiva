@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import packageJson from "../../../package.json";
 
 export function Hero() {
   const [mounted, setMounted] = useState(false);
@@ -31,7 +32,7 @@ export function Hero() {
               <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
             </span>
             <span className="text-sm font-medium text-base-content/80">
-              v1.0 is now live
+              {packageJson.version} is now live
             </span>
           </div>
 

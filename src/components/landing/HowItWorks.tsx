@@ -18,7 +18,12 @@ export function HowItWorks() {
     {
       num: "04",
       title: "Wrap Up",
-      desc: "Winners are notified automatically. Handle exchange and settlement offline, your way.",
+      desc: "Handle exchange and settlement offline, your way.",
+    },
+    {
+      num: "05",
+      title: "Celebrate  🎉",
+      desc: "Celebrate your success with your contributors and raise awareness for your cause!",
     },
   ];
 
