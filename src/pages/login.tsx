@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { AlertMessage, SEO, pageSEO } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { getMessages, Locale } from "@/i18n";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -212,7 +213,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  const messages = await getMessages(context.locale as Locale);
+
   return {
-    props: {},
+    props: {
+      messages,
+    },
   };
 };

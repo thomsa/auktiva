@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import packageJson from "../../../package.json";
 
 export function Hero() {
+  const t = useTranslations("landing.hero");
   const [mounted, setMounted] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -32,20 +34,19 @@ export function Hero() {
               <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
             </span>
             <span className="text-sm font-medium text-base-content/80">
-              {packageJson.version} is now live
+              {t("badge", { version: packageJson.version })}
             </span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight">
-            Auctions made <br />
+            {t("title")} <br />
             <span className="bg-linear-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              simple & social
+              {t("titleHighlight")}
             </span>
           </h1>
 
           <p className="text-xl md:text-2xl text-base-content/60 max-w-2xl mx-auto mb-12 leading-relaxed">
-            The open-source platform for modern fundraising. Host private
-            auctions, invite your community, and manage everything in one place.
+            {t("description")}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -54,7 +55,7 @@ export function Hero() {
               className="btn btn-primary btn-lg h-14 px-8 rounded-full shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 transition-all duration-300"
             >
               <span className="icon-[tabler--rocket] size-6"></span>
-              Start Your Auction
+              {t("startAuction")}
             </Link>
             <Link
               href="https://github.com/thomsa/auktiva"
@@ -62,7 +63,7 @@ export function Hero() {
               className="btn btn-ghost btn-lg h-14 px-8 rounded-full border border-base-content/10 hover:bg-base-200 hover:border-base-content/20 transition-all duration-300"
             >
               <span className="icon-[tabler--brand-github] size-6"></span>
-              View on GitHub
+              {t("viewOnGithub")}
             </Link>
           </div>
 
@@ -74,7 +75,7 @@ export function Hero() {
               )}
               <img
                 src="/pictures/recording.gif"
-                alt="Interactive Demo Preview"
+                alt={t("demoAlt")}
                 className={`w-full h-full object-cover transition-opacity duration-500 ${
                   imageLoaded ? "opacity-100" : "opacity-0"
                 }`}
@@ -93,7 +94,7 @@ export function Hero() {
                 <div className="flex justify-between items-end">
                   <div className="w-16 h-6 rounded bg-secondary/20"></div>
                   <div className="w-20 h-8 rounded bg-primary text-primary-content text-xs flex items-center justify-center">
-                    Bid Now
+                    {t("bidNow")}
                   </div>
                 </div>
               </div>
@@ -109,7 +110,7 @@ export function Hero() {
                 <div className="flex justify-between items-end">
                   <div className="w-16 h-6 rounded bg-primary/20"></div>
                   <div className="w-20 h-8 rounded bg-primary text-primary-content text-xs flex items-center justify-center">
-                    Bid Now
+                    {t("bidNow")}
                   </div>
                 </div>
               </div>

@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout, BackLink, AlertMessage } from "@/components/common";
 import { MemberCard, MemberRow } from "@/components/member";
 import { useToast } from "@/components/ui/toast";
+import { getMessages, Locale } from "@/i18n";
 
 interface Member {
   id: string;
@@ -309,6 +310,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       })),
       isOwner,
       isAdmin,
+      messages: await getMessages(context.locale as Locale),
     },
   };
 };

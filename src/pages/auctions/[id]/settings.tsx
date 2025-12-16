@@ -13,6 +13,7 @@ import {
 import { ThumbnailUpload } from "@/components/upload/thumbnail-upload";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
+import { getMessages, Locale } from "@/i18n";
 import { useConfirmDialog } from "@/hooks/ui";
 
 interface AuctionSettingsProps {
@@ -586,6 +587,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           : null,
       },
       allowOpenAuctions: process.env.ALLOW_OPEN_AUCTIONS === "true",
+      messages: await getMessages(context.locale as Locale),
     },
   };
 };

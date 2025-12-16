@@ -1,8 +1,9 @@
 import { useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { AlertMessage } from "@/components/common";
 import { calculateMinBid } from "@/utils/auction-helpers";
-import { formatDate } from "@/utils/formatters";
+import { useFormatters } from "@/i18n";
 
 interface BidFormData {
   amount: number;
@@ -39,6 +40,9 @@ export function BidForm({
   isEnded,
   onBidPlaced,
 }: BidFormProps) {
+  const t = useTranslations("item.bid");
+  const tStatus = useTranslations("status");
+  const { formatDate } = useFormatters();
   const {
     register,
     handleSubmit,
@@ -58,7 +62,7 @@ export function BidForm({
   const onSubmit = async (data: BidFormData) => {
     if (data.amount < minBid) {
       setError("amount", {
-        message: `Minimum bid is ${item.currency.symbol}${minBid.toFixed(2)}`,
+        message: t("minimumBidError", { symbol: item.currency.symbol, amount: minBid.toFixed(2) }),
       });
       return;
     }
@@ -95,16 +99,16 @@ export function BidForm({
       <div className="card-body">
         <h2 className="card-title">
           <span className="icon-[tabler--gavel] size-6"></span>
-          Place Bid
+          {t("title")}
         </h2>
 
         <div className="bg-base-200 rounded-lg p-4 my-4">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-base-content/60">Current Bid</span>
+            <span className="text-sm text-base-content/60">{t("currentBid")}</span>
             {!isEnded && (
               <span className="text-xs text-base-content/40">
                 <span className="icon-[tabler--refresh] size-3 inline mr-1 animate-spin"></span>
-                Live
+                {tStatus("live")}
               </span>
             )}
           </div>
@@ -114,7 +118,7 @@ export function BidForm({
           </div>
           {item.currentBid && (
             <div className="text-sm text-base-content/60 mt-1">
-              Starting: {item.currency.symbol}
+              {t("startingBid")}: {item.currency.symbol}
               {item.startingBid.toFixed(2)}
             </div>
           )}
@@ -122,14 +126,14 @@ export function BidForm({
 
         {isHighestBidder && (
           <AlertMessage type="success" className="mb-4">
-            You&apos;re the highest bidder!
+            {t("highestBidder")}
           </AlertMessage>
         )}
 
         {item.endDate && (
           <div className="text-sm text-base-content/60 mb-4">
             <span className="icon-[tabler--clock] size-4 inline mr-1"></span>
-            {isEnded ? "Ended" : "Ends"}: {formatDate(item.endDate)}
+            {isEnded ? tStatus("ended") : tStatus("ends")}: {formatDate(item.endDate)}
           </div>
         )}
 
@@ -143,9 +147,9 @@ export function BidForm({
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Your Bid</span>
+                <span className="label-text">{t("yourBid")}</span>
                 <span className="label-text-alt">
-                  Min: {item.currency.symbol}
+                  {t("minBid")}: {item.currency.symbol}
                   {minBid.toFixed(2)}
                 </span>
               </label>
@@ -177,10 +181,10 @@ export function BidForm({
                   className="checkbox checkbox-sm"
                 />
                 <div className="flex items-center gap-1">
-                  <span className="text-sm">Bid as anonymous</span>
+                  <span className="text-sm">{t("bidAsAnonymous")}</span>
                   <div
                     className="tooltip tooltip-left"
-                    data-tip="Your name will be hidden from other bidders. The item owner will still see your details."
+                    data-tip={t("anonymousTooltip")}
                   >
                     <span className="icon-[tabler--info-circle] size-4 text-base-content/50"></span>
                   </div>
@@ -193,23 +197,23 @@ export function BidForm({
               variant="primary"
               modifier="block"
               isLoading={isSubmitting}
-              loadingText="Placing Bid..."
+              loadingText={t("placingBid")}
               icon={<span className="icon-[tabler--gavel] size-5"></span>}
             >
-              Place Bid
+              {t("placeBid")}
             </Button>
           </form>
         ) : isEnded ? (
           <div className="text-center py-4 text-base-content/60">
-            This item&apos;s bidding has ended.
+            {t("biddingEnded")}
           </div>
         ) : isItemOwner ? (
           <AlertMessage type="info">
-            You cannot bid on your own item.
+            {t("cannotBidOwn")}
           </AlertMessage>
         ) : (
           <div className="text-center py-4 text-base-content/60">
-            You cannot bid on this item.
+            {t("cannotBid")}
           </div>
         )}
 
@@ -217,11 +221,11 @@ export function BidForm({
 
         <div className="text-sm space-y-2">
           <div className="flex justify-between">
-            <span className="text-base-content/60">Currency</span>
+            <span className="text-base-content/60">{t("currency")}</span>
             <span>{item.currency.name}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-base-content/60">Min Increment</span>
+            <span className="text-base-content/60">{t("minIncrement")}</span>
             <span>
               {item.currency.symbol}
               {item.minBidIncrement.toFixed(2)}

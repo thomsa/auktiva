@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { isItemEnded, getBidStatus } from "@/utils/auction-helpers";
-import { formatShortDate } from "@/utils/formatters";
+import { useFormatters } from "@/i18n";
 
 interface ItemCardProps {
   item: {
@@ -25,6 +26,8 @@ interface ItemCardProps {
 }
 
 export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
+  const t = useTranslations();
+  const { formatShortDate } = useFormatters();
   const ended = isItemEnded(item.endDate);
   const canEditItem = item.creatorId === userId || isAdmin;
 
@@ -56,21 +59,21 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
               <div className="absolute top-3 left-3">
                 <div className="badge badge-success gap-1 shadow-sm font-bold">
                   <span className="icon-[tabler--crown] size-3"></span>
-                  Won
+                  {t("item.status.won")}
                 </div>
               </div>
             ) : ended ? (
               <div className="absolute top-3 left-3">
                 <div className="badge badge-error gap-1 shadow-sm font-bold">
                   <span className="icon-[tabler--flag-filled] size-3"></span>
-                  Ended
+                  {t("item.status.ended")}
                 </div>
               </div>
             ) : bidStatus === "winning" ? (
               <div className="absolute top-3 left-3">
                 <div className="badge badge-success gap-1 shadow-sm font-bold animate-pulse">
                   <span className="icon-[tabler--trophy] size-3"></span>
-                  Winning
+                  {t("item.status.winning")}
                 </div>
               </div>
             ) : (
@@ -78,11 +81,11 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
                 <div className="absolute top-3 left-3">
                   <div className="badge badge-warning gap-1 shadow-sm font-bold">
                     <span className="icon-[tabler--alert-circle] size-3"></span>
-                    Outbid
+                    {t("item.status.outbid")}
                   </div>
                 </div>
               )
-            )}
+            )
           </figure>
         ) : (
           <figure
@@ -95,21 +98,21 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
               <div className="absolute top-3 left-3">
                 <div className="badge badge-success gap-1 shadow-sm font-bold">
                   <span className="icon-[tabler--crown] size-3"></span>
-                  Won
+                  {t("item.status.won")}
                 </div>
               </div>
             ) : ended ? (
               <div className="absolute top-3 left-3">
                 <div className="badge badge-error gap-1 shadow-sm font-bold">
                   <span className="icon-[tabler--flag-filled] size-3"></span>
-                  Ended
+                  {t("item.status.ended")}
                 </div>
               </div>
             ) : bidStatus === "winning" ? (
               <div className="absolute top-3 left-3">
                 <div className="badge badge-success gap-1 shadow-sm font-bold animate-pulse">
                   <span className="icon-[tabler--trophy] size-3"></span>
-                  Winning
+                  {t("item.status.winning")}
                 </div>
               </div>
             ) : (
@@ -117,7 +120,7 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
                 <div className="absolute top-3 left-3">
                   <div className="badge badge-warning gap-1 shadow-sm font-bold">
                     <span className="icon-[tabler--alert-circle] size-3"></span>
-                    Outbid
+                    {t("item.status.outbid")}
                   </div>
                 </div>
               )
@@ -132,13 +135,13 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
             {bidStatus === "won" && (
               <div className="badge badge-success badge-sm gap-1 shadow-sm font-bold shrink-0">
                 <span className="icon-[tabler--trophy] size-3"></span>
-                Won
+                {t("item.status.won")}
               </div>
             )}
             {bidStatus === "lost" && (
               <div className="badge badge-ghost badge-sm gap-1 shadow-sm font-bold shrink-0 opacity-70">
                 <span className="icon-[tabler--x] size-3"></span>
-                Lost
+                {t("item.status.lost")}
               </div>
             )}
           </div>
@@ -154,7 +157,7 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
             <div className="flex items-end justify-between">
               <div>
                 <div className="text-xs text-base-content/50 font-medium mb-0.5 uppercase tracking-wide">
-                  {item.currentBid ? "Current Bid" : "Starting"}
+                  {item.currentBid ? t("item.bid.currentBid") : t("item.bid.startingBid")}
                 </div>
                 <div
                   className={`text-xl font-bold font-mono tracking-tight ${bidStatus === "winning" || bidStatus === "won" ? "text-success" : bidStatus === "outbid" ? "text-warning" : "text-primary"}`}
@@ -167,7 +170,7 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
               <div className="flex flex-col items-end">
                 <div className="flex items-center gap-1 text-xs text-base-content/60 mb-1">
                   <span className="icon-[tabler--gavel] size-3"></span>
-                  {item._count.bids} bids
+                  {t("item.card.bidsCount", { count: item._count.bids })}
                 </div>
                 {item.endDate && !ended && (
                   <div className="flex items-center gap-1 text-xs font-medium text-secondary">

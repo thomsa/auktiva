@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { isAuctionEnded } from "@/utils/auction-helpers";
-import { formatShortDate } from "@/utils/formatters";
+import { useFormatters } from "@/i18n";
 
 interface AuctionCardProps {
   auction: {
@@ -18,6 +19,8 @@ interface AuctionCardProps {
 }
 
 export function AuctionCard({ auction }: AuctionCardProps) {
+  const t = useTranslations();
+  const { formatShortDate } = useFormatters();
   const ended = isAuctionEnded(auction.endDate);
   const href = ended
     ? `/auctions/${auction.id}/results`
@@ -56,7 +59,7 @@ export function AuctionCard({ auction }: AuctionCardProps) {
           <div className="absolute top-3 right-3">
             <div className="badge badge-error gap-1 shadow-sm font-medium">
               <span className="icon-[tabler--flag-filled] size-3"></span>
-              Ended
+              {t("auction.card.ended")}
             </div>
           </div>
         )}
@@ -92,7 +95,7 @@ export function AuctionCard({ auction }: AuctionCardProps) {
               }`}
             >
               <span className="icon-[tabler--clock] size-3.5"></span>
-              {ended ? "Ended" : "Ends"} {formatShortDate(auction.endDate)}
+              {ended ? t("auction.card.ended") : t("auction.card.ends")} {formatShortDate(auction.endDate)}
             </div>
           )}
         </div>

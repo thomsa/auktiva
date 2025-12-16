@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { Navbar } from "@/components/layout/navbar";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
+import { getMessages, Locale } from "@/i18n";
 
 interface Invite {
   id: string;
@@ -339,6 +340,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         expiresAt: i.expiresAt?.toISOString() || null,
         createdAt: i.createdAt.toISOString(),
       })),
+      messages: await getMessages(context.locale as Locale),
     },
   };
 };

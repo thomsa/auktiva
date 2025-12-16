@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { isItemEnded, getBidStatus } from "@/utils/auction-helpers";
-import { formatShortDate } from "@/utils/formatters";
+import { useFormatters } from "@/i18n";
 
 interface ItemListItemProps {
   item: {
@@ -30,6 +31,8 @@ export function ItemListItem({
   userId,
   isAdmin,
 }: ItemListItemProps) {
+  const t = useTranslations();
+  const { formatShortDate } = useFormatters();
   const ended = isItemEnded(item.endDate);
   const canEditItem = item.creatorId === userId || isAdmin;
 
@@ -106,12 +109,12 @@ export function ItemListItem({
                 }`}
               >
                 {bidStatus === "winning"
-                  ? "Winning"
+                  ? t("item.status.winning")
                   : bidStatus === "won"
-                    ? "Won"
+                    ? t("item.status.won")
                     : bidStatus === "outbid"
-                      ? "Outbid"
-                      : "Lost"}
+                      ? t("item.status.outbid")
+                      : t("item.status.lost")}
               </div>
             )}
           </div>
@@ -131,7 +134,7 @@ export function ItemListItem({
           </div>
           <div className="text-xs text-base-content/50 flex items-center justify-end gap-1">
             <span className="icon-[tabler--gavel] size-3"></span>
-            {item._count.bids} bids
+            {t("item.card.bidsCount", { count: item._count.bids })}
           </div>
         </div>
         {item.endDate && (
@@ -140,7 +143,7 @@ export function ItemListItem({
               ended ? "text-error" : "text-base-content/60"
             }`}
           >
-            {ended ? "Ended" : "Ends"} {formatShortDate(item.endDate)}
+            {ended ? t("status.ended") : t("status.ends")} {formatShortDate(item.endDate)}
           </div>
         )}
       </Link>
@@ -149,7 +152,7 @@ export function ItemListItem({
           href={`/auctions/${auctionId}/items/${item.id}/edit`}
           className="btn btn-ghost btn-sm btn-circle shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
           onClick={(e) => e.stopPropagation()}
-          title="Edit item"
+          title={t("common.edit")}
         >
           <span className="icon-[tabler--edit] size-4"></span>
         </Link>

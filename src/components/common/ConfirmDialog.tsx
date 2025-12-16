@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
 interface ConfirmDialogProps {
@@ -17,13 +18,16 @@ export function ConfirmDialog({
   isOpen,
   title,
   message,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   variant = "error",
   isLoading = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const t = useTranslations("common");
+  const confirm = confirmLabel || t("confirm");
+  const cancel = cancelLabel || t("cancel");
   if (!isOpen) return null;
 
   const bgColor = {
@@ -43,16 +47,16 @@ export function ConfirmDialog({
           onClick={onConfirm}
           variant={variant}
           isLoading={isLoading}
-          loadingText="Processing..."
+          loadingText={t("loading")}
         >
-          {confirmLabel}
+          {confirm}
         </Button>
         <button
           onClick={onCancel}
           className="btn btn-ghost"
           disabled={isLoading}
         >
-          {cancelLabel}
+          {cancel}
         </button>
       </div>
     </div>

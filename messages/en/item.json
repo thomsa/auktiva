@@ -1,0 +1,69 @@
+{
+  "item": {
+    "bid": {
+      "title": "Place Bid",
+      "currentBid": "Current Bid",
+      "startingBid": "Starting",
+      "yourBid": "Your Bid",
+      "minBid": "Min",
+      "placeBid": "Place Bid",
+      "placingBid": "Placing Bid...",
+      "highestBidder": "You're the highest bidder!",
+      "biddingEnded": "This item's bidding has ended.",
+      "cannotBidOwn": "You cannot bid on your own item.",
+      "cannotBid": "You cannot bid on this item.",
+      "bidAsAnonymous": "Bid as anonymous",
+      "anonymousTooltip": "Your name will be hidden from other bidders. The item owner will still see your details.",
+      "minIncrement": "Min Increment",
+      "minimumBidError": "Minimum bid is {symbol}{amount}",
+      "currency": "Currency"
+    },
+    "card": {
+      "noBids": "No bids yet",
+      "bids": "bids",
+      "bidsCount": "{count, plural, =0 {No bids} =1 {1 bid} other {# bids}}",
+      "startingAt": "Starting at"
+    },
+    "create": {
+      "title": "Add New Item",
+      "subtitle": "Add an item to your auction",
+      "itemName": "Item Name",
+      "itemNamePlaceholder": "e.g., Vintage Watch",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe your item...",
+      "images": "Images",
+      "startingBid": "Starting Bid",
+      "minBidIncrement": "Minimum Bid Increment",
+      "currency": "Currency",
+      "endDate": "End Date (optional)",
+      "submitButton": "Add Item",
+      "submitting": "Adding..."
+    },
+    "gallery": {
+      "imageOf": "Image {current} of {total}",
+      "previousImage": "Previous image",
+      "nextImage": "Next image",
+      "thumbnail": "Thumbnail {index}"
+    },
+    "sidebar": {
+      "title": "Items in Auction",
+      "show": "Show items sidebar",
+      "hide": "Hide items sidebar"
+    },
+    "history": {
+      "title": "Bid History",
+      "noBids": "No bids yet. Be the first to bid!",
+      "anonymous": "Anonymous",
+      "you": "You",
+      "highest": "Highest"
+    },
+    "status": {
+      "active": "Active",
+      "ended": "Ended",
+      "winning": "Winning",
+      "outbid": "Outbid",
+      "won": "Won",
+      "lost": "Lost"
+    }
+  }
+}

@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import packageJson from "../../../package.json";
 
 export function AppFooter() {
+  const t = useTranslations();
   const { data: session } = useSession();
   const currentYear = new Date().getFullYear();
 
@@ -14,7 +16,7 @@ export function AppFooter() {
       <div className="container mx-auto flex items-center justify-between text-xs text-base-content/50">
         <div className="flex items-center gap-2">
           <span className="font-mono">v{packageJson.version}</span>
-          <span>© {currentYear} Auktiva</span>
+          <span>© {currentYear} {t("common.appName")}</span>
         </div>
         <div className="flex items-center gap-3">
           <Link
@@ -23,7 +25,7 @@ export function AppFooter() {
             rel="noopener noreferrer"
             className="hover:text-primary transition-colors"
           >
-            Docs
+            {t("nav.docs")}
           </Link>
           <Link
             href="https://github.com/thomsa/auktiva/issues/new/choose"
@@ -31,7 +33,7 @@ export function AppFooter() {
             rel="noopener noreferrer"
             className="hover:text-primary transition-colors"
           >
-            Report Issue
+            {t("footer.reportIssue")}
           </Link>
         </div>
       </div>

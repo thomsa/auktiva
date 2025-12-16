@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { GetStaticProps } from "next";
 import { SEO, pageSEO } from "@/components/common";
+import { getMessages, Locale } from "@/i18n";
 
 export default function PrivacyPage() {
   return (
@@ -329,3 +331,12 @@ export default function PrivacyPage() {
     </>
   );
 }
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  const messages = await getMessages(locale as Locale);
+  return {
+    props: {
+      messages,
+    },
+  };
+};

@@ -1,0 +1,28 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back, {name}!",
+    "createAuction": "Create Auction",
+    "stats": {
+      "totalBids": "Total Bids",
+      "totalBidAmount": "Total Bid Amount",
+      "itemsBidOn": "Items Bid On",
+      "currentlyWinning": "Currently Winning"
+    },
+    "activeBids": {
+      "title": "Your Active Bids"
+    },
+    "auctions": {
+      "title": "Auctions you have joined"
+    },
+    "empty": {
+      "title": "No auctions yet",
+      "description": "You haven't joined or created any auctions yet. Create your first auction or join one using an invite link.",
+      "createFirst": "Create Your First Auction"
+    },
+    "seo": {
+      "title": "Dashboard",
+      "description": "Manage your auctions and bids"
+    }
+  }
+}

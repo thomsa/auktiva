@@ -1,6 +1,8 @@
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { getMessages } from "@/i18n/getMessages";
+import { Locale } from "@/i18n/config";
 import {
   SEO,
   SITE_URL,
@@ -108,8 +110,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  const messages = await getMessages(context.locale as Locale);
+
   // Show landing page for non-authenticated users
   return {
-    props: {},
+    props: {
+      messages,
+    },
   };
 };

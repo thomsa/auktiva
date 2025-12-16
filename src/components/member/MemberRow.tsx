@@ -1,4 +1,6 @@
+import { useTranslations } from "next-intl";
 import { ROLE_COLORS, ROLE_OPTIONS } from "@/utils/auction-helpers";
+import { useFormatters } from "@/i18n";
 
 interface MemberRowProps {
   member: {
@@ -30,6 +32,8 @@ export function MemberRow({
   onRoleChange,
   onRemove,
 }: MemberRowProps) {
+  const t = useTranslations();
+  const { formatShortDate } = useFormatters();
   const isCurrentUser = member.user.id === currentUserId;
   const canModify = isAdmin && !isCurrentUser && member.role !== "OWNER";
 
@@ -46,9 +50,9 @@ export function MemberRow({
           </div>
           <div>
             <div className="font-bold">
-              {member.user.name || "No name"}
+              {member.user.name || t("member.noName")}
               {isCurrentUser && (
-                <span className="badge badge-sm ml-2">You</span>
+                <span className="badge badge-sm ml-2">{t("member.you")}</span>
               )}
             </div>
             <div className="text-sm text-base-content/60">
@@ -80,7 +84,7 @@ export function MemberRow({
         )}
       </td>
       <td className="text-sm text-base-content/60">
-        {new Date(member.joinedAt).toLocaleDateString()}
+        {formatShortDate(member.joinedAt)}
       </td>
       <td className="text-sm text-base-content/60">
         {member.invitedBy
@@ -96,7 +100,7 @@ export function MemberRow({
               }
               disabled={isLoading}
               className="btn btn-ghost btn-sm text-error"
-              title="Remove member"
+              title={t("member.remove")}
             >
               {isLoading ? (
                 <span className="loading loading-spinner loading-sm"></span>

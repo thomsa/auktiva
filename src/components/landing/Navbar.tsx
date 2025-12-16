@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/components/providers/theme-provider";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { useTranslations } from "next-intl";
 
 export function Navbar() {
+  const t = useTranslations("nav");
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -19,6 +23,10 @@ export function Navbar() {
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -43,19 +51,20 @@ export function Navbar() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-6 text-sm font-medium text-base-content/80">
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-4">
+          <div className="flex items-center gap-6 text-sm font-medium text-base-content/80">
             <Link
               href="#features"
               className="hover:text-primary transition-colors"
             >
-              Features
+              {t("features")}
             </Link>
             <Link
               href="#how-it-works"
               className="hover:text-primary transition-colors"
             >
-              How it Works
+              {t("howItWorks")}
             </Link>
             <a
               href="https://docs.auktiva.org"
@@ -63,11 +72,12 @@ export function Navbar() {
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors"
             >
-              Docs
+              {t("docs")}
             </a>
           </div>
 
           <div className="flex items-center gap-3 pl-4 border-l border-base-content/10">
+            <LanguageSwitcher compact />
             {mounted && (
               <button
                 onClick={toggleTheme}
@@ -85,17 +95,91 @@ export function Navbar() {
               href="/login"
               className="btn btn-ghost btn-sm hover:bg-base-content/5"
             >
-              Sign In
+              {t("signIn")}
             </Link>
             <Link
               href="/register"
               className="btn btn-primary btn-sm shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:-translate-y-0.5"
             >
-              Get Started
+              {t("getStarted")}
             </Link>
           </div>
         </div>
+
+        {/* Mobile Menu Button */}
+        <div className="flex md:hidden items-center gap-2">
+          <LanguageSwitcher compact />
+          {mounted && (
+            <button
+              onClick={toggleTheme}
+              className="btn btn-ghost btn-sm btn-circle"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <span className="icon-[tabler--sun] size-5"></span>
+              ) : (
+                <span className="icon-[tabler--moon] size-5"></span>
+              )}
+            </button>
+          )}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="btn btn-ghost btn-sm btn-circle"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? (
+              <span className="icon-[tabler--x] size-6"></span>
+            ) : (
+              <span className="icon-[tabler--menu-2] size-6"></span>
+            )}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-base-100/95 backdrop-blur-lg border-b border-base-content/10 shadow-lg">
+          <div className="container mx-auto px-4 py-4 flex flex-col gap-2">
+            <Link
+              href="#features"
+              onClick={closeMobileMenu}
+              className="btn btn-ghost justify-start"
+            >
+              {t("features")}
+            </Link>
+            <Link
+              href="#how-it-works"
+              onClick={closeMobileMenu}
+              className="btn btn-ghost justify-start"
+            >
+              {t("howItWorks")}
+            </Link>
+            <a
+              href="https://docs.auktiva.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost justify-start"
+            >
+              {t("docs")}
+            </a>
+            <div className="divider my-1"></div>
+            <Link
+              href="/login"
+              onClick={closeMobileMenu}
+              className="btn btn-ghost justify-start"
+            >
+              {t("signIn")}
+            </Link>
+            <Link
+              href="/register"
+              onClick={closeMobileMenu}
+              className="btn btn-primary"
+            >
+              {t("getStarted")}
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout, EmptyState } from "@/components/common";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
 import { formatDate } from "@/utils/formatters";
+import { getMessages, Locale } from "@/i18n";
 
 interface BidHistory {
   id: string;
@@ -348,6 +349,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         winningBids: winningBids.length,
         winningTotals,
       },
+      messages: await getMessages(context.locale as Locale),
     },
   };
 };

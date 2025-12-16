@@ -1,0 +1,56 @@
+{
+  "errors": {
+    "generic": "An error occurred. Please try again.",
+    "somethingWentWrong": "Something went wrong. Please try again.",
+    "networkError": "Network error. Please check your connection.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "notFound": "The requested resource was not found.",
+    "forbidden": "You don't have permission to access this resource.",
+    "validation": {
+      "required": "This field is required",
+      "invalidEmail": "Please enter a valid email address",
+      "passwordTooShort": "Password must be at least {min} characters",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "invalidAmount": "Please enter a valid amount",
+      "minBid": "Minimum bid is {symbol}{amount}"
+    },
+    "auth": {
+      "invalidCredentials": "Invalid email or password",
+      "emailInUse": "This email is already registered",
+      "accountNotFound": "No account found with this email",
+      "invalidToken": "Invalid or expired token",
+      "sessionExpired": "Your session has expired. Please sign in again."
+    },
+    "auction": {
+      "createFailed": "Failed to create auction",
+      "updateFailed": "Failed to update auction",
+      "deleteFailed": "Failed to delete auction",
+      "notFound": "Auction not found",
+      "alreadyEnded": "This auction has already ended",
+      "notMember": "You are not a member of this auction"
+    },
+    "item": {
+      "createFailed": "Failed to create item",
+      "updateFailed": "Failed to update item",
+      "deleteFailed": "Failed to delete item",
+      "notFound": "Item not found"
+    },
+    "bid": {
+      "placeFailed": "Failed to place bid",
+      "tooLow": "Your bid is too low",
+      "auctionEnded": "This auction has ended",
+      "itemEnded": "Bidding for this item has ended",
+      "ownItem": "You cannot bid on your own item"
+    },
+    "invite": {
+      "sendFailed": "Failed to send invitation",
+      "invalidInvite": "Invalid or expired invitation",
+      "alreadyMember": "You are already a member of this auction"
+    },
+    "profile": {
+      "updateFailed": "Failed to update profile",
+      "passwordChangeFailed": "Failed to change password",
+      "incorrectPassword": "Current password is incorrect"
+    }
+  }
+}

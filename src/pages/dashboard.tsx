@@ -3,6 +3,7 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
+import { getMessages, Locale } from "@/i18n";
 import { prisma } from "@/lib/prisma";
 import { PageLayout, EmptyState, SEO, pageSEO } from "@/components/common";
 import { AuctionCard } from "@/components/auction";
@@ -434,6 +435,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     currentlyWinning,
   };
 
+  const messages = await getMessages(context.locale as Locale);
+
   return {
     props: {
       user: {
@@ -444,6 +447,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       auctions,
       bidItems,
       bidStats,
+      messages,
     },
   };
 };

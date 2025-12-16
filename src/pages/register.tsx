@@ -7,6 +7,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { authOptions } from "@/lib/auth";
 import { AlertMessage, SEO, pageSEO } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { getMessages, Locale } from "@/i18n";
 
 const LazyReCAPTCHA = lazy(() => import("react-google-recaptcha"));
 
@@ -374,10 +375,12 @@ export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async (
 
   // Pass reCAPTCHA site key to client (null if not configured)
   const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || null;
+  const messages = await getMessages(context.locale as Locale);
 
   return {
     props: {
       recaptchaSiteKey,
+      messages,
     },
   };
 };

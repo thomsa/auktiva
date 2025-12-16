@@ -1,0 +1,14 @@
+{
+  "legal": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated",
+      "description": "Your privacy is important to us"
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "lastUpdated": "Last updated",
+      "description": "Please read these terms carefully"
+    }
+  }
+}

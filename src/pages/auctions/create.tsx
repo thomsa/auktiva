@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { PageLayout, BackLink, AlertMessage } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { getMessages, Locale } from "@/i18n";
 
 interface CreateAuctionProps {
   user: {
@@ -296,6 +297,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
+  const messages = await getMessages(context.locale as Locale);
+
   return {
     props: {
       user: {
@@ -304,6 +307,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         email: session.user.email || "",
       },
       allowOpenAuctions: process.env.ALLOW_OPEN_AUCTIONS === "true",
+      messages,
     },
   };
 };

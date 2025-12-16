@@ -1,0 +1,85 @@
+{
+  "landing": {
+    "hero": {
+      "badge": "{version} is now live",
+      "title": "Auctions made",
+      "titleHighlight": "simple & social",
+      "description": "The open-source platform for modern fundraising. Host private auctions, invite your community, and manage everything in one place.",
+      "startAuction": "Start Your Auction",
+      "viewOnGithub": "View on GitHub",
+      "demoAlt": "Interactive Demo Preview",
+      "bidNow": "Bid Now"
+    },
+    "features": {
+      "sectionTitle": "Everything you need for a",
+      "sectionTitleHighlight": "perfect auction",
+      "sectionDescription": "Powerful features built for organizers and bidders alike.",
+      "realTimeBidding": {
+        "title": "Real-time Bidding",
+        "description": "Watch bids happen instantly with our WebSocket-powered live updates. No refreshing required."
+      },
+      "privateSecure": {
+        "title": "Private & Secure",
+        "description": "Host invite-only auctions with role-based access control. Your data stays private."
+      },
+      "multiCurrency": {
+        "title": "Multi-Currency",
+        "description": "Support for global events with automatic currency formatting for USD, EUR, GBP, and more."
+      },
+      "smartNotifications": {
+        "title": "Smart Notifications",
+        "description": "Get notified immediately when you're outbid or when watched items are ending."
+      },
+      "richMedia": {
+        "title": "Rich Media",
+        "description": "Showcase items with high-resolution image galleries and detailed descriptions."
+      },
+      "offlineExchange": {
+        "title": "Offline Exchange",
+        "description": "Perfect for charity events. We handle the bidding, you handle the item exchange offline."
+      }
+    },
+    "howItWorks": {
+      "sectionTitle": "From setup to",
+      "sectionTitleHighlight": "successful fundraiser",
+      "sectionDescription": "Four simple steps to run your charity auction. Focus on your cause, we'll handle the bidding.",
+      "step1": {
+        "title": "Create Auction",
+        "description": "Set up your event in minutes with customizable details and branding."
+      },
+      "step2": {
+        "title": "Invite Guests",
+        "description": "Share a private link or send email invitations to your participants."
+      },
+      "step3": {
+        "title": "Live Bidding",
+        "description": "Guests place bids in real-time from their phones. Excitement builds!"
+      },
+      "step4": {
+        "title": "Wrap Up",
+        "description": "Handle exchange and settlement offline, your way."
+      },
+      "step5": {
+        "title": "Celebrate",
+        "description": "Celebrate your success with your contributors and raise awareness for your cause!"
+      },
+      "newBid": "New Bid!"
+    },
+    "impact": {
+      "sectionTitle": "Your Impact,",
+      "sectionTitleHighlight": "Collected",
+      "sectionDescription": "Every contribution counts. Watch how individual donations come together to fill the jar of opportunity.",
+      "totalValue": "Total Value",
+      "itemsCollected": "Items Collected"
+    },
+    "cta": {
+      "title": "Ready to run your next fundraiser?",
+      "description": "Join organizers using Auktiva to run charity auctions. Open source, free, and built for communities.",
+      "getStarted": "Get Started",
+      "freeForever": "It's free and will always be free",
+      "selfHostTitle": "Prefer to self-host?",
+      "selfHostDescription": "Run Auktiva on your own server with full control over your data. One command to get started.",
+      "seeDocumentation": "See the <link>developer documentation</link> for more details."
+    }
+  }
+}

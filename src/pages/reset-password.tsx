@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { AlertMessage, SEO } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { getMessages, Locale } from "@/i18n";
 
 interface ResetPasswordPageProps {
   token: string | null;
@@ -291,10 +292,12 @@ export const getServerSideProps: GetServerSideProps<
   }
 
   const token = (context.query.token as string) || null;
+  const messages = await getMessages(context.locale as Locale);
 
   return {
     props: {
       token,
+      messages,
     },
   };
 };

@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { useTranslations } from "next-intl";
 
 export interface SortOption {
   value: string;
@@ -22,6 +23,7 @@ export function SortDropdown({
   fullWidth = false,
   dropdownEnd = true,
 }: SortDropdownProps) {
+  const t = useTranslations("sort");
   const router = useRouter();
 
   const handleSortChange = (value: string) => {
@@ -36,8 +38,8 @@ export function SortDropdown({
     );
   };
 
-  const currentLabel =
-    options.find((o) => o.value === currentSort)?.label || options[0]?.label;
+  const currentOption = options.find((o) => o.value === currentSort) || options[0];
+  const currentLabel = currentOption ? t(currentOption.label) : "";
 
   return (
     <div
@@ -63,7 +65,7 @@ export function SortDropdown({
               onClick={() => handleSortChange(option.value)}
               className={currentSort === option.value ? "active" : ""}
             >
-              {option.label}
+              {t(option.label)}
               {currentSort === option.value && (
                 <span className="icon-[tabler--check] size-4"></span>
               )}
@@ -75,38 +77,38 @@ export function SortDropdown({
   );
 }
 
-// Predefined sort options for reuse
+// Sort option keys for translation lookup
 export const itemSortOptions: SortOption[] = [
-  { value: "date-desc", label: "Newest First" },
-  { value: "date-asc", label: "Oldest First" },
-  { value: "price-desc", label: "Price: High to Low" },
-  { value: "price-asc", label: "Price: Low to High" },
-  { value: "name-asc", label: "Name: A to Z" },
-  { value: "name-desc", label: "Name: Z to A" },
-  { value: "end-asc", label: "Ending Soon" },
-  { value: "end-desc", label: "Ending Later" },
-  { value: "bids-desc", label: "Most Bids" },
-  { value: "bids-asc", label: "Least Bids" },
+  { value: "date-desc", label: "newestFirst" },
+  { value: "date-asc", label: "oldestFirst" },
+  { value: "price-desc", label: "priceHighToLow" },
+  { value: "price-asc", label: "priceLowToHigh" },
+  { value: "name-asc", label: "nameAZ" },
+  { value: "name-desc", label: "nameZA" },
+  { value: "end-asc", label: "endingSoon" },
+  { value: "end-desc", label: "endingLater" },
+  { value: "bids-desc", label: "mostBids" },
+  { value: "bids-asc", label: "leastBids" },
 ];
 
 export const auctionSortOptions: SortOption[] = [
-  { value: "date-desc", label: "Newest First" },
-  { value: "date-asc", label: "Oldest First" },
-  { value: "name-asc", label: "Name: A to Z" },
-  { value: "name-desc", label: "Name: Z to A" },
-  { value: "end-asc", label: "Ending Soon" },
-  { value: "end-desc", label: "Ending Later" },
+  { value: "date-desc", label: "newestFirst" },
+  { value: "date-asc", label: "oldestFirst" },
+  { value: "name-asc", label: "nameAZ" },
+  { value: "name-desc", label: "nameZA" },
+  { value: "end-asc", label: "endingSoon" },
+  { value: "end-desc", label: "endingLater" },
 ];
 
 export const sidebarItemSortOptions: SortOption[] = [
-  { value: "date-desc", label: "Newest First" },
-  { value: "date-asc", label: "Oldest First" },
-  { value: "price-desc", label: "Price: High to Low" },
-  { value: "price-asc", label: "Price: Low to High" },
-  { value: "name-asc", label: "Name: A to Z" },
-  { value: "name-desc", label: "Name: Z to A" },
-  { value: "end-asc", label: "Ending Soon" },
-  { value: "end-desc", label: "Ending Later" },
+  { value: "date-desc", label: "newestFirst" },
+  { value: "date-asc", label: "oldestFirst" },
+  { value: "price-desc", label: "priceHighToLow" },
+  { value: "price-asc", label: "priceLowToHigh" },
+  { value: "name-asc", label: "nameAZ" },
+  { value: "name-desc", label: "nameZA" },
+  { value: "end-asc", label: "endingSoon" },
+  { value: "end-desc", label: "endingLater" },
 ];
 
 // Sort helper functions

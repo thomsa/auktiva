@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 interface StatsCardProps {
   icon: string;
   iconColor:
@@ -67,6 +69,7 @@ export function CurrencyStatsCard({
   label,
   decimals = 0,
 }: CurrencyStatsCardProps) {
+  const t = useTranslations("stats");
   const colors = colorClasses[iconColor];
 
   return (
@@ -89,14 +92,14 @@ export function CurrencyStatsCard({
                       tabIndex={0}
                       className="text-xs text-base-content/60 cursor-help underline decoration-dotted"
                     >
-                      +{currencyTotals.length - 1} more
+                      {t("more", { count: currencyTotals.length - 1 })}
                     </span>
                     <div
                       tabIndex={0}
                       className="dropdown-content z-10 bg-base-100 shadow-lg rounded-lg p-3 w-48 mb-2"
                     >
                       <div className="text-xs font-semibold mb-2">
-                        All Currencies
+                        {t("allCurrencies")}
                       </div>
                       <div className="space-y-1">
                         {currencyTotals.map((ct) => (

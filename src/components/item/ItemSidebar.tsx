@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { isItemEnded } from "@/utils/auction-helpers";
 import {
   SortDropdown,
@@ -34,6 +35,8 @@ export function ItemSidebar({
   currentSort,
   onToggle,
 }: ItemSidebarProps) {
+  const t = useTranslations();
+
   return (
     <>
       {/* Sidebar */}
@@ -45,7 +48,7 @@ export function ItemSidebar({
         <div className="h-[calc(100vh-4rem)] overflow-y-auto sticky top-16">
           <div className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="font-semibold text-lg">Items in Auction</h2>
+              <h2 className="font-semibold text-lg">{t("item.sidebar.title")}</h2>
               <span className="badge badge-ghost">{items.length}</span>
             </div>
             <div className="sticky top-0 bg-base-100 pb-2 -mx-4 px-4 z-10">
@@ -116,7 +119,7 @@ export function ItemSidebar({
         onClick={onToggle}
         className="hidden lg:flex fixed left-0 top-1/2 -translate-y-1/2 z-10 bg-base-100 border border-base-300 rounded-r-lg p-2 shadow-md hover:bg-base-200 transition-all"
         style={{ left: isCollapsed ? 0 : "calc(20rem - 1px)" }}
-        aria-label={isCollapsed ? "Show items sidebar" : "Hide items sidebar"}
+        aria-label={isCollapsed ? t("item.sidebar.show") : t("item.sidebar.hide")}
       >
         <span
           className={`icon-[tabler--chevron-${isCollapsed ? "right" : "left"}] size-5`}

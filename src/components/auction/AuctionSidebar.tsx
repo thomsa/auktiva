@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { formatShortDate } from "@/utils/formatters";
+import { useTranslations } from "next-intl";
 import { isAuctionEnded } from "@/utils/auction-helpers";
+import { useFormatters } from "@/i18n";
 
 interface AuctionSidebarProps {
   auction: {
@@ -27,6 +28,8 @@ interface AuctionSidebarProps {
 }
 
 export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
+  const t = useTranslations();
+  const { formatShortDate } = useFormatters();
   const ended = isAuctionEnded(auction.endDate);
   const isOwner = membership.role === "OWNER";
   const isAdmin = membership.role === "ADMIN" || isOwner;
@@ -60,7 +63,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
             </span>
             {ended && (
               <span className="badge badge-error badge-sm gap-1">
-                <span className="icon-[tabler--flag-filled] size-3"></span>Ended
+                <span className="icon-[tabler--flag-filled] size-3"></span>{t("auction.card.ended")}
               </span>
             )}
           </div>
@@ -75,7 +78,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
             <div className="flex justify-between items-center text-sm">
               <span className="text-base-content/60 flex items-center gap-2">
                 <span className="icon-[tabler--package] size-4"></span>
-                Items
+                {t("auction.sidebar.items")}
               </span>
               <span className="font-bold text-base-content">
                 {auction._count.items}
@@ -84,7 +87,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
             <div className="flex justify-between items-center text-sm">
               <span className="text-base-content/60 flex items-center gap-2">
                 <span className="icon-[tabler--users] size-4"></span>
-                Members
+                {t("auction.sidebar.members")}
               </span>
               <span className="font-bold text-base-content">
                 {auction._count.members}
@@ -94,7 +97,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
               <div className="flex justify-between items-center text-sm">
                 <span className="text-base-content/60 flex items-center gap-2">
                   <span className="icon-[tabler--clock] size-4"></span>
-                  Ends
+                  {t("auction.card.ends")}
                 </span>
                 <span
                   className={`font-medium ${ended ? "text-error" : "text-primary"}`}
@@ -107,7 +110,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
 
           <div className="text-xs text-base-content/40 text-center flex items-center justify-center gap-1">
             <span className="icon-[tabler--user] size-3"></span>
-            Hosted by{" "}
+            {t("auction.sidebar.hostedBy")}{" "}
             <span className="font-medium text-base-content/60">
               {auction.creator.name || auction.creator.email}
             </span>
@@ -120,7 +123,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
         <div className="card-body p-5">
           <h3 className="font-bold text-sm uppercase tracking-wider text-base-content/40 mb-3 flex items-center gap-2">
             <span className="icon-[tabler--bolt] size-4"></span>
-            Quick Actions
+            {t("auction.sidebar.quickActions")}
           </h3>
           <div className="space-y-2">
             {canCreateItems && (
@@ -129,7 +132,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                 className="btn btn-primary btn-sm btn-block justify-start shadow-sm shadow-primary/20"
               >
                 <span className="icon-[tabler--plus] size-4"></span>
-                Add Item
+                {t("auction.sidebar.addItem")}
               </Link>
             )}
             {canInvite && (
@@ -138,7 +141,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                 className="btn btn-outline btn-sm btn-block justify-start border-base-content/10 hover:bg-base-200 hover:border-base-content/20 text-base-content"
               >
                 <span className="icon-[tabler--user-plus] size-4"></span>
-                Invite People
+                {t("auction.sidebar.invitePeople")}
               </Link>
             )}
             <Link
@@ -146,7 +149,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
               className="btn btn-ghost btn-sm btn-block justify-start hover:bg-base-content/5"
             >
               <span className="icon-[tabler--trophy] size-4"></span>
-              View Results
+              {t("auction.sidebar.results")}
             </Link>
           </div>
         </div>
@@ -158,7 +161,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
           <div className="card-body p-5">
             <h3 className="font-bold text-sm uppercase tracking-wider text-base-content/40 mb-3 flex items-center gap-2">
               <span className="icon-[tabler--settings] size-4"></span>
-              Manage
+              {t("auction.sidebar.manage")}
             </h3>
             <div className="space-y-2">
               <Link
@@ -166,7 +169,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                 className="btn btn-ghost btn-sm btn-block justify-start hover:bg-base-content/5"
               >
                 <span className="icon-[tabler--users] size-4"></span>
-                Manage Members
+                {t("auction.sidebar.manageMembers")}
               </Link>
               {isOwner && (
                 <Link
@@ -174,7 +177,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                   className="btn btn-ghost btn-sm btn-block justify-start hover:bg-base-content/5"
                 >
                   <span className="icon-[tabler--adjustments-horizontal] size-4"></span>
-                  Auction Settings
+                  {t("auction.sidebar.settings")}
                 </Link>
               )}
             </div>
@@ -183,13 +186,13 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
 
             <div className="space-y-2.5">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-base-content/50">Join Mode</span>
+                <span className="text-base-content/50">{t("auction.sidebar.joinMode")}</span>
                 <span className="badge badge-ghost badge-xs text-[10px] uppercase font-bold tracking-wide">
                   {auction.joinMode.replace("_", " ")}
                 </span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-base-content/50">Visibility</span>
+                <span className="text-base-content/50">{t("auction.sidebar.visibility")}</span>
                 <span className="badge badge-ghost badge-xs text-[10px] uppercase font-bold tracking-wide">
                   {auction.bidderVisibility.replace("_", " ")}
                 </span>

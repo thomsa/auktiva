@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useImageGallery } from "@/hooks/ui";
 
 interface ItemImage {
@@ -11,6 +12,7 @@ interface ItemGalleryProps {
 }
 
 export function ItemGallery({ images, itemName }: ItemGalleryProps) {
+  const t = useTranslations("item.gallery");
   const { selectedIndex, setSelectedIndex, next, previous } = useImageGallery(
     images.length,
   );
@@ -33,14 +35,14 @@ export function ItemGallery({ images, itemName }: ItemGalleryProps) {
             <button
               onClick={previous}
               className="absolute left-2 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-black/50 hover:bg-black/70 border-none text-white"
-              aria-label="Previous image"
+              aria-label={t("previousImage")}
             >
               <span className="icon-[tabler--chevron-left] size-5"></span>
             </button>
             <button
               onClick={next}
               className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-black/50 hover:bg-black/70 border-none text-white"
-              aria-label="Next image"
+              aria-label={t("nextImage")}
             >
               <span className="icon-[tabler--chevron-right] size-5"></span>
             </button>
@@ -67,7 +69,7 @@ export function ItemGallery({ images, itemName }: ItemGalleryProps) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={img.publicUrl}
-                alt={`Thumbnail ${index + 1}`}
+                alt={t("thumbnail", { index: index + 1 })}
                 className="w-full h-full object-cover"
               />
             </button>

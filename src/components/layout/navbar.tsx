@@ -2,8 +2,10 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useTheme } from "@/components/providers/theme-provider";
 import { NotificationBell } from "@/components/notifications/notification-bell";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import packageJson from "../../../package.json";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface NavbarProps {
   user: {
@@ -14,12 +16,13 @@ interface NavbarProps {
 }
 
 export function Navbar({ user }: NavbarProps) {
+  const t = useTranslations("nav");
   const { setTheme, resolvedTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     setMounted(true);
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -56,24 +59,40 @@ export function Navbar({ user }: NavbarProps) {
               href="/dashboard"
               className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10"
             >
-              Dashboard
+              {t("dashboard")}
             </Link>
             <Link
               href="/auctions/create"
               className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10"
             >
-              Create Auction
+              {t("createAuction")}
             </Link>
             <Link
               href="/history"
               className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10"
             >
-              My Bids
+              {t("myBids")}
             </Link>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden btn btn-ghost btn-sm btn-circle"
+          aria-label="Toggle menu"
+        >
+          {mobileMenuOpen ? (
+            <span className="icon-[tabler--x] size-6"></span>
+          ) : (
+            <span className="icon-[tabler--menu-2] size-6"></span>
+          )}
+        </button>
+
+        <div className="hidden md:flex items-center gap-3">
+          {/* Language Switcher */}
+          <LanguageSwitcher compact />
+
           {/* Notifications */}
           <div className="btn btn-ghost btn-circle btn-sm hover:bg-base-content/5">
             <NotificationBell />
@@ -130,7 +149,7 @@ export function Navbar({ user }: NavbarProps) {
             >
               <li className="menu-title px-4 py-3 border-b border-base-content/5 mb-2">
                 <span className="text-xs font-semibold text-primary block mb-0.5">
-                  Signed in as
+                  {t("signedInAs")}
                 </span>
                 <span className="text-sm font-normal text-base-content/80 truncate block">
                   {user.email}
@@ -142,7 +161,7 @@ export function Navbar({ user }: NavbarProps) {
                   className="active:bg-primary/10 active:text-primary"
                 >
                   <span className="icon-[tabler--layout-dashboard] size-4 opacity-70"></span>
-                  Dashboard
+                  {t("dashboard")}
                 </Link>
               </li>
               <li>
@@ -151,7 +170,7 @@ export function Navbar({ user }: NavbarProps) {
                   className="active:bg-primary/10 active:text-primary"
                 >
                   <span className="icon-[tabler--history] size-4 opacity-70"></span>
-                  Bid History
+                  {t("bidHistory")}
                 </Link>
               </li>
               <li>
@@ -160,7 +179,7 @@ export function Navbar({ user }: NavbarProps) {
                   className="active:bg-primary/10 active:text-primary"
                 >
                   <span className="icon-[tabler--settings] size-4 opacity-70"></span>
-                  Settings
+                  {t("settings")}
                 </Link>
               </li>
               <div className="divider my-1 opacity-50"></div>
@@ -172,7 +191,7 @@ export function Navbar({ user }: NavbarProps) {
                   className="active:bg-primary/10 active:text-primary"
                 >
                   <span className="icon-[tabler--book] size-4 opacity-70"></span>
-                  Documentation
+                  {t("documentation")}
                 </a>
               </li>
               <li>
@@ -183,7 +202,7 @@ export function Navbar({ user }: NavbarProps) {
                   className="active:bg-primary/10 active:text-primary"
                 >
                   <span className="icon-[tabler--message-report] size-4 opacity-70"></span>
-                  Feedback
+                  {t("feedback")}
                 </a>
               </li>
               <div className="divider my-1 opacity-50"></div>
@@ -193,7 +212,7 @@ export function Navbar({ user }: NavbarProps) {
                   className="text-error hover:bg-error/10 hover:text-error active:bg-error/20"
                 >
                   <span className="icon-[tabler--logout] size-4"></span>
-                  Sign out
+                  {t("signOut")}
                 </button>
               </li>
               <li className="menu-title mt-1 text-center">
@@ -205,6 +224,71 @@ export function Navbar({ user }: NavbarProps) {
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-base-100/95 backdrop-blur-lg border-b border-base-content/10 shadow-lg z-40">
+          <div className="container mx-auto px-4 py-4 flex flex-col gap-2">
+            <Link
+              href="/dashboard"
+              onClick={() => setMobileMenuOpen(false)}
+              className="btn btn-ghost justify-start"
+            >
+              <span className="icon-[tabler--layout-dashboard] size-5"></span>
+              {t("dashboard")}
+            </Link>
+            <Link
+              href="/auctions/create"
+              onClick={() => setMobileMenuOpen(false)}
+              className="btn btn-ghost justify-start"
+            >
+              <span className="icon-[tabler--plus] size-5"></span>
+              {t("createAuction")}
+            </Link>
+            <Link
+              href="/history"
+              onClick={() => setMobileMenuOpen(false)}
+              className="btn btn-ghost justify-start"
+            >
+              <span className="icon-[tabler--history] size-5"></span>
+              {t("myBids")}
+            </Link>
+            <Link
+              href="/settings"
+              onClick={() => setMobileMenuOpen(false)}
+              className="btn btn-ghost justify-start"
+            >
+              <span className="icon-[tabler--settings] size-5"></span>
+              {t("settings")}
+            </Link>
+            <div className="divider my-1"></div>
+            <div className="flex items-center justify-between px-4 py-2">
+              <LanguageSwitcher />
+              {mounted && (
+                <button
+                  onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}
+                  className="btn btn-ghost btn-sm btn-circle"
+                  aria-label="Toggle theme"
+                >
+                  {resolvedTheme === "light" ? (
+                    <span className="icon-[tabler--moon] size-5"></span>
+                  ) : (
+                    <span className="icon-[tabler--sun] size-5"></span>
+                  )}
+                </button>
+              )}
+            </div>
+            <div className="divider my-1"></div>
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="btn btn-ghost justify-start text-error"
+            >
+              <span className="icon-[tabler--logout] size-5"></span>
+              {t("signOut")}
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

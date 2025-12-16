@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function CallToAction() {
+  const t = useTranslations("landing.cta");
   const [copied, setCopied] = useState(false);
   const installCommand =
     "curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install.sh | bash";
@@ -27,11 +29,10 @@ export function CallToAction() {
 
           <div className="relative z-10 max-w-3xl mx-auto">
             <h2 className="text-4xl md:text-6xl font-extrabold mb-8 tracking-tight">
-              Ready to run your <br /> next fundraiser?
+              {t("title")}
             </h2>
             <p className="text-xl opacity-90 mb-12 max-w-2xl mx-auto font-light">
-              Join organizers using Auktiva to run charity auctions. Open
-              source, free, and built for communities.
+              {t("description")}
             </p>
 
             <div className="flex flex-col items-center gap-2">
@@ -39,11 +40,11 @@ export function CallToAction() {
                 href="/register"
                 className="btn btn-lg bg-white text-primary hover:bg-white/90 border-none shadow-xl h-14 px-8 rounded-full"
               >
-                Get Started{" "}
+                {t("getStarted")}{" "}
                 <span className="icon-[tabler--rocket] size-6"></span>
               </Link>
               <p className="text-sm opacity-70">
-                It&apos;s free and will always be free
+                {t("freeForever")}
               </p>
             </div>
           </div>
@@ -52,11 +53,10 @@ export function CallToAction() {
         {/* Self-Host Section */}
         <div className="max-w-3xl mx-auto text-center">
           <h3 className="text-2xl md:text-3xl font-bold mb-4">
-            Prefer to self-host?
+            {t("selfHostTitle")}
           </h3>
           <p className="text-base-content/60 mb-8">
-            Run Auktiva on your own server with full control over your data. One
-            command to get started.
+            {t("selfHostDescription")}
           </p>
 
           {/* Terminal mockup */}
@@ -80,15 +80,17 @@ export function CallToAction() {
           </div>
 
           <p className="text-sm text-base-content/50 mt-4">
-            See the{" "}
-            <Link
-              href="https://docs.auktiva.org/developers"
-              className="link link-primary"
-              target="_blank"
-            >
-              developer documentation
-            </Link>{" "}
-            for more details.
+            {t.rich("seeDocumentation", {
+              link: (chunks) => (
+                <Link
+                  href="https://docs.auktiva.org/developers"
+                  className="link link-primary"
+                  target="_blank"
+                >
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
         </div>
       </div>

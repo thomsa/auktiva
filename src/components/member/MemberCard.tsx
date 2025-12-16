@@ -1,4 +1,6 @@
+import { useTranslations } from "next-intl";
 import { ROLE_COLORS, ROLE_OPTIONS } from "@/utils/auction-helpers";
+import { useFormatters } from "@/i18n";
 
 interface MemberCardProps {
   member: {
@@ -26,6 +28,8 @@ export function MemberCard({
   onRoleChange,
   onRemove,
 }: MemberCardProps) {
+  const t = useTranslations();
+  const { formatShortDate } = useFormatters();
   const isCurrentUser = member.user.id === currentUserId;
   const canModify = isAdmin && !isCurrentUser && member.role !== "OWNER";
 
@@ -46,9 +50,9 @@ export function MemberCard({
           </div>
           <div>
             <div className="font-bold text-sm">
-              {member.user.name || "No name"}
+              {member.user.name || t("member.noName")}
               {isCurrentUser && (
-                <span className="badge badge-xs ml-2">You</span>
+                <span className="badge badge-xs ml-2">{t("member.you")}</span>
               )}
             </div>
             <div className="text-xs text-base-content/60 break-all">
@@ -63,7 +67,7 @@ export function MemberCard({
             }
             disabled={isLoading}
             className="btn btn-ghost btn-xs text-error"
-            title="Remove member"
+            title={t("member.remove")}
           >
             {isLoading ? (
               <span className="loading loading-spinner loading-xs"></span>
@@ -95,7 +99,7 @@ export function MemberCard({
           </span>
         )}
         <span className="text-xs text-base-content/60">
-          Joined {new Date(member.joinedAt).toLocaleDateString()}
+          {t("member.joined")} {formatShortDate(member.joinedAt)}
         </span>
       </div>
     </div>

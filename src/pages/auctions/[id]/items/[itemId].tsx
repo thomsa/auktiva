@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getMessages, Locale } from "@/i18n";
 import { Navbar } from "@/components/layout/navbar";
 import {
   SortDropdown,
@@ -1021,6 +1022,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         publicUrl: getPublicUrl(img.url),
         order: img.order,
       })),
+      messages: await getMessages(context.locale as Locale),
     },
   };
 };

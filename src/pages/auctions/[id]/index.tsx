@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getMessages, Locale } from "@/i18n";
 import { MemberRole } from "@/generated/prisma/enums";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { AuctionSidebar } from "@/components/auction";
@@ -354,6 +355,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           : null,
         _count: item._count,
       })),
+      messages: await getMessages(context.locale as Locale),
     },
   };
 };

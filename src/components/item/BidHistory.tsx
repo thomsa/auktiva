@@ -1,4 +1,5 @@
-import { formatCurrency } from "@/utils/formatters";
+import { useTranslations } from "next-intl";
+import { useFormatters } from "@/i18n";
 
 interface Bid {
   id: string;
@@ -17,16 +18,23 @@ interface BidHistoryProps {
 }
 
 export function BidHistory({ bids, currencySymbol }: BidHistoryProps) {
+  const t = useTranslations("item.history");
+  const { formatDate } = useFormatters();
+
+  const formatCurrency = (amount: number, symbol: string) => {
+    return `${symbol}${amount.toFixed(2)}`;
+  };
+
   return (
     <div>
       <h2 className="font-semibold mb-4 flex items-center gap-2">
         <span className="icon-[tabler--history] size-5"></span>
-        Bid History ({bids.length})
+        {t("title")} ({bids.length})
       </h2>
 
       {bids.length === 0 ? (
         <p className="text-base-content/60 text-center py-8">
-          No bids yet. Be the first to bid!
+          {t("noBids")}
         </p>
       ) : (
         <div className="space-y-2">
@@ -39,11 +47,11 @@ export function BidHistory({ bids, currencySymbol }: BidHistoryProps) {
             >
               <div className="flex items-center gap-2">
                 <span className="font-medium">
-                  {bid.user ? bid.user.name || "Anonymous" : "Anonymous"}
+                  {bid.user ? bid.user.name || t("anonymous") : t("anonymous")}
                 </span>
                 {index === 0 && (
                   <span className="badge badge-primary badge-sm text-center">
-                    Highest
+                    {t("highest")}
                   </span>
                 )}
               </div>
@@ -52,7 +60,7 @@ export function BidHistory({ bids, currencySymbol }: BidHistoryProps) {
                   {formatCurrency(bid.amount, currencySymbol)}
                 </div>
                 <div className="text-xs text-base-content/60">
-                  {new Date(bid.createdAt).toLocaleString()}
+                  {formatDate(bid.createdAt)}
                 </div>
               </div>
             </div>

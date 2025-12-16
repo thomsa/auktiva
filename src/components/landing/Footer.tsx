@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export function Footer() {
+  const t = useTranslations();
   return (
     <footer className="bg-base-100 border-t border-base-content/10 pt-20 pb-10">
       <div className="container mx-auto px-4">
@@ -13,9 +15,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-base-content/60 max-w-md mb-8">
-              A free, open-source auction platform designed for fundraisers,
-              charities, and communities. Built with modern tech for modern
-              events.
+              {t("footer.description")}
             </p>
             <div className="flex gap-4">
               <a
@@ -30,7 +30,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold mb-6 text-lg">Resources</h4>
+            <h4 className="font-bold mb-6 text-lg">{t("footer.resources")}</h4>
             <ul className="space-y-4 text-base-content/60">
               <li>
                 <Link
@@ -38,7 +38,7 @@ export function Footer() {
                   className="hover:text-primary transition-colors"
                   target="_blank"
                 >
-                  Documentation
+                  {t("nav.documentation")}
                 </Link>
               </li>
               <li>
@@ -55,14 +55,14 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold mb-6 text-lg">Legal</h4>
+            <h4 className="font-bold mb-6 text-lg">{t("footer.legal")}</h4>
             <ul className="space-y-4 text-base-content/60">
               <li>
                 <Link
                   href="/privacy"
                   className="hover:text-primary transition-colors"
                 >
-                  Privacy Policy
+                  {t("footer.privacyPolicy")}
                 </Link>
               </li>
               <li>
@@ -70,7 +70,7 @@ export function Footer() {
                   href="/terms"
                   className="hover:text-primary transition-colors"
                 >
-                  Terms of Service
+                  {t("footer.termsOfService")}
                 </Link>
               </li>
             </ul>
@@ -78,9 +78,9 @@ export function Footer() {
         </div>
 
         <div className="border-t border-base-content/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-base-content/40">
-          <p>© {new Date().getFullYear()} Auktiva. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {t("common.appName")}. {t("footer.allRightsReserved")}</p>
           <p>
-            Designed & Built by{" "}
+            {t("footer.designedBy")}{" "}
             <a
               href="https://tamaslorincz.com"
               className="text-base-content/60 hover:text-primary transition-colors"

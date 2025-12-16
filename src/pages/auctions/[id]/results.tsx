@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { StatsCard } from "@/components/ui/stats-card";
+import { getMessages, Locale } from "@/i18n";
 
 interface Winner {
   itemId: string;
@@ -448,6 +449,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       totalItems: items.length,
       totalBids,
       isAdmin,
+      messages: await getMessages(context.locale as Locale),
     },
   };
 };

@@ -1,0 +1,147 @@
+{
+  "common": {
+    "appName": "Auktiva",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "or": "or",
+    "and": "and",
+    "all": "All",
+    "none": "None",
+    "more": "More",
+    "less": "Less",
+    "viewAll": "View All",
+    "seeMore": "See More",
+    "showMore": "Show More",
+    "showLess": "Show Less",
+    "copyToClipboard": "Copy to clipboard",
+    "copied": "Copied!",
+    "required": "Required",
+    "optional": "Optional"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "createAuction": "Create Auction",
+    "myBids": "My Bids",
+    "bidHistory": "Bid History",
+    "settings": "Settings",
+    "documentation": "Documentation",
+    "feedback": "Feedback",
+    "signOut": "Sign out",
+    "signIn": "Sign In",
+    "getStarted": "Get Started",
+    "signedInAs": "Signed in as",
+    "features": "Features",
+    "howItWorks": "How it Works",
+    "docs": "Docs"
+  },
+  "sort": {
+    "newestFirst": "Newest First",
+    "oldestFirst": "Oldest First",
+    "priceHighToLow": "Price: High to Low",
+    "priceLowToHigh": "Price: Low to High",
+    "nameAZ": "Name: A to Z",
+    "nameZA": "Name: Z to A",
+    "endingSoon": "Ending Soon",
+    "endingLater": "Ending Later",
+    "mostBids": "Most Bids",
+    "leastBids": "Least Bids"
+  },
+  "status": {
+    "active": "Active",
+    "ended": "Ended",
+    "ends": "Ends",
+    "pending": "Pending",
+    "accepted": "Accepted",
+    "winning": "Winning",
+    "outbid": "Outbid",
+    "won": "Won",
+    "lost": "Lost",
+    "live": "Live"
+  },
+  "time": {
+    "ends": "Ends",
+    "ended": "Ended",
+    "endsAt": "Ends at",
+    "endedAt": "Ended at"
+  },
+  "currency": {
+    "label": "Currency"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "preference": "Theme Preference"
+  },
+  "language": {
+    "label": "Language",
+    "select": "Select language"
+  },
+  "footer": {
+    "resources": "Resources",
+    "legal": "Legal",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "allRightsReserved": "All rights reserved.",
+    "designedBy": "Designed & Built by",
+    "description": "A free, open-source auction platform designed for fundraisers, charities, and communities. Built with modern tech for modern events.",
+    "reportIssue": "Report Issue"
+  },
+  "member": {
+    "noName": "No name",
+    "you": "You",
+    "remove": "Remove member",
+    "joined": "Joined"
+  },
+  "upload": {
+    "uploading": "Uploading...",
+    "dragDrop": "Drag & drop images here, or",
+    "browse": "browse",
+    "imageFormats": "JPEG, PNG, WebP, GIF",
+    "maxSize": "Max 10MB",
+    "images": "images",
+    "maxImagesError": "Can only upload {count} more image(s)",
+    "imageAlt": "Image {index}",
+    "moveLeft": "Move left",
+    "moveRight": "Move right",
+    "delete": "Delete",
+    "main": "Main",
+    "thumbnailAlt": "Auction thumbnail",
+    "change": "Change",
+    "upload": "Upload",
+    "remove": "Remove",
+    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Max 5MB • Square recommended"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "new": "New",
+    "read": "Read",
+    "noNew": "No new notifications",
+    "noRead": "No read notifications",
+    "justNow": "Just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago"
+  },
+  "stats": {
+    "more": "+{count} more",
+    "allCurrencies": "All Currencies"
+  }
+}

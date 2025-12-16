@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 interface StatusBadgeProps {
   status: "winning" | "won" | "outbid" | "lost" | "ended" | "active";
   size?: "xs" | "sm" | "md";
@@ -8,21 +10,21 @@ const statusConfig = {
   winning: {
     color: "badge-success",
     icon: "icon-[tabler--trophy]",
-    label: "Winning",
+    labelKey: "winning",
   },
-  won: { color: "badge-success", icon: "icon-[tabler--trophy]", label: "Won" },
+  won: { color: "badge-success", icon: "icon-[tabler--trophy]", labelKey: "won" },
   outbid: {
     color: "badge-warning",
     icon: "icon-[tabler--arrow-up]",
-    label: "Outbid",
+    labelKey: "outbid",
   },
-  lost: { color: "badge-ghost", icon: null, label: "Lost" },
+  lost: { color: "badge-ghost", icon: null, labelKey: "lost" },
   ended: {
     color: "badge-error",
     icon: "icon-[tabler--flag-filled]",
-    label: "Ended",
+    labelKey: "ended",
   },
-  active: { color: "badge-success", icon: null, label: "Active" },
+  active: { color: "badge-success", icon: null, labelKey: "active" },
 };
 
 const sizeClasses = {
@@ -36,6 +38,7 @@ export function StatusBadge({
   size = "sm",
   showIcon = true,
 }: StatusBadgeProps) {
+  const t = useTranslations("status");
   const config = statusConfig[status];
 
   return (
@@ -43,7 +46,7 @@ export function StatusBadge({
       {showIcon && config.icon && (
         <span className={`${config.icon} size-3`}></span>
       )}
-      {config.label}
+      {t(config.labelKey)}
     </span>
   );
 }

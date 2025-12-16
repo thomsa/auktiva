@@ -1,4 +1,5 @@
 import { ButtonHTMLAttributes, forwardRef, ReactNode } from "react";
+import { useTranslations } from "next-intl";
 
 type ButtonVariant =
   | "neutral"
@@ -58,6 +59,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref,
   ) => {
+    const t = useTranslations("common");
     const variantClass = variant ? `btn-${variant}` : "";
     const styleClass = buttonStyle ? `btn-${buttonStyle}` : "";
     const sizeClass = size ? `btn-${size}` : "";
@@ -84,7 +86,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {isLoading ? (
           <>
             <span className="loading loading-spinner"></span>
-            {loadingText || "Loading..."}
+            {loadingText || t("loading")}
           </>
         ) : (
           <>

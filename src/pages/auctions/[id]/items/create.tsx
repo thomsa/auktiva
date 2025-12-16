@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { PageLayout, BackLink, AlertMessage } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { getMessages, Locale } from "@/i18n";
 
 interface Currency {
   code: string;
@@ -395,6 +396,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         endDate: auction.endDate?.toISOString() || null,
       },
       currencies,
+      messages: await getMessages(context.locale as Locale),
     },
   };
 };

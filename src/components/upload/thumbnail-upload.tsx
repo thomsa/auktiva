@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useTranslations } from "next-intl";
 
 interface ThumbnailUploadProps {
   auctionId: string;
@@ -11,6 +12,7 @@ export function ThumbnailUpload({
   currentThumbnail,
   onThumbnailChange,
 }: ThumbnailUploadProps) {
+  const t = useTranslations("upload");
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -79,7 +81,7 @@ export function ThumbnailUpload({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={currentThumbnail}
-              alt="Auction thumbnail"
+              alt={t("thumbnailAlt")}
               className="w-full h-full object-cover"
             />
           ) : (
@@ -110,7 +112,7 @@ export function ThumbnailUpload({
               ) : (
                 <span className="icon-[tabler--upload] size-4"></span>
               )}
-              {currentThumbnail ? "Change" : "Upload"}
+              {currentThumbnail ? t("change") : t("upload")}
             </button>
 
             {currentThumbnail && (
@@ -121,13 +123,13 @@ export function ThumbnailUpload({
                 disabled={isUploading}
               >
                 <span className="icon-[tabler--trash] size-4"></span>
-                Remove
+                {t("remove")}
               </button>
             )}
           </div>
 
           <p className="text-xs text-base-content/50">
-            JPEG, PNG, WebP, GIF • Max 5MB • Square recommended
+            {t("thumbnailFormats")}
           </p>
         </div>
       </div>

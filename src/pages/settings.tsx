@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout } from "@/components/common";
 import { useTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
+import { getMessages, Locale } from "@/i18n";
 
 interface UserSettings {
   emailOnNewItem: boolean;
@@ -477,6 +478,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     });
   }
 
+  const messages = await getMessages(context.locale as Locale);
+
   return {
     props: {
       user,
@@ -484,6 +487,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         emailOnNewItem: settings.emailOnNewItem,
         emailOnOutbid: settings.emailOnOutbid,
       },
+      messages,
     },
   };
 };

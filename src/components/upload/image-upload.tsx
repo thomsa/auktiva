@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
 
 interface UploadedImage {
   id: string;
@@ -22,6 +23,7 @@ export function ImageUpload({
   onImagesChange,
   maxImages = 10,
 }: ImageUploadProps) {
+  const t = useTranslations("upload");
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +54,7 @@ export function ImageUpload({
     const remainingSlots = maxImages - images.length;
 
     if (fileArray.length > remainingSlots) {
-      setError(`Can only upload ${remainingSlots} more image(s)`);
+      setError(t("maxImagesError", { count: remainingSlots }));
       return;
     }
 
@@ -164,24 +166,24 @@ export function ImageUpload({
         {isUploading ? (
           <div className="flex flex-col items-center gap-2">
             <span className="loading loading-spinner loading-lg text-primary"></span>
-            <p className="text-sm text-base-content/60">Uploading...</p>
+            <p className="text-sm text-base-content/60">{t("uploading")}</p>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-2">
             <span className="icon-[tabler--cloud-upload] size-12 text-base-content/40"></span>
             <p className="text-sm text-base-content/60">
-              Drag & drop images here, or{" "}
+              {t("dragDrop")}{" "}
               <button
                 type="button"
                 className="link link-primary"
                 onClick={() => fileInputRef.current?.click()}
               >
-                browse
+                {t("browse")}
               </button>
             </p>
             <p className="text-xs text-base-content/40">
-              JPEG, PNG, WebP, GIF • Max 10MB • {images.length}/{maxImages}{" "}
-              images
+              {t("imageFormats")} • {t("maxSize")} • {images.length}/{maxImages}{" "}
+              {t("images")}
             </p>
           </div>
         )}
@@ -212,7 +214,7 @@ export function ImageUpload({
             >
               <img
                 src={image.publicUrl}
-                alt={`Image ${index + 1}`}
+                alt={t("imageAlt", { index: index + 1 })}
                 className="w-full h-full object-cover"
               />
 
@@ -224,7 +226,7 @@ export function ImageUpload({
                     type="button"
                     className="btn btn-circle btn-sm btn-ghost text-white"
                     onClick={() => moveImage(index, index - 1)}
-                    title="Move left"
+                    title={t("moveLeft")}
                   >
                     <span className="icon-[tabler--chevron-left] size-5"></span>
                   </button>
@@ -235,7 +237,7 @@ export function ImageUpload({
                   type="button"
                   className="btn btn-circle btn-sm btn-error"
                   onClick={() => handleDelete(image.id)}
-                  title="Delete"
+                  title={t("delete")}
                 >
                   <span className="icon-[tabler--trash] size-4"></span>
                 </button>
@@ -246,7 +248,7 @@ export function ImageUpload({
                     type="button"
                     className="btn btn-circle btn-sm btn-ghost text-white"
                     onClick={() => moveImage(index, index + 1)}
-                    title="Move right"
+                    title={t("moveRight")}
                   >
                     <span className="icon-[tabler--chevron-right] size-5"></span>
                   </button>
@@ -256,7 +258,7 @@ export function ImageUpload({
               {/* Order badge */}
               {index === 0 && (
                 <div className="absolute top-2 left-2 badge badge-primary badge-sm">
-                  Main
+                  {t("main")}
                 </div>
               )}
             </div>

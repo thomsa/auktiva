@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { GetServerSideProps } from "next";
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import { getMessages, Locale } from "@/i18n";
 
 interface InviteInfo {
   auction: {
@@ -280,3 +282,12 @@ export default function AcceptInvitePage() {
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const messages = await getMessages(context.locale as Locale);
+  return {
+    props: {
+      messages,
+    },
+  };
+};

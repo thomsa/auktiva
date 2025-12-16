@@ -1,0 +1,52 @@
+{
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account preferences and profile",
+    "profile": {
+      "title": "Profile",
+      "email": "Email",
+      "emailCannotChange": "Email cannot be changed",
+      "displayName": "Display Name",
+      "displayNamePlaceholder": "Your name",
+      "saveProfile": "Save Profile",
+      "saving": "Saving...",
+      "profileUpdated": "Profile updated successfully"
+    },
+    "password": {
+      "title": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "At least 8 characters",
+      "confirmNewPassword": "Confirm New Password",
+      "changePassword": "Change Password",
+      "changing": "Changing...",
+      "passwordChanged": "Password changed successfully",
+      "passwordsDoNotMatch": "New passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters"
+    },
+    "emailNotifications": {
+      "title": "Email Notifications",
+      "settingsSaved": "Settings saved",
+      "newItemNotifications": "New item notifications",
+      "newItemDescription": "Receive an email when a new item is added to an auction you're a member of",
+      "outbidNotifications": "Outbid notifications",
+      "outbidDescription": "Receive an email when someone outbids you on an item"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "themePreference": "Theme Preference",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": {
+      "title": "Language",
+      "selectLanguage": "Select Language",
+      "languageDescription": "Choose your preferred language for the interface"
+    },
+    "seo": {
+      "title": "Settings",
+      "description": "Manage your account settings"
+    }
+  }
+}

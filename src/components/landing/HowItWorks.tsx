@@ -1,30 +1,14 @@
+import { useTranslations } from "next-intl";
+
 export function HowItWorks() {
+  const t = useTranslations("landing.howItWorks");
+
   const steps = [
-    {
-      num: "01",
-      title: "Create Auction",
-      desc: "Set up your event in minutes with customizable details and branding.",
-    },
-    {
-      num: "02",
-      title: "Invite Guests",
-      desc: "Share a private link or send email invitations to your participants.",
-    },
-    {
-      num: "03",
-      title: "Live Bidding",
-      desc: "Guests place bids in real-time from their phones. Excitement builds!",
-    },
-    {
-      num: "04",
-      title: "Wrap Up",
-      desc: "Handle exchange and settlement offline, your way.",
-    },
-    {
-      num: "05",
-      title: "Celebrate  🎉",
-      desc: "Celebrate your success with your contributors and raise awareness for your cause!",
-    },
+    { num: "01", key: "step1" },
+    { num: "02", key: "step2" },
+    { num: "03", key: "step3" },
+    { num: "04", key: "step4" },
+    { num: "05", key: "step5" },
   ];
 
   return (
@@ -33,12 +17,11 @@ export function HowItWorks() {
         <div className="flex flex-col lg:flex-row gap-16 items-center">
           <div className="lg:w-1/2">
             <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">
-              From setup to <br />
-              <span className="text-secondary">successful fundraiser</span>
+              {t("sectionTitle")} <br />
+              <span className="text-secondary">{t("sectionTitleHighlight")}</span>
             </h2>
             <p className="text-xl text-base-content/60 mb-12">
-              Four simple steps to run your charity auction. Focus on your
-              cause, we&apos;ll handle the bidding.
+              {t("sectionDescription")}
             </p>
 
             <div className="space-y-8">
@@ -48,8 +31,12 @@ export function HowItWorks() {
                     {step.num}
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                    <p className="text-base-content/60">{step.desc}</p>
+                    <h3 className="text-xl font-bold mb-2">
+                      {t(`${step.key}.title`)}
+                    </h3>
+                    <p className="text-base-content/60">
+                      {t(`${step.key}.description`)}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -79,7 +66,7 @@ export function HowItWorks() {
                       <div className="w-32 h-3 bg-base-content/10 rounded"></div>
                     </div>
                     <div className="w-20 h-8 bg-secondary rounded text-secondary-content flex items-center justify-center text-xs font-bold">
-                      New Bid!
+                      {t("newBid")}
                     </div>
                   </div>
                   <div className="h-20 rounded-xl bg-base-100 p-4 flex items-center justify-between shadow-sm border border-base-content/5 opacity-60">

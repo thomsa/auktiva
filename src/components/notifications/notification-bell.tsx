@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import useSWR from "swr";
+import { useTranslations } from "next-intl";
 import { fetcher } from "@/lib/fetcher";
 
 interface Notification {
@@ -21,6 +22,7 @@ interface NotificationsResponse {
 }
 
 export function NotificationBell() {
+  const t = useTranslations("notifications");
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"new" | "read">("new");
@@ -125,10 +127,10 @@ export function NotificationBell() {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    return `${days}d ago`;
+    if (minutes < 1) return t("justNow");
+    if (minutes < 60) return t("minutesAgo", { count: minutes });
+    if (hours < 24) return t("hoursAgo", { count: hours });
+    return t("daysAgo", { count: days });
   };
 
   return (
@@ -136,7 +138,7 @@ export function NotificationBell() {
       <button
         className="btn btn-ghost btn-circle"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label="Notifications"
+        aria-label={t("title")}
       >
         <div className="indicator">
           <span className="icon-[tabler--bell] size-5"></span>
@@ -152,10 +154,10 @@ export function NotificationBell() {
         <div className="absolute right-0 top-full mt-2 bg-base-100 rounded-box z-50 w-80 shadow-lg border border-base-300">
           {/* Header */}
           <div className="p-3 border-b border-base-300 flex justify-between items-center">
-            <h3 className="font-semibold">Notifications</h3>
+            <h3 className="font-semibold">{t("title")}</h3>
             {activeTab === "new" && unreadCount > 0 && (
               <button onClick={markAllAsRead} className="btn btn-ghost btn-xs">
-                Mark all read
+                {t("markAllRead")}
               </button>
             )}
           </div>
@@ -166,7 +168,7 @@ export function NotificationBell() {
               className={`tab flex-1 ${activeTab === "new" ? "tab-active" : ""}`}
               onClick={() => setActiveTab("new")}
             >
-              New
+              {t("new")}
               {unreadCount > 0 && (
                 <span className="badge badge-primary badge-xs ml-1">
                   {unreadCount}
@@ -177,7 +179,7 @@ export function NotificationBell() {
               className={`tab flex-1 ${activeTab === "read" ? "tab-active" : ""}`}
               onClick={() => setActiveTab("read")}
             >
-              Read
+              {t("read")}
             </button>
           </div>
 
@@ -194,8 +196,8 @@ export function NotificationBell() {
                     <span className="icon-[tabler--bell-off] size-8 mb-2 block mx-auto"></span>
                     <p>
                       {activeTab === "new"
-                        ? "No new notifications"
-                        : "No read notifications"}
+                        ? t("noNew")
+                        : t("noRead")}
                     </p>
                   </div>
                 );
