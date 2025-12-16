@@ -1,85 +1,85 @@
 {
   "landing": {
     "hero": {
-      "badge": "{version} is now live",
-      "title": "Auctions made",
-      "titleHighlight": "simple & social",
-      "description": "The open-source platform for modern fundraising. Host private auctions, invite your community, and manage everything in one place.",
-      "startAuction": "Start Your Auction",
-      "viewOnGithub": "View on GitHub",
-      "demoAlt": "Interactive Demo Preview",
-      "bidNow": "Bid Now"
+      "badge": "{version} már elérhető",
+      "title": "Aukciózz",
+      "titleHighlight": "egyszerűen, közösségben",
+      "description": "Nyílt forráskódú platform modern adománygyűjtéshez. Szervezz privát aukciókat, hívd meg a közösségedet, és kezelj mindent egy helyen.",
+      "startAuction": "Aukció indítása",
+      "viewOnGithub": "Megtekintés GitHubon",
+      "demoAlt": "Interaktív demó",
+      "bidNow": "Licitálj most"
     },
     "features": {
-      "sectionTitle": "Everything you need for a",
-      "sectionTitleHighlight": "perfect auction",
-      "sectionDescription": "Powerful features built for organizers and bidders alike.",
+      "sectionTitle": "Minden egy helyen a",
+      "sectionTitleHighlight": "tökéletes aukcióhoz",
+      "sectionDescription": "Hatékony funkciók szervezőknek és licitálóknak.",
       "realTimeBidding": {
-        "title": "Real-time Bidding",
-        "description": "Watch bids happen instantly with our WebSocket-powered live updates. No refreshing required."
+        "title": "Valós idejű licitálás",
+        "description": "Kövesd a liciteket valós időben. Az oldal automatikusan frissül."
       },
       "privateSecure": {
-        "title": "Private & Secure",
-        "description": "Host invite-only auctions with role-based access control. Your data stays private."
+        "title": "Privát és biztonságos",
+        "description": "Szervezz meghívásos aukciókat jogosultság-alapú hozzáféréssel. Adataid biztonságban vannak."
       },
       "multiCurrency": {
-        "title": "Multi-Currency",
-        "description": "Support for global events with automatic currency formatting for USD, EUR, GBP, and more."
+        "title": "Többdevizás támogatás",
+        "description": "Nemzetközi események támogatása automatikus pénznemformázással (USD, EUR, GBP, HUF, stb.)."
       },
       "smartNotifications": {
-        "title": "Smart Notifications",
-        "description": "Get notified immediately when you're outbid or when watched items are ending."
+        "title": "Okos értesítések",
+        "description": "Azonnal értesülj, ha túllicitálnak vagy ha a figyelt tételek hamarosan zárulnak."
       },
       "richMedia": {
-        "title": "Rich Media",
-        "description": "Showcase items with high-resolution image galleries and detailed descriptions."
+        "title": "Részletes megjelenítés",
+        "description": "Mutasd be a tételeket nagy felbontású képekkel és részletes leírással."
       },
       "offlineExchange": {
-        "title": "Offline Exchange",
-        "description": "Perfect for charity events. We handle the bidding, you handle the item exchange offline."
+        "title": "Személyes átadás",
+        "description": "Tökéletes jótékonysági eseményekhez. Mi kezeljük a licitálást, te az átadást személyesen."
       }
     },
     "howItWorks": {
-      "sectionTitle": "From setup to",
-      "sectionTitleHighlight": "successful fundraiser",
-      "sectionDescription": "Four simple steps to run your charity auction. Focus on your cause, we'll handle the bidding.",
+      "sectionTitle": "A beállítástól a",
+      "sectionTitleHighlight": "sikeres adománygyűjtésig",
+      "sectionDescription": "Négy egyszerű lépés a jótékonysági aukció lebonyolításához. Koncentrálj az ügyedre, mi kezeljük a licitálást.",
       "step1": {
-        "title": "Create Auction",
-        "description": "Set up your event in minutes with customizable details and branding."
+        "title": "Aukció létrehozása",
+        "description": "Állítsd be az eseményt percek alatt testreszabható részletekkel és arculattal."
       },
       "step2": {
-        "title": "Invite Guests",
-        "description": "Share a private link or send email invitations to your participants."
+        "title": "Vendégek meghívása",
+        "description": "Ossz meg egy privát linket vagy küldj e-mail meghívókat a résztvevőknek."
       },
       "step3": {
-        "title": "Live Bidding",
-        "description": "Guests place bids in real-time from their phones. Excitement builds!"
+        "title": "Élő licitálás",
+        "description": "A vendégek valós időben licitálnak a telefonjukról. Az izgalom fokozódik!"
       },
       "step4": {
-        "title": "Wrap Up",
-        "description": "Handle exchange and settlement offline, your way."
+        "title": "Zárás",
+        "description": "Kezeld az átadást és elszámolást személyesen, ahogy neked kényelmes."
       },
       "step5": {
-        "title": "Celebrate",
-        "description": "Celebrate your success with your contributors and raise awareness for your cause!"
+        "title": "Ünneplés",
+        "description": "Ünnepeld a sikeredet a támogatóiddal és növeld az ügy ismertségét!"
       },
-      "newBid": "New Bid!"
+      "newBid": "Új licit!"
     },
     "impact": {
-      "sectionTitle": "Your Impact,",
-      "sectionTitleHighlight": "Collected",
-      "sectionDescription": "Every contribution counts. Watch how individual donations come together to fill the jar of opportunity.",
-      "totalValue": "Total Value",
-      "itemsCollected": "Items Collected"
+      "sectionTitle": "Az elért eredmény,",
+      "sectionTitleHighlight": "összegyűjtve",
+      "sectionDescription": "Minden hozzájárulás számít. Nézd meg, hogyan állnak össze az egyéni adományok valódi segítséggé.",
+      "totalValue": "Teljes érték",
+      "itemsCollected": "Összegyűjtött tételek"
     },
     "cta": {
-      "title": "Ready to run your next fundraiser?",
-      "description": "Join organizers using Auktiva to run charity auctions. Open source, free, and built for communities.",
-      "getStarted": "Get Started",
-      "freeForever": "It's free and will always be free",
-      "selfHostTitle": "Prefer to self-host?",
-      "selfHostDescription": "Run Auktiva on your own server with full control over your data. One command to get started.",
-      "seeDocumentation": "See the <link>developer documentation</link> for more details."
+      "title": "Készen állsz a következő adománygyűjtésre?",
+      "description": "Csatlakozz a szervezőkhöz, akik az Auktivát használják jótékonysági aukciókhoz. Nyílt forráskódú, ingyenes, és közösségeknek készült.",
+      "getStarted": "Kezdés",
+      "freeForever": "Ingyenes és mindig az is marad",
+      "selfHostTitle": "Saját szerveren futtatnád?",
+      "selfHostDescription": "Futtasd az Auktivát saját szervereden teljes adatkontrollal. Indítás egyetlen paranccsal.",
+      "seeDocumentation": "Lásd a <link>fejlesztői dokumentációt</link> további részletekért."
     }
   }
 }

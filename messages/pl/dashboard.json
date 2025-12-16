@@ -1,28 +1,28 @@
 {
   "dashboard": {
-    "title": "Dashboard",
-    "welcome": "Welcome back, {name}!",
-    "createAuction": "Create Auction",
+    "title": "Panel",
+    "welcome": "Witaj ponownie, {name}!",
+    "createAuction": "Utwórz aukcję",
     "stats": {
-      "totalBids": "Total Bids",
-      "totalBidAmount": "Total Bid Amount",
-      "itemsBidOn": "Items Bid On",
-      "currentlyWinning": "Currently Winning"
+      "totalBids": "Wszystkie oferty",
+      "totalBidAmount": "Całkowita kwota ofert",
+      "itemsBidOn": "Licytowane przedmioty",
+      "currentlyWinning": "Aktualnie wygrywasz"
     },
     "activeBids": {
-      "title": "Your Active Bids"
+      "title": "Twoje aktywne oferty"
     },
     "auctions": {
-      "title": "Auctions you have joined"
+      "title": "Aukcje, do których dołączyłeś"
     },
     "empty": {
-      "title": "No auctions yet",
-      "description": "You haven't joined or created any auctions yet. Create your first auction or join one using an invite link.",
-      "createFirst": "Create Your First Auction"
+      "title": "Brak aukcji",
+      "description": "Nie dołączyłeś jeszcze do żadnej aukcji ani jej nie utworzyłeś. Utwórz swoją pierwszą aukcję lub dołącz do jednej za pomocą linku zaproszenia.",
+      "createFirst": "Utwórz swoją pierwszą aukcję"
     },
     "seo": {
-      "title": "Dashboard",
-      "description": "Manage your auctions and bids"
+      "title": "Panel",
+      "description": "Zarządzaj swoimi aukcjami i ofertami"
     }
   }
 }

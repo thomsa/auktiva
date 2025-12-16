@@ -1,14 +1,14 @@
 {
   "legal": {
     "privacy": {
-      "title": "Privacy Policy",
-      "lastUpdated": "Last updated",
-      "description": "Your privacy is important to us"
+      "title": "Adatvédelmi irányelvek",
+      "lastUpdated": "Utoljára frissítve",
+      "description": "Számunkra fontos az adataid védelme"
     },
     "terms": {
-      "title": "Terms of Service",
-      "lastUpdated": "Last updated",
-      "description": "Please read these terms carefully"
+      "title": "Felhasználási feltételek",
+      "lastUpdated": "Utoljára frissítve",
+      "description": "Kérjük, olvasd el figyelmesen a feltételeket"
     }
   }
 }

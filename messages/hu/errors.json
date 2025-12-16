@@ -1,56 +1,56 @@
 {
   "errors": {
-    "generic": "An error occurred. Please try again.",
-    "somethingWentWrong": "Something went wrong. Please try again.",
-    "networkError": "Network error. Please check your connection.",
-    "unauthorized": "You are not authorized to perform this action.",
-    "notFound": "The requested resource was not found.",
-    "forbidden": "You don't have permission to access this resource.",
+    "generic": "Hiba történt. Kérjük, próbáld újra.",
+    "somethingWentWrong": "Valami hiba történt. Kérlek, próbáld újra.",
+    "networkError": "Hálózati hiba. Ellenőrizd az internetkapcsolatot.",
+    "unauthorized": "Nincs jogosultságod ehhez a művelethez.",
+    "notFound": "A kért erőforrás nem található.",
+    "forbidden": "Nincs hozzáférésed ehhez az erőforráshoz.",
     "validation": {
-      "required": "This field is required",
-      "invalidEmail": "Please enter a valid email address",
-      "passwordTooShort": "Password must be at least {min} characters",
-      "passwordsDoNotMatch": "Passwords do not match",
-      "invalidAmount": "Please enter a valid amount",
-      "minBid": "Minimum bid is {symbol}{amount}"
+      "required": "Ez a mező kötelező",
+      "invalidEmail": "Adj meg egy érvényes e-mail címet",
+      "passwordTooShort": "A jelszónak legalább {min} karakter hosszúnak kell lennie",
+      "passwordsDoNotMatch": "A jelszavak nem egyeznek",
+      "invalidAmount": "Adj meg érvényes összeget",
+      "minBid": "Minimális licit: {symbol}{amount}"
     },
     "auth": {
-      "invalidCredentials": "Invalid email or password",
-      "emailInUse": "This email is already registered",
-      "accountNotFound": "No account found with this email",
-      "invalidToken": "Invalid or expired token",
-      "sessionExpired": "Your session has expired. Please sign in again."
+      "invalidCredentials": "Hibás e-mail cím vagy jelszó",
+      "emailInUse": "Ez az e-mail már regisztrálva van",
+      "accountNotFound": "Nem található fiók ezzel az e-mail címmel",
+      "invalidToken": "Érvénytelen vagy lejárt token",
+      "sessionExpired": "A munkameneted lejárt. Kérlek, jelentkezz be újra."
     },
     "auction": {
-      "createFailed": "Failed to create auction",
-      "updateFailed": "Failed to update auction",
-      "deleteFailed": "Failed to delete auction",
-      "notFound": "Auction not found",
-      "alreadyEnded": "This auction has already ended",
-      "notMember": "You are not a member of this auction"
+      "createFailed": "Nem sikerült létrehozni az aukciót",
+      "updateFailed": "Nem sikerült frissíteni az aukciót",
+      "deleteFailed": "Nem sikerült törölni az aukciót",
+      "notFound": "Aukció nem található",
+      "alreadyEnded": "Ez az aukció már lezárult",
+      "notMember": "Nem vagy tagja ennek az aukciónak"
     },
     "item": {
-      "createFailed": "Failed to create item",
-      "updateFailed": "Failed to update item",
-      "deleteFailed": "Failed to delete item",
-      "notFound": "Item not found"
+      "createFailed": "Nem sikerült létrehozni a tételt",
+      "updateFailed": "Nem sikerült frissíteni a tételt",
+      "deleteFailed": "Nem sikerült törölni a tételt",
+      "notFound": "Tétel nem található"
     },
     "bid": {
-      "placeFailed": "Failed to place bid",
-      "tooLow": "Your bid is too low",
-      "auctionEnded": "This auction has ended",
-      "itemEnded": "Bidding for this item has ended",
-      "ownItem": "You cannot bid on your own item"
+      "placeFailed": "Nem sikerült leadni a licitet",
+      "tooLow": "A licited túl alacsony",
+      "auctionEnded": "Ez az aukció lezárult",
+      "itemEnded": "A tétel licitálása lezárult",
+      "ownItem": "Nem licitálhatsz a saját tételedre"
     },
     "invite": {
-      "sendFailed": "Failed to send invitation",
-      "invalidInvite": "Invalid or expired invitation",
-      "alreadyMember": "You are already a member of this auction"
+      "sendFailed": "Nem sikerült elküldeni a meghívót",
+      "invalidInvite": "Érvénytelen vagy lejárt meghívó",
+      "alreadyMember": "Már tagja vagy ennek az aukciónak"
     },
     "profile": {
-      "updateFailed": "Failed to update profile",
-      "passwordChangeFailed": "Failed to change password",
-      "incorrectPassword": "Current password is incorrect"
+      "updateFailed": "Nem sikerült frissíteni a profilt",
+      "passwordChangeFailed": "Nem sikerült módosítani a jelszót",
+      "incorrectPassword": "A jelenlegi jelszó helytelen"
     }
   }
 }

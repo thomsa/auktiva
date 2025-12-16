@@ -360,7 +360,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
 }
 
 export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async (
-  context,
+  context
 ) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 

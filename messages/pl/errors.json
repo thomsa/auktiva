@@ -1,56 +1,56 @@
 {
   "errors": {
-    "generic": "An error occurred. Please try again.",
-    "somethingWentWrong": "Something went wrong. Please try again.",
-    "networkError": "Network error. Please check your connection.",
-    "unauthorized": "You are not authorized to perform this action.",
-    "notFound": "The requested resource was not found.",
-    "forbidden": "You don't have permission to access this resource.",
+    "generic": "Wystąpił błąd. Spróbuj ponownie.",
+    "somethingWentWrong": "Coś poszło nie tak. Spróbuj ponownie.",
+    "networkError": "Błąd sieci. Sprawdź połączenie.",
+    "unauthorized": "Nie masz uprawnień do wykonania tej akcji.",
+    "notFound": "Nie znaleziono żądanego zasobu.",
+    "forbidden": "Nie masz dostępu do tego zasobu.",
     "validation": {
-      "required": "This field is required",
-      "invalidEmail": "Please enter a valid email address",
-      "passwordTooShort": "Password must be at least {min} characters",
-      "passwordsDoNotMatch": "Passwords do not match",
-      "invalidAmount": "Please enter a valid amount",
-      "minBid": "Minimum bid is {symbol}{amount}"
+      "required": "To pole jest wymagane",
+      "invalidEmail": "Podaj prawidłowy adres e-mail",
+      "passwordTooShort": "Hasło musi mieć minimum {min} znaków",
+      "passwordsDoNotMatch": "Hasła nie są zgodne",
+      "invalidAmount": "Podaj prawidłową kwotę",
+      "minBid": "Minimalna oferta to {symbol}{amount}"
     },
     "auth": {
-      "invalidCredentials": "Invalid email or password",
-      "emailInUse": "This email is already registered",
-      "accountNotFound": "No account found with this email",
-      "invalidToken": "Invalid or expired token",
-      "sessionExpired": "Your session has expired. Please sign in again."
+      "invalidCredentials": "Nieprawidłowy e-mail lub hasło",
+      "emailInUse": "Ten e-mail jest już zarejestrowany",
+      "accountNotFound": "Nie znaleziono konta z tym adresem e-mail",
+      "invalidToken": "Nieprawidłowy lub wygasły token",
+      "sessionExpired": "Twoja sesja wygasła. Zaloguj się ponownie."
     },
     "auction": {
-      "createFailed": "Failed to create auction",
-      "updateFailed": "Failed to update auction",
-      "deleteFailed": "Failed to delete auction",
-      "notFound": "Auction not found",
-      "alreadyEnded": "This auction has already ended",
-      "notMember": "You are not a member of this auction"
+      "createFailed": "Nie udało się utworzyć aukcji",
+      "updateFailed": "Nie udało się zaktualizować aukcji",
+      "deleteFailed": "Nie udało się usunąć aukcji",
+      "notFound": "Nie znaleziono aukcji",
+      "alreadyEnded": "Ta aukcja już się zakończyła",
+      "notMember": "Nie jesteś członkiem tej aukcji"
     },
     "item": {
-      "createFailed": "Failed to create item",
-      "updateFailed": "Failed to update item",
-      "deleteFailed": "Failed to delete item",
-      "notFound": "Item not found"
+      "createFailed": "Nie udało się utworzyć przedmiotu",
+      "updateFailed": "Nie udało się zaktualizować przedmiotu",
+      "deleteFailed": "Nie udało się usunąć przedmiotu",
+      "notFound": "Nie znaleziono przedmiotu"
     },
     "bid": {
-      "placeFailed": "Failed to place bid",
-      "tooLow": "Your bid is too low",
-      "auctionEnded": "This auction has ended",
-      "itemEnded": "Bidding for this item has ended",
-      "ownItem": "You cannot bid on your own item"
+      "placeFailed": "Nie udało się złożyć oferty",
+      "tooLow": "Twoja oferta jest za niska",
+      "auctionEnded": "Ta aukcja się zakończyła",
+      "itemEnded": "Licytacja tego przedmiotu się zakończyła",
+      "ownItem": "Nie możesz licytować własnego przedmiotu"
     },
     "invite": {
-      "sendFailed": "Failed to send invitation",
-      "invalidInvite": "Invalid or expired invitation",
-      "alreadyMember": "You are already a member of this auction"
+      "sendFailed": "Nie udało się wysłać zaproszenia",
+      "invalidInvite": "Nieprawidłowe lub wygasłe zaproszenie",
+      "alreadyMember": "Jesteś już członkiem tej aukcji"
     },
     "profile": {
-      "updateFailed": "Failed to update profile",
-      "passwordChangeFailed": "Failed to change password",
-      "incorrectPassword": "Current password is incorrect"
+      "updateFailed": "Nie udało się zaktualizować profilu",
+      "passwordChangeFailed": "Nie udało się zmienić hasła",
+      "incorrectPassword": "Aktualne hasło jest nieprawidłowe"
     }
   }
 }

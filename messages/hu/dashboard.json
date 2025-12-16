@@ -1,28 +1,28 @@
 {
   "dashboard": {
-    "title": "Dashboard",
-    "welcome": "Welcome back, {name}!",
-    "createAuction": "Create Auction",
+    "title": "Irányítópult",
+    "welcome": "Üdvözöljük újra, {name}!",
+    "createAuction": "Aukció létrehozása",
     "stats": {
-      "totalBids": "Total Bids",
-      "totalBidAmount": "Total Bid Amount",
-      "itemsBidOn": "Items Bid On",
-      "currentlyWinning": "Currently Winning"
+      "totalBids": "Összes licit",
+      "totalBidAmount": "Licitek összege",
+      "itemsBidOn": "Licitált tételek",
+      "currentlyWinning": "Jelenleg nyerésre áll"
     },
     "activeBids": {
-      "title": "Your Active Bids"
+      "title": "Aktív licitjeid"
     },
     "auctions": {
-      "title": "Auctions you have joined"
+      "title": "Aukciók, amelyekhez csatlakoztál"
     },
     "empty": {
-      "title": "No auctions yet",
-      "description": "You haven't joined or created any auctions yet. Create your first auction or join one using an invite link.",
-      "createFirst": "Create Your First Auction"
+      "title": "Még nincsenek aukciók",
+      "description": "Még nem csatlakoztál egyetlen aukcióhoz sem, és nem hoztál létre egyet sem. Hozd létre az első aukciódat, vagy csatlakozz eggyel meghívó link segítségével.",
+      "createFirst": "Első aukció létrehozása"
     },
     "seo": {
-      "title": "Dashboard",
-      "description": "Manage your auctions and bids"
+      "title": "Irányítópult",
+      "description": "Kezeld az aukcióidat és licitjeidet"
     }
   }
 }

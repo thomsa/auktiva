@@ -1,52 +1,52 @@
 {
   "settings": {
-    "title": "Settings",
-    "subtitle": "Manage your account preferences and profile",
+    "title": "Beállítások",
+    "subtitle": "Profil és fiókbeállítások kezelése",
     "profile": {
-      "title": "Profile",
-      "email": "Email",
-      "emailCannotChange": "Email cannot be changed",
-      "displayName": "Display Name",
-      "displayNamePlaceholder": "Your name",
-      "saveProfile": "Save Profile",
-      "saving": "Saving...",
-      "profileUpdated": "Profile updated successfully"
+      "title": "Profil",
+      "email": "E-mail",
+      "emailCannotChange": "Az e-mail cím nem módosítható",
+      "displayName": "Megjelenített név",
+      "displayNamePlaceholder": "A neved",
+      "saveProfile": "Profil mentése",
+      "saving": "Mentés...",
+      "profileUpdated": "Profil sikeresen frissítve"
     },
     "password": {
-      "title": "Change Password",
-      "currentPassword": "Current Password",
-      "newPassword": "New Password",
-      "newPasswordPlaceholder": "At least 8 characters",
-      "confirmNewPassword": "Confirm New Password",
-      "changePassword": "Change Password",
-      "changing": "Changing...",
-      "passwordChanged": "Password changed successfully",
-      "passwordsDoNotMatch": "New passwords do not match",
-      "passwordTooShort": "Password must be at least 8 characters"
+      "title": "Jelszó módosítása",
+      "currentPassword": "Jelenlegi jelszó",
+      "newPassword": "Új jelszó",
+      "newPasswordPlaceholder": "Legalább 8 karakter",
+      "confirmNewPassword": "Új jelszó megerősítése",
+      "changePassword": "Jelszó módosítása",
+      "changing": "Módosítás...",
+      "passwordChanged": "Jelszó sikeresen módosítva",
+      "passwordsDoNotMatch": "Az új jelszavak nem egyeznek",
+      "passwordTooShort": "A jelszónak legalább 8 karakter hosszúnak kell lennie"
     },
     "emailNotifications": {
-      "title": "Email Notifications",
-      "settingsSaved": "Settings saved",
-      "newItemNotifications": "New item notifications",
-      "newItemDescription": "Receive an email when a new item is added to an auction you're a member of",
-      "outbidNotifications": "Outbid notifications",
-      "outbidDescription": "Receive an email when someone outbids you on an item"
+      "title": "E-mail értesítések",
+      "settingsSaved": "Beállítások mentve",
+      "newItemNotifications": "Új tétel értesítések",
+      "newItemDescription": "Értesítés e-mailben, ha új tétel kerül egy általad követett aukcióba",
+      "outbidNotifications": "Túllicitálás értesítések",
+      "outbidDescription": "Értesítés e-mailben, ha valaki túllicitál egy tételen"
     },
     "appearance": {
-      "title": "Appearance",
-      "themePreference": "Theme Preference",
-      "light": "Light",
-      "dark": "Dark",
-      "system": "System"
+      "title": "Megjelenés",
+      "themePreference": "Téma beállítás",
+      "light": "Világos",
+      "dark": "Sötét",
+      "system": "Rendszer"
     },
     "language": {
-      "title": "Language",
-      "selectLanguage": "Select Language",
-      "languageDescription": "Choose your preferred language for the interface"
+      "title": "Nyelv",
+      "selectLanguage": "Nyelv kiválasztása",
+      "languageDescription": "Válaszd ki a preferált nyelvet a felülethez"
     },
     "seo": {
-      "title": "Settings",
-      "description": "Manage your account settings"
+      "title": "Beállítások",
+      "description": "Kezeld a fiók beállításaidat"
     }
   }
 }

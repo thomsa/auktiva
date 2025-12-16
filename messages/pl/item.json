@@ -1,69 +1,69 @@
 {
   "item": {
     "bid": {
-      "title": "Place Bid",
-      "currentBid": "Current Bid",
-      "startingBid": "Starting",
-      "yourBid": "Your Bid",
+      "title": "Złóż ofertę",
+      "currentBid": "Aktualna oferta",
+      "startingBid": "Cena wywoławcza",
+      "yourBid": "Twoja oferta",
       "minBid": "Min",
-      "placeBid": "Place Bid",
-      "placingBid": "Placing Bid...",
-      "highestBidder": "You're the highest bidder!",
-      "biddingEnded": "This item's bidding has ended.",
-      "cannotBidOwn": "You cannot bid on your own item.",
-      "cannotBid": "You cannot bid on this item.",
-      "bidAsAnonymous": "Bid as anonymous",
-      "anonymousTooltip": "Your name will be hidden from other bidders. The item owner will still see your details.",
-      "minIncrement": "Min Increment",
-      "minimumBidError": "Minimum bid is {symbol}{amount}",
-      "currency": "Currency"
+      "placeBid": "Złóż ofertę",
+      "placingBid": "Składanie oferty...",
+      "highestBidder": "Masz najwyższą ofertę!",
+      "biddingEnded": "Licytacja tego przedmiotu zakończyła się.",
+      "cannotBidOwn": "Nie możesz licytować własnego przedmiotu.",
+      "cannotBid": "Nie możesz licytować tego przedmiotu.",
+      "bidAsAnonymous": "Licytuj anonimowo",
+      "anonymousTooltip": "Twoje imię będzie ukryte przed innymi licytującymi. Właściciel przedmiotu nadal zobaczy Twoje dane.",
+      "minIncrement": "Min. przyrost",
+      "minimumBidError": "Minimalna oferta to {symbol}{amount}",
+      "currency": "Waluta"
     },
     "card": {
-      "noBids": "No bids yet",
-      "bids": "bids",
-      "bidsCount": "{count, plural, =0 {No bids} =1 {1 bid} other {# bids}}",
-      "startingAt": "Starting at"
+      "noBids": "Brak ofert",
+      "bids": "ofert",
+      "bidsCount": "{count, plural, =0 {Brak ofert} =1 {1 oferta} other {# ofert}}",
+      "startingAt": "Od"
     },
     "create": {
-      "title": "Add New Item",
-      "subtitle": "Add an item to your auction",
-      "itemName": "Item Name",
-      "itemNamePlaceholder": "e.g., Vintage Watch",
-      "description": "Description",
-      "descriptionPlaceholder": "Describe your item...",
-      "images": "Images",
-      "startingBid": "Starting Bid",
-      "minBidIncrement": "Minimum Bid Increment",
-      "currency": "Currency",
-      "endDate": "End Date (optional)",
-      "submitButton": "Add Item",
-      "submitting": "Adding..."
+      "title": "Dodaj nowy przedmiot",
+      "subtitle": "Dodaj przedmiot do swojej aukcji",
+      "itemName": "Nazwa przedmiotu",
+      "itemNamePlaceholder": "np. Zabytkowy zegarek",
+      "description": "Opis",
+      "descriptionPlaceholder": "Opisz swój przedmiot...",
+      "images": "Zdjęcia",
+      "startingBid": "Cena wywoławcza",
+      "minBidIncrement": "Minimalny przyrost oferty",
+      "currency": "Waluta",
+      "endDate": "Data zakończenia (opcjonalnie)",
+      "submitButton": "Dodaj przedmiot",
+      "submitting": "Dodawanie..."
     },
     "gallery": {
-      "imageOf": "Image {current} of {total}",
-      "previousImage": "Previous image",
-      "nextImage": "Next image",
-      "thumbnail": "Thumbnail {index}"
+      "imageOf": "Zdjęcie {current} z {total}",
+      "previousImage": "Poprzednie zdjęcie",
+      "nextImage": "Następne zdjęcie",
+      "thumbnail": "Miniatura {index}"
     },
     "sidebar": {
-      "title": "Items in Auction",
-      "show": "Show items sidebar",
-      "hide": "Hide items sidebar"
+      "title": "Przedmioty na aukcji",
+      "show": "Pokaż pasek przedmiotów",
+      "hide": "Ukryj pasek przedmiotów"
     },
     "history": {
-      "title": "Bid History",
-      "noBids": "No bids yet. Be the first to bid!",
-      "anonymous": "Anonymous",
-      "you": "You",
-      "highest": "Highest"
+      "title": "Historia ofert",
+      "noBids": "Brak ofert. Bądź pierwszy!",
+      "anonymous": "Anonimowy",
+      "you": "Ty",
+      "highest": "Najwyższa"
     },
     "status": {
-      "active": "Active",
-      "ended": "Ended",
-      "winning": "Winning",
-      "outbid": "Outbid",
-      "won": "Won",
-      "lost": "Lost"
+      "active": "Aktywna",
+      "ended": "Zakończona",
+      "winning": "Wygrywasz",
+      "outbid": "Przebito",
+      "won": "Wygrana",
+      "lost": "Przegrana"
     }
   }
 }

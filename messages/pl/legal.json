@@ -1,14 +1,14 @@
 {
   "legal": {
     "privacy": {
-      "title": "Privacy Policy",
-      "lastUpdated": "Last updated",
-      "description": "Your privacy is important to us"
+      "title": "Polityka prywatności",
+      "lastUpdated": "Ostatnia aktualizacja",
+      "description": "Twoja prywatność jest dla nas ważna"
     },
     "terms": {
-      "title": "Terms of Service",
-      "lastUpdated": "Last updated",
-      "description": "Please read these terms carefully"
+      "title": "Regulamin",
+      "lastUpdated": "Ostatnia aktualizacja",
+      "description": "Prosimy o uważne przeczytanie regulaminu"
     }
   }
 }

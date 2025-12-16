@@ -1,69 +1,69 @@
 {
   "item": {
     "bid": {
-      "title": "Place Bid",
-      "currentBid": "Current Bid",
-      "startingBid": "Starting",
-      "yourBid": "Your Bid",
+      "title": "Licitálás",
+      "currentBid": "Aktuális licit",
+      "startingBid": "Kikiáltási ár",
+      "yourBid": "A te licited",
       "minBid": "Min",
-      "placeBid": "Place Bid",
-      "placingBid": "Placing Bid...",
-      "highestBidder": "You're the highest bidder!",
-      "biddingEnded": "This item's bidding has ended.",
-      "cannotBidOwn": "You cannot bid on your own item.",
-      "cannotBid": "You cannot bid on this item.",
-      "bidAsAnonymous": "Bid as anonymous",
-      "anonymousTooltip": "Your name will be hidden from other bidders. The item owner will still see your details.",
-      "minIncrement": "Min Increment",
-      "minimumBidError": "Minimum bid is {symbol}{amount}",
-      "currency": "Currency"
+      "placeBid": "Licitálás",
+      "placingBid": "Licit küldése...",
+      "highestBidder": "Jelenleg te vezetsz!",
+      "biddingEnded": "A tétel licitálása lezárult.",
+      "cannotBidOwn": "Nem licitálhatsz a saját tételedre.",
+      "cannotBid": "Nem licitálhatsz erre a tételre.",
+      "bidAsAnonymous": "Anonim licitálás",
+      "anonymousTooltip": "A neved rejtve marad a többi licitáló elől. A tétel tulajdonosa továbbra is látja az adataidat.",
+      "minIncrement": "Licitlépcső",
+      "minimumBidError": "Minimális licit: {symbol}{amount}",
+      "currency": "Pénznem"
     },
     "card": {
-      "noBids": "No bids yet",
-      "bids": "bids",
-      "bidsCount": "{count, plural, =0 {No bids} =1 {1 bid} other {# bids}}",
-      "startingAt": "Starting at"
+      "noBids": "Még nincs licit",
+      "bids": "licit",
+      "bidsCount": "{count, plural, =0 {Nincs licit} =1 {1 licit} other {# licit}}",
+      "startingAt": "Kikiáltási ár"
     },
     "create": {
-      "title": "Add New Item",
-      "subtitle": "Add an item to your auction",
-      "itemName": "Item Name",
-      "itemNamePlaceholder": "e.g., Vintage Watch",
-      "description": "Description",
-      "descriptionPlaceholder": "Describe your item...",
-      "images": "Images",
-      "startingBid": "Starting Bid",
-      "minBidIncrement": "Minimum Bid Increment",
-      "currency": "Currency",
-      "endDate": "End Date (optional)",
-      "submitButton": "Add Item",
-      "submitting": "Adding..."
+      "title": "Új tétel hozzáadása",
+      "subtitle": "Adj hozzá egy tételt az aukciódhoz",
+      "itemName": "Tétel neve",
+      "itemNamePlaceholder": "pl. Vintage óra",
+      "description": "Leírás",
+      "descriptionPlaceholder": "Írd le a tételt...",
+      "images": "Képek",
+      "startingBid": "Kikiáltási ár",
+      "minBidIncrement": "Licitlépcső",
+      "currency": "Pénznem",
+      "endDate": "Záró dátum (opcionális)",
+      "submitButton": "Tétel hozzáadása",
+      "submitting": "Hozzáadás..."
     },
     "gallery": {
-      "imageOf": "Image {current} of {total}",
-      "previousImage": "Previous image",
-      "nextImage": "Next image",
-      "thumbnail": "Thumbnail {index}"
+      "imageOf": "{current}. kép a {total}-ból",
+      "previousImage": "Előző kép",
+      "nextImage": "Következő kép",
+      "thumbnail": "{index}. bélyegkép"
     },
     "sidebar": {
-      "title": "Items in Auction",
-      "show": "Show items sidebar",
-      "hide": "Hide items sidebar"
+      "title": "Tételek az aukcióban",
+      "show": "Tételek oldalsáv megjelenítése",
+      "hide": "Tételek oldalsáv elrejtése"
     },
     "history": {
-      "title": "Bid History",
-      "noBids": "No bids yet. Be the first to bid!",
-      "anonymous": "Anonymous",
-      "you": "You",
-      "highest": "Highest"
+      "title": "Licit előzmények",
+      "noBids": "Még nincs licit. Légy az első!",
+      "anonymous": "Anonim",
+      "you": "Te",
+      "highest": "Legmagasabb"
     },
     "status": {
-      "active": "Active",
-      "ended": "Ended",
-      "winning": "Winning",
-      "outbid": "Outbid",
-      "won": "Won",
-      "lost": "Lost"
+      "active": "Aktív",
+      "ended": "Lezárult",
+      "winning": "Nyerésre áll",
+      "outbid": "Túllicitálva",
+      "won": "Nyert",
+      "lost": "Nem nyert"
     }
   }
 }
