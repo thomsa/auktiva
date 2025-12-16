@@ -20,44 +20,18 @@ export function Footer() {
             <div className="flex gap-4">
               <a
                 href="https://github.com/thomsa/auktiva"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="btn btn-ghost btn-circle hover:bg-base-content/5"
               >
                 <span className="icon-[tabler--brand-github] size-6"></span>
-              </a>
-              <a
-                href="https://twitter.com"
-                className="btn btn-ghost btn-circle hover:bg-base-content/5"
-              >
-                <span className="icon-[tabler--brand-twitter] size-6"></span>
-              </a>
-              <a
-                href="https://discord.com"
-                className="btn btn-ghost btn-circle hover:bg-base-content/5"
-              >
-                <span className="icon-[tabler--brand-discord] size-6"></span>
               </a>
             </div>
           </div>
 
           <div>
-            <h4 className="font-bold mb-6 text-lg">Product</h4>
+            <h4 className="font-bold mb-6 text-lg">Resources</h4>
             <ul className="space-y-4 text-base-content/60">
-              <li>
-                <Link
-                  href="/features"
-                  className="hover:text-primary transition-colors"
-                >
-                  Features
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/pricing"
-                  className="hover:text-primary transition-colors"
-                >
-                  Pricing
-                </Link>
-              </li>
               <li>
                 <Link
                   href="https://docs.auktiva.org"
@@ -68,10 +42,12 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/showcase"
+                  href="https://github.com/thomsa/auktiva"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="hover:text-primary transition-colors"
                 >
-                  Showcase
+                  GitHub
                 </Link>
               </li>
             </ul>
@@ -94,22 +70,6 @@ export function Footer() {
                   className="hover:text-primary transition-colors"
                 >
                   Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/license"
-                  className="hover:text-primary transition-colors"
-                >
-                  MIT License
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/security"
-                  className="hover:text-primary transition-colors"
-                >
-                  Security
                 </Link>
               </li>
             </ul>

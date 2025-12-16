@@ -17,8 +17,8 @@ export function HowItWorks() {
     },
     {
       num: "04",
-      title: "Easy Checkout",
-      desc: "Winners are notified automatically. You collect payment your way.",
+      title: "Wrap Up",
+      desc: "Winners are notified automatically. Handle exchange and settlement offline, your way.",
     },
   ];
 
@@ -28,12 +28,12 @@ export function HowItWorks() {
         <div className="flex flex-col lg:flex-row gap-16 items-center">
           <div className="lg:w-1/2">
             <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">
-              Simple workflow for <br />
-              <span className="text-secondary">maximum impact</span>
+              From setup to <br />
+              <span className="text-secondary">successful fundraiser</span>
             </h2>
             <p className="text-xl text-base-content/60 mb-12">
-              We&apos;ve streamlined the auction process so you can focus on
-              what matters - your cause and your guests.
+              Four simple steps to run your charity auction. Focus on your
+              cause, we&apos;ll handle the bidding.
             </p>
 
             <div className="space-y-8">

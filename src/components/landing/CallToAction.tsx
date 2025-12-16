@@ -1,10 +1,24 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 export function CallToAction() {
+  const [copied, setCopied] = useState(false);
+  const installCommand =
+    "curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install.sh | bash";
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(installCommand);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <section className="py-20 px-4">
       <div className="container mx-auto">
-        <div className="relative rounded-[3rem] overflow-hidden bg-primary text-primary-content px-8 py-20 text-center">
+        {/* Main CTA */}
+        <div className="relative rounded-[3rem] overflow-hidden bg-primary text-primary-content px-8 py-20 text-center mb-16">
           {/* Background decorative elements */}
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
@@ -13,29 +27,68 @@ export function CallToAction() {
 
           <div className="relative z-10 max-w-3xl mx-auto">
             <h2 className="text-4xl md:text-6xl font-extrabold mb-8 tracking-tight">
-              Ready to host your <br /> next big event?
+              Ready to run your <br /> next fundraiser?
             </h2>
             <p className="text-xl opacity-90 mb-12 max-w-2xl mx-auto font-light">
-              Join thousands of organizers using Auktiva to raise funds
-              effortlessly. Open source, free, and designed for you.
+              Join organizers using Auktiva to run charity auctions. Open
+              source, free, and built for communities.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col items-center gap-2">
               <Link
                 href="/register"
                 className="btn btn-lg bg-white text-primary hover:bg-white/90 border-none shadow-xl h-14 px-8 rounded-full"
               >
-                Get Started for Free
+                Get Started{" "}
+                <span className="icon-[tabler--rocket] size-6"></span>
               </Link>
-              <Link
-                href="https://github.com/thomsa/auktiva"
-                target="_blank"
-                className="btn btn-lg btn-outline border-white/30 text-white hover:bg-white/10 hover:border-white h-14 px-8 rounded-full"
-              >
-                Self-Host
-              </Link>
+              <p className="text-sm opacity-70">
+                It&apos;s free and will always be free
+              </p>
             </div>
           </div>
+        </div>
+
+        {/* Self-Host Section */}
+        <div className="max-w-3xl mx-auto text-center">
+          <h3 className="text-2xl md:text-3xl font-bold mb-4">
+            Prefer to self-host?
+          </h3>
+          <p className="text-base-content/60 mb-8">
+            Run Auktiva on your own server with full control over your data. One
+            command to get started.
+          </p>
+
+          {/* Terminal mockup */}
+          <div className="mockup-code bg-neutral text-neutral-content text-left">
+            <pre data-prefix="$" className="flex items-center justify-between">
+              <code className="flex-1 overflow-x-auto text-sm">
+                {installCommand}
+              </code>
+              <button
+                onClick={handleCopy}
+                className="btn btn-ghost btn-sm ml-4 text-neutral-content/70 hover:text-neutral-content"
+                aria-label="Copy to clipboard"
+              >
+                {copied ? (
+                  <span className="icon-[tabler--check] size-5 text-success"></span>
+                ) : (
+                  <span className="icon-[tabler--copy] size-5"></span>
+                )}
+              </button>
+            </pre>
+          </div>
+
+          <p className="text-sm text-base-content/50 mt-4">
+            See the{" "}
+            <Link
+              href="https://docs.auktiva.org/developers"
+              className="link link-primary"
+            >
+              developer documentation
+            </Link>{" "}
+            for more details.
+          </p>
         </div>
       </div>
     </section>

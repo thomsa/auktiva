@@ -42,10 +42,10 @@ const features = [
     bg: "bg-pink-500/10",
   },
   {
-    title: "Offline Settlement",
+    title: "Offline Exchange",
     description:
-      "Perfect for charity events. We handle the bidding, you handle the payments your way.",
-    icon: "icon-[tabler--cash-off]",
+      "Perfect for charity events. We handle the bidding, you handle the item exchange offline.",
+    icon: "icon-[tabler--transfer]",
     color: "text-orange-500",
     bg: "bg-orange-500/10",
   },
