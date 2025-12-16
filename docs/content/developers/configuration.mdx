@@ -35,10 +35,11 @@ AUTH_SECRET="your-secret-key-here"
 AUTH_URL="http://localhost:3000"
 ```
 
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 <Callout type="warning">
-  Always generate a unique `AUTH_SECRET` for production. Never use the example value.
+  Always generate a unique `AUTH_SECRET` for production. Never use the example
+  value.
 </Callout>
 
 ## Storage Configuration
@@ -90,6 +91,7 @@ CRON_SECRET="generate-with-openssl-rand-base64-32"
 ### Email Types
 
 When configured, Auktiva sends:
+
 - **Welcome emails** - On user registration
 - **Auction invites** - When users are invited to auctions
 - **New item notifications** - When items are added (user can disable)
@@ -100,7 +102,8 @@ When configured, Auktiva sends:
 Failed emails are logged to the database and automatically retried via a cron job at `/api/cron/retry-emails`. On Vercel, this runs every 15 minutes. The system retries up to 5 times before abandoning.
 
 <Callout type="info">
-  Email is optional. If `BREVO_API_KEY` is not set, no emails will be sent and the app will function normally.
+  Email is optional. If `BREVO_API_KEY` is not set, no emails will be sent and
+  the app will function normally.
 </Callout>
 
 ## Feature Flags
@@ -112,26 +115,26 @@ ALLOW_OPEN_AUCTIONS="true"
 
 ## All Environment Variables
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `DATABASE_URL` | Yes | - | Database connection string |
-| `DATABASE_AUTH_TOKEN` | Turso only | - | Turso authentication token |
-| `AUTH_SECRET` | Yes | - | Session encryption secret |
-| `AUTH_URL` | Yes | - | Application base URL |
-| `STORAGE_PROVIDER` | No | `local` | Storage provider (`local` or `s3`) |
-| `STORAGE_LOCAL_PATH` | Local only | `./uploads` | Path for local file storage |
-| `S3_BUCKET` | S3 only | - | S3 bucket name |
-| `S3_REGION` | S3 only | - | S3 region |
-| `S3_ACCESS_KEY_ID` | S3 only | - | S3 access key |
-| `S3_SECRET_ACCESS_KEY` | S3 only | - | S3 secret key |
-| `S3_ENDPOINT` | No | - | Custom S3 endpoint |
-| `S3_PUBLIC_URL` | No | - | Custom public URL for files |
-| `BREVO_API_KEY` | No | - | Brevo API key for emails |
-| `MAIL_FROM` | No | `noreply@auktiva.org` | Sender email address |
-| `MAIL_FROM_NAME` | No | `Auktiva.org` | Sender display name |
-| `NEXT_PUBLIC_APP_URL` | No | - | App URL for email links |
-| `CRON_SECRET` | No | - | Secret for cron endpoint auth |
-| `ALLOW_OPEN_AUCTIONS` | No | `false` | Enable open auction creation |
+| Variable               | Required   | Default               | Description                        |
+| ---------------------- | ---------- | --------------------- | ---------------------------------- |
+| `DATABASE_URL`         | Yes        | -                     | Database connection string         |
+| `DATABASE_AUTH_TOKEN`  | Turso only | -                     | Turso authentication token         |
+| `AUTH_SECRET`          | Yes        | -                     | Session encryption secret          |
+| `AUTH_URL`             | Yes        | -                     | Application base URL               |
+| `STORAGE_PROVIDER`     | No         | `local`               | Storage provider (`local` or `s3`) |
+| `STORAGE_LOCAL_PATH`   | Local only | `./uploads`           | Path for local file storage        |
+| `S3_BUCKET`            | S3 only    | -                     | S3 bucket name                     |
+| `S3_REGION`            | S3 only    | -                     | S3 region                          |
+| `S3_ACCESS_KEY_ID`     | S3 only    | -                     | S3 access key                      |
+| `S3_SECRET_ACCESS_KEY` | S3 only    | -                     | S3 secret key                      |
+| `S3_ENDPOINT`          | No         | -                     | Custom S3 endpoint                 |
+| `S3_PUBLIC_URL`        | No         | -                     | Custom public URL for files        |
+| `BREVO_API_KEY`        | No         | -                     | Brevo API key for emails           |
+| `MAIL_FROM`            | No         | `noreply@auktiva.org` | Sender email address               |
+| `MAIL_FROM_NAME`       | No         | `Auktiva.org`         | Sender display name                |
+| `NEXT_PUBLIC_APP_URL`  | No         | -                     | App URL for email links            |
+| `CRON_SECRET`          | No         | -                     | Secret for cron endpoint auth      |
+| `ALLOW_OPEN_AUCTIONS`  | No         | `false`               | Enable open auction creation       |
 
 ## Example Configurations
 

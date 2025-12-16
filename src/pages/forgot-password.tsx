@@ -48,86 +48,104 @@ export default function ForgotPasswordPage() {
         description="Reset your Auktiva password"
         noindex
       />
-      <div className="min-h-screen flex flex-col lg:flex-row">
+      <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
         {/* Left side - Branding (hidden on mobile) */}
-        <div
-          className="hidden lg:flex lg:w-1/2 bg-[#fff2d4] items-center justify-center p-12 relative"
-          style={{
-            backgroundImage: "url('/pictures/login-bg.png')",
-            backgroundPosition: "bottom center",
-            backgroundSize: "contain",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          <div className="absolute inset-0 bg-base-100/80"></div>
-          <Link
-            href="/"
-            className="relative z-10 flex flex-col items-center gap-4 hover:opacity-80 transition-opacity cursor-pointer"
-          >
-            <div className="flex items-center gap-3">
-              <span className="icon-[tabler--gavel] size-12 text-primary"></span>
-              <h1 className="text-4xl font-bold text-base-content">Auktiva</h1>
-            </div>
-            <p className="text-base-content/60 text-lg text-center">
-              The free auction platform for fundraisers and charities
+        <div className="hidden lg:flex lg:w-1/2 relative bg-base-200 overflow-hidden items-center justify-center">
+          {/* Background effects */}
+          <div className="absolute inset-0 z-0">
+            <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
+            <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse delay-1000"></div>
+            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center justify-center p-12 text-center max-w-lg">
+            <Link href="/" className="mb-8 group">
+              <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-base-100 shadow-2xl shadow-primary/10 border border-base-content/5 mb-6 group-hover:scale-105 transition-transform duration-300">
+                <span className="icon-[tabler--gavel] size-10 text-primary group-hover:-rotate-12 transition-transform duration-300"></span>
+              </div>
+              <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Auktiva
+              </h1>
+            </Link>
+
+            <h2 className="text-2xl font-bold mb-4">Password Recovery</h2>
+            <p className="text-base-content/60 text-lg leading-relaxed">
+              Don&apos;t worry, it happens to the best of us. We&apos;ll help
+              you get back into your account.
             </p>
-          </Link>
+          </div>
         </div>
 
         {/* Right side - Form */}
-        <div className="flex-1 lg:w-1/2 bg-base-300 flex flex-col items-center justify-center p-6 sm:p-12">
-          {/* Mobile logo */}
+        <div className="flex-1 lg:w-1/2 flex flex-col items-center justify-center p-6 sm:p-12 relative bg-base-100">
           <Link
             href="/"
-            className="lg:hidden mb-8 flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className="lg:hidden absolute top-8 left-6 flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <span className="icon-[tabler--gavel] size-8 text-primary"></span>
-            <span className="text-xl font-bold text-base-content">Auktiva</span>
+            <span className="icon-[tabler--gavel] size-6 text-primary"></span>
+            <span className="text-lg font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Auktiva
+            </span>
           </Link>
 
-          <div className="w-full max-w-md">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-base-content">
-                Forgot your password?
+          <div className="w-full max-w-[400px]">
+            <div className="mb-10">
+              <h2 className="text-3xl font-bold text-base-content mb-2">
+                Forgot Password?
               </h2>
-              <p className="text-base-content/60 mt-1">
-                Enter your email and we&apos;ll send you a reset link
+              <p className="text-base-content/60">
+                Enter your email to receive a reset link
               </p>
             </div>
 
             {success ? (
               <div className="space-y-6">
-                <AlertMessage type="success">
-                  If an account with that email exists, we&apos;ve sent a
-                  password reset link. Please check your inbox.
-                </AlertMessage>
-                <p className="text-sm text-base-content/60">
+                <div className="alert alert-success shadow-lg border-none bg-success/10 text-success-content">
+                  <span className="icon-[tabler--mail-check] size-6"></span>
+                  <div>
+                    <h3 className="font-bold">Check your inbox</h3>
+                    <div className="text-sm opacity-90 mt-1">
+                      If an account exists, we&apos;ve sent a password reset
+                      link.
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-sm text-base-content/60 bg-base-200/50 p-4 rounded-xl">
+                  <span className="font-semibold block mb-1">Note:</span>
                   The link will expire in 10 minutes. If you don&apos;t see the
                   email, check your spam folder.
                 </p>
-                <Link href="/login" className="btn btn-primary w-full">
+
+                <Link
+                  href="/login"
+                  className="btn btn-primary w-full shadow-lg shadow-primary/20"
+                >
                   Back to Sign In
                 </Link>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {error && <AlertMessage type="error">{error}</AlertMessage>}
 
                 <div className="form-control">
-                  <label className="label" htmlFor="email">
-                    <span className="label-text text-base-content/80">
-                      Email
+                  <label className="label pl-0" htmlFor="email">
+                    <span className="label-text font-medium text-base-content/80">
+                      Email Address
                     </span>
                   </label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    autoComplete="email"
-                    className="input input-bordered w-full bg-base-100"
-                    required
-                  />
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--mail] size-5"></span>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      autoComplete="email"
+                      className="input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <Button
@@ -136,20 +154,25 @@ export default function ForgotPasswordPage() {
                   modifier="block"
                   isLoading={isLoading}
                   loadingText="Sending..."
+                  className="btn-lg text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
+                  icon={<span className="icon-[tabler--send] size-5"></span>}
                 >
                   Send Reset Link
                 </Button>
               </form>
             )}
 
-            <div className="divider my-6">or</div>
-
-            <p className="text-center text-sm text-base-content/60">
-              Remember your password?{" "}
-              <Link href="/login" className="link link-primary font-medium">
-                Sign in
-              </Link>
-            </p>
+            <div className="mt-8 text-center">
+              <p className="text-sm text-base-content/60">
+                Remember your password?{" "}
+                <Link
+                  href="/login"
+                  className="link link-primary font-bold hover:text-primary/80 transition-colors"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>

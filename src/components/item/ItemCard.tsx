@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { isItemEnded } from "@/utils/auction-helpers";
+import { isItemEnded, getBidStatus } from "@/utils/auction-helpers";
 import { formatShortDate } from "@/utils/formatters";
 
 interface ItemCardProps {
@@ -13,6 +13,8 @@ interface ItemCardProps {
     endDate: string | null;
     creatorId: string;
     thumbnailUrl: string | null;
+    highestBidderId?: string | null;
+    userHasBid?: boolean;
     _count: {
       bids: number;
     };
@@ -26,69 +28,154 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
   const ended = isItemEnded(item.endDate);
   const canEditItem = item.creatorId === userId || isAdmin;
 
+  // Bid status logic
+  const isHighestBidder = item.highestBidderId === userId;
+  const bidStatus = item.userHasBid
+    ? getBidStatus(isHighestBidder, ended)
+    : null;
+
   return (
     <div
-      className={`card bg-base-200 hover:bg-base-300 transition-colors relative ${
+      className={`card bg-base-100/50 backdrop-blur-sm border border-base-content/5 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 relative group overflow-hidden ${
         ended ? "opacity-75" : ""
       }`}
     >
-      <Link href={`/auctions/${auctionId}/items/${item.id}`} className="block">
+      <Link
+        href={`/auctions/${auctionId}/items/${item.id}`}
+        className="block h-full flex flex-col"
+      >
         {item.thumbnailUrl ? (
-          <figure className="h-36 relative">
+          <figure className="h-48 relative overflow-hidden bg-base-200/50">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={item.thumbnailUrl}
               alt={item.name}
-              className={`w-full h-full object-cover ${ended ? "grayscale" : ""}`}
+              className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${ended ? "grayscale" : ""}`}
             />
-            {ended && (
-              <div className="absolute top-2 left-2">
-                <div className="badge badge-error gap-1">
+            {bidStatus === "won" ? (
+              <div className="absolute top-3 left-3">
+                <div className="badge badge-success gap-1 shadow-sm font-bold">
+                  <span className="icon-[tabler--crown] size-3"></span>
+                  Won
+                </div>
+              </div>
+            ) : ended ? (
+              <div className="absolute top-3 left-3">
+                <div className="badge badge-error gap-1 shadow-sm font-bold">
                   <span className="icon-[tabler--flag-filled] size-3"></span>
                   Ended
                 </div>
               </div>
+            ) : bidStatus === "winning" ? (
+              <div className="absolute top-3 left-3">
+                <div className="badge badge-success gap-1 shadow-sm font-bold animate-pulse">
+                  <span className="icon-[tabler--trophy] size-3"></span>
+                  Winning
+                </div>
+              </div>
+            ) : (
+              bidStatus === "outbid" && (
+                <div className="absolute top-3 left-3">
+                  <div className="badge badge-warning gap-1 shadow-sm font-bold">
+                    <span className="icon-[tabler--alert-circle] size-3"></span>
+                    Outbid
+                  </div>
+                </div>
+              )
             )}
           </figure>
         ) : (
           <figure
-            className={`h-36 bg-base-300 flex items-center justify-center relative ${
+            className={`h-48 bg-base-200/50 flex items-center justify-center relative ${
               ended ? "grayscale" : ""
             }`}
           >
-            <span className="icon-[tabler--photo] size-12 text-base-content/20"></span>
-            {ended && (
-              <div className="absolute top-2 left-2">
-                <div className="badge badge-error gap-1">
+            <span className="icon-[tabler--photo] size-12 text-base-content/10 group-hover:scale-110 transition-transform duration-300"></span>
+            {bidStatus === "won" ? (
+              <div className="absolute top-3 left-3">
+                <div className="badge badge-success gap-1 shadow-sm font-bold">
+                  <span className="icon-[tabler--crown] size-3"></span>
+                  Won
+                </div>
+              </div>
+            ) : ended ? (
+              <div className="absolute top-3 left-3">
+                <div className="badge badge-error gap-1 shadow-sm font-bold">
                   <span className="icon-[tabler--flag-filled] size-3"></span>
                   Ended
                 </div>
               </div>
+            ) : bidStatus === "winning" ? (
+              <div className="absolute top-3 left-3">
+                <div className="badge badge-success gap-1 shadow-sm font-bold animate-pulse">
+                  <span className="icon-[tabler--trophy] size-3"></span>
+                  Winning
+                </div>
+              </div>
+            ) : (
+              bidStatus === "outbid" && (
+                <div className="absolute top-3 left-3">
+                  <div className="badge badge-warning gap-1 shadow-sm font-bold">
+                    <span className="icon-[tabler--alert-circle] size-3"></span>
+                    Outbid
+                  </div>
+                </div>
+              )
             )}
           </figure>
         )}
-        <div className="card-body p-4">
-          <h3 className="card-title text-base pr-8">{item.name}</h3>
+        <div className="card-body p-5 flex-1">
+          <div className="flex justify-between items-start gap-2">
+            <h3 className="card-title text-base pr-8 line-clamp-1 group-hover:text-primary transition-colors">
+              {item.name}
+            </h3>
+            {bidStatus === "won" && (
+              <div className="badge badge-success badge-sm gap-1 shadow-sm font-bold shrink-0">
+                <span className="icon-[tabler--trophy] size-3"></span>
+                Won
+              </div>
+            )}
+            {bidStatus === "lost" && (
+              <div className="badge badge-ghost badge-sm gap-1 shadow-sm font-bold shrink-0 opacity-70">
+                <span className="icon-[tabler--x] size-3"></span>
+                Lost
+              </div>
+            )}
+          </div>
+
           {item.description && (
-            <p className="text-sm text-base-content/60 line-clamp-2">
+            <p className="text-sm text-base-content/60 line-clamp-2 h-10 mb-2">
               {item.description}
             </p>
           )}
-          <div className="mt-auto pt-3">
-            <div className="text-lg font-bold text-primary">
-              {item.currentBid !== null
-                ? `${item.currentBid} ${item.currencyCode}`
-                : `${item.startingBid} ${item.currencyCode}`}
-            </div>
-            <div className="flex justify-between items-center text-xs mt-1">
-              <span className="text-base-content/60">
-                {item._count.bids} bids
-              </span>
-              {item.endDate && (
-                <span className={ended ? "text-error" : "text-base-content/60"}>
-                  {ended ? "Ended" : "Ends"} {formatShortDate(item.endDate)}
-                </span>
-              )}
+          {!item.description && <div className="h-10 mb-2"></div>}
+
+          <div className="mt-auto pt-4 border-t border-base-content/5">
+            <div className="flex items-end justify-between">
+              <div>
+                <div className="text-xs text-base-content/50 font-medium mb-0.5 uppercase tracking-wide">
+                  {item.currentBid ? "Current Bid" : "Starting"}
+                </div>
+                <div
+                  className={`text-xl font-bold font-mono tracking-tight ${bidStatus === "winning" || bidStatus === "won" ? "text-success" : bidStatus === "outbid" ? "text-warning" : "text-primary"}`}
+                >
+                  {item.currentBid !== null
+                    ? `${item.currentBid} ${item.currencyCode}`
+                    : `${item.startingBid} ${item.currencyCode}`}
+                </div>
+              </div>
+              <div className="flex flex-col items-end">
+                <div className="flex items-center gap-1 text-xs text-base-content/60 mb-1">
+                  <span className="icon-[tabler--gavel] size-3"></span>
+                  {item._count.bids} bids
+                </div>
+                {item.endDate && !ended && (
+                  <div className="flex items-center gap-1 text-xs font-medium text-secondary">
+                    <span className="icon-[tabler--clock] size-3"></span>
+                    {formatShortDate(item.endDate)}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -96,11 +183,11 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
       {canEditItem && (
         <Link
           href={`/auctions/${auctionId}/items/${item.id}/edit`}
-          className="btn btn-ghost btn-xs btn-circle absolute top-2 right-2 bg-base-100/80"
+          className="btn btn-ghost btn-sm btn-circle absolute top-2 right-2 bg-base-100/80 hover:bg-base-100 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-200 scale-90 group-hover:scale-100"
           onClick={(e) => e.stopPropagation()}
           title="Edit item"
         >
-          <span className="icon-[tabler--edit] size-3"></span>
+          <span className="icon-[tabler--edit] size-4"></span>
         </Link>
       )}
     </div>

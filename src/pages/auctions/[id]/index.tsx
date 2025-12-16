@@ -59,6 +59,8 @@ interface AuctionDetailProps {
     createdAt: string;
     creatorId: string;
     thumbnailUrl: string | null;
+    highestBidderId: string | null;
+    userHasBid: boolean;
     _count: {
       bids: number;
     };
@@ -94,44 +96,51 @@ export default function AuctionDetailPage({
   return (
     <PageLayout user={user}>
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-8">
         <BackLink
           href="/dashboard"
           label="Back to Dashboard"
           shortLabel="Back"
         />
-        <h1 className="text-xl sm:text-2xl font-bold text-center sm:text-left mt-2">
-          {auction.name}
-        </h1>
+        <div className="flex items-center gap-3 mt-4">
+          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary to-secondary flex items-center justify-center text-primary-content shadow-lg shadow-primary/20">
+            <span className="icon-[tabler--gavel] size-7"></span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            {auction.name}
+          </h1>
+        </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-8">
         {/* Main Content - Items */}
         <div className="flex-1">
-          <div className="card bg-base-100 shadow-xl">
-            <div className="card-body">
+          <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
+            <div className="card-body p-6">
               {/* Items Header */}
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-                <h2 className="card-title">
-                  <span className="icon-[tabler--package] size-5"></span>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 pb-4 border-b border-base-content/5">
+                <h2 className="card-title flex items-center gap-2">
+                  <span className="icon-[tabler--package] size-5 text-primary"></span>
                   Items
-                  <span className="badge badge-ghost">{items.length}</span>
+                  <span className="badge badge-secondary badge-sm shadow-sm">
+                    {items.length}
+                  </span>
                 </h2>
                 <div className="flex flex-wrap items-center gap-2">
                   <SortDropdown
                     options={itemSortOptions}
                     currentSort={currentSort}
                   />
-                  <div className="join">
+                  <div className="join shadow-sm">
                     <button
-                      className={`btn btn-sm join-item ${viewMode === "grid" ? "btn-active" : ""}`}
+                      className={`btn btn-sm join-item ${viewMode === "grid" ? "btn-active btn-primary" : "btn-ghost bg-base-200/50"}`}
                       onClick={() => setViewMode("grid")}
                       title="Grid view"
                     >
                       <span className="icon-[tabler--layout-grid] size-4"></span>
                     </button>
                     <button
-                      className={`btn btn-sm join-item ${viewMode === "list" ? "btn-active" : ""}`}
+                      className={`btn btn-sm join-item ${viewMode === "list" ? "btn-active btn-primary" : "btn-ghost bg-base-200/50"}`}
                       onClick={() => setViewMode("list")}
                       title="List view"
                     >
@@ -141,7 +150,7 @@ export default function AuctionDetailPage({
                   {canCreate && (
                     <Link
                       href={`/auctions/${auction.id}/items/create`}
-                      className="btn btn-primary btn-sm"
+                      className="btn btn-primary btn-sm shadow-md shadow-primary/20"
                     >
                       <span className="icon-[tabler--plus] size-4"></span>
                       <span className="hidden sm:inline">Add Item</span>
@@ -153,23 +162,26 @@ export default function AuctionDetailPage({
 
               {/* Items Content */}
               {sortedItems.length === 0 ? (
-                <EmptyState
-                  icon="icon-[tabler--package-off]"
-                  title="No items yet"
-                  action={
-                    canCreate ? (
-                      <Link
-                        href={`/auctions/${auction.id}/items/create`}
-                        className="btn btn-primary"
-                      >
-                        <span className="icon-[tabler--plus] size-5"></span>
-                        Add First Item
-                      </Link>
-                    ) : undefined
-                  }
-                />
+                <div className="py-8">
+                  <EmptyState
+                    icon="icon-[tabler--package-off]"
+                    title="No items yet"
+                    description="This auction doesn't have any items listed yet."
+                    action={
+                      canCreate ? (
+                        <Link
+                          href={`/auctions/${auction.id}/items/create`}
+                          className="btn btn-primary shadow-lg"
+                        >
+                          <span className="icon-[tabler--plus] size-5"></span>
+                          Add First Item
+                        </Link>
+                      ) : undefined
+                    }
+                  />
+                </div>
               ) : viewMode === "grid" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {sortedItems.map((item) => (
                     <ItemCard
                       key={item.id}
@@ -181,7 +193,7 @@ export default function AuctionDetailPage({
                   ))}
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {sortedItems.map((item) => (
                     <ItemListItem
                       key={item.id}
@@ -198,7 +210,9 @@ export default function AuctionDetailPage({
         </div>
 
         {/* Sidebar */}
-        <AuctionSidebar auction={auction} membership={membership} />
+        <div className="lg:w-80">
+          <AuctionSidebar auction={auction} membership={membership} />
+        </div>
       </div>
     </PageLayout>
   );
@@ -292,6 +306,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // Generate public URL for thumbnail
   const { getPublicUrl } = await import("@/lib/storage");
 
+  // Fetch items user has bid on to determine status
+  const userBids = await prisma.bid.findMany({
+    where: {
+      userId: session.user.id,
+      auctionItem: { auctionId },
+    },
+    select: { auctionItemId: true },
+    distinct: ["auctionItemId"],
+  });
+
+  const userBidItemIds = new Set(userBids.map((b) => b.auctionItemId));
+
   return {
     props: {
       user: {
@@ -318,6 +344,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         currencyCode: item.currencyCode,
         startingBid: item.startingBid,
         currentBid: item.currentBid,
+        highestBidderId: item.highestBidderId, // Include highestBidderId
+        userHasBid: userBidItemIds.has(item.id), // Add userHasBid status
         endDate: item.endDate?.toISOString() || null,
         createdAt: item.createdAt.toISOString(),
         creatorId: item.creatorId,

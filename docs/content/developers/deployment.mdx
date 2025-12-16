@@ -4,16 +4,17 @@ This guide covers deploying Auktiva to various environments.
 
 ## Deployment Options
 
-| Platform | Database | Storage | Difficulty |
-|----------|----------|---------|------------|
-| VPS with PM2 | SQLite or Turso | Local or S3 | Easy |
-| Docker | SQLite or Turso | Local or S3 | Medium |
-| Vercel | Turso only | S3 only | Easy |
+| Platform     | Database        | Storage     | Difficulty |
+| ------------ | --------------- | ----------- | ---------- |
+| VPS with PM2 | SQLite or Turso | Local or S3 | Easy       |
+| Docker       | SQLite or Turso | Local or S3 | Medium     |
+| Vercel       | Turso only      | S3 only     | Easy       |
 
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 <Callout type="warning">
-  Serverless platforms (Vercel, Netlify) require Turso database and S3 storage. SQLite and local storage won't work.
+  Serverless platforms (Vercel, Netlify) require Turso database and S3 storage.
+  SQLite and local storage won't work.
 </Callout>
 
 ## VPS Deployment (Recommended)

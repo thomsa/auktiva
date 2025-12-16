@@ -34,66 +34,99 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
   const canInvite = isAdmin || auction.memberCanInvite;
 
   return (
-    <div className="w-full lg:w-72 space-y-4">
+    <div className="w-full lg:w-80 space-y-6">
       {/* Auction Info */}
-      <div className="card bg-base-100 shadow-lg overflow-hidden">
-        {auction.thumbnailUrl && (
-          <figure className="h-28 bg-base-200">
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-lg overflow-hidden">
+        {auction.thumbnailUrl ? (
+          <figure className="h-40 bg-base-200 relative group">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={auction.thumbnailUrl}
               alt={auction.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-base-100 to-transparent opacity-60"></div>
           </figure>
+        ) : (
+          <div className="h-24 bg-gradient-to-br from-primary/5 to-secondary/5 border-b border-base-content/5 flex items-center justify-center">
+            <span className="icon-[tabler--gavel] size-8 text-primary/20"></span>
+          </div>
         )}
-        <div className="card-body p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="badge badge-primary badge-sm">
+
+        <div className="card-body p-5">
+          <div className="flex items-center justify-between mb-4">
+            <span className="badge badge-primary badge-sm font-semibold shadow-sm shadow-primary/20">
               {membership.role}
             </span>
-            {ended && <span className="badge badge-error badge-sm">Ended</span>}
+            {ended && (
+              <span className="badge badge-error badge-sm gap-1">
+                <span className="icon-[tabler--flag-filled] size-3"></span>Ended
+              </span>
+            )}
           </div>
+
           {auction.description && (
-            <p className="text-sm text-base-content/70 mb-3">
+            <p className="text-sm text-base-content/70 mb-6 leading-relaxed">
               {auction.description}
             </p>
           )}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-base-content/60">Items</span>
-              <span className="font-bold text-primary">
+
+          <div className="space-y-3 p-4 bg-base-200/50 rounded-xl mb-2">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-base-content/60 flex items-center gap-2">
+                <span className="icon-[tabler--package] size-4"></span>
+                Items
+              </span>
+              <span className="font-bold text-base-content">
                 {auction._count.items}
               </span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-base-content/60">Members</span>
-              <span className="font-bold text-secondary">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-base-content/60 flex items-center gap-2">
+                <span className="icon-[tabler--users] size-4"></span>
+                Members
+              </span>
+              <span className="font-bold text-base-content">
                 {auction._count.members}
               </span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-base-content/60">Ends</span>
-              <span className="text-sm font-medium">
-                {formatShortDate(auction.endDate)}
-              </span>
-            </div>
+            {auction.endDate && (
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-base-content/60 flex items-center gap-2">
+                  <span className="icon-[tabler--clock] size-4"></span>
+                  Ends
+                </span>
+                <span
+                  className={`font-medium ${ended ? "text-error" : "text-primary"}`}
+                >
+                  {formatShortDate(auction.endDate)}
+                </span>
+              </div>
+            )}
           </div>
-          <div className="text-xs text-base-content/50 mt-2">
-            by {auction.creator.name || auction.creator.email}
+
+          <div className="text-xs text-base-content/40 text-center flex items-center justify-center gap-1">
+            <span className="icon-[tabler--user] size-3"></span>
+            Hosted by{" "}
+            <span className="font-medium text-base-content/60">
+              {auction.creator.name || auction.creator.email}
+            </span>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="card bg-base-100 shadow-lg">
-        <div className="card-body p-4">
-          <h3 className="font-semibold text-sm mb-2">Quick Actions</h3>
-          <div className="space-y-1">
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-lg">
+        <div className="card-body p-5">
+          <h3 className="font-bold text-sm uppercase tracking-wider text-base-content/40 mb-3 flex items-center gap-2">
+            <span className="icon-[tabler--bolt] size-4"></span>
+            Quick Actions
+          </h3>
+          <div className="space-y-2">
             {canCreateItems && (
               <Link
                 href={`/auctions/${auction.id}/items/create`}
-                className="btn btn-ghost btn-sm btn-block justify-start"
+                className="btn btn-primary btn-sm btn-block justify-start shadow-sm shadow-primary/20"
               >
                 <span className="icon-[tabler--plus] size-4"></span>
                 Add Item
@@ -102,7 +135,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
             {canInvite && (
               <Link
                 href={`/auctions/${auction.id}/invite`}
-                className="btn btn-ghost btn-sm btn-block justify-start"
+                className="btn btn-outline btn-sm btn-block justify-start border-base-content/10 hover:bg-base-200 hover:border-base-content/20 text-base-content"
               >
                 <span className="icon-[tabler--user-plus] size-4"></span>
                 Invite People
@@ -110,7 +143,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
             )}
             <Link
               href={`/auctions/${auction.id}/results`}
-              className="btn btn-ghost btn-sm btn-block justify-start"
+              className="btn btn-ghost btn-sm btn-block justify-start hover:bg-base-content/5"
             >
               <span className="icon-[tabler--trophy] size-4"></span>
               View Results
@@ -121,36 +154,45 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
 
       {/* Admin/Owner Settings Card */}
       {isAdmin && (
-        <div className="card bg-base-100 shadow-lg">
-          <div className="card-body p-4">
-            <h3 className="font-semibold text-sm mb-2">Manage</h3>
-            <div className="space-y-1">
+        <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-lg">
+          <div className="card-body p-5">
+            <h3 className="font-bold text-sm uppercase tracking-wider text-base-content/40 mb-3 flex items-center gap-2">
+              <span className="icon-[tabler--settings] size-4"></span>
+              Manage
+            </h3>
+            <div className="space-y-2">
               <Link
                 href={`/auctions/${auction.id}/members`}
-                className="btn btn-ghost btn-sm btn-block justify-start"
+                className="btn btn-ghost btn-sm btn-block justify-start hover:bg-base-content/5"
               >
                 <span className="icon-[tabler--users] size-4"></span>
-                Members
+                Manage Members
               </Link>
               {isOwner && (
                 <Link
                   href={`/auctions/${auction.id}/settings`}
-                  className="btn btn-ghost btn-sm btn-block justify-start"
+                  className="btn btn-ghost btn-sm btn-block justify-start hover:bg-base-content/5"
                 >
-                  <span className="icon-[tabler--settings] size-4"></span>
-                  Settings
+                  <span className="icon-[tabler--adjustments-horizontal] size-4"></span>
+                  Auction Settings
                 </Link>
               )}
             </div>
-            <div className="divider my-2"></div>
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-base-content/60">Join Mode</span>
-                <span>{auction.joinMode.replace("_", " ")}</span>
+
+            <div className="divider my-2 opacity-50"></div>
+
+            <div className="space-y-2.5">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-base-content/50">Join Mode</span>
+                <span className="badge badge-ghost badge-xs text-[10px] uppercase font-bold tracking-wide">
+                  {auction.joinMode.replace("_", " ")}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-base-content/60">Visibility</span>
-                <span>{auction.bidderVisibility.replace("_", " ")}</span>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-base-content/50">Visibility</span>
+                <span className="badge badge-ghost badge-xs text-[10px] uppercase font-bold tracking-wide">
+                  {auction.bidderVisibility.replace("_", " ")}
+                </span>
               </div>
             </div>
           </div>

@@ -129,57 +129,66 @@ export default function AuctionSettingsPage({
 
   return (
     <PageLayout user={user} maxWidth="2xl">
-      <div className="mb-6">
+      <div className="mb-8">
         <BackLink href={`/auctions/${auction.id}`} label="Back to Auction" />
       </div>
 
-      <div className="card bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h1 className="card-title text-2xl mb-6">
-            <span className="icon-[tabler--settings] size-6"></span>
-            Auction Settings
-          </h1>
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
+        <div className="card-body p-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+              <span className="icon-[tabler--settings] size-7"></span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">Auction Settings</h1>
+              <p className="text-base-content/60">
+                Manage your auction configuration
+              </p>
+            </div>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {error && <AlertMessage type="error">{error}</AlertMessage>}
 
             {/* Basic Info */}
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="icon-[tabler--info-circle] size-5 text-primary"></span>
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">
+                <span className="icon-[tabler--info-circle] size-5"></span>
                 Basic Information
               </h2>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Auction Name</span>
+                  <span className="label-text font-medium">Auction Name</span>
                 </label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   required
                 />
               </div>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Description</span>
+                  <span className="label-text font-medium">Description</span>
                 </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  className="textarea textarea-bordered w-full h-24"
+                  className="textarea textarea-bordered w-full h-24 bg-base-100 focus:bg-base-100 transition-colors"
                   placeholder="Optional description..."
                 />
               </div>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Thumbnail Image</span>
+                  <span className="label-text font-medium">
+                    Thumbnail Image
+                  </span>
                 </label>
                 <ThumbnailUpload
                   auctionId={auction.id}
@@ -190,22 +199,22 @@ export default function AuctionSettingsPage({
             </div>
 
             {/* Access Settings */}
-            <div className="divider"></div>
+            <div className="divider opacity-50"></div>
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="icon-[tabler--lock] size-5 text-primary"></span>
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-secondary">
+                <span className="icon-[tabler--lock] size-5"></span>
                 Access Settings
               </h2>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Join Mode</span>
+                  <span className="label-text font-medium">Join Mode</span>
                 </label>
                 <select
                   name="joinMode"
                   value={formData.joinMode}
                   onChange={handleChange}
-                  className="select select-bordered w-full"
+                  className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                 >
                   <option value="INVITE_ONLY">Invite Only</option>
                   <option value="LINK">Anyone with Link</option>
@@ -216,7 +225,7 @@ export default function AuctionSettingsPage({
               </div>
 
               <div className="form-control">
-                <label className="label cursor-pointer justify-start gap-3">
+                <label className="label cursor-pointer justify-start gap-3 p-0">
                   <input
                     type="checkbox"
                     name="memberCanInvite"
@@ -225,7 +234,7 @@ export default function AuctionSettingsPage({
                     className="checkbox checkbox-primary"
                   />
                   <div>
-                    <span className="label-text">
+                    <span className="label-text font-medium">
                       Members can invite others
                     </span>
                     <p className="text-xs text-base-content/60">
@@ -237,19 +246,19 @@ export default function AuctionSettingsPage({
             </div>
 
             {/* Bidding Settings */}
-            <div className="divider"></div>
+            <div className="divider opacity-50"></div>
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="icon-[tabler--gavel] size-5 text-primary"></span>
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
+                <span className="icon-[tabler--gavel] size-5"></span>
                 Bidding Settings
               </h2>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Bid Visibility</span>
+                  <span className="label-text font-medium">Bid Visibility</span>
                 </label>
-                <div className="space-y-2">
-                  <label className="flex items-start gap-3 p-3 rounded-lg border border-base-300 cursor-pointer hover:bg-base-200 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                <div className="space-y-3">
+                  <label className="flex items-start gap-3 p-3 rounded-xl border border-base-content/10 cursor-pointer hover:bg-base-100 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:shadow-sm">
                     <input
                       type="radio"
                       name="bidderVisibility"
@@ -265,7 +274,7 @@ export default function AuctionSettingsPage({
                       </div>
                     </div>
                   </label>
-                  <label className="flex items-start gap-3 p-3 rounded-lg border border-base-300 cursor-pointer hover:bg-base-200 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                  <label className="flex items-start gap-3 p-3 rounded-xl border border-base-content/10 cursor-pointer hover:bg-base-100 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:shadow-sm">
                     <input
                       type="radio"
                       name="bidderVisibility"
@@ -282,7 +291,7 @@ export default function AuctionSettingsPage({
                       </div>
                     </div>
                   </label>
-                  <label className="flex items-start gap-3 p-3 rounded-lg border border-base-300 cursor-pointer hover:bg-base-200 transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                  <label className="flex items-start gap-3 p-3 rounded-xl border border-base-content/10 cursor-pointer hover:bg-base-100 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:shadow-sm">
                     <input
                       type="radio"
                       name="bidderVisibility"
@@ -304,16 +313,16 @@ export default function AuctionSettingsPage({
             </div>
 
             {/* Timing */}
-            <div className="divider"></div>
+            <div className="divider opacity-50"></div>
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="icon-[tabler--clock] size-5 text-primary"></span>
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-info">
+                <span className="icon-[tabler--clock] size-5"></span>
                 Timing
               </h2>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">
+                  <span className="label-text font-medium">
                     Auction End Date (optional)
                   </span>
                 </label>
@@ -323,7 +332,7 @@ export default function AuctionSettingsPage({
                     name="endDate"
                     value={formData.endDate}
                     onChange={handleChange}
-                    className="input input-bordered flex-1"
+                    className="input input-bordered flex-1 bg-base-100 focus:bg-base-100 transition-colors"
                   />
                   {formData.endDate && (
                     <button
@@ -347,13 +356,13 @@ export default function AuctionSettingsPage({
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Item End Mode</span>
+                  <span className="label-text font-medium">Item End Mode</span>
                 </label>
                 <select
                   name="itemEndMode"
                   value={formData.itemEndMode}
                   onChange={handleChange}
-                  className="select select-bordered w-full"
+                  className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                 >
                   {formData.endDate && (
                     <option value="AUCTION_END">End with Auction</option>
@@ -374,13 +383,14 @@ export default function AuctionSettingsPage({
             </div>
 
             {/* Save Button */}
-            <div className="divider"></div>
+            <div className="divider opacity-50"></div>
             <Button
               type="submit"
               variant="primary"
               modifier="block"
               isLoading={isLoading}
               loadingText="Saving..."
+              className="shadow-lg shadow-primary/20"
               icon={
                 <span className="icon-[tabler--device-floppy] size-5"></span>
               }
@@ -393,9 +403,9 @@ export default function AuctionSettingsPage({
 
       {/* End Auction Now */}
       {!isEnded && (
-        <div className="card bg-base-100 shadow-xl mt-6 border-2 border-warning/20">
-          <div className="card-body">
-            <h2 className="card-title text-warning">
+        <div className="card bg-base-100/50 backdrop-blur-sm shadow-xl mt-8 border border-warning/30">
+          <div className="card-body p-8">
+            <h2 className="card-title text-warning flex items-center gap-2">
               <span className="icon-[tabler--clock-off] size-6"></span>
               End Auction Now
             </h2>
@@ -408,7 +418,7 @@ export default function AuctionSettingsPage({
             {!endDialog.isOpen ? (
               <button
                 onClick={endDialog.open}
-                className="btn btn-warning btn-outline mt-4"
+                className="btn btn-warning btn-outline mt-4 border-warning/50 hover:bg-warning hover:border-warning"
               >
                 <span className="icon-[tabler--clock-off] size-5"></span>
                 End Auction Now
@@ -451,11 +461,14 @@ export default function AuctionSettingsPage({
       )}
 
       {isEnded && (
-        <div className="alert alert-info mt-6">
+        <div className="alert alert-info mt-8 shadow-sm">
           <span className="icon-[tabler--info-circle] size-5"></span>
           <span>
             This auction has ended.{" "}
-            <a href={`/auctions/${auction.id}/results`} className="link">
+            <a
+              href={`/auctions/${auction.id}/results`}
+              className="link font-bold"
+            >
               View results
             </a>
           </span>
@@ -463,9 +476,9 @@ export default function AuctionSettingsPage({
       )}
 
       {/* Danger Zone */}
-      <div className="card bg-base-100 shadow-xl mt-6 border-2 border-error/20">
-        <div className="card-body">
-          <h2 className="card-title text-error">
+      <div className="card bg-base-100/50 backdrop-blur-sm shadow-xl mt-8 border border-error/30">
+        <div className="card-body p-8">
+          <h2 className="card-title text-error flex items-center gap-2">
             <span className="icon-[tabler--alert-triangle] size-6"></span>
             Danger Zone
           </h2>
@@ -478,7 +491,7 @@ export default function AuctionSettingsPage({
           {!deleteDialog.isOpen ? (
             <button
               onClick={deleteDialog.open}
-              className="btn btn-error btn-outline mt-4"
+              className="btn btn-error btn-outline mt-4 border-error/50 hover:bg-error hover:border-error"
             >
               <span className="icon-[tabler--trash] size-5"></span>
               Delete Auction
@@ -500,7 +513,6 @@ export default function AuctionSettingsPage({
   );
 }
 
-// ...
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 

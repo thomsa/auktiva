@@ -26,66 +26,76 @@ export function AuctionCard({ auction }: AuctionCardProps) {
   return (
     <Link
       href={href}
-      className={`card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow ${
-        ended ? "opacity-80" : ""
+      className={`card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group ${
+        ended ? "opacity-70" : ""
       }`}
     >
-      <figure className="h-32 bg-base-200 relative">
+      <figure className="h-48 bg-base-200/50 relative overflow-hidden">
         {auction.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={auction.thumbnailUrl}
             alt={auction.name}
-            className={`w-full h-full object-cover ${ended ? "grayscale" : ""}`}
+            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${ended ? "grayscale" : ""}`}
           />
         ) : (
           <div
-            className={`w-full h-full flex items-center justify-center ${
+            className={`w-full h-full flex items-center justify-center bg-base-200/50 ${
               ended ? "grayscale" : ""
             }`}
           >
-            <span className="icon-[tabler--gavel] size-12 text-base-content/20"></span>
+            <span className="icon-[tabler--gavel] size-12 text-base-content/10 group-hover:scale-110 transition-transform duration-300"></span>
           </div>
         )}
+        <div className="absolute top-3 left-3">
+          <div className="badge badge-sm font-semibold bg-base-100/90 backdrop-blur border-none shadow-sm">
+            {auction.role}
+          </div>
+        </div>
         {ended && (
-          <div className="absolute top-2 right-2">
-            <div className="badge badge-error gap-1">
+          <div className="absolute top-3 right-3">
+            <div className="badge badge-error gap-1 shadow-sm font-medium">
               <span className="icon-[tabler--flag-filled] size-3"></span>
               Ended
             </div>
           </div>
         )}
       </figure>
-      <div className="card-body">
-        <div className="flex justify-between items-start">
-          <h2 className="card-title">{auction.name}</h2>
-          <div className="badge badge-ghost badge-sm">{auction.role}</div>
-        </div>
+      <div className="card-body p-5">
+        <h2 className="card-title text-lg leading-tight mb-1 group-hover:text-primary transition-colors">
+          {auction.name}
+        </h2>
+
         {auction.description && (
-          <p className="text-base-content/60 line-clamp-2">
+          <p className="text-sm text-base-content/60 line-clamp-2 mb-4 h-10">
             {auction.description}
           </p>
         )}
-        <div className="flex gap-4 mt-4 text-sm text-base-content/60">
-          <div className="flex items-center gap-1">
-            <span className="icon-[tabler--package] size-4"></span>
-            {auction._count.items} items
+        {!auction.description && <div className="h-10 mb-4"></div>}
+
+        <div className="flex items-center justify-between mt-auto pt-4 border-t border-base-content/5">
+          <div className="flex gap-3 text-xs font-medium text-base-content/70">
+            <div className="flex items-center gap-1.5">
+              <span className="icon-[tabler--package] size-4 opacity-70"></span>
+              {auction._count.items}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="icon-[tabler--users] size-4 opacity-70"></span>
+              {auction._count.members}
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="icon-[tabler--users] size-4"></span>
-            {auction._count.members} members
-          </div>
+
+          {auction.endDate && (
+            <div
+              className={`flex items-center gap-1.5 text-xs font-medium ${
+                ended ? "text-error" : "text-primary"
+              }`}
+            >
+              <span className="icon-[tabler--clock] size-3.5"></span>
+              {ended ? "Ended" : "Ends"} {formatShortDate(auction.endDate)}
+            </div>
+          )}
         </div>
-        {auction.endDate && (
-          <div
-            className={`flex items-center gap-1 text-sm mt-2 ${
-              ended ? "text-error" : "text-base-content/60"
-            }`}
-          >
-            <span className="icon-[tabler--calendar] size-4"></span>
-            {ended ? "Ended" : "Ends"} {formatShortDate(auction.endDate)}
-          </div>
-        )}
       </div>
     </Link>
   );

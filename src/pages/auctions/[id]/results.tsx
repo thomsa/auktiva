@@ -61,7 +61,7 @@ export default function ResultsPage({
 
   return (
     <PageLayout user={user}>
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <BackLink
           href="/dashboard"
           label="Back to Dashboard"
@@ -77,44 +77,62 @@ export default function ResultsPage({
       </div>
 
       {/* Header */}
-      <div className="card bg-base-100 shadow-xl mb-6">
-        <div className="card-body">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
+        <div className="card-body p-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
             <div>
-              <p className="text-sm text-base-content/60 uppercase tracking-wide mb-1">
+              <p className="text-xs font-bold text-base-content/50 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                <span className="icon-[tabler--chart-bar] size-3"></span>
                 Auction Results
               </p>
-              <h1 className="card-title text-xl sm:text-3xl flex items-center gap-2 sm:gap-3">
-                <span className="icon-[tabler--trophy] size-6 sm:size-8 text-warning"></span>
+              <h1 className="card-title text-2xl sm:text-4xl font-extrabold tracking-tight flex items-center gap-3">
+                <span className="icon-[tabler--trophy] size-8 text-warning"></span>
                 {auction.name}
               </h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 self-start">
               {auction.isEnded ? (
-                <div className="badge badge-error badge-lg">Ended</div>
+                <div className="badge badge-error badge-lg font-bold shadow-sm gap-1">
+                  <span className="icon-[tabler--flag-filled] size-3"></span>
+                  Ended
+                </div>
               ) : (
-                <div className="badge badge-success badge-lg">Active</div>
+                <div className="badge badge-success badge-lg font-bold shadow-sm gap-1 animate-pulse">
+                  <span className="w-2 h-2 rounded-full bg-white"></span>
+                  Active
+                </div>
               )}
               {isAdmin && (
                 <div className="dropdown dropdown-end">
-                  <button tabIndex={0} className="btn btn-ghost btn-sm">
-                    <span className="icon-[tabler--download] size-4"></span>
-                    Export
+                  <button
+                    tabIndex={0}
+                    className="btn btn-ghost btn-sm btn-square"
+                  >
+                    <span className="icon-[tabler--dots-vertical] size-5"></span>
                   </button>
                   <ul
                     tabIndex={0}
-                    className="dropdown-content menu bg-base-100 rounded-box z-10 w-40 p-2 shadow"
+                    className="dropdown-content menu bg-base-100/90 backdrop-blur rounded-box z-10 w-48 p-2 shadow-lg border border-base-content/5"
                   >
+                    <li className="menu-title text-xs font-semibold uppercase tracking-wider text-base-content/50 px-2 py-1">
+                      Export Data
+                    </li>
                     <li>
-                      <button onClick={() => handleExport("json")}>
-                        <span className="icon-[tabler--file-code] size-4"></span>
-                        JSON
+                      <button
+                        onClick={() => handleExport("json")}
+                        className="gap-3"
+                      >
+                        <span className="icon-[tabler--file-code] size-4 text-primary"></span>
+                        Export JSON
                       </button>
                     </li>
                     <li>
-                      <button onClick={() => handleExport("csv")}>
-                        <span className="icon-[tabler--file-spreadsheet] size-4"></span>
-                        CSV
+                      <button
+                        onClick={() => handleExport("csv")}
+                        className="gap-3"
+                      >
+                        <span className="icon-[tabler--file-spreadsheet] size-4 text-success"></span>
+                        Export CSV
                       </button>
                     </li>
                   </ul>
@@ -123,8 +141,10 @@ export default function ResultsPage({
             </div>
           </div>
 
+          <div className="divider opacity-50 my-6"></div>
+
           {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             <StatsCard
               icon="icon-[tabler--package]"
               iconColor="primary"
@@ -155,38 +175,51 @@ export default function ResultsPage({
 
       {/* User's Wins */}
       {userWins.length > 0 && (
-        <div className="card bg-success/10 border-2 border-success shadow-xl mb-6">
-          <div className="card-body">
-            <h2 className="card-title text-success">
+        <div className="card bg-success/5 border border-success/20 shadow-xl mb-8 overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-success/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+
+          <div className="card-body p-8 relative z-10">
+            <h2 className="card-title text-success flex items-center gap-2 mb-6">
               <span className="icon-[tabler--confetti] size-6"></span>
-              Your Winning Bids ({userWins.length})
+              Your Winning Bids{" "}
+              <span className="badge badge-success badge-sm">
+                {userWins.length}
+              </span>
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {userWins.map((win) => (
                 <Link
                   key={win.itemId}
                   href={`/auctions/${auction.id}/items/${win.itemId}`}
-                  className="card bg-base-100 hover:shadow-lg transition-shadow"
+                  className="card bg-base-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group border border-base-content/5 overflow-hidden"
                 >
                   {win.thumbnailUrl ? (
-                    <figure className="h-32">
+                    <figure className="h-40 relative overflow-hidden bg-base-200">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={win.thumbnailUrl}
                         alt={win.itemName}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </figure>
                   ) : (
-                    <figure className="h-32 bg-base-200 flex items-center justify-center">
-                      <span className="icon-[tabler--photo] size-10 text-base-content/20"></span>
+                    <figure className="h-40 bg-base-200 flex items-center justify-center">
+                      <span className="icon-[tabler--photo] size-10 text-base-content/20 group-hover:scale-110 transition-transform duration-300"></span>
                     </figure>
                   )}
-                  <div className="card-body p-4">
-                    <h3 className="font-bold">{win.itemName}</h3>
-                    <div className="text-2xl font-bold text-success">
+                  <div className="card-body p-5">
+                    <h3 className="font-bold text-lg line-clamp-1 group-hover:text-primary transition-colors">
+                      {win.itemName}
+                    </h3>
+                    <div className="text-2xl font-bold text-success font-mono mt-2">
                       {win.currencySymbol}
                       {win.winningBid.toFixed(2)}
+                    </div>
+                    <div className="mt-auto pt-2 flex items-center text-xs text-base-content/60 font-medium">
+                      <span className="icon-[tabler--check] size-3 mr-1 text-success"></span>
+                      Highest Bidder
                     </div>
                   </div>
                 </Link>
@@ -197,83 +230,95 @@ export default function ResultsPage({
       )}
 
       {/* All Winners */}
-      <div className="card bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title">
-            <span className="icon-[tabler--list-check] size-6"></span>
-            All Winning Bids
-          </h2>
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
+        <div className="card-body p-0 sm:p-8">
+          <div className="p-6 sm:p-0 flex items-center gap-3 mb-6">
+            <span className="w-1 h-8 rounded-full bg-secondary"></span>
+            <h2 className="card-title text-xl">All Winning Bids</h2>
+          </div>
 
           {winners.length === 0 ? (
-            <EmptyState
-              icon="icon-[tabler--mood-sad]"
-              title="No bids placed yet"
-            />
+            <div className="pb-8 px-6 sm:pb-0 sm:px-0">
+              <EmptyState
+                icon="icon-[tabler--gavel]"
+                title="No bids placed yet"
+                description="Once bidding starts, results will appear here."
+              />
+            </div>
           ) : (
-            <div className="overflow-x-auto mt-4">
-              <table className="table">
+            <div className="overflow-x-auto">
+              <table className="table table-lg">
                 <thead>
-                  <tr>
-                    <th>Item</th>
-                    <th>Winner</th>
-                    <th className="text-right">Winning Bid</th>
+                  <tr className="border-b-base-content/5">
+                    <th className="bg-base-200/30 font-semibold text-base-content/60 pl-8">
+                      Item
+                    </th>
+                    <th className="bg-base-200/30 font-semibold text-base-content/60">
+                      Winner
+                    </th>
+                    <th className="bg-base-200/30 font-semibold text-base-content/60 text-right pr-8">
+                      Winning Bid
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {winners.map((win) => (
                     <tr
                       key={win.itemId}
-                      className={win.isCurrentUser ? "bg-success/10" : ""}
+                      className={`hover:bg-base-content/2 transition-colors border-b-base-content/5 ${win.isCurrentUser ? "bg-success/5" : ""}`}
                     >
-                      <td>
+                      <td className="pl-8">
                         <Link
                           href={`/auctions/${auction.id}/items/${win.itemId}`}
-                          className="flex items-center gap-3 hover:opacity-80"
+                          className="flex items-center gap-4 hover:opacity-80 group"
                         >
                           {win.thumbnailUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={win.thumbnailUrl}
                               alt={win.itemName}
-                              className="w-12 h-12 object-cover rounded"
+                              className="w-12 h-12 object-cover rounded-lg shadow-sm group-hover:scale-105 transition-transform"
                             />
                           ) : (
-                            <div className="w-12 h-12 bg-base-200 rounded flex items-center justify-center">
+                            <div className="w-12 h-12 bg-base-200 rounded-lg flex items-center justify-center">
                               <span className="icon-[tabler--photo] size-5 text-base-content/30"></span>
                             </div>
                           )}
-                          <span className="font-medium">{win.itemName}</span>
+                          <span className="font-semibold group-hover:text-primary transition-colors">
+                            {win.itemName}
+                          </span>
                         </Link>
                       </td>
                       <td>
                         {win.winner ? (
-                          <div className="flex items-center gap-2">
-                            <div className="avatar placeholder">
-                              <div className="bg-neutral text-neutral-content w-8 h-8 rounded-full">
-                                <span className="text-xs">
-                                  {win.winner.name?.charAt(0) ||
-                                    win.winner.email.charAt(0)}
-                                </span>
-                              </div>
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${win.isCurrentUser ? "bg-success text-success-content" : "bg-neutral text-neutral-content"}`}
+                            >
+                              {win.winner.name?.charAt(0) ||
+                                win.winner.email.charAt(0)}
                             </div>
-                            <span>
+                            <span className="font-medium">
                               {win.winner.name || win.winner.email}
                               {win.isCurrentUser && (
-                                <span className="badge badge-success badge-sm ml-2">
+                                <span className="badge badge-success badge-xs ml-2 font-bold shadow-sm">
                                   You
                                 </span>
                               )}
                             </span>
                           </div>
                         ) : (
-                          <span className="text-base-content/60">
+                          <div className="flex items-center gap-2 text-base-content/50 italic">
+                            <span className="icon-[tabler--spy] size-4"></span>
                             Anonymous
-                          </span>
+                          </div>
                         )}
                       </td>
-                      <td className="text-right font-bold">
-                        {win.currencySymbol}
-                        {win.winningBid.toFixed(2)}
+                      <td className="text-right pr-8">
+                        <span className="font-bold font-mono text-lg">
+                          {win.currencySymbol}
+                          {win.winningBid.toFixed(2)}
+                        </span>
                       </td>
                     </tr>
                   ))}

@@ -79,19 +79,31 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
           description="Reset your Auktiva password"
           noindex
         />
-        <div className="min-h-screen flex items-center justify-center bg-base-300 p-6">
-          <div className="w-full max-w-md text-center">
-            <div className="mb-6">
-              <span className="icon-[tabler--alert-circle] size-16 text-error"></span>
+        <div className="min-h-screen flex items-center justify-center bg-base-200 relative overflow-hidden">
+          {/* Background effects */}
+          <div className="absolute inset-0 z-0">
+            <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
+            <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse delay-1000"></div>
+            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
+          </div>
+
+          <div className="w-full max-w-md text-center p-8 relative z-10">
+            <div className="mb-6 flex justify-center">
+              <div className="w-20 h-20 bg-error/10 rounded-full flex items-center justify-center animate-pulse">
+                <span className="icon-[tabler--alert-circle] size-10 text-error"></span>
+              </div>
             </div>
-            <h1 className="text-2xl font-bold text-base-content mb-4">
+            <h1 className="text-3xl font-extrabold text-base-content mb-4 tracking-tight">
               Invalid Reset Link
             </h1>
-            <p className="text-base-content/60 mb-6">
+            <p className="text-base-content/60 mb-8 text-lg">
               This password reset link is invalid or has expired. Please request
-              a new one.
+              a new one to secure your account.
             </p>
-            <Link href="/forgot-password" className="btn btn-primary">
+            <Link
+              href="/forgot-password"
+              className="btn btn-primary btn-lg shadow-lg shadow-primary/20"
+            >
               Request New Link
             </Link>
           </div>
@@ -107,85 +119,105 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
         description="Reset your Auktiva password"
         noindex
       />
-      <div className="min-h-screen flex flex-col lg:flex-row">
+      <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
         {/* Left side - Branding (hidden on mobile) */}
-        <div
-          className="hidden lg:flex lg:w-1/2 bg-[#fff2d4] items-center justify-center p-12 relative"
-          style={{
-            backgroundImage: "url('/pictures/login-bg.png')",
-            backgroundPosition: "bottom center",
-            backgroundSize: "contain",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          <div className="absolute inset-0 bg-base-100/80"></div>
-          <Link
-            href="/"
-            className="relative z-10 flex flex-col items-center gap-4 hover:opacity-80 transition-opacity cursor-pointer"
-          >
-            <div className="flex items-center gap-3">
-              <span className="icon-[tabler--gavel] size-12 text-primary"></span>
-              <h1 className="text-4xl font-bold text-base-content">Auktiva</h1>
-            </div>
-            <p className="text-base-content/60 text-lg text-center">
-              The free auction platform for fundraisers and charities
+        <div className="hidden lg:flex lg:w-1/2 relative bg-base-200 overflow-hidden items-center justify-center">
+          {/* Background effects */}
+          <div className="absolute inset-0 z-0">
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse delay-1000"></div>
+            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center justify-center p-12 text-center max-w-lg">
+            <Link href="/" className="mb-8 group">
+              <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-base-100 shadow-2xl shadow-primary/10 border border-base-content/5 mb-6 group-hover:scale-105 transition-transform duration-300">
+                <span className="icon-[tabler--gavel] size-10 text-primary group-hover:-rotate-12 transition-transform duration-300"></span>
+              </div>
+              <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Auktiva
+              </h1>
+            </Link>
+
+            <h2 className="text-2xl font-bold mb-4">Secure Your Account</h2>
+            <p className="text-base-content/60 text-lg leading-relaxed">
+              Create a strong new password to protect your account and bidding
+              history.
             </p>
-          </Link>
+          </div>
         </div>
 
         {/* Right side - Form */}
-        <div className="flex-1 lg:w-1/2 bg-base-300 flex flex-col items-center justify-center p-6 sm:p-12">
-          {/* Mobile logo */}
+        <div className="flex-1 lg:w-1/2 flex flex-col items-center justify-center p-6 sm:p-12 relative bg-base-100">
           <Link
             href="/"
-            className="lg:hidden mb-8 flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className="lg:hidden absolute top-8 left-6 flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <span className="icon-[tabler--gavel] size-8 text-primary"></span>
-            <span className="text-xl font-bold text-base-content">Auktiva</span>
+            <span className="icon-[tabler--gavel] size-6 text-primary"></span>
+            <span className="text-lg font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Auktiva
+            </span>
           </Link>
 
-          <div className="w-full max-w-md">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-base-content">
-                Reset your password
+          <div className="w-full max-w-[400px]">
+            <div className="mb-10">
+              <h2 className="text-3xl font-bold text-base-content mb-2">
+                Reset Password
               </h2>
-              <p className="text-base-content/60 mt-1">
-                Enter your new password below
+              <p className="text-base-content/60">
+                Create a new password for your account
               </p>
             </div>
 
             {success ? (
-              <div className="space-y-6">
-                <AlertMessage type="success">
-                  Your password has been reset successfully! Redirecting to
-                  login...
-                </AlertMessage>
-                <Link href="/login" className="btn btn-primary w-full">
-                  Go to Sign In
-                </Link>
+              <div className="text-center space-y-6">
+                <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto text-success mb-4">
+                  <span className="icon-[tabler--check] size-8"></span>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold text-success">
+                    Password Reset!
+                  </h3>
+                  <p className="text-base-content/60">
+                    Your password has been updated successfully.
+                    <br />
+                    Redirecting to login...
+                  </p>
+                </div>
+                <div className="pt-4">
+                  <Link
+                    href="/login"
+                    className="btn btn-primary w-full shadow-lg shadow-primary/20"
+                  >
+                    Sign In Now
+                  </Link>
+                </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {error && <AlertMessage type="error">{error}</AlertMessage>}
 
                 <div className="form-control">
-                  <label className="label" htmlFor="password">
-                    <span className="label-text text-base-content/80">
+                  <label className="label pl-0" htmlFor="password">
+                    <span className="label-text font-medium text-base-content/80">
                       New Password
                     </span>
                   </label>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="••••••••"
-                    autoComplete="new-password"
-                    className={`input input-bordered w-full bg-base-100 ${
-                      fieldErrors.password ? "input-error" : ""
-                    }`}
-                    required
-                    minLength={6}
-                  />
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--lock] size-5"></span>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      placeholder="••••••••"
+                      autoComplete="new-password"
+                      className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
+                        fieldErrors.password ? "input-error" : ""
+                      }`}
+                      required
+                      minLength={6}
+                    />
+                  </div>
                   {fieldErrors.password && (
                     <label className="label">
                       <span className="label-text-alt text-error">
@@ -196,23 +228,26 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
                 </div>
 
                 <div className="form-control">
-                  <label className="label" htmlFor="confirmPassword">
-                    <span className="label-text text-base-content/80">
+                  <label className="label pl-0" htmlFor="confirmPassword">
+                    <span className="label-text font-medium text-base-content/80">
                       Confirm New Password
                     </span>
                   </label>
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    placeholder="••••••••"
-                    autoComplete="new-password"
-                    className={`input input-bordered w-full bg-base-100 ${
-                      fieldErrors.confirmPassword ? "input-error" : ""
-                    }`}
-                    required
-                    minLength={6}
-                  />
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--lock-check] size-5"></span>
+                    <input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      placeholder="••••••••"
+                      autoComplete="new-password"
+                      className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
+                        fieldErrors.confirmPassword ? "input-error" : ""
+                      }`}
+                      required
+                      minLength={6}
+                    />
+                  </div>
                   {fieldErrors.confirmPassword && (
                     <label className="label">
                       <span className="label-text-alt text-error">
@@ -228,6 +263,7 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
                   modifier="block"
                   isLoading={isLoading}
                   loadingText="Resetting..."
+                  className="btn-lg text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
                 >
                   Reset Password
                 </Button>

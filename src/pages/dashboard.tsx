@@ -78,7 +78,7 @@ function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
   return (
     <Link
       href={`/auctions/${item.auctionId}/items/${item.id}`}
-      className={`flex gap-3 p-2 rounded-lg hover:bg-base-200 transition-colors ${
+      className={`flex gap-3 p-3 rounded-xl hover:bg-base-content/5 transition-colors ${
         ended ? "opacity-60" : ""
       }`}
     >
@@ -88,15 +88,15 @@ function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
           <img
             src={item.thumbnailUrl}
             alt={item.name}
-            className={`w-12 h-12 object-cover rounded ${ended ? "grayscale" : ""}`}
+            className={`w-14 h-14 object-cover rounded-lg shadow-sm ${ended ? "grayscale" : ""}`}
           />
         ) : (
           <div
-            className={`w-12 h-12 bg-base-300 rounded flex items-center justify-center ${
+            className={`w-14 h-14 bg-base-200 rounded-lg flex items-center justify-center ${
               ended ? "grayscale" : ""
             }`}
           >
-            <span className="icon-[tabler--photo] size-5 text-base-content/30"></span>
+            <span className="icon-[tabler--photo] size-6 text-base-content/30"></span>
           </div>
         )}
         {ended && (

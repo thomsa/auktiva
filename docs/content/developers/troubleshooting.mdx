@@ -9,6 +9,7 @@ Common issues and their solutions when running Auktiva.
 **Cause:** Prisma client hasn't been generated.
 
 **Solution:**
+
 ```bash
 npm run db:generate
 ```
@@ -18,6 +19,7 @@ npm run db:generate
 **Cause:** When running via `curl | bash`, stdin is consumed by the pipe.
 
 **Solution:** The install script handles this automatically. If running manually:
+
 ```bash
 npx tsx cli/setup.ts </dev/tty
 ```
@@ -27,10 +29,12 @@ npx tsx cli/setup.ts </dev/tty
 ### "Unable to connect to database"
 
 **SQLite:**
+
 - Check the path in `DATABASE_URL` is correct
 - Ensure the directory exists and is writable
 
 **Turso:**
+
 - Verify `DATABASE_URL` format: `libsql://your-db.turso.io`
 - Check `DATABASE_AUTH_TOKEN` is set and valid
 
@@ -39,6 +43,7 @@ npx tsx cli/setup.ts </dev/tty
 **Cause:** Schema hasn't been pushed to database.
 
 **Solution:**
+
 ```bash
 npm run db:push
 ```
@@ -48,10 +53,12 @@ npm run db:push
 ### Session not persisting
 
 **Causes:**
+
 - `AUTH_SECRET` not set or changed
 - `AUTH_URL` mismatch
 
 **Solutions:**
+
 1. Verify `.env` has `AUTH_SECRET` set
 2. Ensure `AUTH_URL` matches your actual URL
 3. Clear browser cookies and try again
@@ -61,10 +68,12 @@ npm run db:push
 ### Images not uploading
 
 **Local storage:**
+
 - Check `STORAGE_LOCAL_PATH` directory exists
 - Verify write permissions
 
 **S3:**
+
 - Verify all S3 environment variables are set
 - Check bucket permissions and CORS configuration
 
@@ -73,6 +82,7 @@ npm run db:push
 ### Port 3000 already in use
 
 **Solution:**
+
 ```bash
 lsof -ti:3000 | xargs kill -9
 ```

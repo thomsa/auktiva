@@ -44,54 +44,74 @@ export default function LoginPage() {
   return (
     <>
       <SEO {...pageSEO.login} />
-      <div className="min-h-screen flex flex-col lg:flex-row">
+      <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
         {/* Left side - Branding (hidden on mobile) */}
-        <div
-          className="hidden lg:flex lg:w-1/2 bg-[#fff2d4] items-center justify-center p-12 relative "
-          style={{
-            backgroundImage: "url('/pictures/login-bg.png')",
-            backgroundPosition: "bottom center",
-            backgroundSize: "contain",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          <div className="absolute inset-0 bg-base-100/80"></div>
-          <Link
-            href="/"
-            className="relative z-10 flex flex-col items-center gap-4 hover:opacity-80 transition-opacity cursor-pointer"
-          >
-            <div className="flex items-center gap-3">
-              <span className="icon-[tabler--gavel] size-12 text-primary"></span>
-              <h1 className="text-4xl font-bold text-base-content">Auktiva</h1>
-            </div>
-            <p className="text-base-content/60 text-lg text-center">
-              The free auction platform for fundraisers and charities
+        <div className="hidden lg:flex lg:w-1/2 relative bg-base-200 overflow-hidden items-center justify-center">
+          {/* Background effects */}
+          <div className="absolute inset-0 z-0">
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse delay-1000"></div>
+            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center justify-center p-12 text-center max-w-lg">
+            <Link href="/" className="mb-8 group">
+              <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-base-100 shadow-2xl shadow-primary/10 border border-base-content/5 mb-6 group-hover:scale-105 transition-transform duration-300">
+                <span className="icon-[tabler--gavel] size-10 text-primary group-hover:-rotate-12 transition-transform duration-300"></span>
+              </div>
+              <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Auktiva
+              </h1>
+            </Link>
+
+            <h2 className="text-2xl font-bold mb-4">Welcome Back!</h2>
+            <p className="text-base-content/60 text-lg leading-relaxed">
+              The modern, open-source auction platform designed for fundraisers,
+              charities, and communities.
             </p>
-          </Link>
+
+            <div className="mt-12 grid grid-cols-2 gap-4 w-full">
+              <div className="p-4 rounded-2xl bg-base-100/50 backdrop-blur-sm border border-base-content/5">
+                <div className="text-2xl font-bold text-primary mb-1">100%</div>
+                <div className="text-xs text-base-content/60 font-medium uppercase tracking-wider">
+                  Free & Open
+                </div>
+              </div>
+              <div className="p-4 rounded-2xl bg-base-100/50 backdrop-blur-sm border border-base-content/5">
+                <div className="text-2xl font-bold text-secondary mb-1">
+                  Zero
+                </div>
+                <div className="text-xs text-base-content/60 font-medium uppercase tracking-wider">
+                  Fees
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Right side - Form */}
-        <div className="flex-1 lg:w-1/2 bg-base-300 flex flex-col items-center justify-center p-6 sm:p-12">
-          {/* Mobile logo */}
+        <div className="flex-1 lg:w-1/2 flex flex-col items-center justify-center p-6 sm:p-12 relative bg-base-100">
           <Link
             href="/"
-            className="lg:hidden mb-8 flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className="lg:hidden absolute top-8 left-6 flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <span className="icon-[tabler--gavel] size-8 text-primary"></span>
-            <span className="text-xl font-bold text-base-content">Auktiva</span>
+            <span className="icon-[tabler--gavel] size-6 text-primary"></span>
+            <span className="text-lg font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Auktiva
+            </span>
           </Link>
 
-          <div className="w-full max-w-md">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-base-content">
-                Welcome back
+          <div className="w-full max-w-[400px]">
+            <div className="mb-10">
+              <h2 className="text-3xl font-bold text-base-content mb-2">
+                Sign in
               </h2>
-              <p className="text-base-content/60 mt-1">
-                Sign in to your account
+              <p className="text-base-content/60">
+                Enter your credentials to access your account
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {error && <AlertMessage type="error">{error}</AlertMessage>}
 
               {router.query.registered && (
@@ -100,44 +120,54 @@ export default function LoginPage() {
                 </AlertMessage>
               )}
 
-              <div className="form-control">
-                <label className="label" htmlFor="email">
-                  <span className="label-text text-base-content/80">Email</span>
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                  className="input input-bordered w-full bg-base-100"
-                  required
-                />
-              </div>
+              <div className="space-y-4">
+                <div className="form-control">
+                  <label className="label pl-0" htmlFor="email">
+                    <span className="label-text font-medium text-base-content/80">
+                      Email
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--mail] size-5"></span>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      autoComplete="email"
+                      className="input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors"
+                      required
+                    />
+                  </div>
+                </div>
 
-              <div className="form-control">
-                <label className="label" htmlFor="password">
-                  <span className="label-text text-base-content/80">
-                    Password
-                  </span>
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  className="input input-bordered w-full bg-base-100"
-                  required
-                />
-                <label className="label">
-                  <Link
-                    href="/forgot-password"
-                    className="label-text-alt link link-primary"
-                  >
-                    Forgot password?
-                  </Link>
-                </label>
+                <div className="form-control">
+                  <label className="label pl-0" htmlFor="password">
+                    <span className="label-text font-medium text-base-content/80">
+                      Password
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--lock] size-5"></span>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      placeholder="••••••••"
+                      autoComplete="current-password"
+                      className="input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors"
+                      required
+                    />
+                  </div>
+                  <label className="label pb-0">
+                    <Link
+                      href="/forgot-password"
+                      className="label-text-alt link link-primary hover:text-primary/80 transition-colors ml-auto"
+                    >
+                      Forgot password?
+                    </Link>
+                  </label>
+                </div>
               </div>
 
               <Button
@@ -146,19 +176,23 @@ export default function LoginPage() {
                 modifier="block"
                 isLoading={isLoading}
                 loadingText="Signing in..."
+                className="btn-lg text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
               >
                 Sign in
               </Button>
             </form>
 
-            <div className="divider my-6">or</div>
-
-            <p className="text-center text-sm text-base-content/60">
-              Don&apos;t have an account?{" "}
-              <Link href="/register" className="link link-primary font-medium">
-                Create one
-              </Link>
-            </p>
+            <div className="mt-8 text-center">
+              <p className="text-sm text-base-content/60">
+                Don&apos;t have an account?{" "}
+                <Link
+                  href="/register"
+                  className="link link-primary font-bold hover:text-primary/80 transition-colors"
+                >
+                  Create one now
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>

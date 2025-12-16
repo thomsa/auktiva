@@ -26,7 +26,7 @@ openssl rand -base64 32
 node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 <Callout type="error">
   Never use the example secret in production. Always generate a unique value.

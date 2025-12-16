@@ -175,37 +175,47 @@ export default function EditItemPage({
 
   return (
     <PageLayout user={user} maxWidth="2xl">
-      <div className="mb-6">
+      <div className="mb-8">
         <BackLink
           href={`/auctions/${auction.id}/items/${item.id}`}
           label="Back to Item"
         />
       </div>
 
-      <div className="card bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h1 className="card-title text-2xl mb-6">Edit Item</h1>
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
+        <div className="card-body p-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+              <span className="icon-[tabler--edit] size-7"></span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">Edit Item</h1>
+              <p className="text-base-content/60">
+                Manage item details and settings
+              </p>
+            </div>
+          </div>
 
           {hasBids && (
-            <div className="alert alert-warning mb-4">
+            <div className="alert alert-warning mb-6 shadow-sm">
               <span className="icon-[tabler--alert-triangle] size-5"></span>
               <span>This item has bids. Some fields cannot be changed.</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {error && <AlertMessage type="error">{error}</AlertMessage>}
 
             {/* Basic Info */}
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="icon-[tabler--package] size-5 text-primary"></span>
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">
+                <span className="icon-[tabler--package] size-5"></span>
                 Item Details
               </h2>
 
               <div className="form-control">
                 <label className="label" htmlFor="name">
-                  <span className="label-text">Item Name *</span>
+                  <span className="label-text font-medium">Item Name *</span>
                 </label>
                 <input
                   id="name"
@@ -213,7 +223,7 @@ export default function EditItemPage({
                   type="text"
                   defaultValue={item.name}
                   placeholder="e.g., Vintage Watch"
-                  className={`input input-bordered w-full ${fieldErrors.name ? "input-error" : ""}`}
+                  className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.name ? "input-error" : ""}`}
                   required
                 />
                 {fieldErrors.name && (
@@ -227,23 +237,23 @@ export default function EditItemPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="description">
-                  <span className="label-text">Description</span>
+                  <span className="label-text font-medium">Description</span>
                 </label>
                 <textarea
                   id="description"
                   name="description"
                   defaultValue={item.description || ""}
                   placeholder="Describe the item in detail..."
-                  className="textarea textarea-bordered w-full h-32"
+                  className="textarea textarea-bordered w-full h-32 bg-base-100 focus:bg-base-100 transition-colors"
                 />
               </div>
             </div>
 
             {/* Images */}
-            <div className="divider"></div>
+            <div className="divider opacity-50"></div>
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="icon-[tabler--photo] size-5 text-primary"></span>
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-secondary">
+                <span className="icon-[tabler--photo] size-5"></span>
                 Images
               </h2>
               <ImageUpload
@@ -255,21 +265,21 @@ export default function EditItemPage({
             </div>
 
             {/* Pricing */}
-            <div className="divider"></div>
+            <div className="divider opacity-50"></div>
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="icon-[tabler--currency-dollar] size-5 text-primary"></span>
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
+                <span className="icon-[tabler--currency-dollar] size-5"></span>
                 Pricing
               </h2>
 
               <div className="form-control">
                 <label className="label" htmlFor="currencyCode">
-                  <span className="label-text">Currency *</span>
+                  <span className="label-text font-medium">Currency *</span>
                 </label>
                 <select
                   id="currencyCode"
                   name="currencyCode"
-                  className="select select-bordered w-full"
+                  className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   defaultValue={item.currencyCode}
                   disabled={hasBids}
                   required
@@ -292,7 +302,7 @@ export default function EditItemPage({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label" htmlFor="startingBid">
-                    <span className="label-text">Starting Bid</span>
+                    <span className="label-text font-medium">Starting Bid</span>
                   </label>
                   <input
                     id="startingBid"
@@ -302,7 +312,7 @@ export default function EditItemPage({
                     step="0.01"
                     defaultValue={item.startingBid}
                     disabled={hasBids}
-                    className={`input input-bordered w-full ${fieldErrors.startingBid ? "input-error" : ""}`}
+                    className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.startingBid ? "input-error" : ""}`}
                   />
                   {fieldErrors.startingBid && (
                     <label className="label">
@@ -322,7 +332,9 @@ export default function EditItemPage({
 
                 <div className="form-control">
                   <label className="label" htmlFor="minBidIncrement">
-                    <span className="label-text">Min Bid Increment</span>
+                    <span className="label-text font-medium">
+                      Min Bid Increment
+                    </span>
                   </label>
                   <input
                     id="minBidIncrement"
@@ -331,7 +343,7 @@ export default function EditItemPage({
                     min="0.01"
                     step="0.01"
                     defaultValue={item.minBidIncrement}
-                    className="input input-bordered w-full"
+                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   />
                 </div>
               </div>
@@ -340,7 +352,7 @@ export default function EditItemPage({
             {/* Visibility - deprecated, kept for backwards compatibility */}
             {false && auction.bidderVisibility === "ITEM_CHOICE" && (
               <>
-                <div className="divider"></div>
+                <div className="divider opacity-50"></div>
                 <div className="space-y-4">
                   <h2 className="text-lg font-semibold flex items-center gap-2">
                     <span className="icon-[tabler--eye] size-5 text-primary"></span>
@@ -348,7 +360,7 @@ export default function EditItemPage({
                   </h2>
 
                   <div className="form-control">
-                    <label className="label cursor-pointer justify-start gap-3">
+                    <label className="label cursor-pointer justify-start gap-3 p-0">
                       <input
                         type="checkbox"
                         name="bidderAnonymous"
@@ -356,7 +368,9 @@ export default function EditItemPage({
                         className="checkbox checkbox-primary"
                       />
                       <div>
-                        <span className="label-text">Anonymous Bidding</span>
+                        <span className="label-text font-medium">
+                          Anonymous Bidding
+                        </span>
                         <p className="text-xs text-base-content/60">
                           Hide bidder names for this item
                         </p>
@@ -368,15 +382,15 @@ export default function EditItemPage({
             )}
 
             {/* Timing */}
-            <div className="divider"></div>
+            <div className="divider opacity-50"></div>
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="icon-[tabler--clock] size-5 text-primary"></span>
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-info">
+                <span className="icon-[tabler--clock] size-5"></span>
                 Timing
               </h2>
 
               {/* Item End Mode Info */}
-              <div className="bg-base-200 rounded-lg p-3">
+              <div className="bg-base-200/50 rounded-xl p-4 border border-base-content/5">
                 <div className="flex items-center gap-2 text-sm">
                   <span className="icon-[tabler--info-circle] size-4 text-info"></span>
                   <span className="font-medium">Item End Mode:</span>
@@ -389,7 +403,7 @@ export default function EditItemPage({
                   </span>
                 </div>
                 {auctionHasEndDate && (
-                  <div className="flex items-center gap-2 text-sm mt-1">
+                  <div className="flex items-center gap-2 text-sm mt-2">
                     <span className="icon-[tabler--calendar] size-4 text-info"></span>
                     <span className="font-medium">Auction ends:</span>
                     <span className="text-base-content/70">
@@ -402,7 +416,9 @@ export default function EditItemPage({
               {canSetCustomEndDate && (
                 <div className="form-control">
                   <label className="label" htmlFor="endDate">
-                    <span className="label-text">Item End Date (optional)</span>
+                    <span className="label-text font-medium">
+                      Item End Date (optional)
+                    </span>
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -411,7 +427,7 @@ export default function EditItemPage({
                       type="datetime-local"
                       value={itemEndDate}
                       onChange={(e) => setItemEndDate(e.target.value)}
-                      className="input input-bordered flex-1"
+                      className="input input-bordered flex-1 bg-base-100 focus:bg-base-100 transition-colors"
                       disabled={isItemEnded}
                       max={
                         auctionHasEndDate
@@ -444,7 +460,7 @@ export default function EditItemPage({
 
               {!canSetCustomEndDate &&
                 auction.itemEndMode === "WITH_AUCTION" && (
-                  <div className="alert alert-info">
+                  <div className="alert alert-info shadow-sm">
                     <span className="icon-[tabler--info-circle] size-5"></span>
                     <span>
                       {auctionHasEndDate
@@ -455,7 +471,7 @@ export default function EditItemPage({
                 )}
 
               {!canSetCustomEndDate && auction.itemEndMode === "NONE" && (
-                <div className="alert alert-info">
+                <div className="alert alert-info shadow-sm">
                   <span className="icon-[tabler--info-circle] size-5"></span>
                   <span>This item has no end date (auction setting).</span>
                 </div>
@@ -463,8 +479,8 @@ export default function EditItemPage({
             </div>
 
             {/* Submit */}
-            <div className="divider"></div>
-            <div className="flex gap-4">
+            <div className="divider opacity-50"></div>
+            <div className="flex gap-4 pt-4">
               <Link
                 href={`/auctions/${auction.id}/items/${item.id}`}
                 className="btn btn-ghost flex-1"
@@ -474,7 +490,7 @@ export default function EditItemPage({
               <Button
                 type="submit"
                 variant="primary"
-                className="flex-1"
+                className="flex-1 shadow-lg shadow-primary/20"
                 isLoading={isLoading}
                 loadingText="Saving..."
                 icon={
@@ -490,9 +506,9 @@ export default function EditItemPage({
 
       {/* End Item Section - Only show if custom end dates are allowed */}
       {!isItemEnded && canSetCustomEndDate && (
-        <div className="card bg-base-100 shadow-xl mt-6 border-2 border-warning/20">
-          <div className="card-body">
-            <h2 className="card-title text-warning">
+        <div className="card bg-base-100/50 backdrop-blur-sm shadow-xl mt-8 border border-warning/30">
+          <div className="card-body p-8">
+            <h2 className="card-title text-warning flex items-center gap-2">
               <span className="icon-[tabler--clock-stop] size-6"></span>
               End Bidding
             </h2>
@@ -505,7 +521,7 @@ export default function EditItemPage({
             {!endDialog.isOpen ? (
               <button
                 onClick={endDialog.open}
-                className="btn btn-warning btn-outline mt-4"
+                className="btn btn-warning btn-outline mt-4 border-warning/50 hover:bg-warning hover:border-warning"
               >
                 <span className="icon-[tabler--flag-filled] size-5"></span>
                 End Item Now
@@ -532,7 +548,7 @@ export default function EditItemPage({
 
       {/* Item Already Ended Notice */}
       {isItemEnded && (
-        <div className="alert alert-info mt-6">
+        <div className="alert alert-info mt-8 shadow-sm">
           <span className="icon-[tabler--flag-filled] size-5"></span>
           <span>This item has already ended. Bidding is closed.</span>
         </div>
@@ -540,9 +556,9 @@ export default function EditItemPage({
 
       {/* Danger Zone */}
       {!hasBids && (
-        <div className="card bg-base-100 shadow-xl mt-6 border-2 border-error/20">
-          <div className="card-body">
-            <h2 className="card-title text-error">
+        <div className="card bg-base-100/50 backdrop-blur-sm shadow-xl mt-8 border border-error/30">
+          <div className="card-body p-8">
+            <h2 className="card-title text-error flex items-center gap-2">
               <span className="icon-[tabler--alert-triangle] size-6"></span>
               Danger Zone
             </h2>
@@ -554,7 +570,7 @@ export default function EditItemPage({
             {!deleteDialog.isOpen ? (
               <button
                 onClick={deleteDialog.open}
-                className="btn btn-error btn-outline mt-4"
+                className="btn btn-error btn-outline mt-4 border-error/50 hover:bg-error hover:border-error"
               >
                 <span className="icon-[tabler--trash] size-5"></span>
                 Delete Item
@@ -575,7 +591,7 @@ export default function EditItemPage({
       )}
 
       {hasBids && (
-        <div className="alert alert-info mt-6">
+        <div className="alert alert-info mt-8 shadow-sm">
           <span className="icon-[tabler--info-circle] size-5"></span>
           <span>Items with bids cannot be deleted.</span>
         </div>

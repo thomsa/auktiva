@@ -8,30 +8,44 @@ export default function TermsPage() {
 
       <div className="min-h-screen bg-base-100">
         {/* Navigation */}
-        <nav className="navbar bg-base-100 border-b border-base-200">
+        <nav className="navbar bg-base-100/80 backdrop-blur-lg sticky top-0 z-50 border-b border-base-200">
           <div className="container mx-auto px-4">
             <div className="flex-1">
               <Link
                 href="/"
-                className="text-2xl font-bold text-primary flex items-center gap-2"
+                className="text-2xl font-bold flex items-center gap-2 group"
               >
-                <span className="icon-[tabler--gavel] size-7"></span>
-                Auktiva
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                  <span className="icon-[tabler--gavel] size-6"></span>
+                </div>
+                <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  Auktiva
+                </span>
               </Link>
             </div>
+            <Link href="/" className="btn btn-ghost btn-sm">
+              Back to Home
+            </Link>
           </div>
         </nav>
 
-        <main className="container mx-auto px-4 py-12 max-w-3xl">
-          <h1 className="text-4xl font-bold mb-4">Terms of Service</h1>
-          <p className="text-base-content/60 mb-8">
-            Last updated: December 15, 2025
-          </p>
+        <main className="container mx-auto px-4 py-16 max-w-3xl">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
+              Terms of Service
+            </h1>
+            <p className="text-base-content/60 text-lg">
+              Last updated: December 15, 2025
+            </p>
+          </div>
 
-          <div className="space-y-8">
+          <div className="space-y-12 prose prose-lg prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary max-w-none">
             {/* Acceptance of Terms */}
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-base-content">
+              <h2 className="flex items-center gap-3 text-2xl font-bold mb-6">
+                <span className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-base-content/70 text-lg">
+                  1
+                </span>
                 Acceptance of Terms
               </h2>
               <p className="text-base-content/80 leading-relaxed">
@@ -45,29 +59,43 @@ export default function TermsPage() {
 
             {/* What is Auktiva */}
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-base-content">
+              <h2 className="flex items-center gap-3 text-2xl font-bold mb-6">
+                <span className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-base-content/70 text-lg">
+                  2
+                </span>
                 What is Auktiva
               </h2>
-              <p className="text-base-content/80 leading-relaxed mb-4">
+              <p className="text-base-content/80 leading-relaxed mb-6">
                 Auktiva is a free, open-source auction platform designed for
                 fundraisers, charities, schools, churches, company events, and
                 community organizations. The platform enables you to create and
                 manage auctions, invite participants, and facilitate real-time
                 bidding.
               </p>
-              <div className="bg-warning/10 border border-warning/30 rounded-lg p-4">
-                <p className="text-base-content/80 text-sm">
-                  <strong className="text-warning">Important:</strong> Auktiva
-                  facilitates bidding but does not process payments. All
-                  transactions are settled offline between participants. We are
-                  not a marketplace or payment processor.
-                </p>
+              <div className="not-prose bg-warning/10 border border-warning/30 rounded-xl p-5 flex gap-4 items-start">
+                <span className="icon-[tabler--alert-triangle] size-6 text-warning mt-0.5 shrink-0"></span>
+                <div>
+                  <h3 className="font-bold text-warning mb-1">
+                    Important Disclaimer
+                  </h3>
+                  <p className="text-base-content/80 text-sm leading-relaxed">
+                    Auktiva facilitates bidding but{" "}
+                    <strong className="text-base-content">
+                      does not process payments
+                    </strong>
+                    . All transactions are settled offline between participants.
+                    We are not a marketplace or payment processor.
+                  </p>
+                </div>
               </div>
             </section>
 
             {/* User Accounts */}
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-base-content">
+              <h2 className="flex items-center gap-3 text-2xl font-bold mb-6">
+                <span className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-base-content/70 text-lg">
+                  3
+                </span>
                 User Accounts
               </h2>
               <p className="text-base-content/80 leading-relaxed mb-4">
@@ -86,40 +114,49 @@ export default function TermsPage() {
 
             {/* Roles and Permissions */}
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-base-content">
+              <h2 className="flex items-center gap-3 text-2xl font-bold mb-6">
+                <span className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-base-content/70 text-lg">
+                  4
+                </span>
                 Roles and Permissions
               </h2>
-              <p className="text-base-content/80 leading-relaxed mb-4">
+              <p className="text-base-content/80 leading-relaxed mb-6">
                 Auctions use a role-based permission system to control what each
                 member can do. Auction owners are responsible for managing their
                 members and resolving any disputes within their auctions.
               </p>
-              <div className="space-y-3">
-                <div className="bg-base-200 rounded-lg p-4">
-                  <h3 className="font-medium text-base-content mb-1">Owner</h3>
-                  <p className="text-base-content/70 text-sm">
+              <div className="grid sm:grid-cols-2 gap-4 not-prose">
+                <div className="bg-base-200/50 rounded-xl p-5 border border-base-content/5">
+                  <div className="badge badge-primary badge-outline mb-2 font-bold">
+                    Owner
+                  </div>
+                  <p className="text-base-content/70 text-sm leading-relaxed">
                     Full control over the auction including settings, members,
                     items, and deletion.
                   </p>
                 </div>
-                <div className="bg-base-200 rounded-lg p-4">
-                  <h3 className="font-medium text-base-content mb-1">Admin</h3>
-                  <p className="text-base-content/70 text-sm">
+                <div className="bg-base-200/50 rounded-xl p-5 border border-base-content/5">
+                  <div className="badge badge-secondary badge-outline mb-2 font-bold">
+                    Admin
+                  </div>
+                  <p className="text-base-content/70 text-sm leading-relaxed">
                     Can manage members, add and edit items, and modify auction
                     settings.
                   </p>
                 </div>
-                <div className="bg-base-200 rounded-lg p-4">
-                  <h3 className="font-medium text-base-content mb-1">
+                <div className="bg-base-200/50 rounded-xl p-5 border border-base-content/5">
+                  <div className="badge badge-accent badge-outline mb-2 font-bold">
                     Creator
-                  </h3>
-                  <p className="text-base-content/70 text-sm">
+                  </div>
+                  <p className="text-base-content/70 text-sm leading-relaxed">
                     Can add new items and edit their own items in the auction.
                   </p>
                 </div>
-                <div className="bg-base-200 rounded-lg p-4">
-                  <h3 className="font-medium text-base-content mb-1">Bidder</h3>
-                  <p className="text-base-content/70 text-sm">
+                <div className="bg-base-200/50 rounded-xl p-5 border border-base-content/5">
+                  <div className="badge badge-ghost badge-outline mb-2 font-bold">
+                    Bidder
+                  </div>
+                  <p className="text-base-content/70 text-sm leading-relaxed">
                     Can view items and place bids in the auction.
                   </p>
                 </div>

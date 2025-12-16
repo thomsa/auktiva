@@ -14,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
+import { canUserBid } from "@/utils/auction-helpers";
+import { getPublicUrl } from "@/lib/storage";
 
 interface Bid {
   id: string;
@@ -34,6 +36,8 @@ interface AuctionItemSummary {
   thumbnailUrl: string | null;
   endDate: string | null;
   createdAt: string;
+  highestBidderId: string | null;
+  userHasBid: boolean;
   currency: {
     symbol: string;
   };
@@ -114,7 +118,7 @@ export default function ItemDetailPage({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    initialSidebarCollapsed
+    initialSidebarCollapsed,
   );
 
   // Sidebar sorting
@@ -134,11 +138,11 @@ export default function ItemDetailPage({
       fallbackData: { item: initialItem, bids: initialBids },
       refreshInterval: isEnded ? 0 : 5000,
       revalidateOnFocus: true,
-    }
+    },
   );
 
   const item = data?.item ?? initialItem;
-  const bids = data?.bids ?? initialBids;
+  const bids: Bid[] = data?.bids ?? initialBids;
   const isHighestBidder = item.highestBidderId === user.id;
 
   const minBid = item.currentBid
@@ -181,7 +185,7 @@ export default function ItemDetailPage({
                 ? bidAsAnonymous
                 : undefined,
           }),
-        }
+        },
       );
 
       const result = await res.json();
@@ -216,470 +220,595 @@ export default function ItemDetailPage({
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <Navbar user={user} />
+    <div className="min-h-screen bg-base-100 relative overflow-x-hidden selection:bg-primary/20">
+      {/* Background decorations */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[128px] translate-x-1/3 -translate-y-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[128px] -translate-x-1/3 translate-y-1/3"></div>
+      </div>
 
-      <div className="flex">
-        {/* Items Sidebar */}
-        <aside
-          className={`hidden lg:block bg-base-100 border-r border-base-300 transition-all duration-300 ${
-            sidebarCollapsed ? "w-0 overflow-hidden" : "w-80"
-          }`}
-        >
-          <div className="h-[calc(100vh-4rem)] overflow-y-auto sticky top-16">
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="font-semibold text-lg">Items in Auction</h2>
-                <span className="badge badge-ghost">{auctionItems.length}</span>
-              </div>
-              <div className="sticky top-0 bg-base-100 pb-2 -mx-4 px-4 z-10">
-                <SortDropdown
-                  options={sidebarItemSortOptions}
-                  currentSort={sidebarSort}
-                  paramName="sidebarSort"
-                  fullWidth
-                  dropdownEnd={false}
-                />
-              </div>
-              <div className="space-y-2">
-                {sortedAuctionItems.map((auctionItem) => {
-                  const isEnded =
-                    auctionItem.endDate &&
-                    new Date(auctionItem.endDate) < new Date();
-                  return (
-                    <Link
-                      key={auctionItem.id}
-                      href={`/auctions/${auction.id}/items/${auctionItem.id}`}
-                      className={`block p-3 rounded-lg transition-colors ${
-                        auctionItem.id === initialItem.id
-                          ? "bg-primary/10 border border-primary"
-                          : "bg-base-200 hover:bg-base-300"
-                      } ${isEnded ? "opacity-60" : ""}`}
-                    >
-                      <div className="flex gap-3">
-                        <div className="relative shrink-0">
-                          {auctionItem.thumbnailUrl ? (
-                            <img
-                              src={auctionItem.thumbnailUrl}
-                              alt={auctionItem.name}
-                              className={`w-12 h-12 object-cover rounded ${
-                                isEnded ? "grayscale" : ""
-                              }`}
-                            />
-                          ) : (
-                            <div
-                              className={`w-12 h-12 bg-base-300 rounded flex items-center justify-center ${
-                                isEnded ? "grayscale" : ""
-                              }`}
-                            >
-                              <span className="icon-[tabler--photo] size-6 text-base-content/40"></span>
-                            </div>
-                          )}
-                          {isEnded && (
-                            <div className="absolute -top-1 -left-1">
-                              <div className="badge badge-error badge-xs gap-0.5">
-                                <span className="icon-[tabler--flag-filled] size-2"></span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium truncate">
-                            {auctionItem.name}
-                          </div>
-                          <div
-                            className={`text-sm font-semibold ${
-                              isEnded ? "text-base-content/50" : "text-primary"
-                            }`}
-                          >
-                            {auctionItem.currency.symbol}
-                            {(
-                              auctionItem.currentBid || auctionItem.startingBid
-                            ).toFixed(2)}
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </aside>
+      <div className="relative z-10">
+        <Navbar user={user} />
 
-        {/* Sidebar Toggle Button */}
-        <button
-          onClick={toggleSidebar}
-          className="hidden lg:flex fixed left-0 top-1/2 -translate-y-1/2 z-10 bg-base-100 border border-base-300 rounded-r-lg p-2 shadow-md hover:bg-base-200 transition-all"
-          style={{ left: sidebarCollapsed ? 0 : "calc(20rem - 1px)" }}
-          aria-label={
-            sidebarCollapsed ? "Show items sidebar" : "Hide items sidebar"
-          }
-        >
-          <span
-            className={`icon-[tabler--chevron-${
-              sidebarCollapsed ? "right" : "left"
-            }] size-5`}
-          ></span>
-        </button>
+        <div className="flex h-[calc(100vh-64px)]">
+          {/* Items Sidebar */}
+          <aside
+            className={`hidden lg:flex flex-col bg-base-100/80 backdrop-blur-xl border-r border-base-content/10 transition-all duration-300 ${
+              sidebarCollapsed ? "w-0 overflow-hidden" : "w-80"
+            }`}
+          >
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-bold text-sm uppercase tracking-wider text-base-content/60 flex items-center gap-2">
+                    <span className="icon-[tabler--list] size-4"></span>
+                    Items in Auction
+                  </h2>
+                  <span className="badge badge-sm badge-ghost">
+                    {auctionItems.length}
+                  </span>
+                </div>
+                <div className="sticky top-0 bg-base-100/95 backdrop-blur z-10 pb-4">
+                  <SortDropdown
+                    options={sidebarItemSortOptions}
+                    currentSort={sidebarSort}
+                    paramName="sidebarSort"
+                    fullWidth
+                    dropdownEnd={false}
+                  />
+                </div>
+                <div className="space-y-2">
+                  {sortedAuctionItems.map((auctionItem) => {
+                    const isEnded =
+                      auctionItem.endDate &&
+                      new Date(auctionItem.endDate) < new Date();
+                    const isActive = auctionItem.id === initialItem.id;
+                    const isWinning = auctionItem.highestBidderId === user.id;
+                    const isOutbid = auctionItem.userHasBid && !isWinning;
 
-        {/* Main Content Area */}
-        <main
-          className={`flex-1 transition-all duration-300 ${
-            sidebarCollapsed ? "" : "lg:ml-0"
-          }`}
-        >
-          <div className="container mx-auto px-4 py-8 pb-12">
-            <div className="mb-6 flex items-center justify-between">
-              <Link
-                href={`/auctions/${auction.id}`}
-                className="btn btn-ghost btn-sm gap-2"
-              >
-                <span className="icon-[tabler--arrow-left] size-4"></span>
-                Back to {auction.name}
-              </Link>
-
-              {/* Mobile: Show items count */}
-              <div className="lg:hidden">
-                <Link
-                  href={`/auctions/${auction.id}`}
-                  className="btn btn-ghost btn-sm gap-2"
-                >
-                  <span className="icon-[tabler--list] size-4"></span>
-                  {auctionItems.length} items
-                </Link>
-              </div>
-            </div>
-
-            <div className="flex flex-col lg:flex-row gap-6">
-              {/* Main Content */}
-              <div className="flex-1">
-                <div className="card bg-base-100 shadow-xl">
-                  <div className="card-body">
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                      <h1 className="card-title text-xl sm:text-3xl">
-                        {item.name}
-                      </h1>
-                      <div className="flex items-center gap-2">
-                        {isEnded && (
-                          <div className="badge badge-error">Ended</div>
-                        )}
-                        {canEdit && (
-                          <Link
-                            href={`/auctions/${auction.id}/items/${item.id}/edit`}
-                            className="btn btn-ghost btn-sm"
-                          >
-                            <span className="icon-[tabler--edit] size-4"></span>
-                            Edit
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-
-                    <p className="text-base-content/60 text-sm">
-                      Listed by {item.creator.name || item.creator.email}
-                    </p>
-
-                    {/* Image Gallery */}
-                    {images.length > 0 && (
-                      <div className="mt-6">
-                        {/* Main Image with Navigation */}
-                        <div className="relative aspect-video bg-base-200 rounded-lg overflow-hidden mb-3">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={images[selectedImageIndex]?.publicUrl}
-                            alt={`${item.name} - Image ${
-                              selectedImageIndex + 1
-                            }`}
-                            className="w-full h-full object-contain"
-                          />
-                          {/* Navigation Buttons */}
-                          {images.length > 1 && (
-                            <>
-                              <button
-                                onClick={() =>
-                                  setSelectedImageIndex((prev) =>
-                                    prev === 0 ? images.length - 1 : prev - 1
-                                  )
-                                }
-                                className="absolute left-2 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-black/50 hover:bg-black/70 border-none text-white"
-                                aria-label="Previous image"
-                              >
-                                <span className="icon-[tabler--chevron-left] size-5"></span>
-                              </button>
-                              <button
-                                onClick={() =>
-                                  setSelectedImageIndex((prev) =>
-                                    prev === images.length - 1 ? 0 : prev + 1
-                                  )
-                                }
-                                className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-black/50 hover:bg-black/70 border-none text-white"
-                                aria-label="Next image"
-                              >
-                                <span className="icon-[tabler--chevron-right] size-5"></span>
-                              </button>
-                              {/* Image Counter */}
-                              <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                                {selectedImageIndex + 1} / {images.length}
-                              </div>
-                            </>
-                          )}
-                        </div>
-                        {/* Thumbnails */}
-                        {images.length > 1 && (
-                          <div className="flex gap-2 overflow-x-auto pb-2">
-                            {images.map((img, index) => (
-                              <button
-                                key={img.id}
-                                onClick={() => setSelectedImageIndex(index)}
-                                className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                                  index === selectedImageIndex
-                                    ? "border-primary"
-                                    : "border-transparent hover:border-base-300"
+                    return (
+                      <Link
+                        key={auctionItem.id}
+                        href={`/auctions/${auction.id}/items/${auctionItem.id}`}
+                        className={`block p-3 rounded-xl transition-all border ${
+                          isActive
+                            ? "bg-primary/5 border-primary/20 shadow-sm"
+                            : "bg-base-100/50 border-transparent hover:bg-base-100 hover:border-base-content/10"
+                        } ${isEnded ? "opacity-60" : ""}`}
+                      >
+                        <div className="flex gap-3">
+                          <div className="relative shrink-0">
+                            {auctionItem.thumbnailUrl ? (
+                              <img
+                                src={auctionItem.thumbnailUrl}
+                                alt={auctionItem.name}
+                                className={`w-12 h-12 object-cover rounded-lg ${
+                                  isEnded ? "grayscale" : ""
+                                }`}
+                              />
+                            ) : (
+                              <div
+                                className={`w-12 h-12 bg-base-200 rounded-lg flex items-center justify-center ${
+                                  isEnded ? "grayscale" : ""
                                 }`}
                               >
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                  src={img.publicUrl}
-                                  alt={`Thumbnail ${index + 1}`}
-                                  className="w-full h-full object-cover"
-                                />
-                              </button>
+                                <span className="icon-[tabler--photo] size-5 text-base-content/30"></span>
+                              </div>
+                            )}
+                            {isEnded && isWinning ? (
+                              <div className="absolute -top-1 -left-1">
+                                <div className="badge badge-success badge-xs gap-0.5 shadow-sm">
+                                  <span className="icon-[tabler--crown] size-2"></span>
+                                </div>
+                              </div>
+                            ) : isEnded ? (
+                              <div className="absolute -top-1 -left-1">
+                                <div className="badge badge-error badge-xs gap-0.5 shadow-sm">
+                                  <span className="icon-[tabler--flag-filled] size-2"></span>
+                                </div>
+                              </div>
+                            ) : isWinning ? (
+                              <div className="absolute -top-1 -left-1">
+                                <div className="badge badge-success badge-xs gap-0.5 shadow-sm">
+                                  <span className="icon-[tabler--trophy] size-2"></span>
+                                </div>
+                              </div>
+                            ) : isOutbid ? (
+                              <div className="absolute -top-1 -left-1">
+                                <div className="badge badge-warning badge-xs gap-0.5 shadow-sm">
+                                  <span className="icon-[tabler--alert-triangle] size-2"></span>
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div
+                              className={`font-medium truncate text-sm ${isActive ? "text-primary" : ""}`}
+                            >
+                              {auctionItem.name}
+                            </div>
+                            <div
+                              className={`text-xs font-semibold mt-0.5 ${
+                                isEnded
+                                  ? "text-base-content/50"
+                                  : isActive
+                                    ? "text-primary"
+                                    : "text-base-content/70"
+                              }`}
+                            >
+                              {auctionItem.currency.symbol}
+                              {(
+                                auctionItem.currentBid ||
+                                auctionItem.startingBid
+                              ).toFixed(2)}
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          {/* Sidebar Toggle Button */}
+          <button
+            onClick={toggleSidebar}
+            className="hidden lg:flex fixed z-20 bg-base-100 border border-base-content/10 rounded-r-lg p-1.5 shadow-md hover:bg-base-200 transition-all items-center justify-center top-24"
+            style={{ left: sidebarCollapsed ? 0 : "20rem" }}
+            aria-label={
+              sidebarCollapsed ? "Show items sidebar" : "Hide items sidebar"
+            }
+          >
+            <span
+              className={`icon-[tabler--chevron-${
+                sidebarCollapsed ? "right" : "left"
+              }] size-4 text-base-content/60`}
+            ></span>
+          </button>
+
+          {/* Main Content Area */}
+          <main className="flex-1 overflow-y-auto bg-base-200/30">
+            <div className="container mx-auto px-4 py-8 pb-20 max-w-6xl">
+              <div className="mb-6 flex items-center justify-between">
+                <Link
+                  href={`/auctions/${auction.id}`}
+                  className="btn btn-ghost btn-sm gap-2 hover:bg-base-content/5"
+                >
+                  <span className="icon-[tabler--arrow-left] size-4"></span>
+                  Back to Auction
+                </Link>
+
+                {/* Mobile: Show items count */}
+                <div className="lg:hidden">
+                  <Link
+                    href={`/auctions/${auction.id}`}
+                    className="btn btn-ghost btn-sm gap-2"
+                  >
+                    <span className="icon-[tabler--list] size-4"></span>
+                    {auctionItems.length} items
+                  </Link>
+                </div>
+              </div>
+
+              <div className="flex flex-col xl:flex-row gap-8 items-start">
+                {/* Main Content */}
+                <div className="flex-1 w-full min-w-0">
+                  <div className="card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl">
+                    <div className="card-body p-6 sm:p-8">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
+                        <div>
+                          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
+                            {item.name}
+                          </h1>
+                          <div className="flex items-center gap-2 text-sm text-base-content/60">
+                            <span className="icon-[tabler--user] size-4"></span>
+                            Listed by{" "}
+                            <span className="font-medium text-base-content/80">
+                              {item.creator.name || item.creator.email}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 self-start">
+                          {isEnded && (
+                            <div className="badge badge-error gap-1 font-bold">
+                              <span className="icon-[tabler--flag-filled] size-3"></span>
+                              Ended
+                            </div>
+                          )}
+                          {canEdit && (
+                            <Link
+                              href={`/auctions/${auction.id}/items/${item.id}/edit`}
+                              className="btn btn-outline btn-sm gap-2"
+                            >
+                              <span className="icon-[tabler--edit] size-4"></span>
+                              Edit Item
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Image Gallery */}
+                      {images.length > 0 ? (
+                        <div className="mb-8">
+                          {/* Main Image with Navigation */}
+                          <div className="relative aspect-video bg-base-200/50 rounded-2xl overflow-hidden mb-4 border border-base-content/5 shadow-inner group">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={images[selectedImageIndex]?.publicUrl}
+                              alt={`${item.name} - Image ${
+                                selectedImageIndex + 1
+                              }`}
+                              className="w-full h-full object-contain"
+                            />
+                            {/* Navigation Buttons */}
+                            {images.length > 1 && (
+                              <>
+                                <button
+                                  onClick={() =>
+                                    setSelectedImageIndex((prev) =>
+                                      prev === 0 ? images.length - 1 : prev - 1,
+                                    )
+                                  }
+                                  className="absolute left-4 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-base-100/80 backdrop-blur border-none hover:bg-base-100 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                  aria-label="Previous image"
+                                >
+                                  <span className="icon-[tabler--chevron-left] size-5"></span>
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    setSelectedImageIndex((prev) =>
+                                      prev === images.length - 1 ? 0 : prev + 1,
+                                    )
+                                  }
+                                  className="absolute right-4 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-base-100/80 backdrop-blur border-none hover:bg-base-100 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                  aria-label="Next image"
+                                >
+                                  <span className="icon-[tabler--chevron-right] size-5"></span>
+                                </button>
+                                {/* Image Counter */}
+                                <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium">
+                                  {selectedImageIndex + 1} / {images.length}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                          {/* Thumbnails */}
+                          {images.length > 1 && (
+                            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-base-300 scrollbar-track-transparent">
+                              {images.map((img, index) => (
+                                <button
+                                  key={img.id}
+                                  onClick={() => setSelectedImageIndex(index)}
+                                  className={`shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
+                                    index === selectedImageIndex
+                                      ? "border-primary ring-2 ring-primary/20"
+                                      : "border-transparent opacity-70 hover:opacity-100 hover:border-base-300"
+                                  }`}
+                                >
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={img.publicUrl}
+                                    alt={`Thumbnail ${index + 1}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="mb-8 aspect-video bg-base-200/50 rounded-2xl flex items-center justify-center border border-base-content/5">
+                          <div className="text-center text-base-content/30">
+                            <span className="icon-[tabler--photo-off] size-16 mb-2"></span>
+                            <p>No images available</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {item.description && (
+                        <div className="mb-8">
+                          <h2 className="font-bold text-lg mb-3 flex items-center gap-2">
+                            <span className="icon-[tabler--file-description] size-5 text-primary"></span>
+                            Description
+                          </h2>
+                          <div className="prose prose-sm max-w-none text-base-content/80 bg-base-200/30 p-4 rounded-xl border border-base-content/5">
+                            <p className="whitespace-pre-wrap">
+                              {item.description}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="divider opacity-50"></div>
+
+                      {/* Bid History */}
+                      <div>
+                        <div className="flex items-center justify-between mb-6">
+                          <h2 className="font-bold text-lg flex items-center gap-2">
+                            <span className="icon-[tabler--history] size-5 text-secondary"></span>
+                            Bid History
+                            <span className="badge badge-sm badge-ghost">
+                              {bids.length}
+                            </span>
+                          </h2>
+                        </div>
+
+                        {bids.length === 0 ? (
+                          <div className="text-center py-12 bg-base-200/30 rounded-xl border border-base-content/5 border-dashed">
+                            <div className="bg-base-200 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                              <span className="icon-[tabler--gavel] size-6 text-base-content/30"></span>
+                            </div>
+                            <p className="text-base-content/60 font-medium">
+                              No bids yet
+                            </p>
+                            <p className="text-xs text-base-content/40 mt-1">
+                              Be the first to place a bid!
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {bids.map((bid, index) => (
+                              <div
+                                key={bid.id}
+                                className={`flex justify-between items-center p-4 rounded-xl border transition-all ${
+                                  index === 0
+                                    ? "bg-primary/5 border-primary/20 shadow-sm"
+                                    : "bg-base-100 border-base-content/5 hover:bg-base-200/50"
+                                }`}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center ${index === 0 ? "bg-primary text-primary-content" : "bg-base-300 text-base-content/60"}`}
+                                  >
+                                    {index === 0 ? (
+                                      <span className="icon-[tabler--trophy] size-4"></span>
+                                    ) : (
+                                      <span className="icon-[tabler--user] size-4"></span>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <span
+                                        className={`font-semibold ${index === 0 ? "text-primary" : ""}`}
+                                      >
+                                        {bid.user
+                                          ? bid.user.name || "Anonymous"
+                                          : "Anonymous"}
+                                      </span>
+                                      {index === 0 && (
+                                        <span className="badge badge-primary badge-xs">
+                                          Highest
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div className="text-xs text-base-content/50">
+                                      {new Date(bid.createdAt).toLocaleString()}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="font-bold font-mono text-lg">
+                                    {item.currency.symbol}
+                                    {bid.amount.toFixed(2)}
+                                  </div>
+                                </div>
+                              </div>
                             ))}
                           </div>
                         )}
                       </div>
-                    )}
-
-                    {item.description && (
-                      <div className="mt-6">
-                        <h2 className="font-semibold mb-2">Description</h2>
-                        <p className="text-base-content/80 whitespace-pre-wrap">
-                          {item.description}
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="divider"></div>
-
-                    {/* Bid History */}
-                    <div>
-                      <h2 className="font-semibold mb-4 flex items-center gap-2">
-                        <span className="icon-[tabler--history] size-5"></span>
-                        Bid History ({bids.length})
-                      </h2>
-
-                      {bids.length === 0 ? (
-                        <p className="text-base-content/60 text-center py-8">
-                          No bids yet. Be the first to bid!
-                        </p>
-                      ) : (
-                        <div className="space-y-2">
-                          {bids.map((bid, index) => (
-                            <div
-                              key={bid.id}
-                              className={`flex justify-between items-center p-3 rounded-lg ${
-                                index === 0 ? "bg-primary/10" : "bg-base-200"
-                              }`}
-                            >
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">
-                                  {bid.user
-                                    ? bid.user.name || "Anonymous"
-                                    : "Anonymous"}
-                                </span>
-                                {index === 0 && (
-                                  <span className="badge badge-primary badge-sm text-center">
-                                    Highest
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-right">
-                                <div className="font-bold">
-                                  {item.currency.symbol}
-                                  {bid.amount.toFixed(2)}
-                                </div>
-                                <div className="text-xs text-base-content/60">
-                                  {new Date(bid.createdAt).toLocaleString()}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Sidebar - Bidding */}
-              <div className="w-full lg:w-96">
-                <div className="card bg-base-100 shadow-xl sticky top-24">
-                  <div className="card-body">
-                    <h2 className="card-title">
-                      <span className="icon-[tabler--gavel] size-6"></span>
-                      Place Bid
-                    </h2>
+                {/* Sidebar - Bidding */}
+                <div className="w-full xl:w-96 shrink-0">
+                  <div className="card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl sticky top-4">
+                    <div className="card-body p-6">
+                      <h2 className="card-title flex items-center gap-2 mb-2">
+                        <span className="icon-[tabler--gavel] size-6 text-primary"></span>
+                        Place Bid
+                      </h2>
 
-                    <div className="bg-base-200 rounded-lg p-4 my-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-base-content/60">
-                          Current Bid
-                        </span>
-                        {!isEnded && (
-                          <span className="text-xs text-base-content/40">
-                            <span className="icon-[tabler--refresh] size-3 inline mr-1 animate-spin"></span>
-                            Live
+                      <div className="bg-base-200/50 border border-base-content/5 rounded-xl p-5 my-4">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-sm font-medium text-base-content/60 uppercase tracking-wide">
+                            Current Price
                           </span>
-                        )}
-                      </div>
-                      <div className="text-3xl font-bold text-primary">
-                        {item.currency.symbol}
-                        {(item.currentBid || item.startingBid).toFixed(2)}
-                      </div>
-                      {item.currentBid && (
-                        <div className="text-sm text-base-content/60 mt-1">
-                          Starting: {item.currency.symbol}
+                          {!isEnded && (
+                            <span className="badge badge-sm badge-success gap-1 animate-pulse">
+                              <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                              Live
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-4xl font-extrabold text-primary tracking-tight mb-2">
+                          {item.currency.symbol}
+                          {(item.currentBid || item.startingBid).toFixed(2)}
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-base-content/50">
+                          <span className="icon-[tabler--arrow-up] size-3"></span>
+                          Starting Price: {item.currency.symbol}
                           {item.startingBid.toFixed(2)}
                         </div>
-                      )}
-                    </div>
-
-                    {isHighestBidder && (
-                      <div className="alert alert-success mb-4">
-                        <span className="icon-[tabler--trophy] size-5"></span>
-                        <span>You&apos;re the highest bidder!</span>
                       </div>
-                    )}
 
-                    {item.endDate && (
-                      <div className="text-sm text-base-content/60 mb-4">
-                        <span className="icon-[tabler--clock] size-4 inline mr-1"></span>
-                        {isEnded ? "Ended" : "Ends"}: {formatDate(item.endDate)}
-                      </div>
-                    )}
-
-                    {error && (
-                      <div className="alert alert-error mb-4">
-                        <span className="icon-[tabler--alert-circle] size-5"></span>
-                        <span>{error}</span>
-                      </div>
-                    )}
-
-                    {canBid && !isEnded ? (
-                      <form onSubmit={handleBid} className="space-y-4">
-                        <div className="form-control">
-                          <label className="label">
-                            <span className="label-text">Your Bid</span>
-                            <span className="label-text-alt">
-                              Min: {item.currency.symbol}
-                              {minBid.toFixed(2)}
-                            </span>
-                          </label>
-                          <div className="input">
-                            <input
-                              type="number"
-                              value={bidAmount}
-                              onChange={(e) => setBidAmount(e.target.value)}
-                              placeholder={minBid.toFixed(2)}
-                              min={minBid}
-                              step="0.01"
-                              required
-                            />
-                            <span className="label">
-                              {item.currency.symbol}
-                            </span>
-                          </div>
+                      {isHighestBidder && (
+                        <div className="alert alert-success shadow-sm mb-4 border-none bg-success/10 text-success-content">
+                          <span className="icon-[tabler--trophy] size-5 text-success"></span>
+                          <span className="font-semibold text-success">
+                            You&apos;re the highest bidder!
+                          </span>
                         </div>
+                      )}
 
-                        {auction.bidderVisibility === "PER_BID" && (
-                          <label className="flex items-center gap-3 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={bidAsAnonymous}
-                              onChange={(e) =>
-                                setBidAsAnonymous(e.target.checked)
-                              }
-                              className="checkbox checkbox-sm"
-                            />
-                            <div className="flex items-center gap-1">
-                              <span className="text-sm">Bid as anonymous</span>
-                              <div
-                                className="tooltip tooltip-left"
-                                data-tip="Your name will be hidden from other bidders. The item owner will still see your details."
-                              >
-                                <span className="icon-[tabler--info-circle] size-4 text-base-content/50"></span>
+                      {item.endDate && (
+                        <div
+                          className={`flex items-center gap-2 text-sm mb-6 p-3 rounded-lg ${isEnded ? "bg-error/10 text-error" : "bg-base-200/50 text-base-content/70"}`}
+                        >
+                          <span
+                            className={`icon-[tabler--${isEnded ? "flag-filled" : "clock"}] size-5`}
+                          ></span>
+                          <span className="font-medium">
+                            {isEnded ? "Auction Ended" : "Time Remaining"}:
+                          </span>
+                          <span className="font-mono">
+                            {isEnded
+                              ? formatDate(item.endDate)
+                              : formatDate(item.endDate)}
+                          </span>
+                        </div>
+                      )}
+
+                      {error && (
+                        <div className="alert alert-error mb-4 shadow-sm text-sm">
+                          <span className="icon-[tabler--alert-circle] size-5"></span>
+                          <span>{error}</span>
+                        </div>
+                      )}
+
+                      {canBid && !isEnded ? (
+                        <form onSubmit={handleBid} className="space-y-4">
+                          <div className="form-control">
+                            <label className="label">
+                              <span className="label-text font-medium">
+                                Your Bid Amount
+                              </span>
+                              <span className="label-text-alt text-base-content/60">
+                                Min: {item.currency.symbol}
+                                {minBid.toFixed(2)}
+                              </span>
+                            </label>
+                            <div className="join w-full shadow-sm">
+                              <span className="join-item btn btn-active cursor-default bg-base-200 border-base-300">
+                                {item.currency.symbol}
+                              </span>
+                              <input
+                                type="number"
+                                value={bidAmount}
+                                onChange={(e) => setBidAmount(e.target.value)}
+                                placeholder={minBid.toFixed(2)}
+                                min={minBid}
+                                step="0.01"
+                                required
+                                className="join-item input input-bordered w-full focus:outline-none"
+                              />
+                            </div>
+                          </div>
+
+                          {auction.bidderVisibility === "PER_BID" && (
+                            <label className="flex items-center gap-3 cursor-pointer p-2 rounded-lg hover:bg-base-200/50 transition-colors">
+                              <input
+                                type="checkbox"
+                                checked={bidAsAnonymous}
+                                onChange={(e) =>
+                                  setBidAsAnonymous(e.target.checked)
+                                }
+                                className="checkbox checkbox-sm checkbox-primary"
+                              />
+                              <div className="flex-1">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-sm font-medium">
+                                    Bid anonymously
+                                  </span>
+                                  <div
+                                    className="tooltip tooltip-top"
+                                    data-tip="Your name will be hidden from other bidders. The item owner will still see your details."
+                                  >
+                                    <span className="icon-[tabler--info-circle] size-3.5 text-base-content/40 cursor-help"></span>
+                                  </div>
+                                </div>
+                              </div>
+                            </label>
+                          )}
+
+                          <Button
+                            type="submit"
+                            variant="primary"
+                            modifier="block"
+                            isLoading={isLoading}
+                            loadingText="Placing Bid..."
+                            className="btn-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all"
+                            icon={
+                              <span className="icon-[tabler--gavel] size-5"></span>
+                            }
+                          >
+                            Place Bid
+                          </Button>
+                        </form>
+                      ) : isEnded ? (
+                        <div className="space-y-4">
+                          <div className="text-center py-6 bg-base-200/30 rounded-xl border border-base-content/5">
+                            <span className="icon-[tabler--gavel-off] size-8 text-base-content/20 mb-2"></span>
+                            <div className="text-base-content/60 font-medium">
+                              Bidding has ended
+                            </div>
+                          </div>
+                          {winnerEmail && (
+                            <div className="alert alert-info shadow-sm">
+                              <span className="icon-[tabler--trophy] size-5"></span>
+                              <div>
+                                <div className="font-bold">Winner Contact</div>
+                                <div className="text-sm opacity-90">
+                                  {winnerEmail}
+                                </div>
                               </div>
                             </div>
-                          </label>
-                        )}
-
-                        <Button
-                          type="submit"
-                          variant="primary"
-                          modifier="block"
-                          isLoading={isLoading}
-                          loadingText="Placing Bid..."
-                          icon={
-                            <span className="icon-[tabler--gavel] size-5"></span>
-                          }
-                        >
-                          Place Bid
-                        </Button>
-                      </form>
-                    ) : isEnded ? (
-                      <div className="space-y-3">
-                        <div className="text-center py-2 text-base-content/60">
-                          This item&apos;s bidding has ended.
+                          )}
                         </div>
-                        {winnerEmail && (
-                          <div className="alert alert-info">
-                            <span className="icon-[tabler--trophy] size-5"></span>
-                            <div>
-                              <div className="font-medium">Winner Contact</div>
-                              <div className="text-sm">{winnerEmail}</div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ) : isItemOwner ? (
-                      <div className="alert alert-info">
-                        <span className="icon-[tabler--info-circle] size-5"></span>
-                        <span>You cannot bid on your own item.</span>
-                      </div>
-                    ) : (
-                      <div className="text-center py-4 text-base-content/60">
-                        You cannot bid on this item.
-                      </div>
-                    )}
+                      ) : isItemOwner ? (
+                        <div className="alert alert-info shadow-sm">
+                          <span className="icon-[tabler--info-circle] size-5"></span>
+                          <span>You cannot bid on your own item.</span>
+                        </div>
+                      ) : (
+                        <div className="text-center py-6 bg-base-200/30 rounded-xl border border-base-content/5 text-base-content/60">
+                          You cannot bid on this item.
+                        </div>
+                      )}
 
-                    <div className="divider"></div>
+                      <div className="divider opacity-50 my-6"></div>
 
-                    <div className="text-sm space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-base-content/60">Currency</span>
-                        <span>{item.currency.name}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-base-content/60">
-                          Min Increment
-                        </span>
-                        <span>
-                          {item.currency.symbol}
-                          {item.minBidIncrement.toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-base-content/60">Total Bids</span>
-                        <span>{bids.length}</span>
+                      <div className="text-sm space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-base-content/60 flex items-center gap-2">
+                            <span className="icon-[tabler--currency-dollar] size-4"></span>
+                            Currency
+                          </span>
+                          <span className="font-medium">
+                            {item.currency.name}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-base-content/60 flex items-center gap-2">
+                            <span className="icon-[tabler--chart-bar] size-4"></span>
+                            Min Increment
+                          </span>
+                          <span className="font-medium">
+                            {item.currency.symbol}
+                            {item.minBidIncrement.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-base-content/60 flex items-center gap-2">
+                            <span className="icon-[tabler--users] size-4"></span>
+                            Total Bids
+                          </span>
+                          <span className="badge badge-ghost font-medium">
+                            {bids.length}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
     </div>
   );
@@ -820,8 +949,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       startingBid: true,
       endDate: true,
       createdAt: true,
+      highestBidderId: true, // Need this for sidebar status
       currency: {
         select: { symbol: true },
+      },
+      images: {
+        select: { url: true },
+        orderBy: { order: "asc" },
+        take: 1,
       },
     },
     orderBy: { createdAt: "asc" },
@@ -832,28 +967,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     where: { userId: session.user.id },
   });
 
-  // Generate public URLs for images
-  const { getPublicUrl } = await import("@/lib/storage");
-
-  // Get thumbnails for auction items
-  const itemThumbnails = await prisma.auctionItem.findMany({
-    where: { auctionId },
-    select: {
-      id: true,
-      images: {
-        select: { url: true },
-        orderBy: { order: "asc" },
-        take: 1,
-      },
+  // Get user's bids to show which items they've bid on in sidebar
+  const userBids = await prisma.bid.findMany({
+    where: {
+      userId: session.user.id,
+      auctionItem: { auctionId },
     },
+    select: { auctionItemId: true },
+    distinct: ["auctionItemId"],
   });
 
-  const thumbnailMap = new Map(
-    itemThumbnails.map((i) => [
-      i.id,
-      i.images[0]?.url ? getPublicUrl(i.images[0].url) : null,
-    ])
-  );
+  const userBidItemIds = new Set(userBids.map((b) => b.auctionItemId));
+
+  // ...
 
   return {
     props: {
@@ -867,7 +993,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         ...ai,
         endDate: ai.endDate?.toISOString() || null,
         createdAt: ai.createdAt.toISOString(),
-        thumbnailUrl: thumbnailMap.get(ai.id) || null,
+        thumbnailUrl: ai.images[0]?.url ? getPublicUrl(ai.images[0].url) : null,
+        userHasBid: userBidItemIds.has(ai.id), // Pass bid status
       })),
       itemSidebarCollapsed: userSettings?.itemSidebarCollapsed ?? false,
       item: {
@@ -884,7 +1011,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         user: b.user,
       })),
       isHighestBidder,
-      canBid: !isCreator, // Item creators cannot bid on their own items
+      canBid: canUserBid(session.user.id, item.creatorId, !!isItemEnded),
       canEdit,
       isItemOwner: isCreator,
       winnerEmail,

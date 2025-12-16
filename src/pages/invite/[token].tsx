@@ -77,10 +77,19 @@ export default function AcceptInvitePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center">
-        <div className="text-center">
+      <div className="min-h-screen bg-base-200 flex items-center justify-center relative overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
+          <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse delay-1000"></div>
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
+        </div>
+
+        <div className="text-center relative z-10">
           <span className="loading loading-spinner loading-lg text-primary"></span>
-          <p className="mt-4 text-base-content/60">Loading invite...</p>
+          <p className="mt-4 text-base-content/60 font-medium animate-pulse">
+            Loading invite...
+          </p>
         </div>
       </div>
     );
@@ -88,14 +97,25 @@ export default function AcceptInvitePage() {
 
   if (error && !invite) {
     return (
-      <div className="min-h-screen bg-base-200 flex items-center justify-center px-4">
-        <div className="card bg-base-100 shadow-xl max-w-md w-full">
-          <div className="card-body items-center text-center">
-            <span className="icon-[tabler--alert-circle] size-16 text-error"></span>
-            <h1 className="card-title mt-4">Invalid Invite</h1>
-            <p className="text-base-content/60">{error}</p>
-            <div className="card-actions mt-6">
-              <Link href="/dashboard" className="btn btn-primary">
+      <div className="min-h-screen bg-base-200 flex items-center justify-center px-4 relative overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-error/10 rounded-full blur-[128px]"></div>
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
+        </div>
+
+        <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl max-w-md w-full relative z-10">
+          <div className="card-body items-center text-center p-8">
+            <div className="w-20 h-20 bg-error/10 rounded-full flex items-center justify-center mb-4">
+              <span className="icon-[tabler--alert-circle] size-10 text-error"></span>
+            </div>
+            <h1 className="text-2xl font-bold mt-2">Invalid Invite</h1>
+            <p className="text-base-content/60 mt-2">{error}</p>
+            <div className="card-actions mt-8 w-full">
+              <Link
+                href="/dashboard"
+                className="btn btn-primary w-full shadow-lg shadow-primary/20"
+              >
                 Go to Dashboard
               </Link>
             </div>
@@ -112,37 +132,73 @@ export default function AcceptInvitePage() {
     session?.user?.email?.toLowerCase() === invite.email.toLowerCase();
 
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center px-4">
-      <div className="card bg-base-100 shadow-xl max-w-md w-full">
-        <div className="card-body">
-          <div className="text-center mb-6">
-            <span className="icon-[tabler--mail-opened] size-16 text-primary"></span>
-            <h1 className="text-2xl font-bold mt-4">You&apos;re Invited!</h1>
+    <div className="min-h-screen bg-base-200 flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
+        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse delay-1000"></div>
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
+      </div>
+
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl max-w-md w-full relative z-10">
+        <div className="card-body p-8">
+          <div className="text-center mb-8">
+            <div className="inline-flex relative">
+              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div>
+              <div className="w-24 h-24 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-3xl flex items-center justify-center relative z-10 border border-base-content/5 rotate-3">
+                <span className="icon-[tabler--mail-opened] size-12 text-primary -rotate-3"></span>
+              </div>
+            </div>
+            <h1 className="text-3xl font-extrabold mt-6 bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+              You&apos;re Invited!
+            </h1>
+            <p className="text-base-content/60 mt-2">
+              You have been invited to join an auction
+            </p>
           </div>
 
-          <div className="bg-base-200 rounded-lg p-4 mb-6">
-            <h2 className="font-bold text-lg">{invite.auction.name}</h2>
+          <div className="bg-base-100/80 rounded-xl p-5 mb-8 border border-base-content/5 shadow-inner">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <span className="icon-[tabler--gavel] size-6"></span>
+              </div>
+              <div>
+                <h2 className="font-bold text-lg leading-tight">
+                  {invite.auction.name}
+                </h2>
+                <p className="text-xs text-base-content/50 uppercase tracking-wide font-semibold">
+                  Auction
+                </p>
+              </div>
+            </div>
+
             {invite.auction.description && (
-              <p className="text-sm text-base-content/60 mt-1">
+              <p className="text-sm text-base-content/70 mb-4 pl-[52px]">
                 {invite.auction.description}
               </p>
             )}
-            <div className="mt-3 text-sm">
-              <span className="text-base-content/60">Invited by: </span>
-              <span className="font-medium">
-                {invite.sender.name || invite.sender.email}
-              </span>
-            </div>
-            <div className="mt-1 text-sm">
-              <span className="text-base-content/60">Role: </span>
-              <span className="badge badge-primary badge-sm">
-                {invite.role}
-              </span>
+
+            <div className="divider my-3 opacity-50"></div>
+
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-base-content/60">Invited by</span>
+                <span className="font-medium flex items-center gap-1.5">
+                  <span className="icon-[tabler--user] size-3.5 opacity-50"></span>
+                  {invite.sender.name || invite.sender.email}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-base-content/60">Your Role</span>
+                <span className="badge badge-primary badge-sm font-semibold shadow-sm shadow-primary/20">
+                  {invite.role}
+                </span>
+              </div>
             </div>
           </div>
 
           {error && (
-            <div className="alert alert-error mb-4">
+            <div className="alert alert-error mb-6 shadow-sm">
               <span className="icon-[tabler--alert-circle] size-5"></span>
               <span>{error}</span>
             </div>
@@ -150,44 +206,57 @@ export default function AcceptInvitePage() {
 
           {!isLoggedIn ? (
             <div className="space-y-4">
-              <p className="text-center text-base-content/60">
-                Please login or create an account to accept this invite.
-              </p>
-              <div className="text-center text-sm text-base-content/60">
-                Invite is for:{" "}
-                <span className="font-medium">{invite.email}</span>
+              <div className="text-center p-4 bg-base-200/50 rounded-xl mb-2">
+                <p className="text-base-content/80 font-medium mb-1">
+                  Login Required
+                </p>
+                <p className="text-sm text-base-content/60">
+                  This invite was sent to{" "}
+                  <span className="font-bold text-base-content/80">
+                    {invite.email}
+                  </span>
+                </p>
               </div>
+
               <Link
                 href={`/login?callbackUrl=${encodeURIComponent(`/invite/${token}`)}`}
-                className="btn btn-primary w-full"
+                className="btn btn-primary w-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
               >
                 Login to Accept
               </Link>
+              <div className="text-center">
+                <span className="text-xs text-base-content/40 uppercase font-bold tracking-widest">
+                  or
+                </span>
+              </div>
               <Link
                 href={`/register?callbackUrl=${encodeURIComponent(`/invite/${token}`)}`}
-                className="btn btn-ghost w-full"
+                className="btn btn-outline w-full hover:bg-base-content/5"
               >
                 Create Account
               </Link>
             </div>
           ) : !emailMatches ? (
             <div className="space-y-4">
-              <div className="alert alert-warning">
+              <div className="alert alert-warning shadow-sm">
                 <span className="icon-[tabler--alert-triangle] size-5"></span>
-                <div>
+                <div className="text-sm">
+                  <p className="font-bold mb-1">Wrong Account</p>
                   <p>
-                    This invite is for <strong>{invite.email}</strong>
+                    Invite is for:{" "}
+                    <strong className="font-mono">{invite.email}</strong>
                   </p>
-                  <p className="text-sm">
-                    You&apos;re logged in as {session.user?.email}
+                  <p>
+                    Logged in as:{" "}
+                    <strong className="font-mono">{session.user?.email}</strong>
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => signOut({ callbackUrl: `/invite/${token}` })}
-                className="btn btn-primary w-full"
+                className="btn btn-primary w-full shadow-lg shadow-primary/20"
               >
-                Log out & switch account
+                Log out & Switch Account
               </button>
               <Link href="/dashboard" className="btn btn-ghost w-full">
                 Go to Dashboard
@@ -199,8 +268,9 @@ export default function AcceptInvitePage() {
               variant="primary"
               modifier="block"
               isLoading={isAccepting}
-              loadingText="Joining..."
+              loadingText="Joining Auction..."
               icon={<span className="icon-[tabler--check] size-5"></span>}
+              className="btn-lg shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
             >
               Accept & Join Auction
             </Button>

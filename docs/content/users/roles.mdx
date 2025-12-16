@@ -14,13 +14,17 @@ From most to least permissions:
 ## Role Details
 
 ### Owner
+
 The auction creator. There can only be one Owner.
+
 - All Admin permissions
 - Delete the auction
 - Cannot be removed
 
 ### Admin
+
 Helps manage the auction.
+
 - All Creator permissions
 - Edit auction settings
 - Manage members
@@ -28,28 +32,32 @@ Helps manage the auction.
 - View all bidder identities
 
 ### Creator
+
 Can contribute items.
+
 - All Bidder permissions
 - Add new items
 - Edit/delete their own items
 
 ### Bidder
+
 Default role for new members.
+
 - View auction and items
 - Place bids
 - Receive notifications
 
 ## Permission Matrix
 
-| Action | Owner | Admin | Creator | Bidder |
-|--------|:-----:|:-----:|:-------:|:------:|
-| View auction | ✓ | ✓ | ✓ | ✓ |
-| Place bids | ✓ | ✓ | ✓ | ✓ |
-| Add items | ✓ | ✓ | ✓ | ✗ |
-| Edit any item | ✓ | ✓ | ✗ | ✗ |
-| Edit settings | ✓ | ✓ | ✗ | ✗ |
-| Manage members | ✓ | ✓ | ✗ | ✗ |
-| Delete auction | ✓ | ✗ | ✗ | ✗ |
+| Action         | Owner | Admin | Creator | Bidder |
+| -------------- | :---: | :---: | :-----: | :----: |
+| View auction   |   ✓   |   ✓   |    ✓    |   ✓    |
+| Place bids     |   ✓   |   ✓   |    ✓    |   ✓    |
+| Add items      |   ✓   |   ✓   |    ✓    |   ✗    |
+| Edit any item  |   ✓   |   ✓   |    ✗    |   ✗    |
+| Edit settings  |   ✓   |   ✓   |    ✗    |   ✗    |
+| Manage members |   ✓   |   ✓   |    ✗    |   ✗    |
+| Delete auction |   ✓   |   ✗   |    ✗    |   ✗    |
 
 ## Changing Roles
 
@@ -58,8 +66,6 @@ Default role for new members.
 3. Click the role dropdown
 4. Select the new role
 
-import { Callout } from 'nextra/components'
+import { Callout } from "nextra/components";
 
-<Callout type="info">
-  Role changes take effect immediately.
-</Callout>
+<Callout type="info">Role changes take effect immediately.</Callout>

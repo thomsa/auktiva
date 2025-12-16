@@ -8,7 +8,7 @@ type ResponseData = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData>,
 ) {
   if (req.method !== "POST") {
     return res
@@ -41,7 +41,7 @@ export default async function handler(
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: `secret=${secretKey}&response=${token}`,
-      }
+      },
     );
 
     const data = await response.json();

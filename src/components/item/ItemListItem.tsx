@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { isItemEnded } from "@/utils/auction-helpers";
+import { isItemEnded, getBidStatus } from "@/utils/auction-helpers";
 import { formatShortDate } from "@/utils/formatters";
 
 interface ItemListItemProps {
@@ -13,6 +13,8 @@ interface ItemListItemProps {
     endDate: string | null;
     creatorId: string;
     thumbnailUrl: string | null;
+    highestBidderId?: string | null;
+    userHasBid?: boolean;
     _count: {
       bids: number;
     };
@@ -31,9 +33,15 @@ export function ItemListItem({
   const ended = isItemEnded(item.endDate);
   const canEditItem = item.creatorId === userId || isAdmin;
 
+  // Bid status logic
+  const isHighestBidder = item.highestBidderId === userId;
+  const bidStatus = item.userHasBid
+    ? getBidStatus(isHighestBidder, ended)
+    : null;
+
   return (
     <div
-      className={`flex items-center gap-4 p-3 bg-base-200 hover:bg-base-300 rounded-lg transition-colors ${
+      className={`flex items-center gap-4 p-3 bg-base-100/50 hover:bg-base-100 border border-base-content/5 hover:border-primary/20 rounded-xl transition-all duration-200 group ${
         ended ? "opacity-75" : ""
       }`}
     >
@@ -47,27 +55,66 @@ export function ItemListItem({
             <img
               src={item.thumbnailUrl}
               alt={item.name}
-              className={`w-14 h-14 object-cover rounded ${ended ? "grayscale" : ""}`}
+              className={`w-14 h-14 object-cover rounded-lg shadow-sm ${ended ? "grayscale" : ""}`}
             />
           ) : (
             <div
-              className={`w-14 h-14 bg-base-300 rounded flex items-center justify-center ${
+              className={`w-14 h-14 bg-base-200 rounded-lg flex items-center justify-center ${
                 ended ? "grayscale" : ""
               }`}
             >
               <span className="icon-[tabler--photo] size-6 text-base-content/20"></span>
             </div>
           )}
-          {ended && (
+          {bidStatus === "won" ? (
             <div className="absolute -top-1 -left-1">
-              <div className="badge badge-error badge-xs gap-0.5">
+              <div className="badge badge-success badge-xs gap-0.5 shadow-sm">
+                <span className="icon-[tabler--crown] size-2"></span>
+              </div>
+            </div>
+          ) : ended ? (
+            <div className="absolute -top-1 -left-1">
+              <div className="badge badge-error badge-xs gap-0.5 shadow-sm">
                 <span className="icon-[tabler--flag-filled] size-2"></span>
               </div>
             </div>
-          )}
+          ) : bidStatus === "winning" ? (
+            <div className="absolute -top-1 -left-1">
+              <div className="badge badge-success badge-xs gap-0.5 shadow-sm">
+                <span className="icon-[tabler--trophy] size-2"></span>
+              </div>
+            </div>
+          ) : bidStatus === "outbid" ? (
+            <div className="absolute -top-1 -left-1">
+              <div className="badge badge-warning badge-xs gap-0.5 shadow-sm">
+                <span className="icon-[tabler--alert-triangle] size-2"></span>
+              </div>
+            </div>
+          ) : null}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-medium truncate">{item.name}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
+              {item.name}
+            </h3>
+            {bidStatus && (
+              <div
+                className={`badge badge-xs font-bold ${
+                  bidStatus === "winning" || bidStatus === "won"
+                    ? "badge-success"
+                    : "badge-warning"
+                }`}
+              >
+                {bidStatus === "winning"
+                  ? "Winning"
+                  : bidStatus === "won"
+                    ? "Won"
+                    : bidStatus === "outbid"
+                      ? "Outbid"
+                      : "Lost"}
+              </div>
+            )}
+          </div>
           {item.description && (
             <p className="text-sm text-base-content/60 truncate">
               {item.description}
@@ -75,19 +122,22 @@ export function ItemListItem({
           )}
         </div>
         <div className="text-right shrink-0">
-          <div className="font-bold text-primary">
+          <div
+            className={`font-bold font-mono ${bidStatus === "winning" || bidStatus === "won" ? "text-success" : bidStatus === "outbid" ? "text-warning" : "text-primary"}`}
+          >
             {item.currentBid !== null
               ? `${item.currentBid} ${item.currencyCode}`
               : `${item.startingBid} ${item.currencyCode}`}
           </div>
-          <div className="text-xs text-base-content/60">
+          <div className="text-xs text-base-content/50 flex items-center justify-end gap-1">
+            <span className="icon-[tabler--gavel] size-3"></span>
             {item._count.bids} bids
           </div>
         </div>
         {item.endDate && (
           <div
-            className={`text-xs shrink-0 w-24 text-right ${
-              ended ? "text-error" : "text-base-content/50"
+            className={`text-xs shrink-0 w-24 text-right font-medium ${
+              ended ? "text-error" : "text-base-content/60"
             }`}
           >
             {ended ? "Ended" : "Ends"} {formatShortDate(item.endDate)}
@@ -97,7 +147,7 @@ export function ItemListItem({
       {canEditItem && (
         <Link
           href={`/auctions/${auctionId}/items/${item.id}/edit`}
-          className="btn btn-ghost btn-xs btn-circle shrink-0"
+          className="btn btn-ghost btn-sm btn-circle shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
           onClick={(e) => e.stopPropagation()}
           title="Edit item"
         >

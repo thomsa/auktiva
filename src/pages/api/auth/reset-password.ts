@@ -15,7 +15,7 @@ const resetPasswordSchema = z.object({
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
@@ -79,10 +79,13 @@ export default async function handler(
       }),
     ]);
 
-    console.log(`[Password Reset] Password updated for user ${resetToken.userId}`);
+    console.log(
+      `[Password Reset] Password updated for user ${resetToken.userId}`,
+    );
 
     return res.status(200).json({
-      message: "Password reset successfully. You can now log in with your new password.",
+      message:
+        "Password reset successfully. You can now log in with your new password.",
     });
   } catch (error) {
     console.error("[Password Reset] Error:", error);

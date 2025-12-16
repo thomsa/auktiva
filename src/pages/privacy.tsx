@@ -8,30 +8,44 @@ export default function PrivacyPage() {
 
       <div className="min-h-screen bg-base-100">
         {/* Navigation */}
-        <nav className="navbar bg-base-100 border-b border-base-200">
+        <nav className="navbar bg-base-100/80 backdrop-blur-lg sticky top-0 z-50 border-b border-base-200">
           <div className="container mx-auto px-4">
             <div className="flex-1">
               <Link
                 href="/"
-                className="text-2xl font-bold text-primary flex items-center gap-2"
+                className="text-2xl font-bold flex items-center gap-2 group"
               >
-                <span className="icon-[tabler--gavel] size-7"></span>
-                Auktiva
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                  <span className="icon-[tabler--gavel] size-6"></span>
+                </div>
+                <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  Auktiva
+                </span>
               </Link>
             </div>
+            <Link href="/" className="btn btn-ghost btn-sm">
+              Back to Home
+            </Link>
           </div>
         </nav>
 
-        <main className="container mx-auto px-4 py-12 max-w-3xl">
-          <h1 className="text-4xl font-bold mb-4">Privacy Policy</h1>
-          <p className="text-base-content/60 mb-8">
-            Last updated: December 15, 2025
-          </p>
+        <main className="container mx-auto px-4 py-16 max-w-3xl">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
+              Privacy Policy
+            </h1>
+            <p className="text-base-content/60 text-lg">
+              Last updated: December 15, 2025
+            </p>
+          </div>
 
-          <div className="space-y-8">
+          <div className="space-y-12 prose prose-lg prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary max-w-none">
             {/* Introduction */}
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-base-content">
+              <h2 className="flex items-center gap-3 text-2xl font-bold mb-6">
+                <span className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-base-content/70 text-lg">
+                  1
+                </span>
                 Introduction
               </h2>
               <p className="text-base-content/80 leading-relaxed">
@@ -45,46 +59,55 @@ export default function PrivacyPage() {
 
             {/* Information We Collect */}
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-base-content">
+              <h2 className="flex items-center gap-3 text-2xl font-bold mb-6">
+                <span className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-base-content/70 text-lg">
+                  2
+                </span>
                 Information We Collect
               </h2>
-              <p className="text-base-content/80 leading-relaxed mb-4">
+              <p className="text-base-content/80 leading-relaxed mb-6">
                 We collect information you provide directly to us when you use
                 Auktiva:
               </p>
-              <div className="space-y-3">
-                <div className="bg-base-200 rounded-lg p-4">
-                  <h3 className="font-medium text-base-content mb-1">
+              <div className="grid sm:grid-cols-2 gap-4 not-prose">
+                <div className="bg-base-200/50 rounded-2xl p-6 border border-base-content/5">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
+                    <span className="icon-[tabler--user] size-6"></span>
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">
                     Account Information
                   </h3>
-                  <p className="text-base-content/70 text-sm">
+                  <p className="text-base-content/70 text-sm leading-relaxed">
                     Your name, email address, and password when you create an
                     account.
                   </p>
                 </div>
-                <div className="bg-base-200 rounded-lg p-4">
-                  <h3 className="font-medium text-base-content mb-1">
-                    Auction Data
-                  </h3>
-                  <p className="text-base-content/70 text-sm">
+                <div className="bg-base-200/50 rounded-2xl p-6 border border-base-content/5">
+                  <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary mb-3">
+                    <span className="icon-[tabler--gavel] size-6"></span>
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">Auction Data</h3>
+                  <p className="text-base-content/70 text-sm leading-relaxed">
                     Information about auctions you create or join, items you
                     list, bids you place, and your membership roles.
                   </p>
                 </div>
-                <div className="bg-base-200 rounded-lg p-4">
-                  <h3 className="font-medium text-base-content mb-1">
-                    Uploaded Content
-                  </h3>
-                  <p className="text-base-content/70 text-sm">
+                <div className="bg-base-200/50 rounded-2xl p-6 border border-base-content/5">
+                  <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-accent mb-3">
+                    <span className="icon-[tabler--photo] size-6"></span>
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">Uploaded Content</h3>
+                  <p className="text-base-content/70 text-sm leading-relaxed">
                     Images and descriptions you upload for auction items and
                     auction thumbnails.
                   </p>
                 </div>
-                <div className="bg-base-200 rounded-lg p-4">
-                  <h3 className="font-medium text-base-content mb-1">
-                    Preferences
-                  </h3>
-                  <p className="text-base-content/70 text-sm">
+                <div className="bg-base-200/50 rounded-2xl p-6 border border-base-content/5">
+                  <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center text-info mb-3">
+                    <span className="icon-[tabler--settings] size-6"></span>
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">Preferences</h3>
+                  <p className="text-base-content/70 text-sm leading-relaxed">
                     Your email notification settings and theme preferences.
                   </p>
                 </div>

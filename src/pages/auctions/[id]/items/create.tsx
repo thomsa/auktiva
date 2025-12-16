@@ -92,37 +92,47 @@ export default function CreateItemPage({
 
   return (
     <PageLayout user={user} maxWidth="2xl">
-      <div className="mb-6">
+      <div className="mb-8">
         <BackLink
           href={`/auctions/${auction.id}`}
           label={`Back to ${auction.name}`}
         />
       </div>
 
-      <div className="card bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h1 className="card-title text-2xl mb-6">Add New Item</h1>
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
+        <div className="card-body p-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+              <span className="icon-[tabler--package] size-7"></span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">Add New Item</h1>
+              <p className="text-base-content/60">
+                Create a new item for auction
+              </p>
+            </div>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {error && <AlertMessage type="error">{error}</AlertMessage>}
 
             {/* Basic Info */}
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="icon-[tabler--package] size-5 text-primary"></span>
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">
+                <span className="icon-[tabler--info-circle] size-5"></span>
                 Item Details
               </h2>
 
               <div className="form-control">
                 <label className="label" htmlFor="name">
-                  <span className="label-text">Item Name *</span>
+                  <span className="label-text font-medium">Item Name *</span>
                 </label>
                 <input
                   id="name"
                   name="name"
                   type="text"
                   placeholder="e.g., Vintage Watch"
-                  className={`input input-bordered w-full ${fieldErrors.name ? "input-error" : ""}`}
+                  className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.name ? "input-error" : ""}`}
                   required
                 />
                 {fieldErrors.name && (
@@ -136,33 +146,33 @@ export default function CreateItemPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="description">
-                  <span className="label-text">Description</span>
+                  <span className="label-text font-medium">Description</span>
                 </label>
                 <textarea
                   id="description"
                   name="description"
                   placeholder="Describe the item in detail..."
-                  className="textarea textarea-bordered w-full h-32"
+                  className="textarea textarea-bordered w-full h-32 bg-base-100 focus:bg-base-100 transition-colors"
                 />
               </div>
             </div>
 
             {/* Pricing */}
-            <div className="divider"></div>
+            <div className="divider opacity-50"></div>
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="icon-[tabler--currency-dollar] size-5 text-primary"></span>
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-secondary">
+                <span className="icon-[tabler--currency-dollar] size-5"></span>
                 Pricing
               </h2>
 
               <div className="form-control">
                 <label className="label" htmlFor="currencyCode">
-                  <span className="label-text">Currency *</span>
+                  <span className="label-text font-medium">Currency *</span>
                 </label>
                 <select
                   id="currencyCode"
                   name="currencyCode"
-                  className="select select-bordered w-full"
+                  className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   defaultValue="USD"
                   required
                 >
@@ -177,7 +187,7 @@ export default function CreateItemPage({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label" htmlFor="startingBid">
-                    <span className="label-text">Starting Bid</span>
+                    <span className="label-text font-medium">Starting Bid</span>
                   </label>
                   <input
                     id="startingBid"
@@ -186,7 +196,7 @@ export default function CreateItemPage({
                     min="0"
                     step="0.01"
                     defaultValue="0"
-                    className={`input input-bordered w-full ${fieldErrors.startingBid ? "input-error" : ""}`}
+                    className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.startingBid ? "input-error" : ""}`}
                   />
                   {fieldErrors.startingBid && (
                     <label className="label">
@@ -199,7 +209,9 @@ export default function CreateItemPage({
 
                 <div className="form-control">
                   <label className="label" htmlFor="minBidIncrement">
-                    <span className="label-text">Min Bid Increment</span>
+                    <span className="label-text font-medium">
+                      Min Bid Increment
+                    </span>
                   </label>
                   <input
                     id="minBidIncrement"
@@ -208,7 +220,7 @@ export default function CreateItemPage({
                     min="0.01"
                     step="0.01"
                     defaultValue="1"
-                    className="input input-bordered w-full"
+                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   />
                 </div>
               </div>
@@ -217,22 +229,24 @@ export default function CreateItemPage({
             {/* Visibility - deprecated, kept for backwards compatibility */}
             {false && auction.bidderVisibility === "ITEM_CHOICE" && (
               <>
-                <div className="divider"></div>
+                <div className="divider opacity-50"></div>
                 <div className="space-y-4">
-                  <h2 className="text-lg font-semibold flex items-center gap-2">
-                    <span className="icon-[tabler--eye] size-5 text-primary"></span>
+                  <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
+                    <span className="icon-[tabler--eye] size-5"></span>
                     Visibility
                   </h2>
 
                   <div className="form-control">
-                    <label className="label cursor-pointer justify-start gap-3">
+                    <label className="label cursor-pointer justify-start gap-3 p-0">
                       <input
                         type="checkbox"
                         name="bidderAnonymous"
                         className="checkbox checkbox-primary"
                       />
                       <div>
-                        <span className="label-text">Anonymous Bidding</span>
+                        <span className="label-text font-medium">
+                          Anonymous Bidding
+                        </span>
                         <p className="text-xs text-base-content/60">
                           Hide bidder names for this item
                         </p>
@@ -246,22 +260,24 @@ export default function CreateItemPage({
             {/* Timing */}
             {showEndDate && (
               <>
-                <div className="divider"></div>
+                <div className="divider opacity-50"></div>
                 <div className="space-y-4">
-                  <h2 className="text-lg font-semibold flex items-center gap-2">
-                    <span className="icon-[tabler--clock] size-5 text-primary"></span>
+                  <h2 className="text-lg font-semibold flex items-center gap-2 text-info">
+                    <span className="icon-[tabler--clock] size-5"></span>
                     Timing
                   </h2>
 
                   <div className="form-control">
                     <label className="label" htmlFor="endDate">
-                      <span className="label-text">End Date (optional)</span>
+                      <span className="label-text font-medium">
+                        End Date (optional)
+                      </span>
                     </label>
                     <input
                       id="endDate"
                       name="endDate"
                       type="datetime-local"
-                      className="input input-bordered w-full"
+                      className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                     />
                     <label className="label">
                       <span className="label-text-alt text-base-content/60">
@@ -274,8 +290,8 @@ export default function CreateItemPage({
             )}
 
             {/* Submit */}
-            <div className="divider"></div>
-            <div className="flex gap-4">
+            <div className="divider opacity-50"></div>
+            <div className="flex gap-4 pt-4">
               <Link
                 href={`/auctions/${auction.id}`}
                 className="btn btn-ghost flex-1"
@@ -285,7 +301,7 @@ export default function CreateItemPage({
               <Button
                 type="submit"
                 variant="primary"
-                className="flex-1"
+                className="flex-1 shadow-lg shadow-primary/20"
                 isLoading={isLoading}
                 loadingText="Creating..."
                 icon={<span className="icon-[tabler--plus] size-5"></span>}

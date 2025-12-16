@@ -118,64 +118,85 @@ export default function MembersPage({
 
   return (
     <PageLayout user={user} maxWidth="4xl">
-      <div className="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-        <BackLink
-          href={`/auctions/${auction.id}`}
-          label={`Back to ${auction.name}`}
-          shortLabel="Back"
-        />
+      <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div>
+          <BackLink
+            href={`/auctions/${auction.id}`}
+            label={`Back to ${auction.name}`}
+            shortLabel="Back"
+          />
+          <h1 className="text-2xl sm:text-3xl font-bold mt-4 flex items-center gap-3">
+            <span className="icon-[tabler--users] size-8 text-primary"></span>
+            Members
+            <span className="badge badge-neutral text-lg">
+              {members.length}
+            </span>
+          </h1>
+        </div>
+
         {(isOwner || isAdmin) && (
           <Link
             href={`/auctions/${auction.id}/invite`}
-            className="btn btn-primary btn-sm w-full sm:w-auto"
+            className="btn btn-primary shadow-lg shadow-primary/20 gap-2"
           >
-            <span className="icon-[tabler--user-plus] size-4"></span>
-            Invite
+            <span className="icon-[tabler--user-plus] size-5"></span>
+            Invite Members
           </Link>
         )}
       </div>
 
-      <div className="card bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h1 className="card-title text-2xl mb-4">
-            <span className="icon-[tabler--users] size-6"></span>
-            Members ({members.length})
-          </h1>
-
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
+        <div className="card-body p-6">
           {error && (
-            <AlertMessage type="error" className="mb-4">
+            <AlertMessage type="error" className="mb-6">
               {error}
             </AlertMessage>
           )}
 
           {/* Mobile Card View */}
-          <div className="space-y-3 md:hidden">
+          <div className="space-y-4 md:hidden">
             {members.map((member) => (
-              <MemberCard
+              <div
                 key={member.id}
-                member={member}
-                currentUserId={user.id}
-                isAdmin={isAdmin}
-                isLoading={loadingMemberId === member.id}
-                onRoleChange={handleRoleChange}
-                onRemove={handleRemoveMember}
-              />
+                className="bg-base-100 rounded-xl p-4 border border-base-content/5 shadow-sm"
+              >
+                <MemberCard
+                  member={member}
+                  currentUserId={user.id}
+                  isAdmin={isAdmin}
+                  isLoading={loadingMemberId === member.id}
+                  onRoleChange={handleRoleChange}
+                  onRemove={handleRemoveMember}
+                />
+              </div>
             ))}
           </div>
 
           {/* Desktop Table View */}
           <div className="hidden md:block overflow-x-auto">
-            <table className="table">
+            <table className="table table-lg">
               <thead>
-                <tr>
-                  <th>Member</th>
-                  <th>Role</th>
-                  <th>Joined</th>
-                  <th>Invited By</th>
-                  {isAdmin && <th className="text-right">Actions</th>}
+                <tr className="border-b-base-content/5">
+                  <th className="bg-base-200/30 text-base-content/60 font-semibold pl-6">
+                    Member
+                  </th>
+                  <th className="bg-base-200/30 text-base-content/60 font-semibold">
+                    Role
+                  </th>
+                  <th className="bg-base-200/30 text-base-content/60 font-semibold">
+                    Joined
+                  </th>
+                  <th className="bg-base-200/30 text-base-content/60 font-semibold">
+                    Invited By
+                  </th>
+                  {isAdmin && (
+                    <th className="bg-base-200/30 text-base-content/60 font-semibold text-right pr-6">
+                      Actions
+                    </th>
+                  )}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-base-content/5">
                 {members.map((member) => (
                   <MemberRow
                     key={member.id}

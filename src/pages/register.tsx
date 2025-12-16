@@ -127,50 +127,53 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
   return (
     <>
       <SEO {...pageSEO.register} />
-      <div className="min-h-screen flex flex-col lg:flex-row">
+      <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
         {/* Left side - Branding (hidden on mobile) */}
-        <div
-          className="hidden lg:flex lg:w-1/2 bg-[#fff2d4] items-center justify-center p-12 relative"
-          style={{
-            backgroundImage: "url('/pictures/login-bg.png')",
-            backgroundPosition: "bottom center",
-            backgroundSize: "contain",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          <div className="absolute inset-0 bg-base-100/80"></div>
-          <Link
-            href="/"
-            className="relative z-10 flex flex-col items-center gap-4 hover:opacity-80 transition-opacity"
-          >
-            <div className="flex items-center gap-3">
-              <span className="icon-[tabler--gavel] size-12 text-primary"></span>
-              <h1 className="text-4xl font-bold text-base-content">Auktiva</h1>
-            </div>
-            <p className="text-base-content/60 text-lg text-center">
-              The free auction platform for fundraisers and charities
+        <div className="hidden lg:flex lg:w-1/2 relative bg-base-200 overflow-hidden items-center justify-center">
+          {/* Background effects */}
+          <div className="absolute inset-0 z-0">
+            <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
+            <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[128px] animate-pulse delay-1000"></div>
+            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center justify-center p-12 text-center max-w-lg">
+            <Link href="/" className="mb-8 group">
+              <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-base-100 shadow-2xl shadow-primary/10 border border-base-content/5 mb-6 group-hover:scale-105 transition-transform duration-300">
+                <span className="icon-[tabler--gavel] size-10 text-primary group-hover:-rotate-12 transition-transform duration-300"></span>
+              </div>
+              <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Auktiva
+              </h1>
+            </Link>
+
+            <h2 className="text-2xl font-bold mb-4">Join the Community</h2>
+            <p className="text-base-content/60 text-lg leading-relaxed">
+              Create your account in seconds and start hosting or bidding on
+              auctions.
             </p>
-          </Link>
+          </div>
         </div>
 
         {/* Right side - Form */}
-        <div className="flex-1 lg:w-1/2 bg-base-300 flex flex-col items-center justify-center p-6 sm:p-12">
-          {/* Mobile logo */}
+        <div className="flex-1 lg:w-1/2 flex flex-col items-center justify-center p-6 sm:p-12 relative bg-base-100">
           <Link
             href="/"
-            className="lg:hidden mb-8 flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className="lg:hidden absolute top-8 left-6 flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <span className="icon-[tabler--gavel] size-8 text-primary"></span>
-            <span className="text-xl font-bold text-base-content">Auktiva</span>
+            <span className="icon-[tabler--gavel] size-6 text-primary"></span>
+            <span className="text-lg font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Auktiva
+            </span>
           </Link>
 
-          <div className="w-full max-w-md">
+          <div className="w-full max-w-[400px]">
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-base-content">
-                Create account
+              <h2 className="text-3xl font-bold text-base-content mb-2">
+                Create Account
               </h2>
-              <p className="text-base-content/60 mt-1">
-                Join Auktiva to start bidding
+              <p className="text-base-content/60">
+                Get started with your free account
               </p>
             </div>
 
@@ -178,20 +181,25 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
               {error && <AlertMessage type="error">{error}</AlertMessage>}
 
               <div className="form-control">
-                <label className="label" htmlFor="name">
-                  <span className="label-text text-base-content/80">Name</span>
+                <label className="label pl-0" htmlFor="name">
+                  <span className="label-text font-medium text-base-content/80">
+                    Full Name
+                  </span>
                 </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder="John Doe"
-                  autoComplete="name"
-                  className={`input input-bordered w-full bg-base-100 ${
-                    fieldErrors.name ? "input-error" : ""
-                  }`}
-                  required
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--user] size-5"></span>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="John Doe"
+                    autoComplete="name"
+                    className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
+                      fieldErrors.name ? "input-error" : ""
+                    }`}
+                    required
+                  />
+                </div>
                 {fieldErrors.name && (
                   <label className="label">
                     <span className="label-text-alt text-error">
@@ -202,20 +210,25 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
               </div>
 
               <div className="form-control">
-                <label className="label" htmlFor="email">
-                  <span className="label-text text-base-content/80">Email</span>
+                <label className="label pl-0" htmlFor="email">
+                  <span className="label-text font-medium text-base-content/80">
+                    Email
+                  </span>
                 </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                  className={`input input-bordered w-full bg-base-100 ${
-                    fieldErrors.email ? "input-error" : ""
-                  }`}
-                  required
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--mail] size-5"></span>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                    className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
+                      fieldErrors.email ? "input-error" : ""
+                    }`}
+                    required
+                  />
+                </div>
                 {fieldErrors.email && (
                   <label className="label">
                     <span className="label-text-alt text-error">
@@ -225,58 +238,66 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
                 )}
               </div>
 
-              <div className="form-control">
-                <label className="label" htmlFor="password">
-                  <span className="label-text text-base-content/80">
-                    Password
-                  </span>
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  className={`input input-bordered w-full bg-base-100 ${
-                    fieldErrors.password ? "input-error" : ""
-                  }`}
-                  required
-                  minLength={6}
-                />
-                {fieldErrors.password && (
-                  <label className="label">
-                    <span className="label-text-alt text-error">
-                      {fieldErrors.password}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="form-control">
+                  <label className="label pl-0" htmlFor="password">
+                    <span className="label-text font-medium text-base-content/80">
+                      Password
                     </span>
                   </label>
-                )}
-              </div>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--lock] size-5"></span>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      placeholder="••••••"
+                      autoComplete="new-password"
+                      className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
+                        fieldErrors.password ? "input-error" : ""
+                      }`}
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  {fieldErrors.password && (
+                    <label className="label">
+                      <span className="label-text-alt text-error">
+                        {fieldErrors.password}
+                      </span>
+                    </label>
+                  )}
+                </div>
 
-              <div className="form-control">
-                <label className="label" htmlFor="confirmPassword">
-                  <span className="label-text text-base-content/80">
-                    Confirm Password
-                  </span>
-                </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  className={`input input-bordered w-full bg-base-100 ${
-                    fieldErrors.confirmPassword ? "input-error" : ""
-                  }`}
-                  required
-                  minLength={6}
-                />
-                {fieldErrors.confirmPassword && (
-                  <label className="label">
-                    <span className="label-text-alt text-error">
-                      {fieldErrors.confirmPassword}
+                <div className="form-control">
+                  <label className="label pl-0" htmlFor="confirmPassword">
+                    <span className="label-text font-medium text-base-content/80">
+                      Confirm
                     </span>
                   </label>
-                )}
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--lock-check] size-5"></span>
+                    <input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      placeholder="••••••"
+                      autoComplete="new-password"
+                      className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
+                        fieldErrors.confirmPassword ? "input-error" : ""
+                      }`}
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  {fieldErrors.confirmPassword && (
+                    <label className="label">
+                      <span className="label-text-alt text-error">
+                        {fieldErrors.confirmPassword}
+                      </span>
+                    </label>
+                  )}
+                </div>
               </div>
 
               {/* reCAPTCHA Widget */}
@@ -313,19 +334,23 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
                 isLoading={isLoading}
                 loadingText="Creating account..."
                 disabled={recaptchaSiteKey ? !isVerified : false}
+                className="btn-lg text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
               >
-                Create account
+                Create Account
               </Button>
             </form>
 
-            <div className="divider my-6">or</div>
-
-            <p className="text-center text-sm text-base-content/60">
-              Already have an account?{" "}
-              <Link href="/login" className="link link-primary font-medium">
-                Sign in
-              </Link>
-            </p>
+            <div className="mt-8 text-center">
+              <p className="text-sm text-base-content/60">
+                Already have an account?{" "}
+                <Link
+                  href="/login"
+                  className="link link-primary font-bold hover:text-primary/80 transition-colors"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -334,7 +359,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
 }
 
 export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async (
-  context
+  context,
 ) => {
   const session = await getServerSession(context.req, context.res, authOptions);
 

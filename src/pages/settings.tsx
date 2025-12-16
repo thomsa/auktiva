@@ -162,17 +162,26 @@ export default function SettingsPage({
 
   return (
     <PageLayout user={user} maxWidth="2xl">
-      <h1 className="text-3xl font-bold mb-8">Settings</h1>
+      <div className="mb-10">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-linear-to-r from-base-content to-base-content/60 bg-clip-text text-transparent mb-2">
+          Settings
+        </h1>
+        <p className="text-base-content/60 text-lg">
+          Manage your account preferences and profile
+        </p>
+      </div>
 
       {/* Profile Section */}
-      <div className="card bg-base-100 shadow-xl mb-6">
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
         <div className="card-body">
-          <h2 className="card-title">
-            <span className="icon-[tabler--user] size-6"></span>
+          <h2 className="card-title flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+              <span className="icon-[tabler--user] size-6"></span>
+            </div>
             Profile
           </h2>
 
-          <form onSubmit={handleProfileSubmit} className="space-y-4 mt-4">
+          <form onSubmit={handleProfileSubmit} className="space-y-5">
             {profileError && (
               <div className="alert alert-error">
                 <span className="icon-[tabler--alert-circle] size-5"></span>
@@ -189,16 +198,17 @@ export default function SettingsPage({
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Email</span>
+                <span className="label-text font-medium">Email</span>
               </label>
               <input
                 type="email"
                 value={user.email}
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-base-200/50 opacity-70"
                 disabled
               />
               <label className="label">
-                <span className="label-text-alt text-base-content/60">
+                <span className="label-text-alt text-base-content/50 flex items-center gap-1">
+                  <span className="icon-[tabler--lock] size-3"></span>
                   Email cannot be changed
                 </span>
               </label>
@@ -206,41 +216,46 @@ export default function SettingsPage({
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Display Name</span>
+                <span className="label-text font-medium">Display Name</span>
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
               />
             </div>
 
-            <Button
-              type="submit"
-              variant="primary"
-              isLoading={profileLoading}
-              loadingText="Saving..."
-              icon={
-                <span className="icon-[tabler--device-floppy] size-5"></span>
-              }
-            >
-              Save Profile
-            </Button>
+            <div className="pt-2">
+              <Button
+                type="submit"
+                variant="primary"
+                isLoading={profileLoading}
+                loadingText="Saving..."
+                icon={
+                  <span className="icon-[tabler--device-floppy] size-5"></span>
+                }
+                className="shadow-lg shadow-primary/20"
+              >
+                Save Profile
+              </Button>
+            </div>
           </form>
         </div>
       </div>
 
       {/* Password Section */}
-      <div className="card bg-base-100 shadow-xl mb-6">
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
         <div className="card-body">
-          <h2 className="card-title">
-            <span className="icon-[tabler--lock] size-6"></span>
+          <h2 className="card-title flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
+              <span className="icon-[tabler--lock] size-6"></span>
+            </div>
             Change Password
           </h2>
 
-          <form onSubmit={handlePasswordSubmit} className="space-y-4 mt-4">
+          <form onSubmit={handlePasswordSubmit} className="space-y-5">
             {passwordError && (
               <div className="alert alert-error">
                 <span className="icon-[tabler--alert-circle] size-5"></span>
@@ -257,27 +272,27 @@ export default function SettingsPage({
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Current Password</span>
+                <span className="label-text font-medium">Current Password</span>
               </label>
               <input
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                 required
               />
             </div>
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">New Password</span>
+                <span className="label-text font-medium">New Password</span>
               </label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="At least 8 characters"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                 required
                 minLength={8}
               />
@@ -285,88 +300,94 @@ export default function SettingsPage({
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Confirm New Password</span>
+                <span className="label-text font-medium">
+                  Confirm New Password
+                </span>
               </label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                 required
               />
             </div>
 
-            <Button
-              type="submit"
-              variant="primary"
-              isLoading={passwordLoading}
-              loadingText="Changing..."
-              icon={<span className="icon-[tabler--key] size-5"></span>}
-            >
-              Change Password
-            </Button>
+            <div className="pt-2">
+              <Button
+                type="submit"
+                buttonStyle="outline"
+                isLoading={passwordLoading}
+                loadingText="Changing..."
+                icon={<span className="icon-[tabler--key] size-5"></span>}
+              >
+                Change Password
+              </Button>
+            </div>
           </form>
         </div>
       </div>
 
       {/* Email Notifications Section */}
-      <div className="card bg-base-100 shadow-xl mb-6">
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
         <div className="card-body">
-          <h2 className="card-title">
-            <span className="icon-[tabler--mail] size-6"></span>
+          <h2 className="card-title flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+              <span className="icon-[tabler--mail] size-6"></span>
+            </div>
             Email Notifications
           </h2>
 
           {emailSettingsSuccess && (
-            <div className="alert alert-success py-2">
+            <div className="alert alert-success py-2 text-sm shadow-sm mb-2">
               <span className="icon-[tabler--check] size-5"></span>
               <span>{emailSettingsSuccess}</span>
             </div>
           )}
 
-          <div className="space-y-4 mt-4">
-            <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-4">
+          <div className="space-y-2 mt-2 divide-y divide-base-content/5">
+            <div className="form-control py-3">
+              <label className="label cursor-pointer justify-between gap-4 p-0">
+                <div className="flex-1">
+                  <span className="label-text font-bold text-base block mb-1">
+                    New item notifications
+                  </span>
+                  <p className="text-sm text-base-content/60 leading-tight">
+                    Receive an email when a new item is added to an auction
+                    you&apos;re a member of
+                  </p>
+                </div>
                 <input
                   type="checkbox"
                   checked={emailOnNewItem}
                   onChange={(e) =>
                     handleEmailSettingChange("emailOnNewItem", e.target.checked)
                   }
-                  className="toggle toggle-primary"
+                  className="toggle toggle-primary toggle-lg"
                   disabled={emailSettingsLoading}
                 />
-                <div>
-                  <span className="label-text font-medium">
-                    New item notifications
-                  </span>
-                  <p className="text-sm text-base-content/60">
-                    Receive an email when a new item is added to an auction
-                    you&apos;re a member of
-                  </p>
-                </div>
               </label>
             </div>
 
-            <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-4">
+            <div className="form-control py-3 pt-5">
+              <label className="label cursor-pointer justify-between gap-4 p-0">
+                <div className="flex-1">
+                  <span className="label-text font-bold text-base block mb-1">
+                    Outbid notifications
+                  </span>
+                  <p className="text-sm text-base-content/60 leading-tight">
+                    Receive an email when someone outbids you on an item
+                  </p>
+                </div>
                 <input
                   type="checkbox"
                   checked={emailOnOutbid}
                   onChange={(e) =>
                     handleEmailSettingChange("emailOnOutbid", e.target.checked)
                   }
-                  className="toggle toggle-primary"
+                  className="toggle toggle-primary toggle-lg"
                   disabled={emailSettingsLoading}
                 />
-                <div>
-                  <span className="label-text font-medium">
-                    Outbid notifications
-                  </span>
-                  <p className="text-sm text-base-content/60">
-                    Receive an email when someone outbids you on an item
-                  </p>
-                </div>
               </label>
             </div>
           </div>
@@ -374,37 +395,39 @@ export default function SettingsPage({
       </div>
 
       {/* Appearance Section */}
-      <div className="card bg-base-100 shadow-xl">
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
         <div className="card-body">
-          <h2 className="card-title">
-            <span className="icon-[tabler--palette] size-6"></span>
+          <h2 className="card-title flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-neutral/10 flex items-center justify-center text-neutral-content">
+              <span className="icon-[tabler--palette] size-6 text-base-content"></span>
+            </div>
             Appearance
           </h2>
 
-          <div className="form-control mt-4">
+          <div className="form-control mt-2">
             <label className="label">
-              <span className="label-text">Theme</span>
+              <span className="label-text font-medium">Theme Preference</span>
             </label>
-            <div className="flex gap-2">
+            <div className="grid grid-cols-3 gap-3">
               <button
                 onClick={() => setTheme("light")}
-                className={`btn flex-1 ${theme === "light" ? "btn-primary" : "btn-ghost"}`}
+                className={`btn h-20 flex-col gap-2 ${theme === "light" ? "btn-primary ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "btn-outline border-base-content/10 hover:bg-base-200 hover:border-base-content/20"}`}
               >
-                <span className="icon-[tabler--sun] size-5"></span>
+                <span className="icon-[tabler--sun] size-6"></span>
                 Light
               </button>
               <button
                 onClick={() => setTheme("dark")}
-                className={`btn flex-1 ${theme === "dark" ? "btn-primary" : "btn-ghost"}`}
+                className={`btn h-20 flex-col gap-2 ${theme === "dark" ? "btn-primary ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "btn-outline border-base-content/10 hover:bg-base-200 hover:border-base-content/20"}`}
               >
-                <span className="icon-[tabler--moon] size-5"></span>
+                <span className="icon-[tabler--moon] size-6"></span>
                 Dark
               </button>
               <button
                 onClick={() => setTheme("system")}
-                className={`btn flex-1 ${theme === "system" ? "btn-primary" : "btn-ghost"}`}
+                className={`btn h-20 flex-col gap-2 ${theme === "system" ? "btn-primary ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "btn-outline border-base-content/10 hover:bg-base-200 hover:border-base-content/20"}`}
               >
-                <span className="icon-[tabler--device-desktop] size-5"></span>
+                <span className="icon-[tabler--device-desktop] size-6"></span>
                 System
               </button>
             </div>
