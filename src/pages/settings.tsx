@@ -8,6 +8,7 @@ import { useTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { LanguageSelect } from "@/components/ui/language-select";
 
 interface UserSettings {
   emailOnNewItem: boolean;
@@ -47,10 +48,10 @@ export default function SettingsPage({
 
   // Email notification settings
   const [emailOnNewItem, setEmailOnNewItem] = useState(
-    initialSettings.emailOnNewItem,
+    initialSettings.emailOnNewItem
   );
   const [emailOnOutbid, setEmailOnOutbid] = useState(
-    initialSettings.emailOnOutbid,
+    initialSettings.emailOnOutbid
   );
   const [emailSettingsLoading, setEmailSettingsLoading] = useState(false);
   const [emailSettingsSuccess, setEmailSettingsSuccess] = useState<
@@ -59,7 +60,7 @@ export default function SettingsPage({
 
   const handleEmailSettingChange = async (
     setting: "emailOnNewItem" | "emailOnOutbid",
-    value: boolean,
+    value: boolean
   ) => {
     if (setting === "emailOnNewItem") {
       setEmailOnNewItem(value);
@@ -149,7 +150,9 @@ export default function SettingsPage({
       const result = await res.json();
 
       if (!res.ok) {
-        setPasswordError(result.message || tErrors("profile.passwordChangeFailed"));
+        setPasswordError(
+          result.message || tErrors("profile.passwordChangeFailed")
+        );
       } else {
         setPasswordSuccess(t("password.passwordChanged"));
         setCurrentPassword("");
@@ -171,9 +174,7 @@ export default function SettingsPage({
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-linear-to-r from-base-content to-base-content/60 bg-clip-text text-transparent mb-2">
           {t("title")}
         </h1>
-        <p className="text-base-content/60 text-lg">
-          {t("subtitle")}
-        </p>
+        <p className="text-base-content/60 text-lg">{t("subtitle")}</p>
       </div>
 
       {/* Profile Section */}
@@ -203,7 +204,9 @@ export default function SettingsPage({
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">{t("profile.email")}</span>
+                <span className="label-text font-medium">
+                  {t("profile.email")}
+                </span>
               </label>
               <input
                 type="email"
@@ -221,7 +224,9 @@ export default function SettingsPage({
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">{t("profile.displayName")}</span>
+                <span className="label-text font-medium">
+                  {t("profile.displayName")}
+                </span>
               </label>
               <input
                 type="text"
@@ -277,7 +282,9 @@ export default function SettingsPage({
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">{t("password.currentPassword")}</span>
+                <span className="label-text font-medium">
+                  {t("password.currentPassword")}
+                </span>
               </label>
               <input
                 type="password"
@@ -290,7 +297,9 @@ export default function SettingsPage({
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">{t("password.newPassword")}</span>
+                <span className="label-text font-medium">
+                  {t("password.newPassword")}
+                </span>
               </label>
               <input
                 type="password"
@@ -398,6 +407,30 @@ export default function SettingsPage({
         </div>
       </div>
 
+      {/* Language Section */}
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-info/10 flex items-center justify-center text-info">
+              <span className="icon-[tabler--language] size-6"></span>
+            </div>
+            {t("language.title")}
+          </h2>
+
+          <div className="form-control mt-2">
+            <label className="label">
+              <span className="label-text font-medium">
+                {t("language.selectLanguage")}
+              </span>
+            </label>
+            <p className="text-sm text-base-content/60 mb-4">
+              {t("language.languageDescription")}
+            </p>
+            <LanguageSelect />
+          </div>
+        </div>
+      </div>
+
       {/* Appearance Section */}
       <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
         <div className="card-body">
@@ -410,26 +443,40 @@ export default function SettingsPage({
 
           <div className="form-control mt-2">
             <label className="label">
-              <span className="label-text font-medium">{t("appearance.themePreference")}</span>
+              <span className="label-text font-medium">
+                {t("appearance.themePreference")}
+              </span>
             </label>
             <div className="grid grid-cols-3 gap-3">
               <button
                 onClick={() => setTheme("light")}
-                className={`btn h-20 flex-col gap-2 ${theme === "light" ? "btn-primary ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "btn-outline border-base-content/10 hover:bg-base-200 hover:border-base-content/20"}`}
+                className={`btn h-20 flex-col gap-2 ${
+                  theme === "light"
+                    ? "btn-primary ring-2 ring-primary ring-offset-2 ring-offset-base-100"
+                    : "btn-outline border-base-content/10 hover:bg-base-200 hover:border-base-content/20"
+                }`}
               >
                 <span className="icon-[tabler--sun] size-6"></span>
                 {t("appearance.light")}
               </button>
               <button
                 onClick={() => setTheme("dark")}
-                className={`btn h-20 flex-col gap-2 ${theme === "dark" ? "btn-primary ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "btn-outline border-base-content/10 hover:bg-base-200 hover:border-base-content/20"}`}
+                className={`btn h-20 flex-col gap-2 ${
+                  theme === "dark"
+                    ? "btn-primary ring-2 ring-primary ring-offset-2 ring-offset-base-100"
+                    : "btn-outline border-base-content/10 hover:bg-base-200 hover:border-base-content/20"
+                }`}
               >
                 <span className="icon-[tabler--moon] size-6"></span>
                 {t("appearance.dark")}
               </button>
               <button
                 onClick={() => setTheme("system")}
-                className={`btn h-20 flex-col gap-2 ${theme === "system" ? "btn-primary ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "btn-outline border-base-content/10 hover:bg-base-200 hover:border-base-content/20"}`}
+                className={`btn h-20 flex-col gap-2 ${
+                  theme === "system"
+                    ? "btn-primary ring-2 ring-primary ring-offset-2 ring-offset-base-100"
+                    : "btn-outline border-base-content/10 hover:bg-base-200 hover:border-base-content/20"
+                }`}
               >
                 <span className="icon-[tabler--device-desktop] size-6"></span>
                 {t("appearance.system")}

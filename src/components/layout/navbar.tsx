@@ -2,7 +2,6 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useTheme } from "@/components/providers/theme-provider";
 import { NotificationBell } from "@/components/notifications/notification-bell";
-import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import packageJson from "../../../package.json";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -91,9 +90,6 @@ export function Navbar({ user }: NavbarProps) {
         </button>
 
         <div className="hidden md:flex items-center gap-3">
-          {/* Language Switcher */}
-          <LanguageSwitcher compact />
-
           {/* Notifications */}
           <div className="btn btn-ghost btn-circle btn-sm hover:bg-base-content/5">
             <NotificationBell />
@@ -263,11 +259,12 @@ export function Navbar({ user }: NavbarProps) {
               {t("settings")}
             </Link>
             <div className="divider my-1"></div>
-            <div className="flex items-center justify-between px-4 py-2">
-              <LanguageSwitcher />
+            <div className="flex items-center justify-end px-4 py-2">
               {mounted && (
                 <button
-                  onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}
+                  onClick={() =>
+                    setTheme(resolvedTheme === "light" ? "dark" : "light")
+                  }
                   className="btn btn-ghost btn-sm btn-circle"
                   aria-label="Toggle theme"
                 >
