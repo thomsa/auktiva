@@ -1,56 +1,56 @@
 {
   "errors": {
-    "generic": "An error occurred. Please try again.",
-    "somethingWentWrong": "Something went wrong. Please try again.",
-    "networkError": "Network error. Please check your connection.",
-    "unauthorized": "You are not authorized to perform this action.",
-    "notFound": "The requested resource was not found.",
-    "forbidden": "You don't have permission to access this resource.",
+    "generic": "Ocurrió un error. Por favor inténtalo de nuevo.",
+    "somethingWentWrong": "Algo salió mal. Por favor inténtalo de nuevo.",
+    "networkError": "Error de red. Por favor verifica tu conexión.",
+    "unauthorized": "No estás autorizado para realizar esta acción.",
+    "notFound": "El recurso solicitado no fue encontrado.",
+    "forbidden": "No tienes permiso para acceder a este recurso.",
     "validation": {
-      "required": "This field is required",
-      "invalidEmail": "Please enter a valid email address",
-      "passwordTooShort": "Password must be at least {min} characters",
-      "passwordsDoNotMatch": "Passwords do not match",
-      "invalidAmount": "Please enter a valid amount",
-      "minBid": "Minimum bid is {symbol}{amount}"
+      "required": "Este campo es obligatorio",
+      "invalidEmail": "Por favor introduce un correo válido",
+      "passwordTooShort": "La contraseña debe tener al menos {min} caracteres",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "invalidAmount": "Por favor introduce una cantidad válida",
+      "minBid": "La puja mínima es {symbol}{amount}"
     },
     "auth": {
-      "invalidCredentials": "Invalid email or password",
-      "emailInUse": "This email is already registered",
-      "accountNotFound": "No account found with this email",
-      "invalidToken": "Invalid or expired token",
-      "sessionExpired": "Your session has expired. Please sign in again."
+      "invalidCredentials": "Correo o contraseña inválidos",
+      "emailInUse": "Este correo ya está registrado",
+      "accountNotFound": "No se encontró cuenta con este correo",
+      "invalidToken": "Token inválido o expirado",
+      "sessionExpired": "Tu sesión ha expirado. Por favor inicia sesión de nuevo."
     },
     "auction": {
-      "createFailed": "Failed to create auction",
-      "updateFailed": "Failed to update auction",
-      "deleteFailed": "Failed to delete auction",
-      "notFound": "Auction not found",
-      "alreadyEnded": "This auction has already ended",
-      "notMember": "You are not a member of this auction"
+      "createFailed": "Error al crear la subasta",
+      "updateFailed": "Error al actualizar la subasta",
+      "deleteFailed": "Error al eliminar la subasta",
+      "notFound": "Subasta no encontrada",
+      "alreadyEnded": "Esta subasta ya ha finalizado",
+      "notMember": "No eres miembro de esta subasta"
     },
     "item": {
-      "createFailed": "Failed to create item",
-      "updateFailed": "Failed to update item",
-      "deleteFailed": "Failed to delete item",
-      "notFound": "Item not found"
+      "createFailed": "Error al crear el artículo",
+      "updateFailed": "Error al actualizar el artículo",
+      "deleteFailed": "Error al eliminar el artículo",
+      "notFound": "Artículo no encontrado"
     },
     "bid": {
-      "placeFailed": "Failed to place bid",
-      "tooLow": "Your bid is too low",
-      "auctionEnded": "This auction has ended",
-      "itemEnded": "Bidding for this item has ended",
-      "ownItem": "You cannot bid on your own item"
+      "placeFailed": "Error al realizar la puja",
+      "tooLow": "Tu puja es demasiado baja",
+      "auctionEnded": "Esta subasta ha finalizado",
+      "itemEnded": "La puja para este artículo ha terminado",
+      "ownItem": "No puedes pujar en tu propio artículo"
     },
     "invite": {
-      "sendFailed": "Failed to send invitation",
-      "invalidInvite": "Invalid or expired invitation",
-      "alreadyMember": "You are already a member of this auction"
+      "sendFailed": "Error al enviar la invitación",
+      "invalidInvite": "Invitación inválida o expirada",
+      "alreadyMember": "Ya eres miembro de esta subasta"
     },
     "profile": {
-      "updateFailed": "Failed to update profile",
-      "passwordChangeFailed": "Failed to change password",
-      "incorrectPassword": "Current password is incorrect"
+      "updateFailed": "Error al actualizar perfil",
+      "passwordChangeFailed": "Error al cambiar contraseña",
+      "incorrectPassword": "La contraseña actual es incorrecta"
     }
   }
 }

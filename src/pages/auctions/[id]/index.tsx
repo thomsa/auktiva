@@ -84,14 +84,14 @@ export default function AuctionDetailPage({
 
   const sortedItems = useMemo(
     () => sortItems(items, currentSort),
-    [items, currentSort],
+    [items, currentSort]
   );
 
   const setViewMode = (mode: "grid" | "list") => {
     router.push(
       { pathname: router.pathname, query: { ...router.query, view: mode } },
       undefined,
-      { shallow: true },
+      { shallow: true }
     );
   };
 
@@ -119,7 +119,7 @@ export default function AuctionDetailPage({
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main Content - Items */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
             <div className="card-body p-6">
               {/* Items Header */}
@@ -138,14 +138,22 @@ export default function AuctionDetailPage({
                   />
                   <div className="join shadow-sm">
                     <button
-                      className={`btn btn-sm join-item ${viewMode === "grid" ? "btn-active btn-primary" : "btn-ghost bg-base-200/50"}`}
+                      className={`btn btn-sm join-item ${
+                        viewMode === "grid"
+                          ? "btn-active btn-primary"
+                          : "btn-ghost bg-base-200/50"
+                      }`}
                       onClick={() => setViewMode("grid")}
                       title="Grid view"
                     >
                       <span className="icon-[tabler--layout-grid] size-4"></span>
                     </button>
                     <button
-                      className={`btn btn-sm join-item ${viewMode === "list" ? "btn-active btn-primary" : "btn-ghost bg-base-200/50"}`}
+                      className={`btn btn-sm join-item ${
+                        viewMode === "list"
+                          ? "btn-active btn-primary"
+                          : "btn-ghost bg-base-200/50"
+                      }`}
                       onClick={() => setViewMode("list")}
                       title="List view"
                     >
@@ -158,7 +166,9 @@ export default function AuctionDetailPage({
                       className="btn btn-primary btn-sm shadow-md shadow-primary/20"
                     >
                       <span className="icon-[tabler--plus] size-4"></span>
-                      <span className="hidden sm:inline">{t("sidebar.addItem")}</span>
+                      <span className="hidden sm:inline">
+                        {t("sidebar.addItem")}
+                      </span>
                       <span className="sm:hidden">{tCommon("create")}</span>
                     </Link>
                   )}
@@ -215,7 +225,7 @@ export default function AuctionDetailPage({
         </div>
 
         {/* Sidebar */}
-        <div className="lg:w-80">
+        <div className="lg:w-80 shrink-0">
           <AuctionSidebar auction={auction} membership={membership} />
         </div>
       </div>

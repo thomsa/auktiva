@@ -391,7 +391,7 @@ export default function ItemDetailPage({
                   className="btn btn-ghost btn-sm gap-2 hover:bg-base-content/5"
                 >
                   <span className="icon-[tabler--arrow-left] size-4"></span>
-                  {tAuction("invite.backTo", { name: tCommon("back") })}
+                  {tAuction("invite.backTo", { name: auction.name })}
                 </Link>
 
                 {/* Mobile: Show items count */}
@@ -680,10 +680,7 @@ export default function ItemDetailPage({
                             }] size-5`}
                           ></span>
                           <span className="font-medium">
-                            {isEnded
-                              ? t("bid.biddingEnded")
-                              : tTime("endsAt")}
-                            :
+                            {isEnded ? t("bid.biddingEnded") : tTime("endsAt")}:
                           </span>
                           <span className="font-mono">
                             {formatDate(item.endDate)}

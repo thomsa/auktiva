@@ -1,28 +1,28 @@
 {
   "dashboard": {
-    "title": "Dashboard",
-    "welcome": "Welcome back, {name}!",
-    "createAuction": "Create Auction",
+    "title": "Panel",
+    "welcome": "¡Bienvenido de nuevo, {name}!",
+    "createAuction": "Crear Subasta",
     "stats": {
-      "totalBids": "Total Bids",
-      "totalBidAmount": "Total Bid Amount",
-      "itemsBidOn": "Items Bid On",
-      "currentlyWinning": "Currently Winning"
+      "totalBids": "Total Pujas",
+      "totalBidAmount": "Monto Total Pujado",
+      "itemsBidOn": "Artículos Pujados",
+      "currentlyWinning": "Actualmente Ganando"
     },
     "activeBids": {
-      "title": "Your Active Bids"
+      "title": "Tus Pujas Activas"
     },
     "auctions": {
-      "title": "Auctions you have joined"
+      "title": "Subastas a las que te has unido"
     },
     "empty": {
-      "title": "No auctions yet",
-      "description": "You haven't joined or created any auctions yet. Create your first auction or join one using an invite link.",
-      "createFirst": "Create Your First Auction"
+      "title": "No hay subastas aún",
+      "description": "No te has unido ni has creado ninguna subasta todavía. Crea tu primera subasta o únete a una usando un enlace de invitación.",
+      "createFirst": "Crea Tu Primera Subasta"
     },
     "seo": {
-      "title": "Dashboard",
-      "description": "Manage your auctions and bids"
+      "title": "Panel",
+      "description": "Gestiona tus subastas y pujas"
     }
   }
 }

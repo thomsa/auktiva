@@ -1,14 +1,175 @@
 {
   "legal": {
     "privacy": {
-      "title": "Privacy Policy",
-      "lastUpdated": "Last updated",
-      "description": "Your privacy is important to us"
+      "title": "Política de Privacidad",
+      "lastUpdated": "Última actualización: 15 de Diciembre de 2025",
+      "description": "Tu privacidad es importante para nosotros",
+      "backToHome": "Volver al Inicio",
+      "sections": {
+        "1": {
+          "title": "Introducción",
+          "content": "Auktiva (\"nosotros\", \"nuestro\" o \"nos\") se compromete a proteger tu privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos y salvaguardamos tu información cuando usas nuestra plataforma de subastas gratuita y de código abierto para recaudación de fondos, organizaciones benéficas y eventos internos."
+        },
+        "2": {
+          "title": "Información que Recopilamos",
+          "content": "Recopilamos información que nos proporcionas directamente cuando usas Auktiva:",
+          "accountInfo": "Información de Cuenta",
+          "accountInfoDesc": "Tu nombre, dirección de correo electrónico y contraseña cuando creas una cuenta.",
+          "auctionData": "Datos de Subasta",
+          "auctionDataDesc": "Información sobre subastas que creas o a las que te unes, artículos que listas, pujas que realizas y tus roles de membresía.",
+          "uploadedContent": "Contenido Subido",
+          "uploadedContentDesc": "Imágenes y descripciones que subes para artículos de subasta y miniaturas de subasta.",
+          "preferences": "Preferencias",
+          "preferencesDesc": "Tus ajustes de notificaciones por correo y preferencias de tema."
+        },
+        "3": {
+          "title": "Cómo Usamos Tu Información",
+          "content": "Usamos la información que recopilamos para proporcionar y mejorar nuestros servicios de subasta:",
+          "point1": "Procesar tus actividades de subasta, pujas y roles de membresía",
+          "point2": "Mostrar actualizaciones de pujas en tiempo real y estado de subastas a los participantes",
+          "point3": "Enviarte notificaciones por correo sobre actividad de subastas cuando optas por ello",
+          "point4": "Generar resultados de subasta y permitirte exportar datos",
+          "point5": "Responder a tus preguntas y proporcionar soporte"
+        },
+        "4": {
+          "title": "Almacenamiento de Datos",
+          "content1": "Si usas la versión alojada en auktiva.org, tus datos se almacenan de forma segura utilizando infraestructura estándar de la industria. La información de la base de datos se almacena usando Turso (SQLite distribuido), y las imágenes subidas se almacenan usando almacenamiento en la nube compatible con S3.",
+          "content2": "Si eliges alojar Auktiva tú mismo, eres responsable de tu propio almacenamiento y seguridad de datos. Las instancias auto-alojadas pueden usar bases de datos SQLite locales y almacenamiento en sistema de archivos local para un control total sobre tus datos."
+        },
+        "5": {
+          "title": "Compartir Datos",
+          "content1": "No vendemos, comerciamos ni transferimos tu información personal a terceros. Tus datos de subasta son solo visibles para los miembros de las subastas en las que participas, de acuerdo con los ajustes de privacidad configurados por cada propietario de subasta.",
+          "content2": "Los propietarios de subastas pueden configurar ajustes de privacidad incluyendo pujas anónimas para ocultar identidades de pujadores, restricciones de acceso solo por invitación, y permisos basados en roles para controlar lo que cada miembro puede ver y hacer."
+        },
+        "6": {
+          "title": "Comunicaciones por Correo",
+          "content1": "Podemos enviarte correos de bienvenida cuando te registras, invitaciones a subastas cuando alguien te invita a participar, notificaciones de superación de puja cuando otro usuario hace una puja más alta, y notificaciones de nuevos artículos para subastas a las que te has unido.",
+          "content2": "Puedes gestionar tus preferencias de correo en los ajustes de tu cuenta en cualquier momento. Las notificaciones de superación de puja y nuevos artículos están desactivadas por defecto para respetar tu bandeja de entrada."
+        },
+        "7": {
+          "title": "Cookies y Almacenamiento Local",
+          "content": "Usamos almacenamiento local del navegador para recordar tu preferencia de tema (modo claro u oscuro) y para mantener tu sesión de autenticación. No usamos cookies de rastreo de terceros ni servicios de análisis que rastreen tu comportamiento a través de sitios web."
+        },
+        "8": {
+          "title": "Transparencia de Código Abierto",
+          "content": "Auktiva es software 100% de código abierto lanzado bajo la Licencia MIT. Puedes revisar nuestra base de código completa en <a href=\"https://github.com/thomsa/auktiva\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub</a> para ver exactamente cómo recopilamos, almacenamos y manejamos tus datos. También puedes alojar Auktiva tú mismo para tener control total sobre tu información."
+        },
+        "9": {
+          "title": "Tus Derechos",
+          "content1": "Tienes derecho a acceder a tus datos personales a través de los ajustes de tu cuenta, corregir información inexacta actualizando tu perfil, solicitar la eliminación de tu cuenta y datos asociados, exportar tus datos de subasta en formato JSON o CSV, y gestionar tus preferencias de notificaciones por correo.",
+          "content2": "Para ejercer cualquiera de estos derechos, visita los ajustes de tu cuenta o contáctanos a través de los canales listados abajo."
+        },
+        "10": {
+          "title": "Retención de Datos",
+          "content": "Retenemos tus datos mientras tu cuenta esté activa. Los datos de subasta se retienen hasta que el propietario de la subasta la elimina. Puedes solicitar la eliminación de tu cuenta en cualquier momento, y eliminaremos tu información personal de nuestros sistemas."
+        },
+        "11": {
+          "title": "Privacidad de Niños",
+          "content": "Auktiva no está destinado a usuarios menores de 18 años. No recopilamos a sabiendas información personal de niños menores de 18 años. Si crees que hemos recopilado información de un niño, por favor contáctanos inmediatamente."
+        },
+        "12": {
+          "title": "Cambios en esta Política",
+          "content": "Podemos actualizar esta Política de Privacidad de vez en cuando. Cuando hagamos cambios, publicaremos la nueva Política de Privacidad en esta página y actualizaremos la fecha de \"Última actualización\" arriba. Te animamos a revisar esta política periódicamente."
+        },
+        "13": {
+          "title": "Contáctanos",
+          "content": "Si tienes preguntas sobre esta Política de Privacidad o cómo manejamos tus datos, por favor contáctanos a través de nuestros <a href=\"https://github.com/thomsa/auktiva/issues\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub Issues</a> o contacta al mantenedor del proyecto en <a href=\"https://www.tamaslorincz.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">tamaslorincz.com</a>."
+        }
+      }
     },
     "terms": {
-      "title": "Terms of Service",
-      "lastUpdated": "Last updated",
-      "description": "Please read these terms carefully"
+      "title": "Términos de Servicio",
+      "lastUpdated": "Última actualización: 15 de Diciembre de 2025",
+      "description": "Por favor lee estos términos cuidadosamente",
+      "backToHome": "Volver al Inicio",
+      "sections": {
+        "1": {
+          "title": "Aceptación de Términos",
+          "content": "Al acceder o usar Auktiva, aceptas estar sujeto a estos Términos de Servicio. Si no estás de acuerdo con estos términos, por favor no uses nuestro servicio. Estos términos aplican a todos los usuarios de la plataforma, ya sea usando la versión alojada o una instancia auto-alojada."
+        },
+        "2": {
+          "title": "¿Qué es Auktiva?",
+          "content": "Auktiva es una plataforma de subastas gratuita y de código abierto diseñada para recaudación de fondos, organizaciones benéficas, escuelas, iglesias, eventos corporativos y organizaciones comunitarias. La plataforma te permite crear y gestionar subastas, invitar participantes y facilitar pujas en tiempo real.",
+          "disclaimerTitle": "Aviso Importante",
+          "disclaimer": "Auktiva facilita las pujas pero <strong class=\"text-base-content\">no procesa pagos</strong>. Todas las transacciones se liquidan offline entre los participantes. No somos un mercado ni un procesador de pagos."
+        },
+        "3": {
+          "title": "Cuentas de Usuario",
+          "content1": "Para usar Auktiva, debes crear una cuenta con información precisa incluyendo tu nombre, dirección de correo electrónico y una contraseña segura. Eres responsable de mantener la seguridad de las credenciales de tu cuenta y no debes compartir tu cuenta con otros.",
+          "content2": "Debes tener al menos 18 años o tener consentimiento parental para usar Auktiva. Por favor mantén tu información de cuenta actualizada para asegurar que recibes notificaciones importantes sobre tus subastas."
+        },
+        "4": {
+          "title": "Roles y Permisos",
+          "content": "Las subastas usan un sistema de permisos basado en roles para controlar lo que cada miembro puede hacer. Los propietarios de subastas son responsables de gestionar a sus miembros y resolver cualquier disputa dentro de sus subastas.",
+          "owner": "Propietario",
+          "ownerDesc": "Control total sobre la subasta incluyendo ajustes, miembros, artículos y eliminación.",
+          "admin": "Admin",
+          "adminDesc": "Puede gestionar miembros, añadir y editar artículos, y modificar ajustes de subasta.",
+          "creator": "Creador",
+          "creatorDesc": "Puede añadir nuevos artículos y editar sus propios artículos en la subasta.",
+          "bidder": "Pujador",
+          "bidderDesc": "Puede ver artículos y realizar pujas en la subasta."
+        },
+        "5": {
+          "title": "Participación en Subastas",
+          "content1": "Al participar en subastas, aceptas honrar tus pujas ganadoras y completar transacciones offline con el vendedor del artículo. Debes proporcionar descripciones precisas para cualquier artículo que listes y respetar los tiempos de finalización de subasta y reglas de puja establecidas por el propietario de la subasta.",
+          "content2": "Cada subasta puede tener sus propias reglas específicas determinadas por el propietario. Asegúrate de revisar cualquier directriz específica de la subasta antes de participar."
+        },
+        "6": {
+          "title": "Uso Aceptable",
+          "content1": "Aceptas usar Auktiva de manera responsable y legal. No debes usar el servicio para propósitos ilegales, publicar artículos fraudulentos o engañosos, o participar en manipulación de pujas.",
+          "content2": "El acoso, abuso o amenazas hacia otros usuarios están estrictamente prohibidos. No debes intentar obtener acceso no autorizado al sistema, usar bots o scripts automatizados, o subir contenido malicioso que pueda comprometer la plataforma u otros usuarios."
+        },
+        "7": {
+          "title": "Sin Procesamiento de Pagos",
+          "content1": "Auktiva no procesa pagos, no recopila información de pago ni facilita transacciones financieras de ningún tipo. Los ganadores y vendedores de artículos son los únicos responsables de acordar métodos de pago, completar el intercambio de artículos y resolver cualquier disputa que surja.",
+          "content2": "Auktiva no es responsable de ninguna disputa, pérdida o daño que surja de transacciones offline entre usuarios. Recomendamos discutir los arreglos de pago y recogida antes de que termine la subasta."
+        },
+        "8": {
+          "title": "Propiedad del Contenido",
+          "content1": "Conservas la propiedad de todo el contenido que subes a Auktiva, incluyendo imágenes de artículos y descripciones. Al subir contenido, otorgas a Auktiva una licencia no exclusiva y libre de regalías para mostrar ese contenido a los participantes de la subasta con el propósito de operar el servicio.",
+          "content2": "Representas que tienes el derecho de subir cualquier contenido que envíes y que no infringe ningún derecho de terceros, incluyendo derechos de autor, marcas registradas o derechos de privacidad."
+        },
+        "9": {
+          "title": "Licencia de Código Abierto",
+          "content": "Auktiva es software de código abierto lanzado bajo la Licencia MIT. Puedes usar, modificar y distribuir el software de acuerdo con los términos de esa licencia. El código fuente completo está disponible en <a href=\"https://github.com/thomsa/auktiva\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub</a>, y puedes revisar nuestro <a href=\"https://github.com/thomsa/auktiva/blob/main/LICENSE\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">archivo LICENSE</a> para detalles completos."
+        },
+        "10": {
+          "title": "Auto-Alojamiento",
+          "content": "Puedes alojar Auktiva tú mismo en tu propia infraestructura. Al auto-alojar, eres el único responsable de la seguridad y mantenimiento del servidor, respaldo y protección de datos, cumplimiento de leyes aplicables en tu jurisdicción, y proporcionar soporte al usuario y resolución de disputas para tus usuarios."
+        },
+        "11": {
+          "title": "Alojamiento en la Nube en auktiva.org",
+          "content1": "La versión alojada en auktiva.org se proporciona de forma gratuita y se ejecuta completamente en servicios de nivel gratuito bajo las cuentas personales del creador del proyecto. Usamos Vercel para alojamiento, Turso para almacenamiento de base de datos y Brevo para entrega de correos — todos en sus respectivos niveles gratuitos.",
+          "commitmentTitle": "Nuestro Compromiso:",
+          "commitment": "Como dominio .org, Auktiva se esfuerza por permanecer gratis y accesible para todos. Estamos comprometidos a usar servicios gratuitos y de código abierto siempre que sea posible para mantener la plataforma funcionando sin costo para los usuarios.",
+          "content2": "Aunque hacemos todo lo posible para mantener el servicio funcionando, por favor entiende que los servicios de nivel gratuito tienen limitaciones. Puede haber límites de uso, tiempo de inactividad ocasional o cambios en el servicio fuera de nuestro control. Para casos de uso de misión crítica o requisitos de mayor fiabilidad, recomendamos alojar Auktiva tú mismo en tu propia infraestructura."
+        },
+        "12": {
+          "title": "Renuncia de Garantías",
+          "content": "Auktiva se proporciona \"tal cual\" y \"según disponibilidad\" sin garantías de ningún tipo, ya sean expresas o implícitas. No garantizamos que el servicio sea ininterrumpido, seguro, libre de errores o que cumpla con tus requisitos específicos. El uso del servicio es bajo tu propio riesgo."
+        },
+        "13": {
+          "title": "Limitación de Responsabilidad",
+          "content": "En la máxima medida permitida por la ley, Auktiva y sus creadores, contribuyentes y mantenedores no serán responsables por ningún daño indirecto, incidental, especial, consecuente o punitivo que surja de tu uso del servicio. Esto incluye, pero no se limita a, pérdida de beneficios, datos o buena voluntad, transacciones fallidas o disputadas, acceso no autorizado a tu cuenta, e interrupciones o errores del servicio."
+        },
+        "14": {
+          "title": "Terminación",
+          "content": "Nos reservamos el derecho de suspender o terminar cuentas que violen estos términos. Puedes eliminar tu cuenta en cualquier momento a través de los ajustes de tu cuenta. Tras la terminación, tu acceso al servicio será revocado, pero los datos de subasta que creaste pueden ser retenidos para otros participantes."
+        },
+        "15": {
+          "title": "Cambios en los Términos",
+          "content": "Podemos actualizar estos Términos de Servicio de vez en cuando. Cuando hagamos cambios significativos, publicaremos un aviso en la plataforma y actualizaremos la fecha de \"Última actualización\" en la parte superior de esta página. El uso continuado del servicio después de los cambios constituye la aceptación de los nuevos términos."
+        },
+        "16": {
+          "title": "Ley Aplicable",
+          "content": "Estos términos se regirán e interpretarán de acuerdo con las leyes aplicables. Cualquier disputa se resolverá mediante negociación de buena fe o, si es necesario, a través de los canales legales apropiados en la jurisdicción relevante."
+        },
+        "17": {
+          "title": "Contacto",
+          "content": "Si tienes preguntas sobre estos Términos de Servicio, por favor contáctanos a través de nuestros <a href=\"https://github.com/thomsa/auktiva/issues\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub Issues</a> o contacta al mantenedor del proyecto en <a href=\"https://www.tamaslorincz.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">tamaslorincz.com</a>."
+        }
+      }
     }
   }
 }

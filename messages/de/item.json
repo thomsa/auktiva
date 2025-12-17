@@ -1,86 +1,86 @@
 {
   "item": {
     "bid": {
-      "title": "Place Bid",
-      "currentBid": "Current Bid",
-      "startingBid": "Starting",
-      "yourBid": "Your Bid",
+      "title": "Gebot abgeben",
+      "currentBid": "Aktuelles Gebot",
+      "startingBid": "Startpreis",
+      "yourBid": "Dein Gebot",
       "minBid": "Min",
-      "placeBid": "Place Bid",
-      "placingBid": "Placing Bid...",
-      "highestBidder": "You're the highest bidder!",
-      "biddingEnded": "This item's bidding has ended.",
-      "cannotBidOwn": "You cannot bid on your own item.",
-      "cannotBid": "You cannot bid on this item.",
-      "bidAsAnonymous": "Bid as anonymous",
-      "anonymousTooltip": "Your name will be hidden from other bidders. The item owner will still see your details.",
-      "minIncrement": "Min Increment",
-      "minimumBidError": "Minimum bid is {symbol}{amount}",
-      "currency": "Currency"
+      "placeBid": "Gebot abgeben",
+      "placingBid": "Gebe Gebot ab...",
+      "highestBidder": "Du bist der Höchstbietende!",
+      "biddingEnded": "Das Bieten für diesen Artikel ist beendet.",
+      "cannotBidOwn": "Du kannst nicht auf deinen eigenen Artikel bieten.",
+      "cannotBid": "Du kannst auf diesen Artikel nicht bieten.",
+      "bidAsAnonymous": "Anonym bieten",
+      "anonymousTooltip": "Dein Name wird vor anderen Bietern verborgen. Der Artikelbesitzer sieht deine Details trotzdem.",
+      "minIncrement": "Min. Erhöhung",
+      "minimumBidError": "Mindestgebot ist {symbol}{amount}",
+      "currency": "Währung"
     },
     "card": {
-      "noBids": "No bids yet",
-      "bids": "bids",
-      "bidsCount": "{count, plural, =0 {No bids} =1 {1 bid} other {# bids}}",
-      "startingAt": "Starting at"
+      "noBids": "Noch keine Gebote",
+      "bids": "Gebote",
+      "bidsCount": "{count, plural, =0 {Keine Gebote} =1 {1 Gebot} other {# Gebote}}",
+      "startingAt": "Startet bei"
     },
     "create": {
       "title": "Neuen Artikel hinzufügen",
       "subtitle": "Füge einen Artikel zu deiner Auktion hinzu",
       "itemName": "Artikelname",
-      "itemNamePlaceholder": "z.B. Vintage-Uhr",
+      "itemNamePlaceholder": "z.B. Vintage Uhr",
       "description": "Beschreibung",
       "descriptionPlaceholder": "Beschreibe deinen Artikel...",
       "images": "Bilder",
       "startingBid": "Startgebot",
-      "minBidIncrement": "Mindestgebotserhöhung",
+      "minBidIncrement": "Minimale Gebotserhöhung",
       "currency": "Währung",
       "endDate": "Enddatum (optional)",
       "submitButton": "Artikel hinzufügen",
-      "submitting": "Hinzufügen...",
+      "submitting": "Füge hinzu...",
       "basicInfo": "Artikeldetails",
       "pricing": "Preisgestaltung",
-      "createFailed": "Artikel konnte nicht erstellt werden"
+      "createFailed": "Erstellen des Artikels fehlgeschlagen"
     },
     "edit": {
       "title": "Artikel bearbeiten",
-      "subtitle": "Artikeldetails und Einstellungen verwalten",
+      "subtitle": "Verwalte Artikeldetails und Einstellungen",
       "save": "Änderungen speichern",
-      "saving": "Speichern...",
+      "saving": "Speichere...",
       "dangerZone": "Gefahrenzone",
       "delete": "Artikel löschen",
-      "deleteDescription": "Diesen Artikel dauerhaft löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "deleteDescription": "Lösche diesen Artikel dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
       "confirmDelete": "Bist du sicher, dass du \"{name}\" löschen möchtest?",
-      "endItem": "Gebot beenden",
-      "endDescription": "Beende das Bieten auf diesen Artikel sofort. Danach werden keine weiteren Gebote akzeptiert.",
+      "endItem": "Bieten beenden",
+      "endDescription": "Beende das Bieten für diesen Artikel sofort. Danach werden keine Gebote mehr angenommen.",
       "endButton": "Artikel jetzt beenden",
-      "confirmEnd": "Bist du sicher, dass du das Bieten auf \"{name}\" beenden möchtest?",
-      "endMessageWithBids": "Der aktuelle Höchstbietende gewinnt diesen Artikel.",
+      "confirmEnd": "Bist du sicher, dass du das Bieten für \"{name}\" beenden möchtest?",
+      "endMessageWithBids": "Der aktuell Höchstbietende gewinnt diesen Artikel.",
       "endMessageNoBids": "Dieser Artikel hat noch keine Gebote.",
       "hasBidsWarning": "Dieser Artikel hat Gebote. Einige Felder können nicht geändert werden.",
-      "endedMessage": "Dieser Artikel ist bereits beendet. Das Bieten ist geschlossen.",
+      "endedMessage": "Dieser Artikel ist bereits beendet. Bieten ist geschlossen.",
       "cannotDeleteWithBids": "Artikel mit Geboten können nicht gelöscht werden.",
-      "updateFailed": "Artikel konnte nicht aktualisiert werden",
-      "deleteFailed": "Artikel konnte nicht gelöscht werden",
-      "endFailed": "Artikel konnte nicht beendet werden"
+      "updateFailed": "Aktualisieren des Artikels fehlgeschlagen",
+      "deleteFailed": "Löschen des Artikels fehlgeschlagen",
+      "endFailed": "Beenden des Artikels fehlgeschlagen"
     },
     "gallery": {
-      "imageOf": "Image {current} of {total}",
-      "previousImage": "Previous image",
-      "nextImage": "Next image",
-      "thumbnail": "Thumbnail {index}"
+      "imageOf": "Bild {current} von {total}",
+      "previousImage": "Vorheriges Bild",
+      "nextImage": "Nächstes Bild",
+      "thumbnail": "Vorschaubild {index}"
     },
     "sidebar": {
-      "title": "Items in Auction",
-      "show": "Show items sidebar",
-      "hide": "Hide items sidebar"
+      "title": "Artikel in Auktion",
+      "show": "Artikel-Seitenleiste anzeigen",
+      "hide": "Artikel-Seitenleiste verbergen"
     },
     "history": {
-      "title": "Bid History",
-      "noBids": "No bids yet. Be the first to bid!",
-      "anonymous": "Anonymous",
-      "you": "You",
-      "highest": "Highest"
+      "title": "Gebotshistorie",
+      "noBids": "Noch keine Gebote. Sei der Erste!",
+      "anonymous": "Anonym",
+      "you": "Du",
+      "highest": "Höchstes"
     },
     "status": {
       "active": "Aktiv",
@@ -91,13 +91,13 @@
       "lost": "Verloren"
     },
     "joinModes": {
-      "inviteOnly": "Nur mit Einladung",
-      "link": "Link-Zugang",
+      "inviteOnly": "Nur Einladung",
+      "link": "Link-Zugriff",
       "free": "Offen"
     },
     "empty": {
       "title": "Noch keine Artikel",
-      "description": "Diese Auktion hat noch keine Artikel.",
+      "description": "Diese Auktion hat noch keine gelisteten Artikel.",
       "createFirst": "Ersten Artikel hinzufügen"
     }
   }

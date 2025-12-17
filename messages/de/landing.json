@@ -1,87 +1,87 @@
 {
   "landing": {
     "hero": {
-      "badge": "{version} is now live",
-      "title": "Auctions made",
-      "titleHighlight": "simple & social",
-      "description": "The open-source platform for modern fundraising. Host private auctions, invite your community, and manage everything in one place.",
-      "startAuction": "Start Your Auction",
-      "viewOnGithub": "View on GitHub",
-      "demoAlt": "Interactive Demo Preview",
-      "bidNow": "Bid Now"
+      "badge": "{version} ist jetzt live",
+      "title": "Auktionen",
+      "titleHighlight": "einfach & sozial",
+      "description": "Die Open-Source-Plattform für modernes Fundraising. Veranstalte private Auktionen, lade deine Community ein und verwalte alles an einem Ort.",
+      "startAuction": "Starte deine Auktion",
+      "viewOnGithub": "Auf GitHub ansehen",
+      "demoAlt": "Interaktive Demo-Vorschau",
+      "bidNow": "Jetzt bieten"
     },
     "features": {
-      "sectionTitle": "Everything you need for a",
-      "sectionTitleHighlight": "perfect auction",
-      "sectionDescription": "Powerful features built for organizers and bidders alike.",
+      "sectionTitle": "Alles, was du für eine",
+      "sectionTitleHighlight": "perfekte Auktion brauchst",
+      "sectionDescription": "Leistungsstarke Funktionen für Organisatoren und Bieter.",
       "realTimeBidding": {
-        "title": "Real-time Bidding",
-        "description": "Watch bids happen instantly with our WebSocket-powered live updates. No refreshing required."
+        "title": "Echtzeit-Gebote",
+        "description": "Verfolge Gebote sofort mit unseren WebSocket-gestützten Live-Updates. Kein Neuladen erforderlich."
       },
       "privateSecure": {
-        "title": "Private & Secure",
-        "description": "Host invite-only auctions with role-based access control. Your data stays private."
+        "title": "Privat & Sicher",
+        "description": "Veranstalte Auktionen nur für Geladene mit rollenbasierter Zugriffskontrolle. Deine Daten bleiben privat."
       },
       "multiCurrency": {
-        "title": "Multi-Currency",
-        "description": "Support for global events with automatic currency formatting for USD, EUR, GBP, and more."
+        "title": "Mehrere Währungen",
+        "description": "Unterstützung für globale Events mit automatischer Währungsformatierung für USD, EUR, GBP und mehr."
       },
       "smartNotifications": {
-        "title": "Smart Notifications",
-        "description": "Get notified immediately when you're outbid or when watched items are ending."
+        "title": "Intelligente Benachrichtigungen",
+        "description": "Werde sofort benachrichtigt, wenn du überboten wurdest oder beobachtete Artikel enden."
       },
       "richMedia": {
         "title": "Rich Media",
-        "description": "Showcase items with high-resolution image galleries and detailed descriptions."
+        "description": "Präsentiere Artikel mit hochauflösenden Bildergalerien und detaillierten Beschreibungen."
       },
       "offlineExchange": {
-        "title": "Offline Exchange",
-        "description": "Perfect for charity events. We handle the bidding, you handle the item exchange offline."
+        "title": "Offline-Übergabe",
+        "description": "Perfekt für Charity-Events. Wir kümmern uns um das Bieten, du dich um die Übergabe der Artikel vor Ort."
       }
     },
     "howItWorks": {
-      "sectionTitle": "From setup to",
-      "sectionTitleHighlight": "successful fundraiser",
-      "sectionDescription": "Four simple steps to run your charity auction. Focus on your cause, we'll handle the bidding.",
+      "sectionTitle": "Von der Einrichtung zum",
+      "sectionTitleHighlight": "erfolgreichen Spendenaufruf",
+      "sectionDescription": "Vier einfache Schritte für deine Wohltätigkeitsauktion. Konzentriere dich auf deinen Zweck, wir kümmern uns um die Gebote.",
       "step1": {
-        "title": "Create Auction",
-        "description": "Set up your event in minutes with customizable details and branding."
+        "title": "Auktion erstellen",
+        "description": "Richte dein Event in Minuten mit anpassbaren Details und Branding ein."
       },
       "step2": {
-        "title": "Invite Guests",
-        "description": "Share a private link or send email invitations to your participants."
+        "title": "Gäste einladen",
+        "description": "Teile einen privaten Link oder sende E-Mail-Einladungen an deine Teilnehmer."
       },
       "step3": {
-        "title": "Live Bidding",
-        "description": "Guests place bids in real-time from their phones. Excitement builds!"
+        "title": "Live-Gebote",
+        "description": "Gäste bieten in Echtzeit von ihren Handys. Die Spannung steigt!"
       },
       "step4": {
-        "title": "Wrap Up",
-        "description": "Handle exchange and settlement offline, your way."
+        "title": "Abschluss",
+        "description": "Kümmmere dich um Übergabe und Abrechnung offline, auf deine Art."
       },
       "step5": {
-        "title": "Celebrate",
-        "description": "Celebrate your success with your contributors and raise awareness for your cause!"
+        "title": "Feiern",
+        "description": "Feiere deinen Erfolg mit deinen Unterstützern und schaffe Aufmerksamkeit für deinen Zweck!"
       },
-      "newBid": "New Bid!"
+      "newBid": "Neues Gebot!"
     },
     "impact": {
-      "sectionTitle": "Your Impact,",
-      "sectionTitleHighlight": "Collected",
-      "sectionDescription": "Every contribution counts. Watch how individual donations come together to fill the jar of opportunity.",
-      "totalValue": "Total Value",
-      "itemsCollected": "Items Collected",
+      "sectionTitle": "Dein Einfluss,",
+      "sectionTitleHighlight": "Gesammelt",
+      "sectionDescription": "Jeder Beitrag zählt. Erlebe, wie einzelne Spenden zusammenkommen und Großes bewirken.",
+      "totalValue": "Gesamtwert",
+      "itemsCollected": "Gesammelte Artikel",
       "exampleAuctionName": "Weihnachts-Spendenaktion",
       "moreItems": "+{count}"
     },
     "cta": {
-      "title": "Ready to run your next fundraiser?",
-      "description": "Join organizers using Auktiva to run charity auctions. Open source, free, and built for communities.",
-      "getStarted": "Get Started",
-      "freeForever": "It's free and will always be free",
-      "selfHostTitle": "Prefer to self-host?",
-      "selfHostDescription": "Run Auktiva on your own server with full control over your data. One command to get started.",
-      "seeDocumentation": "See the <link>developer documentation</link> for more details."
+      "title": "Bereit für deinen nächsten Spendenaufruf?",
+      "description": "Schließ dich Organisatoren an, die Auktiva für Wohltätigkeitsauktionen nutzen. Open Source, kostenlos und für Gemeinschaften gebaut.",
+      "getStarted": "Loslegen",
+      "freeForever": "Es ist kostenlos und wird immer kostenlos bleiben",
+      "selfHostTitle": "Lieber selbst hosten?",
+      "selfHostDescription": "Betreibe Auktiva auf deinem eigenen Server mit voller Kontrolle über deine Daten. Ein Befehl zum Starten.",
+      "seeDocumentation": "Siehe die <link>Entwickler-Dokumentation</link> für mehr Details."
     }
   }
 }

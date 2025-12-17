@@ -1,14 +1,175 @@
 {
   "legal": {
     "privacy": {
-      "title": "Privacy Policy",
-      "lastUpdated": "Last updated",
-      "description": "Your privacy is important to us"
+      "title": "Datenschutzrichtlinie",
+      "lastUpdated": "Zuletzt aktualisiert: 15. Dezember 2025",
+      "description": "Deine Privatsphäre ist uns wichtig",
+      "backToHome": "Zurück zur Startseite",
+      "sections": {
+        "1": {
+          "title": "Einführung",
+          "content": "Auktiva (\"wir\", \"unser\" oder \"uns\") verpflichtet sich, deine Privatsphäre zu schützen. Diese Datenschutzrichtlinie erklärt, wie wir deine Informationen sammeln, verwenden und schützen, wenn du unsere kostenlose Open-Source-Auktionsplattform für Spendenaktionen, Wohltätigkeitsorganisationen und interne Veranstaltungen nutzt."
+        },
+        "2": {
+          "title": "Informationen, die wir sammeln",
+          "content": "Wir sammeln Informationen, die du uns direkt zur Verfügung stellst, wenn du Auktiva nutzt:",
+          "accountInfo": "Kontoinformationen",
+          "accountInfoDesc": "Dein Name, E-Mail-Adresse und Passwort, wenn du ein Konto erstellst.",
+          "auctionData": "Auktionsdaten",
+          "auctionDataDesc": "Informationen über Auktionen, die du erstellst oder denen du beitrittst, Artikel, die du einstellst, Gebote, die du abgibst, und deine Mitgliedschaftsrollen.",
+          "uploadedContent": "Hochgeladene Inhalte",
+          "uploadedContentDesc": "Bilder und Beschreibungen, die du für Auktionsartikel und Auktionsvorschaubilder hochlädst.",
+          "preferences": "Einstellungen",
+          "preferencesDesc": "Deine Einstellungen für E-Mail-Benachrichtigungen und Design-Präferenzen."
+        },
+        "3": {
+          "title": "Wie wir deine Informationen verwenden",
+          "content": "Wir verwenden die gesammelten Informationen, um unsere Auktionsdienste bereitzustellen und zu verbessern:",
+          "point1": "Verarbeitung deiner Auktionsaktivitäten, Gebote und Mitgliedschaftsrollen",
+          "point2": "Anzeige von Echtzeit-Gebotsaktualisierungen und Auktionsstatus für Teilnehmer",
+          "point3": "Senden von E-Mail-Benachrichtigungen über Auktionsaktivitäten, wenn du dies aktiviert hast",
+          "point4": "Generierung von Auktionsergebnissen und Ermöglichung des Datenexports",
+          "point5": "Beantwortung deiner Fragen und Bereitstellung von Support"
+        },
+        "4": {
+          "title": "Datenspeicherung",
+          "content1": "Wenn du die gehostete Version auf auktiva.org nutzt, werden deine Daten sicher unter Verwendung von Industriestandard-Infrastruktur gespeichert. Datenbankinformationen werden mit Turso (verteiltes SQLite) gespeichert, und hochgeladene Bilder werden in S3-kompatiblem Cloud-Speicher abgelegt.",
+          "content2": "Wenn du dich entscheidest, Auktiva selbst zu hosten, bist du für deine eigene Datenspeicherung und Sicherheit verantwortlich. Selbst gehostete Instanzen können lokale SQLite-Datenbanken und lokalen Dateisystemspeicher für die vollständige Kontrolle über deine Daten verwenden."
+        },
+        "5": {
+          "title": "Datenweitergabe",
+          "content1": "Wir verkaufen, handeln oder übertragen deine persönlichen Daten nicht an Dritte. Deine Auktionsdaten sind nur für Mitglieder der Auktionen sichtbar, an denen du teilnimmst, gemäß den Datenschutzeinstellungen, die vom jeweiligen Auktionsbesitzer konfiguriert wurden.",
+          "content2": "Auktionsbesitzer können Datenschutzeinstellungen konfigurieren, einschließlich anonymem Bieten zum Verbergen von Bieteridentitäten, Zugangsbeschränkungen nur für Eingeladene und rollenbasierten Berechtigungen, um zu steuern, was jedes Mitglied sehen und tun kann."
+        },
+        "6": {
+          "title": "E-Mail-Kommunikation",
+          "content1": "Wir können dir E-Mails für Willkommensnachrichten bei der Registrierung, Auktions Einladungen, wenn dich jemand zur Teilnahme einlädt, Benachrichtigungen über Überbietungen, wenn ein anderer Benutzer ein höheres Gebot abgibt, und Benachrichtigungen über neue Artikel für Auktionen, denen du beigetreten bist, senden.",
+          "content2": "Du kannst deine E-Mail-Einstellungen jederzeit in deinen Kontoeinstellungen verwalten. Benachrichtigungen für Überbietungen und neue Artikel sind standardmäßig deaktiviert, um deinen Posteingang zu schonen."
+        },
+        "7": {
+          "title": "Cookies und lokaler Speicher",
+          "content": "Wir verwenden den lokalen Browserspeicher, um deine Design-Präferenz (heller oder dunkler Modus) zu speichern und deine Sitzungsauthentifizierung aufrechtzuerhalten. Wir verwenden keine Tracking-Cookies von Drittanbietern oder Analysedienste, die dein Verhalten über Websites hinweg verfolgen."
+        },
+        "8": {
+          "title": "Open Source Transparenz",
+          "content": "Auktiva ist 100% Open-Source-Software, die unter der MIT-Lizenz veröffentlicht wurde. Du kannst unsere gesamte Codebasis auf <a href=\"https://github.com/thomsa/auktiva\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub</a> einsehen, um genau zu sehen, wie wir deine Daten sammeln, speichern und verarbeiten. Du kannst Auktiva auch selbst hosten, um die vollständige Kontrolle über deine Informationen zu haben."
+        },
+        "9": {
+          "title": "Deine Rechte",
+          "content1": "Du hast das Recht, über deine Kontoeinstellungen auf deine persönlichen Daten zuzugreifen, ungenaue Informationen durch Aktualisierung deines Profils zu korrigieren, die Löschung deines Kontos und der damit verbundenen Daten zu verlangen, deine Auktionsdaten im JSON- oder CSV-Format zu exportieren und deine E-Mail-Benachrichtigungseinstellungen zu verwalten.",
+          "content2": "Um eines dieser Rechte auszuüben, besuche deine Kontoeinstellungen oder kontaktiere uns über die unten aufgeführten Kanäle."
+        },
+        "10": {
+          "title": "Datenaufbewahrung",
+          "content": "Wir bewahren deine Daten so lange auf, wie dein Konto aktiv ist. Auktionsdaten werden so lange aufbewahrt, bis der Auktionsbesitzer die Auktion löscht. Du kannst jederzeit die Löschung deines Kontos verlangen, und wir werden deine persönlichen Informationen aus unseren Systemen entfernen."
+        },
+        "11": {
+          "title": "Privatsphäre von Kindern",
+          "content": "Auktiva ist nicht für Nutzer unter 18 Jahren gedacht. Wir sammeln nicht wissentlich persönliche Informationen von Kindern unter 18 Jahren. Wenn du glaubst, dass wir Informationen von einem Kind gesammelt haben, kontaktiere uns bitte sofort."
+        },
+        "12": {
+          "title": "Änderungen an dieser Richtlinie",
+          "content": "Wir können diese Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Wenn wir Änderungen vornehmen, werden wir die neue Datenschutzrichtlinie auf dieser Seite veröffentlichen und das Datum \"Zuletzt aktualisiert\" oben aktualisieren. Wir empfehlen dir, diese Richtlinie regelmäßig zu überprüfen."
+        },
+        "13": {
+          "title": "Kontakt",
+          "content": "Wenn du Fragen zu dieser Datenschutzrichtlinie hast oder wie wir mit deinen Daten umgehen, wende dich bitte über unsere <a href=\"https://github.com/thomsa/auktiva/issues\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub Issues</a> an uns oder kontaktiere den Projektbetreuer unter <a href=\"https://www.tamaslorincz.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">tamaslorincz.com</a>."
+        }
+      }
     },
     "terms": {
-      "title": "Terms of Service",
-      "lastUpdated": "Last updated",
-      "description": "Please read these terms carefully"
+      "title": "Nutzungsbedingungen",
+      "lastUpdated": "Zuletzt aktualisiert: 15. Dezember 2025",
+      "description": "Bitte lies diese Bedingungen sorgfältig durch",
+      "backToHome": "Zurück zur Startseite",
+      "sections": {
+        "1": {
+          "title": "Annahme der Bedingungen",
+          "content": "Durch den Zugriff auf oder die Nutzung von Auktiva stimmst du diesen Nutzungsbedingungen zu. Wenn du diesen Bedingungen nicht zustimmst, nutze unseren Dienst bitte nicht. Diese Bedingungen gelten für alle Nutzer der Plattform, unabhängig davon, ob sie die gehostete Version oder eine selbst gehostete Instanz verwenden."
+        },
+        "2": {
+          "title": "Was ist Auktiva",
+          "content": "Auktiva ist eine kostenlose Open-Source-Auktionsplattform, die für Spendenaktionen, Wohltätigkeitsorganisationen, Schulen, Kirchen, Firmenveranstaltungen und Gemeinschaftsorganisationen entwickelt wurde. Die Plattform ermöglicht es dir, Auktionen zu erstellen und zu verwalten, Teilnehmer einzuladen und Echtzeit-Gebote zu ermöglichen.",
+          "disclaimerTitle": "Wichtiger Haftungsausschluss",
+          "disclaimer": "Auktiva erleichtert das Bieten, <strong class=\"text-base-content\">wickelt aber keine Zahlungen ab</strong>. Alle Transaktionen werden offline zwischen den Teilnehmern abgewickelt. Wir sind kein Marktplatz und kein Zahlungsabwickler."
+        },
+        "3": {
+          "title": "Benutzerkonten",
+          "content1": "Um Auktiva zu nutzen, musst du ein Konto mit genauen Informationen, einschließlich deines Namens, deiner E-Mail-Adresse und eines sicheren Passworts, erstellen. Du bist für die Sicherheit deiner Anmeldedaten verantwortlich und solltest dein Konto nicht mit anderen teilen.",
+          "content2": "Du musst mindestens 18 Jahre alt sein oder die Zustimmung der Eltern haben, um Auktiva zu nutzen. Bitte halte deine Kontoinformationen auf dem neuesten Stand, um sicherzustellen, dass du wichtige Benachrichtigungen über deine Auktionen erhältst."
+        },
+        "4": {
+          "title": "Rollen und Berechtigungen",
+          "content": "Auktionen verwenden ein rollenbasiertes Berechtigungssystem, um zu steuern, was jedes Mitglied tun kann. Auktionsbesitzer sind verantwortlich für die Verwaltung ihrer Mitglieder und die Lösung von Streitigkeiten innerhalb ihrer Auktionen.",
+          "owner": "Besitzer",
+          "ownerDesc": "Volle Kontrolle über die Auktion, einschließlich Einstellungen, Mitglieder, Artikel und Löschung.",
+          "admin": "Admin",
+          "adminDesc": "Kann Mitglieder verwalten, Artikel hinzufügen und bearbeiten sowie Auktionseinstellungen ändern.",
+          "creator": "Ersteller",
+          "creatorDesc": "Kann neue Artikel hinzufügen und eigene Artikel in der Auktion bearbeiten.",
+          "bidder": "Bieter",
+          "bidderDesc": "Kann Artikel ansehen und Gebote in der Auktion abgeben."
+        },
+        "5": {
+          "title": "Teilnahme an Auktionen",
+          "content1": "Wenn du an Auktionen teilnimmst, verpflichtest du dich, deine gewinnenden Gebote einzulösen und Transaktionen offline mit dem Artikelverkäufer abzuschließen. Du solltest genaue Beschreibungen für alle Artikel bereitstellen, die du einstellst, und die vom Auktionsbesitzer festgelegten Auktionsendzeiten und Gebotsregeln respektieren.",
+          "content2": "Jede Auktion kann ihre eigenen spezifischen Regeln haben, die vom Besitzer festgelegt werden. Stelle sicher, dass du alle auktionsspezifischen Richtlinien überprüfst, bevor du teilnimmst."
+        },
+        "6": {
+          "title": "Zulässige Nutzung",
+          "content1": "Du stimmst zu, Auktiva verantwortungsbewusst und legal zu nutzen. Du darfst den Dienst nicht für illegale Zwecke nutzen, betrügerische oder irreführende Artikel einstellen oder dich an Gebotsmanipulationen wie Preistreiberei beteiligen.",
+          "content2": "Belästigung, Missbrauch oder Bedrohungen gegenüber anderen Nutzern sind strengstens untersagt. Du darfst nicht versuchen, unbefugten Zugriff auf das System zu erlangen, automatisierte Bots oder Skripte zu verwenden oder schädliche Inhalte hochzuladen, die die Plattform oder andere Nutzer gefährden könnten."
+        },
+        "7": {
+          "title": "Keine Zahlungsabwicklung",
+          "content1": "Auktiva wickelt keine Zahlungen ab, sammelt keine Zahlungsinformationen und ermöglicht keine finanziellen Transaktionen jeglicher Art. Gewinner und Artikelverkäufer sind allein verantwortlich für die Vereinbarung von Zahlungsmethoden, den Abschluss des Artikelaustauschs und die Lösung etwaiger Streitigkeiten.",
+          "content2": "Auktiva haftet nicht für Streitigkeiten, Verluste oder Schäden, die aus Offline-Transaktionen zwischen Nutzern entstehen. Wir empfehlen, Zahlungs- und Abholmodalitäten vor Auktionsende zu besprechen."
+        },
+        "8": {
+          "title": "Eigentum an Inhalten",
+          "content1": "Du behältst das Eigentum an allen Inhalten, die du auf Auktiva hochlädst, einschließlich Artikelbilder und Beschreibungen. Durch das Hochladen von Inhalten gewährst du Auktiva eine nicht-exklusive, gebührenfreie Lizenz, diese Inhalte den Auktionsteilnehmern zum Zweck des Betriebs des Dienstes anzuzeigen.",
+          "content2": "Du versicherst, dass du das Recht hast, alle von dir übermittelten Inhalte hochzuladen, und dass diese keine Rechte Dritter, einschließlich Urheberrechte, Markenrechte oder Persönlichkeitsrechte, verletzen."
+        },
+        "9": {
+          "title": "Open Source Lizenz",
+          "content": "Auktiva ist Open-Source-Software, die unter der MIT-Lizenz veröffentlicht wurde. Du darfst die Software gemäß den Bedingungen dieser Lizenz verwenden, modifizieren und verbreiten. Der vollständige Quellcode ist auf <a href=\"https://github.com/thomsa/auktiva\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub</a> verfügbar, und du kannst unsere <a href=\"https://github.com/thomsa/auktiva/blob/main/LICENSE\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">LIZENZ-Datei</a> für vollständige Details einsehen."
+        },
+        "10": {
+          "title": "Selbst-Hosting",
+          "content": "Du kannst Auktiva auf deiner eigenen Infrastruktur selbst hosten. Beim Selbst-Hosting bist du allein verantwortlich für Serversicherheit und Wartung, Datensicherung und -schutz, Einhaltung der geltenden Gesetze in deiner Gerichtsbarkeit sowie die Bereitstellung von Benutzersupport und Streitbeilegung für deine Nutzer."
+        },
+        "11": {
+          "title": "Cloud-Hosting auf auktiva.org",
+          "content1": "Die gehostete Version auf auktiva.org wird kostenlos zur Verfügung gestellt und läuft vollständig auf kostenlosen Diensten unter den persönlichen Konten des Projekterstellers. Wir verwenden Vercel für das Hosting, Turso für die Datenbankspeicherung und Brevo für den E-Mail-Versand – alle in ihren jeweiligen kostenlosen Stufen.",
+          "commitmentTitle": "Unsere Verpflichtung:",
+          "commitment": "Als .org-Domain strebt Auktiva danach, für jeden kostenlos und zugänglich zu bleiben. Wir verpflichten uns, wann immer möglich kostenlose und Open-Source-Dienste zu nutzen, um die Plattform für Nutzer kostenlos zu betreiben.",
+          "content2": "Obwohl wir uns bemühen, den Dienst am Laufen zu halten, verstehe bitte, dass kostenlose Dienste Einschränkungen haben. Es kann Nutzungsobergrenzen, gelegentliche Ausfallzeiten oder Serviceänderungen geben, die außerhalb unserer Kontrolle liegen. Für unternehmenskritische Anwendungsfälle oder höhere Zuverlässigkeitsanforderungen empfehlen wir, Auktiva auf deiner eigenen Infrastruktur selbst zu hosten."
+        },
+        "12": {
+          "title": "Haftungsausschluss",
+          "content": "Auktiva wird \"wie besehen\" und \"wie verfügbar\" ohne jegliche Garantien, weder ausdrücklich noch stillschweigend, bereitgestellt. Wir garantieren nicht, dass der Dienst ununterbrochen, sicher oder fehlerfrei ist oder deine spezifischen Anforderungen erfüllt. Die Nutzung des Dienstes erfolgt auf eigenes Risiko."
+        },
+        "13": {
+          "title": "Haftungsbeschränkung",
+          "content": "Soweit gesetzlich zulässig, haften Auktiva und seine Ersteller, Mitwirkenden und Betreuer nicht für indirekte, zufällige, spezielle, Folge- oder Strafschäden, die aus deiner Nutzung des Dienstes entstehen. Dies umfasst unter anderem entgangenen Gewinn, Datenverlust oder Verlust des Firmenwerts, fehlgeschlagene oder umstrittene Transaktionen, unbefugten Zugriff auf dein Konto sowie Dienstunterbrechungen oder Fehler."
+        },
+        "14": {
+          "title": "Kündigung",
+          "content": "Wir behalten uns das Recht vor, Konten zu sperren oder zu kündigen, die gegen diese Bedingungen verstoßen. Du kannst dein Konto jederzeit über deine Kontoeinstellungen löschen. Nach der Kündigung wird dein Zugriff auf den Dienst widerrufen, aber von dir erstellte Auktionsdaten können für andere Teilnehmer aufbewahrt werden."
+        },
+        "15": {
+          "title": "Änderungen der Bedingungen",
+          "content": "Wir können diese Nutzungsbedingungen von Zeit zu Zeit aktualisieren. Wenn wir wesentliche Änderungen vornehmen, werden wir einen Hinweis auf der Plattform veröffentlichen und das Datum \"Zuletzt aktualisiert\" oben auf dieser Seite aktualisieren. Die fortgesetzte Nutzung des Dienstes nach Änderungen gilt als Annahme der neuen Bedingungen."
+        },
+        "16": {
+          "title": "Geltendes Recht",
+          "content": "Diese Bedingungen unterliegen den geltenden Gesetzen und werden in Übereinstimmung mit diesen ausgelegt. Alle Streitigkeiten werden durch Verhandlungen nach Treu und Glauben oder, falls erforderlich, durch geeignete rechtliche Kanäle in der zuständigen Gerichtsbarkeit beigelegt."
+        },
+        "17": {
+          "title": "Kontakt",
+          "content": "Wenn du Fragen zu diesen Nutzungsbedingungen hast, wende dich bitte über unsere <a href=\"https://github.com/thomsa/auktiva/issues\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub Issues</a> an uns oder kontaktiere den Projektbetreuer unter <a href=\"https://www.tamaslorincz.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">tamaslorincz.com</a>."
+        }
+      }
     }
   }
 }

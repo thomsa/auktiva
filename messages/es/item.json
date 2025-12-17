@@ -1,86 +1,86 @@
 {
   "item": {
     "bid": {
-      "title": "Place Bid",
-      "currentBid": "Current Bid",
-      "startingBid": "Starting",
-      "yourBid": "Your Bid",
-      "minBid": "Min",
-      "placeBid": "Place Bid",
-      "placingBid": "Placing Bid...",
-      "highestBidder": "You're the highest bidder!",
-      "biddingEnded": "This item's bidding has ended.",
-      "cannotBidOwn": "You cannot bid on your own item.",
-      "cannotBid": "You cannot bid on this item.",
-      "bidAsAnonymous": "Bid as anonymous",
-      "anonymousTooltip": "Your name will be hidden from other bidders. The item owner will still see your details.",
-      "minIncrement": "Min Increment",
-      "minimumBidError": "Minimum bid is {symbol}{amount}",
-      "currency": "Currency"
+      "title": "Realizar Puja",
+      "currentBid": "Puja Actual",
+      "startingBid": "Inicial",
+      "yourBid": "Tu Puja",
+      "minBid": "Mín",
+      "placeBid": "Pujar",
+      "placingBid": "Pujando...",
+      "highestBidder": "¡Eres el máximo pujador!",
+      "biddingEnded": "La puja para este artículo ha terminado.",
+      "cannotBidOwn": "No puedes pujar en tu propio artículo.",
+      "cannotBid": "No puedes pujar en este artículo.",
+      "bidAsAnonymous": "Pujar como anónimo",
+      "anonymousTooltip": "Tu nombre se ocultará a otros pujadores. El propietario del artículo verá tus detalles.",
+      "minIncrement": "Incremento Mín",
+      "minimumBidError": "La puja mínima es {symbol}{amount}",
+      "currency": "Moneda"
     },
     "card": {
-      "noBids": "No bids yet",
-      "bids": "bids",
-      "bidsCount": "{count, plural, =0 {No bids} =1 {1 bid} other {# bids}}",
-      "startingAt": "Starting at"
+      "noBids": "Sin pujas aún",
+      "bids": "pujas",
+      "bidsCount": "{count, plural, =0 {Sin pujas} =1 {1 puja} other {# pujas}}",
+      "startingAt": "Empieza en"
     },
     "create": {
-      "title": "Añadir nuevo artículo",
+      "title": "Añadir Nuevo Artículo",
       "subtitle": "Añade un artículo a tu subasta",
-      "itemName": "Nombre del artículo",
-      "itemNamePlaceholder": "ej. Reloj vintage",
+      "itemName": "Nombre del Artículo",
+      "itemNamePlaceholder": "ej., Reloj Vintage",
       "description": "Descripción",
       "descriptionPlaceholder": "Describe tu artículo...",
       "images": "Imágenes",
-      "startingBid": "Puja inicial",
-      "minBidIncrement": "Incremento mínimo de puja",
+      "startingBid": "Puja Inicial",
+      "minBidIncrement": "Incremento Mínimo de Puja",
       "currency": "Moneda",
-      "endDate": "Fecha de fin (opcional)",
-      "submitButton": "Añadir artículo",
+      "endDate": "Fecha de Fin (opcional)",
+      "submitButton": "Añadir Artículo",
       "submitting": "Añadiendo...",
-      "basicInfo": "Detalles del artículo",
+      "basicInfo": "Detalles del Artículo",
       "pricing": "Precios",
-      "createFailed": "Error al crear el artículo"
+      "createFailed": "Error al crear artículo"
     },
     "edit": {
-      "title": "Editar artículo",
-      "subtitle": "Gestiona los detalles y configuración del artículo",
-      "save": "Guardar cambios",
+      "title": "Editar Artículo",
+      "subtitle": "Gestiona los detalles y ajustes del artículo",
+      "save": "Guardar Cambios",
       "saving": "Guardando...",
-      "dangerZone": "Zona de peligro",
-      "delete": "Eliminar artículo",
-      "deleteDescription": "Elimina este artículo permanentemente. Esta acción no se puede deshacer.",
+      "dangerZone": "Zona de Peligro",
+      "delete": "Eliminar Artículo",
+      "deleteDescription": "Eliminar este artículo permanentemente. Esta acción no se puede deshacer.",
       "confirmDelete": "¿Estás seguro de que quieres eliminar \"{name}\"?",
-      "endItem": "Finalizar puja",
-      "endDescription": "Finaliza la puja de este artículo inmediatamente. No se aceptarán más pujas después de esto.",
-      "endButton": "Finalizar artículo ahora",
-      "confirmEnd": "¿Estás seguro de que quieres finalizar la puja de \"{name}\"?",
+      "endItem": "Terminar Puja",
+      "endDescription": "Terminar la puja de este artículo inmediatamente. No se aceptarán más pujas después de esto.",
+      "endButton": "Terminar Artículo Ahora",
+      "confirmEnd": "¿Estás seguro de que quieres terminar la puja de \"{name}\"?",
       "endMessageWithBids": "El pujador más alto actual ganará este artículo.",
-      "endMessageNoBids": "Este artículo aún no tiene pujas.",
+      "endMessageNoBids": "Este artículo no tiene pujas aún.",
       "hasBidsWarning": "Este artículo tiene pujas. Algunos campos no se pueden cambiar.",
       "endedMessage": "Este artículo ya ha finalizado. La puja está cerrada.",
       "cannotDeleteWithBids": "Los artículos con pujas no se pueden eliminar.",
-      "updateFailed": "Error al actualizar el artículo",
-      "deleteFailed": "Error al eliminar el artículo",
-      "endFailed": "Error al finalizar el artículo"
+      "updateFailed": "Error al actualizar artículo",
+      "deleteFailed": "Error al eliminar artículo",
+      "endFailed": "Error al finalizar artículo"
     },
     "gallery": {
-      "imageOf": "Image {current} of {total}",
-      "previousImage": "Previous image",
-      "nextImage": "Next image",
-      "thumbnail": "Thumbnail {index}"
+      "imageOf": "Imagen {current} de {total}",
+      "previousImage": "Imagen anterior",
+      "nextImage": "Imagen siguiente",
+      "thumbnail": "Miniatura {index}"
     },
     "sidebar": {
-      "title": "Items in Auction",
-      "show": "Show items sidebar",
-      "hide": "Hide items sidebar"
+      "title": "Artículos en Subasta",
+      "show": "Mostrar barra lateral de artículos",
+      "hide": "Ocultar barra lateral de artículos"
     },
     "history": {
-      "title": "Bid History",
-      "noBids": "No bids yet. Be the first to bid!",
-      "anonymous": "Anonymous",
-      "you": "You",
-      "highest": "Highest"
+      "title": "Historial de Pujas",
+      "noBids": "Sin pujas aún. ¡Sé el primero!",
+      "anonymous": "Anónimo",
+      "you": "Tú",
+      "highest": "Más alto"
     },
     "status": {
       "active": "Activo",
@@ -91,14 +91,14 @@
       "lost": "Perdido"
     },
     "joinModes": {
-      "inviteOnly": "Solo invitación",
-      "link": "Acceso por enlace",
-      "free": "Abierta"
+      "inviteOnly": "Solo Invitación",
+      "link": "Acceso por Enlace",
+      "free": "Abierto"
     },
     "empty": {
-      "title": "Aún no hay artículos",
-      "description": "Esta subasta aún no tiene artículos listados.",
-      "createFirst": "Añadir primer artículo"
+      "title": "No hay artículos aún",
+      "description": "Esta subasta no tiene artículos listados todavía.",
+      "createFirst": "Añadir Primer Artículo"
     }
   }
 }

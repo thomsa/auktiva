@@ -1,52 +1,52 @@
 {
   "settings": {
-    "title": "Settings",
-    "subtitle": "Manage your account preferences and profile",
+    "title": "Einstellungen",
+    "subtitle": "Verwalte deine Kontoeinstellungen und dein Profil",
     "profile": {
-      "title": "Profile",
-      "email": "Email",
-      "emailCannotChange": "Email cannot be changed",
-      "displayName": "Display Name",
-      "displayNamePlaceholder": "Your name",
-      "saveProfile": "Save Profile",
-      "saving": "Saving...",
-      "profileUpdated": "Profile updated successfully"
+      "title": "Profil",
+      "email": "E-Mail",
+      "emailCannotChange": "E-Mail kann nicht geändert werden",
+      "displayName": "Anzeigename",
+      "displayNamePlaceholder": "Dein Name",
+      "saveProfile": "Profil speichern",
+      "saving": "Speichere...",
+      "profileUpdated": "Profil erfolgreich aktualisiert"
     },
     "password": {
-      "title": "Change Password",
-      "currentPassword": "Current Password",
-      "newPassword": "New Password",
-      "newPasswordPlaceholder": "At least 8 characters",
-      "confirmNewPassword": "Confirm New Password",
-      "changePassword": "Change Password",
-      "changing": "Changing...",
-      "passwordChanged": "Password changed successfully",
-      "passwordsDoNotMatch": "New passwords do not match",
-      "passwordTooShort": "Password must be at least 8 characters"
+      "title": "Passwort ändern",
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort",
+      "newPasswordPlaceholder": "Mindestens 8 Zeichen",
+      "confirmNewPassword": "Neues Passwort bestätigen",
+      "changePassword": "Passwort ändern",
+      "changing": "Ändere...",
+      "passwordChanged": "Passwort erfolgreich geändert",
+      "passwordsDoNotMatch": "Neue Passwörter stimmen nicht überein",
+      "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein"
     },
     "emailNotifications": {
-      "title": "Email Notifications",
-      "settingsSaved": "Settings saved",
-      "newItemNotifications": "New item notifications",
-      "newItemDescription": "Receive an email when a new item is added to an auction you're a member of",
-      "outbidNotifications": "Outbid notifications",
-      "outbidDescription": "Receive an email when someone outbids you on an item"
+      "title": "E-Mail-Benachrichtigungen",
+      "settingsSaved": "Einstellungen gespeichert",
+      "newItemNotifications": "Benachrichtigungen über neue Artikel",
+      "newItemDescription": "Erhalte eine E-Mail, wenn ein neuer Artikel zu einer Auktion hinzugefügt wird, in der du Mitglied bist",
+      "outbidNotifications": "Benachrichtigungen beim Überbotenwerden",
+      "outbidDescription": "Erhalte eine E-Mail, wenn dich jemand bei einem Artikel überbietet"
     },
     "appearance": {
-      "title": "Appearance",
-      "themePreference": "Theme Preference",
-      "light": "Light",
-      "dark": "Dark",
+      "title": "Erscheinungsbild",
+      "themePreference": "Design-Präferenz",
+      "light": "Hell",
+      "dark": "Dunkel",
       "system": "System"
     },
     "language": {
-      "title": "Language",
-      "selectLanguage": "Select Language",
-      "languageDescription": "Choose your preferred language for the interface"
+      "title": "Sprache",
+      "selectLanguage": "Sprache wählen",
+      "languageDescription": "Wähle deine bevorzugte Sprache für die Oberfläche"
     },
     "seo": {
-      "title": "Settings",
-      "description": "Manage your account settings"
+      "title": "Einstellungen",
+      "description": "Verwalte deine Kontoeinstellungen"
     }
   }
 }

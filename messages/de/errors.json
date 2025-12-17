@@ -1,56 +1,56 @@
 {
   "errors": {
-    "generic": "An error occurred. Please try again.",
-    "somethingWentWrong": "Something went wrong. Please try again.",
-    "networkError": "Network error. Please check your connection.",
-    "unauthorized": "You are not authorized to perform this action.",
-    "notFound": "The requested resource was not found.",
-    "forbidden": "You don't have permission to access this resource.",
+    "generic": "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+    "somethingWentWrong": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "networkError": "Netzwerkfehler. Bitte überprüfe deine Verbindung.",
+    "unauthorized": "Du bist nicht berechtigt, diese Aktion durchzuführen.",
+    "notFound": "Die angeforderte Ressource wurde nicht gefunden.",
+    "forbidden": "Du hast keine Berechtigung, auf diese Ressource zuzugreifen.",
     "validation": {
-      "required": "This field is required",
-      "invalidEmail": "Please enter a valid email address",
-      "passwordTooShort": "Password must be at least {min} characters",
-      "passwordsDoNotMatch": "Passwords do not match",
-      "invalidAmount": "Please enter a valid amount",
-      "minBid": "Minimum bid is {symbol}{amount}"
+      "required": "Dieses Feld ist erforderlich",
+      "invalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein",
+      "passwordTooShort": "Passwort muss mindestens {min} Zeichen lang sein",
+      "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+      "invalidAmount": "Bitte gib einen gültigen Betrag ein",
+      "minBid": "Mindestgebot ist {symbol}{amount}"
     },
     "auth": {
-      "invalidCredentials": "Invalid email or password",
-      "emailInUse": "This email is already registered",
-      "accountNotFound": "No account found with this email",
-      "invalidToken": "Invalid or expired token",
-      "sessionExpired": "Your session has expired. Please sign in again."
+      "invalidCredentials": "E-Mail oder Passwort ungültig",
+      "emailInUse": "Diese E-Mail ist bereits registriert",
+      "accountNotFound": "Kein Konto mit dieser E-Mail gefunden",
+      "invalidToken": "Ungültiger oder abgelaufener Token",
+      "sessionExpired": "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an."
     },
     "auction": {
-      "createFailed": "Failed to create auction",
-      "updateFailed": "Failed to update auction",
-      "deleteFailed": "Failed to delete auction",
-      "notFound": "Auction not found",
-      "alreadyEnded": "This auction has already ended",
-      "notMember": "You are not a member of this auction"
+      "createFailed": "Erstellen der Auktion fehlgeschlagen",
+      "updateFailed": "Aktualisieren der Auktion fehlgeschlagen",
+      "deleteFailed": "Löschen der Auktion fehlgeschlagen",
+      "notFound": "Auktion nicht gefunden",
+      "alreadyEnded": "Diese Auktion ist bereits beendet",
+      "notMember": "Du bist kein Mitglied dieser Auktion"
     },
     "item": {
-      "createFailed": "Failed to create item",
-      "updateFailed": "Failed to update item",
-      "deleteFailed": "Failed to delete item",
-      "notFound": "Item not found"
+      "createFailed": "Erstellen des Artikels fehlgeschlagen",
+      "updateFailed": "Aktualisieren des Artikels fehlgeschlagen",
+      "deleteFailed": "Löschen des Artikels fehlgeschlagen",
+      "notFound": "Artikel nicht gefunden"
     },
     "bid": {
-      "placeFailed": "Failed to place bid",
-      "tooLow": "Your bid is too low",
-      "auctionEnded": "This auction has ended",
-      "itemEnded": "Bidding for this item has ended",
-      "ownItem": "You cannot bid on your own item"
+      "placeFailed": "Gebotsabgabe fehlgeschlagen",
+      "tooLow": "Dein Gebot ist zu niedrig",
+      "auctionEnded": "Diese Auktion ist beendet",
+      "itemEnded": "Das Bieten für diesen Artikel ist beendet",
+      "ownItem": "Du kannst nicht auf deinen eigenen Artikel bieten"
     },
     "invite": {
-      "sendFailed": "Failed to send invitation",
-      "invalidInvite": "Invalid or expired invitation",
-      "alreadyMember": "You are already a member of this auction"
+      "sendFailed": "Senden der Einladung fehlgeschlagen",
+      "invalidInvite": "Ungültige oder abgelaufene Einladung",
+      "alreadyMember": "Du bist bereits Mitglied dieser Auktion"
     },
     "profile": {
-      "updateFailed": "Failed to update profile",
-      "passwordChangeFailed": "Failed to change password",
-      "incorrectPassword": "Current password is incorrect"
+      "updateFailed": "Aktualisieren des Profils fehlgeschlagen",
+      "passwordChangeFailed": "Ändern des Passworts fehlgeschlagen",
+      "incorrectPassword": "Das aktuelle Passwort ist falsch"
     }
   }
 }
