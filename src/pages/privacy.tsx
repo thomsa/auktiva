@@ -34,9 +34,6 @@ export default function PrivacyPage() {
                 </span>
               </Link>
             </div>
-            <Link href="/" className="btn btn-ghost btn-sm">
-              {t("backToHome")}
-            </Link>
           </div>
         </nav>
 
