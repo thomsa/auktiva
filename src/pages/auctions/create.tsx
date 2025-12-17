@@ -86,9 +86,7 @@ export default function CreateAuctionPage({
             </div>
             <div>
               <h1 className="text-2xl font-bold">{t("title")}</h1>
-              <p className="text-base-content/60">
-                {t("subtitle")}
-              </p>
+              <p className="text-base-content/60">{t("subtitle")}</p>
             </div>
           </div>
 
@@ -104,7 +102,9 @@ export default function CreateAuctionPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="name">
-                  <span className="label-text font-medium">{t("auctionName")} *</span>
+                  <span className="label-text font-medium">
+                    {t("auctionName")} *
+                  </span>
                 </label>
                 <input
                   id="name"
@@ -128,7 +128,9 @@ export default function CreateAuctionPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="description">
-                  <span className="label-text font-medium">{t("description")}</span>
+                  <span className="label-text font-medium">
+                    {t("description")}
+                  </span>
                 </label>
                 <textarea
                   id="description"
@@ -150,7 +152,9 @@ export default function CreateAuctionPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="joinMode">
-                  <span className="label-text font-medium">{t("whoCanJoin")}</span>
+                  <span className="label-text font-medium">
+                    {t("whoCanJoin")}
+                  </span>
                 </label>
                 <select
                   id="joinMode"
@@ -158,12 +162,8 @@ export default function CreateAuctionPage({
                   className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   defaultValue="INVITE_ONLY"
                 >
-                  <option value="INVITE_ONLY">
-                    {t("inviteOnly")}
-                  </option>
-                  <option value="LINK">
-                    {t("linkAccess")}
-                  </option>
+                  <option value="INVITE_ONLY">{t("inviteOnly")}</option>
+                  <option value="LINK">{t("linkAccess")}</option>
                   {allowOpenAuctions && (
                     <option value="FREE">{t("openAccess")}</option>
                   )}
@@ -177,9 +177,7 @@ export default function CreateAuctionPage({
                     name="memberCanInvite"
                     className="checkbox checkbox-primary"
                   />
-                  <span className="label-text">
-                    {t("allowMembersInvite")}
-                  </span>
+                  <span className="label-text">{t("allowMembersInvite")}</span>
                 </label>
               </div>
             </div>
@@ -204,15 +202,9 @@ export default function CreateAuctionPage({
                   className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   defaultValue="VISIBLE"
                 >
-                  <option value="VISIBLE">
-                    {t("alwaysVisible")}
-                  </option>
-                  <option value="ANONYMOUS">
-                    {t("alwaysAnonymous")}
-                  </option>
-                  <option value="PER_BID">
-                    {t("perBid")}
-                  </option>
+                  <option value="VISIBLE">{t("alwaysVisible")}</option>
+                  <option value="ANONYMOUS">{t("alwaysAnonymous")}</option>
+                  <option value="PER_BID">{t("perBid")}</option>
                 </select>
               </div>
             </div>
@@ -227,9 +219,7 @@ export default function CreateAuctionPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="endDate">
-                  <span className="label-text font-medium">
-                    {t("endDate")}
-                  </span>
+                  <span className="label-text font-medium">{t("endDate")}</span>
                 </label>
                 <input
                   id="endDate"
@@ -246,7 +236,9 @@ export default function CreateAuctionPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="itemEndMode">
-                  <span className="label-text font-medium">{t("itemEndMode")}</span>
+                  <span className="label-text font-medium">
+                    {t("itemEndMode")}
+                  </span>
                 </label>
                 <select
                   id="itemEndMode"
@@ -254,12 +246,8 @@ export default function CreateAuctionPage({
                   className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   defaultValue="CUSTOM"
                 >
-                  <option value="CUSTOM">
-                    {t("itemEndCustom")}
-                  </option>
-                  <option value="AUCTION_END">
-                    {t("itemEndAuction")}
-                  </option>
+                  <option value="CUSTOM">{t("itemEndCustom")}</option>
+                  <option value="AUCTION_END">{t("itemEndAuction")}</option>
                   <option value="NONE">{t("itemEndNone")}</option>
                 </select>
               </div>

@@ -1,4 +1,4 @@
-import { Locale } from './config';
+import { Locale } from "./config";
 
 export async function getMessages(locale: Locale) {
   return {

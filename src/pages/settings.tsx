@@ -48,10 +48,10 @@ export default function SettingsPage({
 
   // Email notification settings
   const [emailOnNewItem, setEmailOnNewItem] = useState(
-    initialSettings.emailOnNewItem
+    initialSettings.emailOnNewItem,
   );
   const [emailOnOutbid, setEmailOnOutbid] = useState(
-    initialSettings.emailOnOutbid
+    initialSettings.emailOnOutbid,
   );
   const [emailSettingsLoading, setEmailSettingsLoading] = useState(false);
   const [emailSettingsSuccess, setEmailSettingsSuccess] = useState<
@@ -60,7 +60,7 @@ export default function SettingsPage({
 
   const handleEmailSettingChange = async (
     setting: "emailOnNewItem" | "emailOnOutbid",
-    value: boolean
+    value: boolean,
   ) => {
     if (setting === "emailOnNewItem") {
       setEmailOnNewItem(value);
@@ -151,7 +151,7 @@ export default function SettingsPage({
 
       if (!res.ok) {
         setPasswordError(
-          result.message || tErrors("profile.passwordChangeFailed")
+          result.message || tErrors("profile.passwordChangeFailed"),
         );
       } else {
         setPasswordSuccess(t("password.passwordChanged"));

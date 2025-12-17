@@ -84,14 +84,14 @@ export default function AuctionDetailPage({
 
   const sortedItems = useMemo(
     () => sortItems(items, currentSort),
-    [items, currentSort]
+    [items, currentSort],
   );
 
   const setViewMode = (mode: "grid" | "list") => {
     router.push(
       { pathname: router.pathname, query: { ...router.query, view: mode } },
       undefined,
-      { shallow: true }
+      { shallow: true },
     );
   };
 

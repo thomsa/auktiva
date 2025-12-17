@@ -18,7 +18,9 @@ export function HowItWorks() {
           <div className="lg:w-1/2">
             <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">
               {t("sectionTitle")} <br />
-              <span className="text-secondary">{t("sectionTitleHighlight")}</span>
+              <span className="text-secondary">
+                {t("sectionTitleHighlight")}
+              </span>
             </h2>
             <p className="text-xl text-base-content/60 mb-12">
               {t("sectionDescription")}

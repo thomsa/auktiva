@@ -125,7 +125,7 @@ export default function ItemDetailPage({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    initialSidebarCollapsed
+    initialSidebarCollapsed,
   );
 
   // Sidebar sorting
@@ -145,7 +145,7 @@ export default function ItemDetailPage({
       fallbackData: { item: initialItem, bids: initialBids },
       refreshInterval: isEnded ? 0 : 5000,
       revalidateOnFocus: true,
-    }
+    },
   );
 
   const item = data?.item ?? initialItem;
@@ -178,7 +178,7 @@ export default function ItemDetailPage({
         tErrors("validation.minBid", {
           symbol: item.currency.symbol,
           amount: minBid.toFixed(2),
-        })
+        }),
       );
       setIsLoading(false);
       return;
@@ -197,7 +197,7 @@ export default function ItemDetailPage({
                 ? bidAsAnonymous
                 : undefined,
           }),
-        }
+        },
       );
 
       const result = await res.json();
@@ -346,8 +346,8 @@ export default function ItemDetailPage({
                                 isEnded
                                   ? "text-base-content/50"
                                   : isActive
-                                  ? "text-primary"
-                                  : "text-base-content/70"
+                                    ? "text-primary"
+                                    : "text-base-content/70"
                               }`}
                             >
                               {auctionItem.currency.symbol}
@@ -464,7 +464,7 @@ export default function ItemDetailPage({
                                 <button
                                   onClick={() =>
                                     setSelectedImageIndex((prev) =>
-                                      prev === 0 ? images.length - 1 : prev - 1
+                                      prev === 0 ? images.length - 1 : prev - 1,
                                     )
                                   }
                                   className="absolute left-4 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-base-100/80 backdrop-blur border-none hover:bg-base-100 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
@@ -475,7 +475,7 @@ export default function ItemDetailPage({
                                 <button
                                   onClick={() =>
                                     setSelectedImageIndex((prev) =>
-                                      prev === images.length - 1 ? 0 : prev + 1
+                                      prev === images.length - 1 ? 0 : prev + 1,
                                     )
                                   }
                                   className="absolute right-4 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-base-100/80 backdrop-blur border-none hover:bg-base-100 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"

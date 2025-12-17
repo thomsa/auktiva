@@ -9,7 +9,10 @@ interface LanguageSwitcherProps {
   compact?: boolean;
 }
 
-export function LanguageSwitcher({ className = "", compact = false }: LanguageSwitcherProps) {
+export function LanguageSwitcher({
+  className = "",
+  compact = false,
+}: LanguageSwitcherProps) {
   const router = useRouter();
   const currentLocale = useLocale() as Locale;
 

@@ -12,7 +12,11 @@ const statusConfig = {
     icon: "icon-[tabler--trophy]",
     labelKey: "winning",
   },
-  won: { color: "badge-success", icon: "icon-[tabler--trophy]", labelKey: "won" },
+  won: {
+    color: "badge-success",
+    icon: "icon-[tabler--trophy]",
+    labelKey: "won",
+  },
   outbid: {
     color: "badge-warning",
     icon: "icon-[tabler--arrow-up]",

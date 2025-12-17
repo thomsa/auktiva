@@ -195,11 +195,7 @@ export function NotificationBell() {
                 return (
                   <div className="p-6 text-center text-base-content/60">
                     <span className="icon-[tabler--bell-off] size-8 mb-2 block mx-auto"></span>
-                    <p>
-                      {activeTab === "new"
-                        ? t("noNew")
-                        : t("noRead")}
-                    </p>
+                    <p>{activeTab === "new" ? t("noNew") : t("noRead")}</p>
                   </div>
                 );
               }

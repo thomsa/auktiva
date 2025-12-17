@@ -43,9 +43,7 @@ export function CallToAction() {
                 {t("getStarted")}{" "}
                 <span className="icon-[tabler--rocket] size-6"></span>
               </Link>
-              <p className="text-sm opacity-70">
-                {t("freeForever")}
-              </p>
+              <p className="text-sm opacity-70">{t("freeForever")}</p>
             </div>
           </div>
         </div>

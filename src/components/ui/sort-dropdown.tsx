@@ -38,7 +38,8 @@ export function SortDropdown({
     );
   };
 
-  const currentOption = options.find((o) => o.value === currentSort) || options[0];
+  const currentOption =
+    options.find((o) => o.value === currentSort) || options[0];
   const currentLabel = currentOption ? t(currentOption.label) : "";
 
   return (

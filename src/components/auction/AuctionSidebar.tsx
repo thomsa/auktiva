@@ -47,19 +47,27 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
   // Map enum values to translation keys
   const getJoinModeLabel = (mode: string) => {
     switch (mode) {
-      case "INVITE_ONLY": return tJoinModes("inviteOnly");
-      case "LINK": return tJoinModes("link");
-      case "FREE": return tJoinModes("free");
-      default: return mode.replace("_", " ");
+      case "INVITE_ONLY":
+        return tJoinModes("inviteOnly");
+      case "LINK":
+        return tJoinModes("link");
+      case "FREE":
+        return tJoinModes("free");
+      default:
+        return mode.replace("_", " ");
     }
   };
 
   const getVisibilityLabel = (visibility: string) => {
     switch (visibility) {
-      case "VISIBLE": return tVisibilities("alwaysVisible").split(" - ")[0];
-      case "ANONYMOUS": return tVisibilities("alwaysAnonymous").split(" - ")[0];
-      case "PER_BID": return tVisibilities("perBid").split(" - ")[0];
-      default: return visibility.replace("_", " ");
+      case "VISIBLE":
+        return tVisibilities("alwaysVisible").split(" - ")[0];
+      case "ANONYMOUS":
+        return tVisibilities("alwaysAnonymous").split(" - ")[0];
+      case "PER_BID":
+        return tVisibilities("perBid").split(" - ")[0];
+      default:
+        return visibility.replace("_", " ");
     }
   };
 
@@ -90,7 +98,8 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
             </span>
             {ended && (
               <span className="badge badge-error badge-sm gap-1">
-                <span className="icon-[tabler--flag-filled] size-3"></span>{t("card.ended")}
+                <span className="icon-[tabler--flag-filled] size-3"></span>
+                {t("card.ended")}
               </span>
             )}
           </div>
@@ -213,13 +222,17 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
 
             <div className="space-y-2.5">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-base-content/50">{t("sidebar.joinMode")}</span>
+                <span className="text-base-content/50">
+                  {t("sidebar.joinMode")}
+                </span>
                 <span className="badge badge-ghost badge-xs text-[10px] uppercase font-bold tracking-wide">
                   {getJoinModeLabel(auction.joinMode)}
                 </span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-base-content/50">{t("sidebar.visibility")}</span>
+                <span className="text-base-content/50">
+                  {t("sidebar.visibility")}
+                </span>
                 <span className="badge badge-ghost badge-xs text-[10px] uppercase font-bold tracking-wide">
                   {getVisibilityLabel(auction.bidderVisibility)}
                 </span>

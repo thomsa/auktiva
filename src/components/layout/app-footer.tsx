@@ -16,7 +16,9 @@ export function AppFooter() {
       <div className="container mx-auto flex items-center justify-between text-xs text-base-content/50">
         <div className="flex items-center gap-2">
           <span className="font-mono">v{packageJson.version}</span>
-          <span>© {currentYear} {t("common.appName")}</span>
+          <span>
+            © {currentYear} {t("common.appName")}
+          </span>
         </div>
         <div className="flex items-center gap-3">
           <Link

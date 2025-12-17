@@ -72,7 +72,9 @@ export default function InvitePage({
 
       if (!res.ok) {
         setError(
-          result.errors?.email || result.message || tErrors("invite.sendFailed"),
+          result.errors?.email ||
+            result.message ||
+            tErrors("invite.sendFailed"),
         );
       } else {
         showToast(`Invite sent to ${email}`, "success");
@@ -134,9 +136,7 @@ export default function InvitePage({
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold">{t("title")}</h1>
-                  <p className="text-base-content/60">
-                    {t("subtitle")}
-                  </p>
+                  <p className="text-base-content/60">{t("subtitle")}</p>
                 </div>
               </div>
 
@@ -172,7 +172,9 @@ export default function InvitePage({
                 {isAdmin && (
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-medium">{t("role")}</span>
+                      <span className="label-text font-medium">
+                        {t("role")}
+                      </span>
                     </label>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <label
@@ -290,7 +292,11 @@ export default function InvitePage({
                             {invite.role}
                           </span>
                           <span>•</span>
-                          <span>{invite.usedAt ? tStatus("accepted") : tStatus("pending")}</span>
+                          <span>
+                            {invite.usedAt
+                              ? tStatus("accepted")
+                              : tStatus("pending")}
+                          </span>
                         </div>
                       </div>
                       {!invite.usedAt && (

@@ -33,9 +33,7 @@ export function BidHistory({ bids, currencySymbol }: BidHistoryProps) {
       </h2>
 
       {bids.length === 0 ? (
-        <p className="text-base-content/60 text-center py-8">
-          {t("noBids")}
-        </p>
+        <p className="text-base-content/60 text-center py-8">{t("noBids")}</p>
       ) : (
         <div className="space-y-2">
           {bids.map((bid, index) => (

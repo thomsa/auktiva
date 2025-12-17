@@ -88,11 +88,7 @@ export default function MembersPage({
   };
 
   const handleRemoveMember = async (memberId: string, memberName: string) => {
-    if (
-      !confirm(
-        t("confirmRemove", { name: memberName }),
-      )
-    ) {
+    if (!confirm(t("confirmRemove", { name: memberName }))) {
       return;
     }
 

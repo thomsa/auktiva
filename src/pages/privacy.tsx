@@ -11,7 +11,11 @@ export default function PrivacyPage() {
 
   return (
     <>
-      <SEO {...pageSEO.privacy} title={t("title")} description={t("description")} />
+      <SEO
+        {...pageSEO.privacy}
+        title={t("title")}
+        description={t("description")}
+      />
 
       <div className="min-h-screen bg-base-100">
         {/* Navigation */}
@@ -41,9 +45,7 @@ export default function PrivacyPage() {
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
               {t("title")}
             </h1>
-            <p className="text-base-content/60 text-lg">
-              {t("lastUpdated")}
-            </p>
+            <p className="text-base-content/60 text-lg">{t("lastUpdated")}</p>
           </div>
 
           <div className="space-y-12 prose prose-lg prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary max-w-none">
@@ -87,7 +89,9 @@ export default function PrivacyPage() {
                   <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary mb-3">
                     <span className="icon-[tabler--gavel] size-6"></span>
                   </div>
-                  <h3 className="font-bold text-lg mb-2">{tSections("2.auctionData")}</h3>
+                  <h3 className="font-bold text-lg mb-2">
+                    {tSections("2.auctionData")}
+                  </h3>
                   <p className="text-base-content/70 text-sm leading-relaxed">
                     {tSections("2.auctionDataDesc")}
                   </p>
@@ -96,7 +100,9 @@ export default function PrivacyPage() {
                   <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-accent mb-3">
                     <span className="icon-[tabler--photo] size-6"></span>
                   </div>
-                  <h3 className="font-bold text-lg mb-2">{tSections("2.uploadedContent")}</h3>
+                  <h3 className="font-bold text-lg mb-2">
+                    {tSections("2.uploadedContent")}
+                  </h3>
                   <p className="text-base-content/70 text-sm leading-relaxed">
                     {tSections("2.uploadedContentDesc")}
                   </p>
@@ -105,7 +111,9 @@ export default function PrivacyPage() {
                   <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center text-info mb-3">
                     <span className="icon-[tabler--settings] size-6"></span>
                   </div>
-                  <h3 className="font-bold text-lg mb-2">{tSections("2.preferences")}</h3>
+                  <h3 className="font-bold text-lg mb-2">
+                    {tSections("2.preferences")}
+                  </h3>
                   <p className="text-base-content/70 text-sm leading-relaxed">
                     {tSections("2.preferencesDesc")}
                   </p>
@@ -122,15 +130,9 @@ export default function PrivacyPage() {
                 {tSections("3.content")}
               </p>
               <ul className="list-disc list-inside space-y-2 text-base-content/80">
-                <li>
-                  {tSections("3.point1")}
-                </li>
-                <li>
-                  {tSections("3.point2")}
-                </li>
-                <li>
-                  {tSections("3.point3")}
-                </li>
+                <li>{tSections("3.point1")}</li>
+                <li>{tSections("3.point2")}</li>
+                <li>{tSections("3.point3")}</li>
                 <li>{tSections("3.point4")}</li>
                 <li>{tSections("3.point5")}</li>
               </ul>
@@ -190,7 +192,10 @@ export default function PrivacyPage() {
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
                 {tSections("8.title")}
               </h2>
-              <p className="text-base-content/80 leading-relaxed" dangerouslySetInnerHTML={{ __html: tSections.raw("8.content") }} />
+              <p
+                className="text-base-content/80 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: tSections.raw("8.content") }}
+              />
             </section>
 
             {/* Your Rights */}
@@ -241,7 +246,12 @@ export default function PrivacyPage() {
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
                 {tSections("13.title")}
               </h2>
-              <p className="text-base-content/80 leading-relaxed" dangerouslySetInnerHTML={{ __html: tSections.raw("13.content") }} />
+              <p
+                className="text-base-content/80 leading-relaxed"
+                dangerouslySetInnerHTML={{
+                  __html: tSections.raw("13.content"),
+                }}
+              />
             </section>
           </div>
 

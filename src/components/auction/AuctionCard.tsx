@@ -29,8 +29,8 @@ export function AuctionCard({ auction }: AuctionCardProps) {
 
   const roleKey = auction.role.toLowerCase();
   // Fallback to the role string if translation is missing (e.g. OWNER might assume admin rights/translation)
-  const roleLabel = ["admin", "creator", "bidder", "owner"].includes(roleKey) 
-    ? tRoles(roleKey === "owner" ? "admin" : roleKey) 
+  const roleLabel = ["admin", "creator", "bidder", "owner"].includes(roleKey)
+    ? tRoles(roleKey === "owner" ? "admin" : roleKey)
     : auction.role;
 
   return (
@@ -102,7 +102,8 @@ export function AuctionCard({ auction }: AuctionCardProps) {
               }`}
             >
               <span className="icon-[tabler--clock] size-3.5"></span>
-              {ended ? t("ended") : t("ends")} {formatShortDate(auction.endDate)}
+              {ended ? t("ended") : t("ends")}{" "}
+              {formatShortDate(auction.endDate)}
             </div>
           )}
         </div>

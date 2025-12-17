@@ -143,7 +143,8 @@ export function ItemListItem({
               ended ? "text-error" : "text-base-content/60"
             }`}
           >
-            {ended ? t("status.ended") : t("status.ends")} {formatShortDate(item.endDate)}
+            {ended ? t("status.ended") : t("status.ends")}{" "}
+            {formatShortDate(item.endDate)}
           </div>
         )}
       </Link>

@@ -35,13 +35,17 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
 
     // Client-side validation
     if (password !== confirmPassword) {
-      setFieldErrors({ confirmPassword: tErrors("validation.passwordsDoNotMatch") });
+      setFieldErrors({
+        confirmPassword: tErrors("validation.passwordsDoNotMatch"),
+      });
       setIsLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setFieldErrors({ password: tErrors("validation.passwordTooShort", { min: 6 }) });
+      setFieldErrors({
+        password: tErrors("validation.passwordTooShort", { min: 6 }),
+      });
       setIsLoading(false);
       return;
     }
@@ -118,11 +122,7 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
 
   return (
     <>
-      <SEO
-        title={t("title")}
-        description={t("brandingDescription")}
-        noindex
-      />
+      <SEO title={t("title")} description={t("brandingDescription")} noindex />
       <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
         {/* Left side - Branding (hidden on mobile) */}
         <div className="hidden lg:flex lg:w-1/2 relative bg-base-200 overflow-hidden items-center justify-center">
@@ -167,9 +167,7 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
               <h2 className="text-3xl font-bold text-base-content mb-2">
                 {t("title")}
               </h2>
-              <p className="text-base-content/60">
-                {t("subtitle")}
-              </p>
+              <p className="text-base-content/60">{t("subtitle")}</p>
             </div>
 
             {success ? (

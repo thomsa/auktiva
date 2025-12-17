@@ -11,7 +11,11 @@ export default function TermsPage() {
 
   return (
     <>
-      <SEO {...pageSEO.terms} title={t("title")} description={t("description")} />
+      <SEO
+        {...pageSEO.terms}
+        title={t("title")}
+        description={t("description")}
+      />
 
       <div className="min-h-screen bg-base-100">
         {/* Navigation */}
@@ -41,9 +45,7 @@ export default function TermsPage() {
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
               {t("title")}
             </h1>
-            <p className="text-base-content/60 text-lg">
-              {t("lastUpdated")}
-            </p>
+            <p className="text-base-content/60 text-lg">{t("lastUpdated")}</p>
           </div>
 
           <div className="space-y-12 prose prose-lg prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary max-w-none">
@@ -77,7 +79,12 @@ export default function TermsPage() {
                   <h3 className="font-bold text-warning mb-1">
                     {tSections("2.disclaimerTitle")}
                   </h3>
-                  <p className="text-base-content/80 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: tSections.raw("2.disclaimer") }} />
+                  <p
+                    className="text-base-content/80 text-sm leading-relaxed"
+                    dangerouslySetInnerHTML={{
+                      __html: tSections.raw("2.disclaimer"),
+                    }}
+                  />
                 </div>
               </div>
             </section>
@@ -202,7 +209,10 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
                 {tSections("9.title")}
               </h2>
-              <p className="text-base-content/80 leading-relaxed" dangerouslySetInnerHTML={{ __html: tSections.raw("9.content") }} />
+              <p
+                className="text-base-content/80 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: tSections.raw("9.content") }}
+              />
             </section>
 
             {/* Self-Hosting */}
@@ -225,7 +235,10 @@ export default function TermsPage() {
               </p>
               <div className="bg-info/10 border border-info/30 rounded-lg p-4 mb-4">
                 <p className="text-base-content/80 text-sm">
-                  <strong className="text-info">{tSections("11.commitmentTitle")}</strong> {tSections("11.commitment")}
+                  <strong className="text-info">
+                    {tSections("11.commitmentTitle")}
+                  </strong>{" "}
+                  {tSections("11.commitment")}
                 </p>
               </div>
               <p className="text-base-content/80 leading-relaxed">
@@ -288,7 +301,12 @@ export default function TermsPage() {
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
                 {tSections("17.title")}
               </h2>
-              <p className="text-base-content/80 leading-relaxed" dangerouslySetInnerHTML={{ __html: tSections.raw("17.content") }} />
+              <p
+                className="text-base-content/80 leading-relaxed"
+                dangerouslySetInnerHTML={{
+                  __html: tSections.raw("17.content"),
+                }}
+              />
             </section>
           </div>
 

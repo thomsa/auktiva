@@ -113,9 +113,7 @@ export default function CreateItemPage({
             </div>
             <div>
               <h1 className="text-2xl font-bold">{t("title")}</h1>
-              <p className="text-base-content/60">
-                {t("subtitle")}
-              </p>
+              <p className="text-base-content/60">{t("subtitle")}</p>
             </div>
           </div>
 
@@ -126,12 +124,15 @@ export default function CreateItemPage({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">
                 <span className="icon-[tabler--info-circle] size-5"></span>
-                {tAuction("create.basicInfo")} {/* Reusing from auction.create.basicInfo if appropriate or create new key */}
+                {tAuction("create.basicInfo")}{" "}
+                {/* Reusing from auction.create.basicInfo if appropriate or create new key */}
               </h2>
 
               <div className="form-control">
                 <label className="label" htmlFor="name">
-                  <span className="label-text font-medium">{t("itemName")} *</span>
+                  <span className="label-text font-medium">
+                    {t("itemName")} *
+                  </span>
                 </label>
                 <input
                   id="name"
@@ -152,7 +153,9 @@ export default function CreateItemPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="description">
-                  <span className="label-text font-medium">{t("description")}</span>
+                  <span className="label-text font-medium">
+                    {t("description")}
+                  </span>
                 </label>
                 <textarea
                   id="description"
@@ -173,7 +176,9 @@ export default function CreateItemPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="currencyCode">
-                  <span className="label-text font-medium">{t("currency")} *</span>
+                  <span className="label-text font-medium">
+                    {t("currency")} *
+                  </span>
                 </label>
                 <select
                   id="currencyCode"
@@ -193,7 +198,9 @@ export default function CreateItemPage({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label" htmlFor="startingBid">
-                    <span className="label-text font-medium">{t("startingBid")}</span>
+                    <span className="label-text font-medium">
+                      {t("startingBid")}
+                    </span>
                   </label>
                   <input
                     id="startingBid"

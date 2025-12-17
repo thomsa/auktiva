@@ -158,9 +158,7 @@ export default function AcceptInvitePage() {
             <h1 className="text-3xl font-extrabold mt-6 bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
               {t("title")}
             </h1>
-            <p className="text-base-content/60 mt-2">
-              {t("subtitle")}
-            </p>
+            <p className="text-base-content/60 mt-2">{t("subtitle")}</p>
           </div>
 
           <div className="bg-base-100/80 rounded-xl p-5 mb-8 border border-base-content/5 shadow-inner">

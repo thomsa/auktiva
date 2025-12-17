@@ -137,7 +137,10 @@ export default function AuctionSettingsPage({
   return (
     <PageLayout user={user} maxWidth="2xl">
       <div className="mb-8">
-        <BackLink href={`/auctions/${auction.id}`} label={tAuction("invite.backTo", { name: auction.name })} />
+        <BackLink
+          href={`/auctions/${auction.id}`}
+          label={tAuction("invite.backTo", { name: auction.name })}
+        />
       </div>
 
       <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
@@ -148,9 +151,7 @@ export default function AuctionSettingsPage({
             </div>
             <div>
               <h1 className="text-2xl font-bold">{t("title")}</h1>
-              <p className="text-base-content/60">
-                {t("subtitle")}
-              </p>
+              <p className="text-base-content/60">{t("subtitle")}</p>
             </div>
           </div>
 
@@ -166,7 +167,9 @@ export default function AuctionSettingsPage({
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">{tCreate("auctionName")}</span>
+                  <span className="label-text font-medium">
+                    {tCreate("auctionName")}
+                  </span>
                 </label>
                 <input
                   type="text"
@@ -180,7 +183,9 @@ export default function AuctionSettingsPage({
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">{tCreate("description")}</span>
+                  <span className="label-text font-medium">
+                    {tCreate("description")}
+                  </span>
                 </label>
                 <textarea
                   name="description"
@@ -215,7 +220,9 @@ export default function AuctionSettingsPage({
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">{tCreate("whoCanJoin")}</span>
+                  <span className="label-text font-medium">
+                    {tCreate("whoCanJoin")}
+                  </span>
                 </label>
                 <select
                   name="joinMode"
@@ -262,7 +269,9 @@ export default function AuctionSettingsPage({
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">{tCreate("bidderVisibility")}</span>
+                  <span className="label-text font-medium">
+                    {tCreate("bidderVisibility")}
+                  </span>
                 </label>
                 <div className="space-y-3">
                   <label className="flex items-start gap-3 p-3 rounded-xl border border-base-content/10 cursor-pointer hover:bg-base-100 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:shadow-sm">
@@ -275,7 +284,9 @@ export default function AuctionSettingsPage({
                       className="radio radio-primary mt-0.5"
                     />
                     <div className="flex-1">
-                      <div className="font-medium">{tCreate("alwaysVisible").split(" - ")[0]}</div>
+                      <div className="font-medium">
+                        {tCreate("alwaysVisible").split(" - ")[0]}
+                      </div>
                       <div className="text-sm text-base-content/60">
                         {tCreate("alwaysVisible").split(" - ")[1]}
                       </div>
@@ -291,7 +302,9 @@ export default function AuctionSettingsPage({
                       className="radio radio-primary mt-0.5"
                     />
                     <div className="flex-1">
-                      <div className="font-medium">{tCreate("alwaysAnonymous").split(" - ")[0]}</div>
+                      <div className="font-medium">
+                        {tCreate("alwaysAnonymous").split(" - ")[0]}
+                      </div>
                       <div className="text-sm text-base-content/60">
                         {tCreate("alwaysAnonymous").split(" - ")[1]}
                       </div>
@@ -307,7 +320,9 @@ export default function AuctionSettingsPage({
                       className="radio radio-primary mt-0.5"
                     />
                     <div className="flex-1">
-                      <div className="font-medium">{tCreate("perBid").split(" - ")[0]}</div>
+                      <div className="font-medium">
+                        {tCreate("perBid").split(" - ")[0]}
+                      </div>
                       <div className="text-sm text-base-content/60">
                         {tCreate("perBid").split(" - ")[1]}
                       </div>
@@ -361,7 +376,9 @@ export default function AuctionSettingsPage({
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">{tCreate("itemEndMode")}</span>
+                  <span className="label-text font-medium">
+                    {tCreate("itemEndMode")}
+                  </span>
                 </label>
                 <select
                   name="itemEndMode"
@@ -370,11 +387,17 @@ export default function AuctionSettingsPage({
                   className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                 >
                   {formData.endDate && (
-                    <option value="AUCTION_END">{tCreate("itemEndAuction").split(" - ")[0]}</option>
+                    <option value="AUCTION_END">
+                      {tCreate("itemEndAuction").split(" - ")[0]}
+                    </option>
                   )}
-                  <option value="CUSTOM">{tCreate("itemEndCustom").split(" - ")[0]}</option>
+                  <option value="CUSTOM">
+                    {tCreate("itemEndCustom").split(" - ")[0]}
+                  </option>
                   {!formData.endDate && (
-                    <option value="NONE">{tCreate("itemEndNone").split(" - ")[0]}</option>
+                    <option value="NONE">
+                      {tCreate("itemEndNone").split(" - ")[0]}
+                    </option>
                   )}
                 </select>
                 <label className="label">
@@ -485,9 +508,7 @@ export default function AuctionSettingsPage({
             {t("dangerZone")}
           </h2>
 
-          <p className="text-base-content/60 text-sm">
-            {t("deleteWarning")}
-          </p>
+          <p className="text-base-content/60 text-sm">{t("deleteWarning")}</p>
 
           {!deleteDialog.isOpen ? (
             <button

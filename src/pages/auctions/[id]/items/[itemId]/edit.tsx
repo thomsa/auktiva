@@ -197,9 +197,7 @@ export default function EditItemPage({
             </div>
             <div>
               <h1 className="text-2xl font-bold">{t("title")}</h1>
-              <p className="text-base-content/60">
-                {t("subtitle")}
-              </p>
+              <p className="text-base-content/60">{t("subtitle")}</p>
             </div>
           </div>
 
@@ -222,7 +220,9 @@ export default function EditItemPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="name">
-                  <span className="label-text font-medium">{tCreate("itemName")} *</span>
+                  <span className="label-text font-medium">
+                    {tCreate("itemName")} *
+                  </span>
                 </label>
                 <input
                   id="name"
@@ -244,7 +244,9 @@ export default function EditItemPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="description">
-                  <span className="label-text font-medium">{tCreate("description")}</span>
+                  <span className="label-text font-medium">
+                    {tCreate("description")}
+                  </span>
                 </label>
                 <textarea
                   id="description"
@@ -281,7 +283,9 @@ export default function EditItemPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="currencyCode">
-                  <span className="label-text font-medium">{tCreate("currency")} *</span>
+                  <span className="label-text font-medium">
+                    {tCreate("currency")} *
+                  </span>
                 </label>
                 <select
                   id="currencyCode"
@@ -309,7 +313,9 @@ export default function EditItemPage({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label" htmlFor="startingBid">
-                    <span className="label-text font-medium">{tCreate("startingBid")}</span>
+                    <span className="label-text font-medium">
+                      {tCreate("startingBid")}
+                    </span>
                   </label>
                   <input
                     id="startingBid"
@@ -483,9 +489,7 @@ export default function EditItemPage({
                 isOpen={endDialog.isOpen}
                 title={t("confirmEnd", { name: item.name })}
                 message={
-                  hasBids
-                    ? t("endMessageWithBids")
-                    : t("endMessageNoBids")
+                  hasBids ? t("endMessageWithBids") : t("endMessageNoBids")
                 }
                 confirmLabel={t("endButton")}
                 variant="warning"

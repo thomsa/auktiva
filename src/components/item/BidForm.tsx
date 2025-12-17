@@ -64,7 +64,10 @@ export function BidForm({
   const onSubmit = async (data: BidFormData) => {
     if (data.amount < minBid) {
       setError("amount", {
-        message: tErrors("validation.minBid", { symbol: item.currency.symbol, amount: minBid.toFixed(2) }),
+        message: tErrors("validation.minBid", {
+          symbol: item.currency.symbol,
+          amount: minBid.toFixed(2),
+        }),
       });
       return;
     }
@@ -86,7 +89,9 @@ export function BidForm({
       const result = await res.json();
 
       if (!res.ok) {
-        setError("root", { message: result.message || tErrors("bid.placeFailed") });
+        setError("root", {
+          message: result.message || tErrors("bid.placeFailed"),
+        });
       } else {
         await onBidPlaced();
         reset();
@@ -106,7 +111,9 @@ export function BidForm({
 
         <div className="bg-base-200 rounded-lg p-4 my-4">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-base-content/60">{t("currentBid")}</span>
+            <span className="text-sm text-base-content/60">
+              {t("currentBid")}
+            </span>
             {!isEnded && (
               <span className="text-xs text-base-content/40">
                 <span className="icon-[tabler--refresh] size-3 inline mr-1 animate-spin"></span>
@@ -135,7 +142,8 @@ export function BidForm({
         {item.endDate && (
           <div className="text-sm text-base-content/60 mb-4">
             <span className="icon-[tabler--clock] size-4 inline mr-1"></span>
-            {isEnded ? tTime("ended") : tTime("endsAt")}: {formatDate(item.endDate)}
+            {isEnded ? tTime("ended") : tTime("endsAt")}:{" "}
+            {formatDate(item.endDate)}
           </div>
         )}
 
@@ -210,9 +218,7 @@ export function BidForm({
             {t("biddingEnded")}
           </div>
         ) : isItemOwner ? (
-          <AlertMessage type="info">
-            {t("cannotBidOwn")}
-          </AlertMessage>
+          <AlertMessage type="info">{t("cannotBidOwn")}</AlertMessage>
         ) : (
           <div className="text-center py-4 text-base-content/60">
             {t("cannotBid")}

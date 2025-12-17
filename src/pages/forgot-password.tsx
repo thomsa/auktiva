@@ -48,11 +48,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-      <SEO
-        title={t("title")}
-        description={t("brandingDescription")}
-        noindex
-      />
+      <SEO title={t("title")} description={t("brandingDescription")} noindex />
       <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
         {/* Left side - Branding (hidden on mobile) */}
         <div className="hidden lg:flex lg:w-1/2 relative bg-base-200 overflow-hidden items-center justify-center">
@@ -97,9 +93,7 @@ export default function ForgotPasswordPage() {
               <h2 className="text-3xl font-bold text-base-content mb-2">
                 {t("title")}
               </h2>
-              <p className="text-base-content/60">
-                {t("subtitle")}
-              </p>
+              <p className="text-base-content/60">{t("subtitle")}</p>
             </div>
 
             {success ? (

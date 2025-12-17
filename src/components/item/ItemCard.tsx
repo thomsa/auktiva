@@ -168,8 +168,8 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
                     bidStatus === "winning" || bidStatus === "won"
                       ? "text-success"
                       : bidStatus === "outbid"
-                      ? "text-warning"
-                      : "text-primary"
+                        ? "text-warning"
+                        : "text-primary"
                   }`}
                 >
                   {item.currentBid !== null
