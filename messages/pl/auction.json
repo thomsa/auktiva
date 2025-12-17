@@ -11,7 +11,7 @@
       "descriptionPlaceholder": "Opisz swoją aukcję...",
       "accessSettings": "Ustawienia dostępu",
       "whoCanJoin": "Kto może dołączyć?",
-      "inviteOnly": "Tylko zaproszeni - Tylko zaproszeni użytkownicy mogą dołączyć",
+      "inviteOnly": "Tylko na zaproszenie - Tylko zaproszeni użytkownicy mogą dołączyć",
       "linkAccess": "Dostęp przez link - Każdy z linkiem może dołączyć",
       "openAccess": "Otwarta - Każdy może dołączyć",
       "allowMembersInvite": "Pozwól członkom zapraszać innych",
@@ -19,12 +19,12 @@
       "bidderVisibility": "Widoczność licytujących",
       "alwaysVisible": "Zawsze widoczni - Pokaż imiona licytujących",
       "alwaysAnonymous": "Zawsze anonimowi - Ukryj imiona licytujących",
-      "perBid": "Na ofertę - Każdy licytujący decyduje sam",
+      "perBid": "Przy każdej ofercie - Każdy licytujący decyduje sam",
       "timing": "Czas trwania",
       "endDate": "Data zakończenia aukcji (opcjonalnie)",
       "endDateHint": "Pozostaw puste, aby nie ustawiać daty końcowej",
       "itemEndMode": "Tryb zakończenia przedmiotów",
-      "itemEndCustom": "Niestandardowy - Każdy przedmiot może mieć własną datę zakończenia",
+      "itemEndCustom": "Indywidualny - Każdy przedmiot może mieć własną datę zakończenia",
       "itemEndAuction": "Koniec aukcji - Wszystkie przedmioty kończą się wraz z aukcją",
       "itemEndNone": "Bez końca - Przedmioty nie mają daty zakończenia",
       "submitButton": "Utwórz aukcję",
@@ -77,7 +77,7 @@
       "createFirst": "Utwórz swoją pierwszą aukcję"
     },
     "joinModes": {
-      "inviteOnly": "Tylko zaproszeni",
+      "inviteOnly": "Tylko na zaproszenie",
       "link": "Dostęp przez link",
       "free": "Otwarta"
     },

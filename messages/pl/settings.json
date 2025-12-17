@@ -5,7 +5,7 @@
     "profile": {
       "title": "Profil",
       "email": "E-mail",
-      "emailCannotChange": "E-mail nie może być zmieniony",
+      "emailCannotChange": "Adresu e-mail nie można zmienić",
       "displayName": "Wyświetlana nazwa",
       "displayNamePlaceholder": "Twoje imię",
       "saveProfile": "Zapisz profil",
@@ -41,7 +41,7 @@
     },
     "language": {
       "title": "Język",
-      "selectLanguage": "Wybierz język",
+      "selectLanguage": "",
       "languageDescription": "Wybierz preferowany język interfejsu"
     },
     "seo": {

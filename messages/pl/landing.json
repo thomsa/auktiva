@@ -2,8 +2,8 @@
   "landing": {
     "hero": {
       "badge": "{version} jest już dostępna",
-      "title": "Aukcje stały się",
-      "titleHighlight": "proste i społeczne",
+      "title": "Aukcje",
+      "titleHighlight": "proste i społecznościowe",
       "description": "Platforma open-source do nowoczesnych zbiórek. Organizuj prywatne aukcje, zapraszaj społeczność i zarządzaj wszystkim w jednym miejscu.",
       "startAuction": "Rozpocznij aukcję",
       "viewOnGithub": "Zobacz na GitHub",
@@ -16,36 +16,36 @@
       "sectionDescription": "Potężne funkcje stworzone dla organizatorów i licytujących.",
       "realTimeBidding": {
         "title": "Licytacja w czasie rzeczywistym",
-        "description": "Obserwuj oferty na żywo dzięki aktualizacjom WebSocket. Bez odświeżania."
+        "description": "Obserwuj oferty na żywo dzięki aktualizacjom WebSocket. Bez konieczności odświeżania."
       },
       "privateSecure": {
         "title": "Prywatne i bezpieczne",
-        "description": "Organizuj aukcje tylko dla zaproszonych z kontrolą dostępu opartą na rolach. Twoje dane pozostają prywatne."
+        "description": "Organizuj aukcje dostępne tylko na zaproszenie, z kontrolą dostępu opartą na rolach. Twoje dane pozostają prywatne."
       },
       "multiCurrency": {
         "title": "Wiele walut",
-        "description": "Wsparcie dla globalnych wydarzeń z automatycznym formatowaniem walut dla USD, EUR, GBP i innych."
+        "description": "Obsługa wydarzeń o zasięgu globalnym z automatycznym formatowaniem walut dla USD, EUR, GBP i innych."
       },
       "smartNotifications": {
         "title": "Inteligentne powiadomienia",
-        "description": "Otrzymuj natychmiastowe powiadomienia, gdy ktoś przebije Twoją ofertę lub gdy obserwowane przedmioty się kończą."
+        "description": "Otrzymuj natychmiastowe powiadomienia, gdy ktoś przebije Twoją ofertę lub gdy aukcje obserwowanych przedmiotów dobiegają końca."
       },
       "richMedia": {
-        "title": "Bogate media",
+        "title": "Bogata prezentacja",
         "description": "Prezentuj przedmioty z galeriami zdjęć w wysokiej rozdzielczości i szczegółowymi opisami."
       },
       "offlineExchange": {
         "title": "Wymiana offline",
-        "description": "Idealne dla wydarzeń charytatywnych. My zajmujemy się licytacją, Ty zajmujesz się wymianą przedmiotów offline."
+        "description": "Idealne dla wydarzeń charytatywnych. My obsługujemy licytację, a Ty zajmujesz się wymianą przedmiotów offline."
       }
     },
     "howItWorks": {
       "sectionTitle": "Od konfiguracji do",
       "sectionTitleHighlight": "udanej zbiórki",
-      "sectionDescription": "Cztery proste kroki do przeprowadzenia aukcji charytatywnej. Skup się na swojej sprawie, my zajmiemy się licytacją.",
+      "sectionDescription": "Cztery proste kroki do przeprowadzenia aukcji charytatywnej. Skup się na swoim celu, my zajmiemy się licytacją.",
       "step1": {
         "title": "Utwórz aukcję",
-        "description": "Skonfiguruj wydarzenie w kilka minut z konfigurowalnymi szczegółami i brandingiem."
+        "description": "Skonfiguruj wydarzenie w kilka minut, dostosuj szczegóły i branding."
       },
       "step2": {
         "title": "Zaproś gości",
@@ -56,18 +56,18 @@
         "description": "Goście składają oferty w czasie rzeczywistym ze swoich telefonów. Emocje rosną!"
       },
       "step4": {
-        "title": "Podsumowanie",
+        "title": "Finalizacja",
         "description": "Zajmij się wymianą i rozliczeniem offline, po swojemu."
       },
       "step5": {
         "title": "Świętuj",
-        "description": "Świętuj swój sukces z darczyńcami i zwiększaj świadomość swojej sprawy!"
+        "description": "Świętuj swój sukces z darczyńcami i zwiększaj świadomość o swojej inicjatywie!"
       },
       "newBid": "Nowa oferta!"
     },
     "impact": {
-      "sectionTitle": "Twój wpływ,",
-      "sectionTitleHighlight": "Zebrane",
+      "sectionTitle": "Twój wpływ",
+      "sectionTitleHighlight": "w liczbach",
       "sectionDescription": "Każdy wkład się liczy. Zobacz, jak indywidualne darowizny łączą się, aby wypełnić słoik możliwości.",
       "totalValue": "Całkowita wartość",
       "itemsCollected": "Zebrane przedmioty",
@@ -76,9 +76,9 @@
     },
     "cta": {
       "title": "Gotowy na następną zbiórkę?",
-      "description": "Dołącz do organizatorów używających Auktiva do prowadzenia aukcji charytatywnych. Open source, darmowe i stworzone dla społeczności.",
+      "description": "Dołącz do organizatorów korzystających z Auktiva do prowadzenia aukcji charytatywnych. Open source, darmowe i stworzone dla społeczności.",
       "getStarted": "Rozpocznij",
-      "freeForever": "Jest darmowe i zawsze będzie darmowe",
+      "freeForever": "Darmowe teraz i na zawsze",
       "selfHostTitle": "Wolisz hostować samodzielnie?",
       "selfHostDescription": "Uruchom Auktiva na własnym serwerze z pełną kontrolą nad danymi. Jedna komenda, aby zacząć.",
       "seeDocumentation": "Zobacz <link>dokumentację deweloperską</link>, aby uzyskać więcej szczegółów."

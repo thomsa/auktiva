@@ -117,7 +117,7 @@
     "imageFormats": "JPEG, PNG, WebP, GIF",
     "maxSize": "Maks. 10MB",
     "images": "zdjęć",
-    "maxImagesError": "Można przesłać jeszcze {count} zdjęć",
+    "maxImagesError": "{count, plural, one {Można przesłać jeszcze # zdjęcie} few {Można przesłać jeszcze # zdjęcia} many {Można przesłać jeszcze # zdjęć} other {Można przesłać jeszcze # zdjęcia}}",
     "imageAlt": "Zdjęcie {index}",
     "moveLeft": "Przesuń w lewo",
     "moveRight": "Przesuń w prawo",
@@ -139,7 +139,7 @@
     "justNow": "Przed chwilą",
     "minutesAgo": "{count} min temu",
     "hoursAgo": "{count} godz. temu",
-    "daysAgo": "{count} dni temu"
+    "daysAgo": "{count, plural, =1 {1 dzień temu} other {# dni temu}}"
   },
   "stats": {
     "more": "+{count} więcej",
