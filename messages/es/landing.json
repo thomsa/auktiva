@@ -70,7 +70,9 @@
       "sectionTitleHighlight": "Collected",
       "sectionDescription": "Every contribution counts. Watch how individual donations come together to fill the jar of opportunity.",
       "totalValue": "Total Value",
-      "itemsCollected": "Items Collected"
+      "itemsCollected": "Items Collected",
+      "exampleAuctionName": "Recaudación Navideña Benéfica",
+      "moreItems": "+{count}"
     },
     "cta": {
       "title": "Ready to run your next fundraiser?",

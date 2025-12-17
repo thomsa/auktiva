@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { PageLayout, BackLink, AlertMessage } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 interface CreateAuctionProps {
   user: {
@@ -22,6 +23,9 @@ export default function CreateAuctionPage({
   allowOpenAuctions,
 }: CreateAuctionProps) {
   const router = useRouter();
+  const t = useTranslations("auction.create");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -56,13 +60,13 @@ export default function CreateAuctionPage({
         if (result.errors) {
           setFieldErrors(result.errors);
         } else {
-          setError(result.message || "Failed to create auction");
+          setError(result.message || tErrors("auction.createFailed"));
         }
       } else {
         router.push(`/auctions/${result.id}`);
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +75,7 @@ export default function CreateAuctionPage({
   return (
     <PageLayout user={user} maxWidth="2xl">
       <div className="mb-8">
-        <BackLink href="/dashboard" label="Back to Dashboard" />
+        <BackLink href="/dashboard" label={t("backToDashboard")} />
       </div>
 
       <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
@@ -81,9 +85,9 @@ export default function CreateAuctionPage({
               <span className="icon-[tabler--gavel] size-7"></span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Create New Auction</h1>
+              <h1 className="text-2xl font-bold">{t("title")}</h1>
               <p className="text-base-content/60">
-                Set up your auction details
+                {t("subtitle")}
               </p>
             </div>
           </div>
@@ -95,18 +99,18 @@ export default function CreateAuctionPage({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">
                 <span className="icon-[tabler--info-circle] size-5"></span>
-                Basic Information
+                {t("basicInfo")}
               </h2>
 
               <div className="form-control">
                 <label className="label" htmlFor="name">
-                  <span className="label-text font-medium">Auction Name *</span>
+                  <span className="label-text font-medium">{t("auctionName")} *</span>
                 </label>
                 <input
                   id="name"
                   name="name"
                   type="text"
-                  placeholder="e.g., Family Estate Sale"
+                  placeholder={t("auctionNamePlaceholder")}
                   className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${
                     fieldErrors.name ? "input-error" : ""
                   }`}
@@ -124,12 +128,12 @@ export default function CreateAuctionPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="description">
-                  <span className="label-text font-medium">Description</span>
+                  <span className="label-text font-medium">{t("description")}</span>
                 </label>
                 <textarea
                   id="description"
                   name="description"
-                  placeholder="Describe your auction..."
+                  placeholder={t("descriptionPlaceholder")}
                   className="textarea textarea-bordered w-full h-32 bg-base-100 focus:bg-base-100 transition-colors"
                   maxLength={500}
                 />
@@ -141,12 +145,12 @@ export default function CreateAuctionPage({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-secondary">
                 <span className="icon-[tabler--lock] size-5"></span>
-                Access Settings
+                {t("accessSettings")}
               </h2>
 
               <div className="form-control">
                 <label className="label" htmlFor="joinMode">
-                  <span className="label-text font-medium">Who can join?</span>
+                  <span className="label-text font-medium">{t("whoCanJoin")}</span>
                 </label>
                 <select
                   id="joinMode"
@@ -155,13 +159,13 @@ export default function CreateAuctionPage({
                   defaultValue="INVITE_ONLY"
                 >
                   <option value="INVITE_ONLY">
-                    Invite Only - Only invited users can join
+                    {t("inviteOnly")}
                   </option>
                   <option value="LINK">
-                    Link Access - Anyone with the link can join
+                    {t("linkAccess")}
                   </option>
                   {allowOpenAuctions && (
-                    <option value="FREE">Open - Anyone can join</option>
+                    <option value="FREE">{t("openAccess")}</option>
                   )}
                 </select>
               </div>
@@ -174,7 +178,7 @@ export default function CreateAuctionPage({
                     className="checkbox checkbox-primary"
                   />
                   <span className="label-text">
-                    Allow members to invite others
+                    {t("allowMembersInvite")}
                   </span>
                 </label>
               </div>
@@ -185,13 +189,13 @@ export default function CreateAuctionPage({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
                 <span className="icon-[tabler--gavel] size-5"></span>
-                Bidding Settings
+                {t("biddingSettings")}
               </h2>
 
               <div className="form-control">
                 <label className="label" htmlFor="bidderVisibility">
                   <span className="label-text font-medium">
-                    Bidder Visibility
+                    {t("bidderVisibility")}
                   </span>
                 </label>
                 <select
@@ -201,13 +205,13 @@ export default function CreateAuctionPage({
                   defaultValue="VISIBLE"
                 >
                   <option value="VISIBLE">
-                    Always Visible - Show bidder names
+                    {t("alwaysVisible")}
                   </option>
                   <option value="ANONYMOUS">
-                    Always Anonymous - Hide bidder names
+                    {t("alwaysAnonymous")}
                   </option>
                   <option value="PER_BID">
-                    Per Bid - Let each bidder decide
+                    {t("perBid")}
                   </option>
                 </select>
               </div>
@@ -218,13 +222,13 @@ export default function CreateAuctionPage({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-info">
                 <span className="icon-[tabler--clock] size-5"></span>
-                Timing
+                {t("timing")}
               </h2>
 
               <div className="form-control">
                 <label className="label" htmlFor="endDate">
                   <span className="label-text font-medium">
-                    Auction End Date (optional)
+                    {t("endDate")}
                   </span>
                 </label>
                 <input
@@ -235,14 +239,14 @@ export default function CreateAuctionPage({
                 />
                 <label className="label">
                   <span className="label-text-alt text-base-content/60">
-                    Leave empty for no end date
+                    {t("endDateHint")}
                   </span>
                 </label>
               </div>
 
               <div className="form-control">
                 <label className="label" htmlFor="itemEndMode">
-                  <span className="label-text font-medium">Item End Mode</span>
+                  <span className="label-text font-medium">{t("itemEndMode")}</span>
                 </label>
                 <select
                   id="itemEndMode"
@@ -251,12 +255,12 @@ export default function CreateAuctionPage({
                   defaultValue="CUSTOM"
                 >
                   <option value="CUSTOM">
-                    Custom - Each item can have its own end date
+                    {t("itemEndCustom")}
                   </option>
                   <option value="AUCTION_END">
-                    Auction End - All items end when auction ends
+                    {t("itemEndAuction")}
                   </option>
-                  <option value="NONE">No End - Items have no end date</option>
+                  <option value="NONE">{t("itemEndNone")}</option>
                 </select>
               </div>
             </div>
@@ -265,17 +269,17 @@ export default function CreateAuctionPage({
             <div className="divider opacity-50"></div>
             <div className="flex gap-4 pt-4">
               <Link href="/dashboard" className="btn btn-ghost flex-1">
-                Cancel
+                {tCommon("cancel")}
               </Link>
               <Button
                 type="submit"
                 variant="primary"
                 className="flex-1 shadow-lg shadow-primary/20"
                 isLoading={isLoading}
-                loadingText="Creating..."
+                loadingText={t("submitting")}
                 icon={<span className="icon-[tabler--plus] size-5"></span>}
               >
-                Create Auction
+                {t("submitButton")}
               </Button>
             </div>
           </form>

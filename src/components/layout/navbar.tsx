@@ -17,6 +17,7 @@ interface NavbarProps {
 
 export function Navbar({ user }: NavbarProps) {
   const t = useTranslations("nav");
+  const tCommon = useTranslations("common");
   const { setTheme, resolvedTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -49,7 +50,7 @@ export function Navbar({ user }: NavbarProps) {
               <span className="icon-[tabler--gavel] size-6 text-primary transition-transform group-hover:-rotate-12 duration-300"></span>
             </div>
             <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Auktiva
+              {tCommon("appName")}
             </span>
           </Link>
 

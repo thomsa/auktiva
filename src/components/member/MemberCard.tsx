@@ -28,10 +28,19 @@ export function MemberCard({
   onRoleChange,
   onRemove,
 }: MemberCardProps) {
-  const t = useTranslations();
+  const t = useTranslations("member");
+  const tRoles = useTranslations("auction.roles");
   const { formatShortDate } = useFormatters();
   const isCurrentUser = member.user.id === currentUserId;
   const canModify = isAdmin && !isCurrentUser && member.role !== "OWNER";
+
+  const getRoleLabel = (role: string) => {
+    const roleKey = role.toLowerCase();
+    if (["admin", "creator", "bidder", "owner"].includes(roleKey)) {
+      return tRoles(roleKey === "owner" ? "admin" : roleKey);
+    }
+    return role;
+  };
 
   return (
     <div
@@ -50,9 +59,9 @@ export function MemberCard({
           </div>
           <div>
             <div className="font-bold text-sm">
-              {member.user.name || t("member.noName")}
+              {member.user.name || t("noName")}
               {isCurrentUser && (
-                <span className="badge badge-xs ml-2">{t("member.you")}</span>
+                <span className="badge badge-xs ml-2">{t("you")}</span>
               )}
             </div>
             <div className="text-xs text-base-content/60 break-all">
@@ -67,7 +76,7 @@ export function MemberCard({
             }
             disabled={isLoading}
             className="btn btn-ghost btn-xs text-error"
-            title={t("member.remove")}
+            title={t("remove")}
           >
             {isLoading ? (
               <span className="loading loading-spinner loading-xs"></span>
@@ -87,7 +96,7 @@ export function MemberCard({
           >
             {ROLE_OPTIONS.map((role) => (
               <option key={role} value={role}>
-                {role}
+                {getRoleLabel(role)}
               </option>
             ))}
           </select>
@@ -95,11 +104,11 @@ export function MemberCard({
           <span
             className={`badge badge-sm ${ROLE_COLORS[member.role] || "badge-ghost"}`}
           >
-            {member.role}
+            {getRoleLabel(member.role)}
           </span>
         )}
         <span className="text-xs text-base-content/60">
-          {t("member.joined")} {formatShortDate(member.joinedAt)}
+          {t("joined")} {formatShortDate(member.joinedAt)}
         </span>
       </div>
     </div>

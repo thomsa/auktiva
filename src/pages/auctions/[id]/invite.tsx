@@ -8,6 +8,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 interface Invite {
   id: string;
@@ -44,6 +45,10 @@ export default function InvitePage({
   isAdmin,
   invites: initialInvites,
 }: InvitePageProps) {
+  const t = useTranslations("auction.invite");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
+  const tStatus = useTranslations("status");
   const [invites, setInvites] = useState(initialInvites);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("BIDDER");
@@ -67,7 +72,7 @@ export default function InvitePage({
 
       if (!res.ok) {
         setError(
-          result.errors?.email || result.message || "Failed to send invite",
+          result.errors?.email || result.message || tErrors("invite.sendFailed"),
         );
       } else {
         showToast(`Invite sent to ${email}`, "success");
@@ -78,7 +83,7 @@ export default function InvitePage({
         }
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +99,7 @@ export default function InvitePage({
   const copyToClipboard = async (token: string) => {
     try {
       await navigator.clipboard.writeText(getInviteLink(token));
-      showToast("Link copied to clipboard!", "success");
+      showToast(tCommon("copied"), "success");
     } catch {
       setError("Failed to copy link");
     }
@@ -117,7 +122,7 @@ export default function InvitePage({
               className="btn btn-ghost btn-sm gap-2 hover:bg-base-content/5"
             >
               <span className="icon-[tabler--arrow-left] size-4"></span>
-              Back to {auction.name}
+              {t("backTo", { name: auction.name })}
             </Link>
           </div>
 
@@ -128,9 +133,9 @@ export default function InvitePage({
                   <span className="icon-[tabler--user-plus] size-7"></span>
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold">Invite People</h1>
+                  <h1 className="text-2xl font-bold">{t("title")}</h1>
                   <p className="text-base-content/60">
-                    Send email invitations to new members
+                    {t("subtitle")}
                   </p>
                 </div>
               </div>
@@ -144,73 +149,123 @@ export default function InvitePage({
                 )}
 
                 <div className="form-control">
-                  <label className="label" htmlFor="email">
+                  <label className="label">
                     <span className="label-text font-medium">
-                      Email Address
+                      {t("emailAddress")}
                     </span>
                   </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--mail] size-5"></span>
-                    <input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="friend@example.com"
-                      className="input input-bordered w-full pl-10 bg-base-100 focus:bg-base-100 transition-colors"
-                      required
-                    />
+                  <div className="join w-full">
+                    <div className="relative w-full">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--mail] size-5"></span>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder={t("emailPlaceholder")}
+                        className="input input-bordered w-full pl-10 bg-base-100 focus:bg-base-100 transition-colors"
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
 
                 {isAdmin && (
                   <div className="form-control">
-                    <label className="label" htmlFor="role">
-                      <span className="label-text font-medium">Role</span>
+                    <label className="label">
+                      <span className="label-text font-medium">{t("role")}</span>
                     </label>
-                    <select
-                      id="role"
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                    >
-                      <option value="BIDDER">
-                        Bidder - Can only bid on items
-                      </option>
-                      <option value="CREATOR">
-                        Creator - Can create items and bid
-                      </option>
-                      <option value="ADMIN">
-                        Admin - Can manage members and items
-                      </option>
-                    </select>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <label
+                        className={`cursor-pointer border rounded-xl p-3 hover:border-primary/50 transition-all ${
+                          role === "BIDDER"
+                            ? "bg-primary/5 border-primary shadow-sm"
+                            : "bg-base-100 border-base-content/10"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <input
+                            type="radio"
+                            name="role"
+                            value="BIDDER"
+                            checked={role === "BIDDER"}
+                            onChange={(e) => setRole(e.target.value)}
+                            className="radio radio-primary radio-sm"
+                          />
+                          <span className="font-bold">Bidder</span>
+                        </div>
+                        <p className="text-xs text-base-content/60 pl-6">
+                          {t("roleBidder").split(" - ")[1]}
+                        </p>
+                      </label>
+                      <label
+                        className={`cursor-pointer border rounded-xl p-3 hover:border-primary/50 transition-all ${
+                          role === "CREATOR"
+                            ? "bg-primary/5 border-primary shadow-sm"
+                            : "bg-base-100 border-base-content/10"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <input
+                            type="radio"
+                            name="role"
+                            value="CREATOR"
+                            checked={role === "CREATOR"}
+                            onChange={(e) => setRole(e.target.value)}
+                            className="radio radio-primary radio-sm"
+                          />
+                          <span className="font-bold">Creator</span>
+                        </div>
+                        <p className="text-xs text-base-content/60 pl-6">
+                          {t("roleCreator").split(" - ")[1]}
+                        </p>
+                      </label>
+                      <label
+                        className={`cursor-pointer border rounded-xl p-3 hover:border-primary/50 transition-all ${
+                          role === "ADMIN"
+                            ? "bg-primary/5 border-primary shadow-sm"
+                            : "bg-base-100 border-base-content/10"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <input
+                            type="radio"
+                            name="role"
+                            value="ADMIN"
+                            checked={role === "ADMIN"}
+                            onChange={(e) => setRole(e.target.value)}
+                            className="radio radio-primary radio-sm"
+                          />
+                          <span className="font-bold">Admin</span>
+                        </div>
+                        <p className="text-xs text-base-content/60 pl-6">
+                          {t("roleAdmin").split(" - ")[1]}
+                        </p>
+                      </label>
+                    </div>
                   </div>
                 )}
 
-                <div className="pt-2">
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    modifier="block"
-                    isLoading={isLoading}
-                    loadingText="Sending..."
-                    className="shadow-lg shadow-primary/20"
-                    icon={<span className="icon-[tabler--send] size-5"></span>}
-                  >
-                    Send Invite
-                  </Button>
-                </div>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  modifier="block"
+                  isLoading={isLoading}
+                  loadingText={t("sending")}
+                  className="btn-lg shadow-lg shadow-primary/20"
+                  icon={<span className="icon-[tabler--send] size-5"></span>}
+                >
+                  {t("sendInvite")}
+                </Button>
               </form>
             </div>
           </div>
 
-          {/* Pending Invites (Admin only) */}
           {isAdmin && invites.length > 0 && (
             <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mt-8">
               <div className="card-body p-8">
                 <h2 className="card-title text-lg mb-6 flex items-center gap-2">
                   <span className="icon-[tabler--mail] size-5 text-secondary"></span>
-                  Pending Invites
+                  {t("pendingInvites")}
                   <span className="badge badge-ghost badge-sm">
                     {invites.length}
                   </span>
@@ -235,14 +290,14 @@ export default function InvitePage({
                             {invite.role}
                           </span>
                           <span>•</span>
-                          <span>{invite.usedAt ? "Accepted" : "Pending"}</span>
+                          <span>{invite.usedAt ? tStatus("accepted") : tStatus("pending")}</span>
                         </div>
                       </div>
                       {!invite.usedAt && (
                         <button
                           onClick={() => copyToClipboard(invite.token)}
                           className="btn btn-ghost btn-sm btn-circle tooltip tooltip-left"
-                          data-tip="Copy Invite Link"
+                          data-tip={t("copyInviteLink")}
                         >
                           <span className="icon-[tabler--copy] size-5"></span>
                         </button>

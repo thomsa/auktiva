@@ -53,27 +53,29 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
             <img
               src={item.thumbnailUrl}
               alt={item.name}
-              className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${ended ? "grayscale" : ""}`}
+              className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
+                ended ? "grayscale" : ""
+              }`}
             />
             {bidStatus === "won" ? (
               <div className="absolute top-3 left-3">
                 <div className="badge badge-success gap-1 shadow-sm font-bold">
                   <span className="icon-[tabler--crown] size-3"></span>
-                  {t("item.status.won")}
+                  {t("status.won")}
                 </div>
               </div>
             ) : ended ? (
               <div className="absolute top-3 left-3">
                 <div className="badge badge-error gap-1 shadow-sm font-bold">
                   <span className="icon-[tabler--flag-filled] size-3"></span>
-                  {t("item.status.ended")}
+                  {t("status.ended")}
                 </div>
               </div>
             ) : bidStatus === "winning" ? (
               <div className="absolute top-3 left-3">
                 <div className="badge badge-success gap-1 shadow-sm font-bold animate-pulse">
                   <span className="icon-[tabler--trophy] size-3"></span>
-                  {t("item.status.winning")}
+                  {t("status.winning")}
                 </div>
               </div>
             ) : (
@@ -81,11 +83,11 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
                 <div className="absolute top-3 left-3">
                   <div className="badge badge-warning gap-1 shadow-sm font-bold">
                     <span className="icon-[tabler--alert-circle] size-3"></span>
-                    {t("item.status.outbid")}
+                    {t("status.outbid")}
                   </div>
                 </div>
               )
-            )
+            )}
           </figure>
         ) : (
           <figure
@@ -98,21 +100,21 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
               <div className="absolute top-3 left-3">
                 <div className="badge badge-success gap-1 shadow-sm font-bold">
                   <span className="icon-[tabler--crown] size-3"></span>
-                  {t("item.status.won")}
+                  {t("status.won")}
                 </div>
               </div>
             ) : ended ? (
               <div className="absolute top-3 left-3">
                 <div className="badge badge-error gap-1 shadow-sm font-bold">
                   <span className="icon-[tabler--flag-filled] size-3"></span>
-                  {t("item.status.ended")}
+                  {t("status.ended")}
                 </div>
               </div>
             ) : bidStatus === "winning" ? (
               <div className="absolute top-3 left-3">
                 <div className="badge badge-success gap-1 shadow-sm font-bold animate-pulse">
                   <span className="icon-[tabler--trophy] size-3"></span>
-                  {t("item.status.winning")}
+                  {t("status.winning")}
                 </div>
               </div>
             ) : (
@@ -120,7 +122,7 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
                 <div className="absolute top-3 left-3">
                   <div className="badge badge-warning gap-1 shadow-sm font-bold">
                     <span className="icon-[tabler--alert-circle] size-3"></span>
-                    {t("item.status.outbid")}
+                    {t("status.outbid")}
                   </div>
                 </div>
               )
@@ -135,13 +137,13 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
             {bidStatus === "won" && (
               <div className="badge badge-success badge-sm gap-1 shadow-sm font-bold shrink-0">
                 <span className="icon-[tabler--trophy] size-3"></span>
-                {t("item.status.won")}
+                {t("status.won")}
               </div>
             )}
             {bidStatus === "lost" && (
               <div className="badge badge-ghost badge-sm gap-1 shadow-sm font-bold shrink-0 opacity-70">
                 <span className="icon-[tabler--x] size-3"></span>
-                {t("item.status.lost")}
+                {t("status.lost")}
               </div>
             )}
           </div>
@@ -157,10 +159,18 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
             <div className="flex items-end justify-between">
               <div>
                 <div className="text-xs text-base-content/50 font-medium mb-0.5 uppercase tracking-wide">
-                  {item.currentBid ? t("item.bid.currentBid") : t("item.bid.startingBid")}
+                  {item.currentBid
+                    ? t("item.bid.currentBid")
+                    : t("item.bid.startingBid")}
                 </div>
                 <div
-                  className={`text-xl font-bold font-mono tracking-tight ${bidStatus === "winning" || bidStatus === "won" ? "text-success" : bidStatus === "outbid" ? "text-warning" : "text-primary"}`}
+                  className={`text-xl font-bold font-mono tracking-tight ${
+                    bidStatus === "winning" || bidStatus === "won"
+                      ? "text-success"
+                      : bidStatus === "outbid"
+                      ? "text-warning"
+                      : "text-primary"
+                  }`}
                 >
                   {item.currentBid !== null
                     ? `${item.currentBid} ${item.currencyCode}`
@@ -188,7 +198,7 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
           href={`/auctions/${auctionId}/items/${item.id}/edit`}
           className="btn btn-ghost btn-sm btn-circle absolute top-2 right-2 bg-base-100/80 hover:bg-base-100 shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-200 scale-90 group-hover:scale-100"
           onClick={(e) => e.stopPropagation()}
-          title="Edit item"
+          title={t("common.edit")}
         >
           <span className="icon-[tabler--edit] size-4"></span>
         </Link>

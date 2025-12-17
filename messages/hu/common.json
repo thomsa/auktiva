@@ -101,7 +101,8 @@
     "allRightsReserved": "Minden jog fenntartva.",
     "designedBy": "Tervezte és fejlesztette",
     "description": "Ingyenes, nyílt forráskódú aukciós platform adománygyűjtésekhez, jótékonysági szervezeteknek és közösségeknek. Modern technológiával, modern eseményekhez.",
-    "reportIssue": "Hiba bejelentése"
+    "reportIssue": "Hiba bejelentése",
+    "github": "GitHub"
   },
   "member": {
     "noName": "Nincs név",

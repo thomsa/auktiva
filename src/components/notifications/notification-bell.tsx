@@ -23,6 +23,7 @@ interface NotificationsResponse {
 
 export function NotificationBell() {
   const t = useTranslations("notifications");
+  const tErrors = useTranslations("errors");
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"new" | "read">("new");
@@ -78,7 +79,7 @@ export function NotificationBell() {
       await fetch(`/api/notifications/${id}`, { method: "PATCH" });
       mutate(); // Revalidate
     } catch (err) {
-      console.error("Failed to mark as read:", err);
+      console.error(tErrors("generic"), err);
       mutate(); // Revert on error
     }
   };
@@ -104,7 +105,7 @@ export function NotificationBell() {
       await fetch("/api/notifications/read-all", { method: "POST" });
       mutate(); // Revalidate
     } catch (err) {
-      console.error("Failed to mark all as read:", err);
+      console.error(tErrors("generic"), err);
       mutate(); // Revert on error
     }
   };

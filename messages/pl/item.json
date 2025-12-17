@@ -37,7 +37,32 @@
       "currency": "Waluta",
       "endDate": "Data zakończenia (opcjonalnie)",
       "submitButton": "Dodaj przedmiot",
-      "submitting": "Dodawanie..."
+      "submitting": "Dodawanie...",
+      "basicInfo": "Szczegóły przedmiotu",
+      "pricing": "Ceny",
+      "createFailed": "Nie udało się utworzyć przedmiotu"
+    },
+    "edit": {
+      "title": "Edytuj przedmiot",
+      "subtitle": "Zarządzaj szczegółami i ustawieniami przedmiotu",
+      "save": "Zapisz zmiany",
+      "saving": "Zapisywanie...",
+      "dangerZone": "Strefa niebezpieczna",
+      "delete": "Usuń przedmiot",
+      "deleteDescription": "Usuń ten przedmiot na stałe. Tej akcji nie można cofnąć.",
+      "confirmDelete": "Czy na pewno chcesz usunąć \"{name}\"?",
+      "endItem": "Zakończ licytację",
+      "endDescription": "Zakończ licytację tego przedmiotu natychmiast. Żadne kolejne oferty nie będą akceptowane.",
+      "endButton": "Zakończ przedmiot teraz",
+      "confirmEnd": "Czy na pewno chcesz zakończyć licytację \"{name}\"?",
+      "endMessageWithBids": "Aktualny najwyższy oferent wygra ten przedmiot.",
+      "endMessageNoBids": "Ten przedmiot nie ma jeszcze ofert.",
+      "hasBidsWarning": "Ten przedmiot ma oferty. Niektóre pola nie mogą być zmienione.",
+      "endedMessage": "Ten przedmiot już się zakończył. Licytacja jest zamknięta.",
+      "cannotDeleteWithBids": "Przedmioty z ofertami nie mogą być usunięte.",
+      "updateFailed": "Nie udało się zaktualizować przedmiotu",
+      "deleteFailed": "Nie udało się usunąć przedmiotu",
+      "endFailed": "Nie udało się zakończyć przedmiotu"
     },
     "gallery": {
       "imageOf": "Zdjęcie {current} z {total}",
@@ -64,6 +89,16 @@
       "outbid": "Przebito",
       "won": "Wygrana",
       "lost": "Przegrana"
+    },
+    "joinModes": {
+      "inviteOnly": "Tylko zaproszeni",
+      "link": "Dostęp przez link",
+      "free": "Otwarta"
+    },
+    "empty": {
+      "title": "Brak przedmiotów",
+      "description": "Ta aukcja nie ma jeszcze żadnych przedmiotów.",
+      "createFirst": "Dodaj pierwszy przedmiot"
     }
   }
 }

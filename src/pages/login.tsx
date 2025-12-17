@@ -5,12 +5,16 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { AlertMessage, SEO, pageSEO } from "@/components/common";
+import { AlertMessage, SEO } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
   const router = useRouter();
+  const t = useTranslations("auth.login");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,12 +35,12 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        setError(tErrors("auth.invalidCredentials"));
       } else {
         router.push("/dashboard");
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setIsLoading(false);
     }
@@ -44,7 +48,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <SEO {...pageSEO.login} />
+      <SEO title={t("title")} description={tErrors("auth.brandingDescription")} />
       <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
         {/* Left side - Branding (hidden on mobile) */}
         <div className="hidden lg:flex lg:w-1/2 relative bg-base-200 overflow-hidden items-center justify-center">
@@ -61,29 +65,28 @@ export default function LoginPage() {
                 <span className="icon-[tabler--gavel] size-10 text-primary group-hover:-rotate-12 transition-transform duration-300"></span>
               </div>
               <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Auktiva
+                {tCommon("appName")}
               </h1>
             </Link>
 
-            <h2 className="text-2xl font-bold mb-4">Welcome Back!</h2>
+            <h2 className="text-2xl font-bold mb-4">{t("brandingTitle")}</h2>
             <p className="text-base-content/60 text-lg leading-relaxed">
-              The modern, open-source auction platform designed for fundraisers,
-              charities, and communities.
+              {t("brandingDescription")}
             </p>
 
             <div className="mt-12 grid grid-cols-2 gap-4 w-full">
               <div className="p-4 rounded-2xl bg-base-100/50 backdrop-blur-sm border border-base-content/5">
                 <div className="text-2xl font-bold text-primary mb-1">100%</div>
                 <div className="text-xs text-base-content/60 font-medium uppercase tracking-wider">
-                  Free & Open
+                  {t("freeAndOpen")}
                 </div>
               </div>
               <div className="p-4 rounded-2xl bg-base-100/50 backdrop-blur-sm border border-base-content/5">
                 <div className="text-2xl font-bold text-secondary mb-1">
-                  Zero
+                  {t("zeroFees")}
                 </div>
                 <div className="text-xs text-base-content/60 font-medium uppercase tracking-wider">
-                  Fees
+                  {t("fees")}
                 </div>
               </div>
             </div>
@@ -98,17 +101,17 @@ export default function LoginPage() {
           >
             <span className="icon-[tabler--gavel] size-6 text-primary"></span>
             <span className="text-lg font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Auktiva
+              {tCommon("appName")}
             </span>
           </Link>
 
           <div className="w-full max-w-[400px]">
             <div className="mb-10">
               <h2 className="text-3xl font-bold text-base-content mb-2">
-                Sign in
+                {t("title")}
               </h2>
               <p className="text-base-content/60">
-                Enter your credentials to access your account
+                {t("subtitle")}
               </p>
             </div>
 
@@ -117,7 +120,7 @@ export default function LoginPage() {
 
               {router.query.registered && (
                 <AlertMessage type="success">
-                  Account created successfully! Please sign in.
+                  {t("accountCreatedSuccess")}
                 </AlertMessage>
               )}
 
@@ -125,7 +128,7 @@ export default function LoginPage() {
                 <div className="form-control">
                   <label className="label pl-0" htmlFor="email">
                     <span className="label-text font-medium text-base-content/80">
-                      Email
+                      {t("email")}
                     </span>
                   </label>
                   <div className="relative">
@@ -134,7 +137,7 @@ export default function LoginPage() {
                       id="email"
                       name="email"
                       type="email"
-                      placeholder="you@example.com"
+                      placeholder={t("emailPlaceholder")}
                       autoComplete="email"
                       className="input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors"
                       required
@@ -145,7 +148,7 @@ export default function LoginPage() {
                 <div className="form-control">
                   <label className="label pl-0" htmlFor="password">
                     <span className="label-text font-medium text-base-content/80">
-                      Password
+                      {t("password")}
                     </span>
                   </label>
                   <div className="relative">
@@ -154,7 +157,7 @@ export default function LoginPage() {
                       id="password"
                       name="password"
                       type="password"
-                      placeholder="••••••••"
+                      placeholder={t("passwordPlaceholder")}
                       autoComplete="current-password"
                       className="input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors"
                       required
@@ -165,7 +168,7 @@ export default function LoginPage() {
                       href="/forgot-password"
                       className="label-text-alt link link-primary hover:text-primary/80 transition-colors ml-auto"
                     >
-                      Forgot password?
+                      {t("forgotPassword")}
                     </Link>
                   </label>
                 </div>
@@ -176,21 +179,21 @@ export default function LoginPage() {
                 variant="primary"
                 modifier="block"
                 isLoading={isLoading}
-                loadingText="Signing in..."
+                loadingText={t("submitting")}
                 className="btn-lg text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
               >
-                Sign in
+                {t("submitButton")}
               </Button>
             </form>
 
             <div className="mt-8 text-center">
               <p className="text-sm text-base-content/60">
-                Don&apos;t have an account?{" "}
+                {t("noAccount")}{" "}
                 <Link
                   href="/register"
                   className="link link-primary font-bold hover:text-primary/80 transition-colors"
                 >
-                  Create one now
+                  {t("createAccount")}
                 </Link>
               </p>
             </div>

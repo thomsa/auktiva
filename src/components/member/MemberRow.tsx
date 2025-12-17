@@ -32,10 +32,19 @@ export function MemberRow({
   onRoleChange,
   onRemove,
 }: MemberRowProps) {
-  const t = useTranslations();
+  const t = useTranslations("member");
+  const tRoles = useTranslations("auction.roles");
   const { formatShortDate } = useFormatters();
   const isCurrentUser = member.user.id === currentUserId;
   const canModify = isAdmin && !isCurrentUser && member.role !== "OWNER";
+
+  const getRoleLabel = (role: string) => {
+    const roleKey = role.toLowerCase();
+    if (["admin", "creator", "bidder", "owner"].includes(roleKey)) {
+      return tRoles(roleKey === "owner" ? "admin" : roleKey);
+    }
+    return role;
+  };
 
   return (
     <tr className={isCurrentUser ? "bg-base-200" : ""}>
@@ -50,9 +59,9 @@ export function MemberRow({
           </div>
           <div>
             <div className="font-bold">
-              {member.user.name || t("member.noName")}
+              {member.user.name || t("noName")}
               {isCurrentUser && (
-                <span className="badge badge-sm ml-2">{t("member.you")}</span>
+                <span className="badge badge-sm ml-2">{t("you")}</span>
               )}
             </div>
             <div className="text-sm text-base-content/60">
@@ -71,7 +80,7 @@ export function MemberRow({
           >
             {ROLE_OPTIONS.map((role) => (
               <option key={role} value={role}>
-                {role}
+                {getRoleLabel(role)}
               </option>
             ))}
           </select>
@@ -79,7 +88,7 @@ export function MemberRow({
           <span
             className={`badge ${ROLE_COLORS[member.role] || "badge-ghost"}`}
           >
-            {member.role}
+            {getRoleLabel(member.role)}
           </span>
         )}
       </td>
@@ -100,7 +109,7 @@ export function MemberRow({
               }
               disabled={isLoading}
               className="btn btn-ghost btn-sm text-error"
-              title={t("member.remove")}
+              title={t("remove")}
             >
               {isLoading ? (
                 <span className="loading loading-spinner loading-sm"></span>

@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout, BackLink, AlertMessage } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 interface Currency {
   code: string;
@@ -37,6 +38,10 @@ export default function CreateItemPage({
   currencies,
 }: CreateItemProps) {
   const router = useRouter();
+  const t = useTranslations("item.create");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
+  const tAuction = useTranslations("auction"); // For 'backTo' if needed or re-use common back
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -79,13 +84,13 @@ export default function CreateItemPage({
         if (result.errors) {
           setFieldErrors(result.errors);
         } else {
-          setError(result.message || "Failed to create item");
+          setError(result.message || tErrors("item.createFailed"));
         }
       } else {
         router.push(`/auctions/${auction.id}/items/${result.id}`);
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +101,7 @@ export default function CreateItemPage({
       <div className="mb-8">
         <BackLink
           href={`/auctions/${auction.id}`}
-          label={`Back to ${auction.name}`}
+          label={tAuction("invite.backTo", { name: auction.name })}
         />
       </div>
 
@@ -107,9 +112,9 @@ export default function CreateItemPage({
               <span className="icon-[tabler--package] size-7"></span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Add New Item</h1>
+              <h1 className="text-2xl font-bold">{t("title")}</h1>
               <p className="text-base-content/60">
-                Create a new item for auction
+                {t("subtitle")}
               </p>
             </div>
           </div>
@@ -121,18 +126,18 @@ export default function CreateItemPage({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">
                 <span className="icon-[tabler--info-circle] size-5"></span>
-                Item Details
+                {tAuction("create.basicInfo")} {/* Reusing from auction.create.basicInfo if appropriate or create new key */}
               </h2>
 
               <div className="form-control">
                 <label className="label" htmlFor="name">
-                  <span className="label-text font-medium">Item Name *</span>
+                  <span className="label-text font-medium">{t("itemName")} *</span>
                 </label>
                 <input
                   id="name"
                   name="name"
                   type="text"
-                  placeholder="e.g., Vintage Watch"
+                  placeholder={t("itemNamePlaceholder")}
                   className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.name ? "input-error" : ""}`}
                   required
                 />
@@ -147,12 +152,12 @@ export default function CreateItemPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="description">
-                  <span className="label-text font-medium">Description</span>
+                  <span className="label-text font-medium">{t("description")}</span>
                 </label>
                 <textarea
                   id="description"
                   name="description"
-                  placeholder="Describe the item in detail..."
+                  placeholder={t("descriptionPlaceholder")}
                   className="textarea textarea-bordered w-full h-32 bg-base-100 focus:bg-base-100 transition-colors"
                 />
               </div>
@@ -168,7 +173,7 @@ export default function CreateItemPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="currencyCode">
-                  <span className="label-text font-medium">Currency *</span>
+                  <span className="label-text font-medium">{t("currency")} *</span>
                 </label>
                 <select
                   id="currencyCode"
@@ -188,7 +193,7 @@ export default function CreateItemPage({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label" htmlFor="startingBid">
-                    <span className="label-text font-medium">Starting Bid</span>
+                    <span className="label-text font-medium">{t("startingBid")}</span>
                   </label>
                   <input
                     id="startingBid"
@@ -211,7 +216,7 @@ export default function CreateItemPage({
                 <div className="form-control">
                   <label className="label" htmlFor="minBidIncrement">
                     <span className="label-text font-medium">
-                      Min Bid Increment
+                      {t("minBidIncrement")}
                     </span>
                   </label>
                   <input
@@ -234,7 +239,7 @@ export default function CreateItemPage({
                 <div className="space-y-4">
                   <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
                     <span className="icon-[tabler--eye] size-5"></span>
-                    Visibility
+                    {tAuction("create.biddingSettings")}
                   </h2>
 
                   <div className="form-control">
@@ -246,7 +251,7 @@ export default function CreateItemPage({
                       />
                       <div>
                         <span className="label-text font-medium">
-                          Anonymous Bidding
+                          {tAuction("create.alwaysAnonymous")}
                         </span>
                         <p className="text-xs text-base-content/60">
                           Hide bidder names for this item
@@ -265,13 +270,13 @@ export default function CreateItemPage({
                 <div className="space-y-4">
                   <h2 className="text-lg font-semibold flex items-center gap-2 text-info">
                     <span className="icon-[tabler--clock] size-5"></span>
-                    Timing
+                    {tAuction("create.timing")}
                   </h2>
 
                   <div className="form-control">
                     <label className="label" htmlFor="endDate">
                       <span className="label-text font-medium">
-                        End Date (optional)
+                        {t("endDate")}
                       </span>
                     </label>
                     <input
@@ -282,7 +287,7 @@ export default function CreateItemPage({
                     />
                     <label className="label">
                       <span className="label-text-alt text-base-content/60">
-                        Leave empty for no end date
+                        {tAuction("create.endDateHint")}
                       </span>
                     </label>
                   </div>
@@ -297,17 +302,17 @@ export default function CreateItemPage({
                 href={`/auctions/${auction.id}`}
                 className="btn btn-ghost flex-1"
               >
-                Cancel
+                {tCommon("cancel")}
               </Link>
               <Button
                 type="submit"
                 variant="primary"
                 className="flex-1 shadow-lg shadow-primary/20"
                 isLoading={isLoading}
-                loadingText="Creating..."
+                loadingText={t("submitting")}
                 icon={<span className="icon-[tabler--plus] size-5"></span>}
               >
-                Add Item
+                {t("submitButton")}
               </Button>
             </div>
           </form>

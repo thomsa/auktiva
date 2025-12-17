@@ -2,11 +2,16 @@ import Link from "next/link";
 import { GetStaticProps } from "next";
 import { SEO, pageSEO } from "@/components/common";
 import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 export default function TermsPage() {
+  const t = useTranslations("legal.terms");
+  const tSections = useTranslations("legal.terms.sections");
+  const tCommon = useTranslations("common");
+
   return (
     <>
-      <SEO {...pageSEO.terms} />
+      <SEO {...pageSEO.terms} title={t("title")} description={t("description")} />
 
       <div className="min-h-screen bg-base-100">
         {/* Navigation */}
@@ -21,12 +26,12 @@ export default function TermsPage() {
                   <span className="icon-[tabler--gavel] size-6"></span>
                 </div>
                 <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  Auktiva
+                  {tCommon("appName")}
                 </span>
               </Link>
             </div>
             <Link href="/" className="btn btn-ghost btn-sm">
-              Back to Home
+              {t("backToHome")}
             </Link>
           </div>
         </nav>
@@ -34,10 +39,10 @@ export default function TermsPage() {
         <main className="container mx-auto px-4 py-16 max-w-3xl">
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
-              Terms of Service
+              {t("title")}
             </h1>
             <p className="text-base-content/60 text-lg">
-              Last updated: December 15, 2025
+              {t("lastUpdated")}
             </p>
           </div>
 
@@ -48,14 +53,10 @@ export default function TermsPage() {
                 <span className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-base-content/70 text-lg">
                   1
                 </span>
-                Acceptance of Terms
+                {tSections("1.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed">
-                By accessing or using Auktiva, you agree to be bound by these
-                Terms of Service. If you do not agree to these terms, please do
-                not use our service. These terms apply to all users of the
-                platform, whether using the hosted version or a self-hosted
-                instance.
+                {tSections("1.content")}
               </p>
             </section>
 
@@ -65,29 +66,18 @@ export default function TermsPage() {
                 <span className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-base-content/70 text-lg">
                   2
                 </span>
-                What is Auktiva
+                {tSections("2.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed mb-6">
-                Auktiva is a free, open-source auction platform designed for
-                fundraisers, charities, schools, churches, company events, and
-                community organizations. The platform enables you to create and
-                manage auctions, invite participants, and facilitate real-time
-                bidding.
+                {tSections("2.content")}
               </p>
               <div className="not-prose bg-warning/10 border border-warning/30 rounded-xl p-5 flex gap-4 items-start">
                 <span className="icon-[tabler--alert-triangle] size-6 text-warning mt-0.5 shrink-0"></span>
                 <div>
                   <h3 className="font-bold text-warning mb-1">
-                    Important Disclaimer
+                    {tSections("2.disclaimerTitle")}
                   </h3>
-                  <p className="text-base-content/80 text-sm leading-relaxed">
-                    Auktiva facilitates bidding but{" "}
-                    <strong className="text-base-content">
-                      does not process payments
-                    </strong>
-                    . All transactions are settled offline between participants.
-                    We are not a marketplace or payment processor.
-                  </p>
+                  <p className="text-base-content/80 text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: tSections.raw("2.disclaimer") }} />
                 </div>
               </div>
             </section>
@@ -98,19 +88,13 @@ export default function TermsPage() {
                 <span className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-base-content/70 text-lg">
                   3
                 </span>
-                User Accounts
+                {tSections("3.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed mb-4">
-                To use Auktiva, you must create an account with accurate
-                information including your name, email address, and a secure
-                password. You are responsible for maintaining the security of
-                your account credentials and should not share your account with
-                others.
+                {tSections("3.content1")}
               </p>
               <p className="text-base-content/80 leading-relaxed">
-                You must be at least 18 years old or have parental consent to
-                use Auktiva. Please keep your account information up to date to
-                ensure you receive important notifications about your auctions.
+                {tSections("3.content2")}
               </p>
             </section>
 
@@ -120,46 +104,42 @@ export default function TermsPage() {
                 <span className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-base-content/70 text-lg">
                   4
                 </span>
-                Roles and Permissions
+                {tSections("4.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed mb-6">
-                Auctions use a role-based permission system to control what each
-                member can do. Auction owners are responsible for managing their
-                members and resolving any disputes within their auctions.
+                {tSections("4.content")}
               </p>
               <div className="grid sm:grid-cols-2 gap-4 not-prose">
                 <div className="bg-base-200/50 rounded-xl p-5 border border-base-content/5">
                   <div className="badge badge-primary badge-outline mb-2 font-bold">
-                    Owner
+                    {tSections("4.owner")}
                   </div>
                   <p className="text-base-content/70 text-sm leading-relaxed">
-                    Full control over the auction including settings, members,
-                    items, and deletion.
+                    {tSections("4.ownerDesc")}
                   </p>
                 </div>
                 <div className="bg-base-200/50 rounded-xl p-5 border border-base-content/5">
                   <div className="badge badge-secondary badge-outline mb-2 font-bold">
-                    Admin
+                    {tSections("4.admin")}
                   </div>
                   <p className="text-base-content/70 text-sm leading-relaxed">
-                    Can manage members, add and edit items, and modify auction
-                    settings.
+                    {tSections("4.adminDesc")}
                   </p>
                 </div>
                 <div className="bg-base-200/50 rounded-xl p-5 border border-base-content/5">
                   <div className="badge badge-accent badge-outline mb-2 font-bold">
-                    Creator
+                    {tSections("4.creator")}
                   </div>
                   <p className="text-base-content/70 text-sm leading-relaxed">
-                    Can add new items and edit their own items in the auction.
+                    {tSections("4.creatorDesc")}
                   </p>
                 </div>
                 <div className="bg-base-200/50 rounded-xl p-5 border border-base-content/5">
                   <div className="badge badge-ghost badge-outline mb-2 font-bold">
-                    Bidder
+                    {tSections("4.bidder")}
                   </div>
                   <p className="text-base-content/70 text-sm leading-relaxed">
-                    Can view items and place bids in the auction.
+                    {tSections("4.bidderDesc")}
                   </p>
                 </div>
               </div>
@@ -168,261 +148,154 @@ export default function TermsPage() {
             {/* Auction Participation */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                Auction Participation
+                {tSections("5.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed mb-4">
-                When participating in auctions, you agree to honor your winning
-                bids and complete transactions offline with the item seller. You
-                should provide accurate descriptions for any items you list and
-                respect the auction end times and bidding rules set by the
-                auction owner.
+                {tSections("5.content1")}
               </p>
               <p className="text-base-content/80 leading-relaxed">
-                Each auction may have its own specific rules determined by the
-                owner. Make sure to review any auction-specific guidelines
-                before participating.
+                {tSections("5.content2")}
               </p>
             </section>
 
             {/* Acceptable Use */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                Acceptable Use
+                {tSections("6.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed mb-4">
-                You agree to use Auktiva responsibly and legally. You must not
-                use the service for illegal purposes, post fraudulent or
-                misleading items, or engage in bid manipulation such as shill
-                bidding.
+                {tSections("6.content1")}
               </p>
               <p className="text-base-content/80 leading-relaxed">
-                Harassment, abuse, or threats toward other users are strictly
-                prohibited. You must not attempt to gain unauthorized access to
-                the system, use automated bots or scripts, or upload malicious
-                content that could compromise the platform or other users.
+                {tSections("6.content2")}
               </p>
             </section>
 
             {/* No Payment Processing */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                No Payment Processing
+                {tSections("7.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed mb-4">
-                Auktiva does not process payments, collect payment information,
-                or facilitate financial transactions of any kind. Winning
-                bidders and item sellers are solely responsible for arranging
-                payment methods, completing the exchange of items, and resolving
-                any disputes that arise.
+                {tSections("7.content1")}
               </p>
               <p className="text-base-content/80 leading-relaxed">
-                Auktiva is not liable for any disputes, losses, or damages
-                arising from offline transactions between users. We recommend
-                discussing payment and pickup arrangements before the auction
-                ends.
+                {tSections("7.content2")}
               </p>
             </section>
 
             {/* Content Ownership */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                Content Ownership
+                {tSections("8.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed mb-4">
-                You retain ownership of all content you upload to Auktiva,
-                including item images and descriptions. By uploading content,
-                you grant Auktiva a non-exclusive, royalty-free license to
-                display that content to auction participants for the purpose of
-                operating the service.
+                {tSections("8.content1")}
               </p>
               <p className="text-base-content/80 leading-relaxed">
-                You represent that you have the right to upload any content you
-                submit and that it does not infringe on any third-party rights
-                including copyrights, trademarks, or privacy rights.
+                {tSections("8.content2")}
               </p>
             </section>
 
             {/* Open Source License */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                Open Source License
+                {tSections("9.title")}
               </h2>
-              <p className="text-base-content/80 leading-relaxed">
-                Auktiva is open source software released under the MIT License.
-                You may use, modify, and distribute the software according to
-                the terms of that license. The complete source code is available
-                on{" "}
-                <a
-                  href="https://github.com/thomsa/auktiva"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  GitHub
-                </a>
-                , and you can review our{" "}
-                <a
-                  href="https://github.com/thomsa/auktiva/blob/main/LICENSE"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  LICENSE file
-                </a>{" "}
-                for complete details.
-              </p>
+              <p className="text-base-content/80 leading-relaxed" dangerouslySetInnerHTML={{ __html: tSections.raw("9.content") }} />
             </section>
 
             {/* Self-Hosting */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                Self-Hosting
+                {tSections("10.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed">
-                You may self-host Auktiva on your own infrastructure. When
-                self-hosting, you are solely responsible for server security and
-                maintenance, data backup and protection, compliance with
-                applicable laws in your jurisdiction, and providing user support
-                and dispute resolution for your users.
+                {tSections("10.content")}
               </p>
             </section>
 
             {/* Cloud Hosting */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                Cloud Hosting at auktiva.org
+                {tSections("11.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed mb-4">
-                The hosted version at auktiva.org is provided free of charge and
-                runs entirely on free-tier services under the project
-                creator&apos;s personal accounts. We use Vercel for hosting,
-                Turso for database storage, and Brevo for email delivery — all
-                on their respective free tiers.
+                {tSections("11.content1")}
               </p>
               <div className="bg-info/10 border border-info/30 rounded-lg p-4 mb-4">
                 <p className="text-base-content/80 text-sm">
-                  <strong className="text-info">Our Commitment:</strong> As a
-                  .org domain, Auktiva strives to remain free and accessible to
-                  everyone. We are committed to using free and open-source
-                  services wherever possible to keep the platform running at no
-                  cost to users.
+                  <strong className="text-info">{tSections("11.commitmentTitle")}</strong> {tSections("11.commitment")}
                 </p>
               </div>
               <p className="text-base-content/80 leading-relaxed">
-                While we make every effort to keep the service running, please
-                understand that free-tier services have limitations. There may
-                be usage caps, occasional downtime, or service changes beyond
-                our control. For mission-critical use cases or higher
-                reliability requirements, we recommend self-hosting Auktiva on
-                your own infrastructure.
+                {tSections("11.content2")}
               </p>
             </section>
 
             {/* Disclaimer of Warranties */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                Disclaimer of Warranties
+                {tSections("12.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed">
-                Auktiva is provided &quot;as is&quot; and &quot;as
-                available&quot; without warranties of any kind, either express
-                or implied. We do not guarantee that the service will be
-                uninterrupted, secure, error-free, or meet your specific
-                requirements. Use of the service is at your own risk.
+                {tSections("12.content")}
               </p>
             </section>
 
             {/* Limitation of Liability */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                Limitation of Liability
+                {tSections("13.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed">
-                To the maximum extent permitted by law, Auktiva and its
-                creators, contributors, and maintainers shall not be liable for
-                any indirect, incidental, special, consequential, or punitive
-                damages arising from your use of the service. This includes but
-                is not limited to loss of profits, data, or goodwill, failed or
-                disputed transactions, unauthorized access to your account, and
-                service interruptions or errors.
+                {tSections("13.content")}
               </p>
             </section>
 
             {/* Termination */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                Termination
+                {tSections("14.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed">
-                We reserve the right to suspend or terminate accounts that
-                violate these terms. You may delete your account at any time
-                through your account settings. Upon termination, your access to
-                the service will be revoked, but auction data you created may be
-                retained for other participants.
+                {tSections("14.content")}
               </p>
             </section>
 
             {/* Changes to Terms */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                Changes to Terms
+                {tSections("15.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed">
-                We may update these Terms of Service from time to time. When we
-                make significant changes, we will post a notice on the platform
-                and update the &quot;Last updated&quot; date at the top of this
-                page. Continued use of the service after changes constitutes
-                acceptance of the new terms.
+                {tSections("15.content")}
               </p>
             </section>
 
             {/* Governing Law */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                Governing Law
+                {tSections("16.title")}
               </h2>
               <p className="text-base-content/80 leading-relaxed">
-                These terms shall be governed by and construed in accordance
-                with applicable laws. Any disputes shall be resolved through
-                good-faith negotiation or, if necessary, through appropriate
-                legal channels in the relevant jurisdiction.
+                {tSections("16.content")}
               </p>
             </section>
 
             {/* Contact */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
-                Contact
+                {tSections("17.title")}
               </h2>
-              <p className="text-base-content/80 leading-relaxed">
-                If you have questions about these Terms of Service, please reach
-                out through our{" "}
-                <a
-                  href="https://github.com/thomsa/auktiva/issues"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  GitHub Issues
-                </a>{" "}
-                or contact the project maintainer at{" "}
-                <a
-                  href="https://www.tamaslorincz.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  tamaslorincz.com
-                </a>
-                .
-              </p>
+              <p className="text-base-content/80 leading-relaxed" dangerouslySetInnerHTML={{ __html: tSections.raw("17.content") }} />
             </section>
           </div>
 
           <div className="mt-12">
             <Link href="/" className="btn btn-ghost">
               <span className="icon-[tabler--arrow-left] size-5"></span>
-              Back to Home
+              {t("backToHome")}
             </Link>
           </div>
         </main>

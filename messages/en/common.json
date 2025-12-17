@@ -101,7 +101,8 @@
     "allRightsReserved": "All rights reserved.",
     "designedBy": "Designed & Built by",
     "description": "A free, open-source auction platform designed for fundraisers, charities, and communities. Built with modern tech for modern events.",
-    "reportIssue": "Report Issue"
+    "reportIssue": "Report Issue",
+    "github": "GitHub"
   },
   "member": {
     "noName": "No name",

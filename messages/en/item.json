@@ -37,7 +37,32 @@
       "currency": "Currency",
       "endDate": "End Date (optional)",
       "submitButton": "Add Item",
-      "submitting": "Adding..."
+      "submitting": "Adding...",
+      "basicInfo": "Item Details",
+      "pricing": "Pricing",
+      "createFailed": "Failed to create item"
+    },
+    "edit": {
+      "title": "Edit Item",
+      "subtitle": "Manage item details and settings",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "dangerZone": "Danger Zone",
+      "delete": "Delete Item",
+      "deleteDescription": "Delete this item permanently. This action cannot be undone.",
+      "confirmDelete": "Are you sure you want to delete \"{name}\"?",
+      "endItem": "End Bidding",
+      "endDescription": "End bidding on this item immediately. No more bids will be accepted after this.",
+      "endButton": "End Item Now",
+      "confirmEnd": "Are you sure you want to end bidding on \"{name}\"?",
+      "endMessageWithBids": "The current highest bidder will win this item.",
+      "endMessageNoBids": "This item has no bids yet.",
+      "hasBidsWarning": "This item has bids. Some fields cannot be changed.",
+      "endedMessage": "This item has already ended. Bidding is closed.",
+      "cannotDeleteWithBids": "Items with bids cannot be deleted.",
+      "updateFailed": "Failed to update item",
+      "deleteFailed": "Failed to delete item",
+      "endFailed": "Failed to end item"
     },
     "gallery": {
       "imageOf": "Image {current} of {total}",
@@ -64,6 +89,16 @@
       "outbid": "Outbid",
       "won": "Won",
       "lost": "Lost"
+    },
+    "joinModes": {
+      "inviteOnly": "Invite Only",
+      "link": "Link Access",
+      "free": "Open"
+    },
+    "empty": {
+      "title": "No items yet",
+      "description": "This auction doesn't have any items listed yet.",
+      "createFirst": "Add First Item"
     }
   }
 }

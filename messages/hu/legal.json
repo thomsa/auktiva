@@ -1,14 +1,175 @@
 {
   "legal": {
-    "privacy": {
-      "title": "Adatvédelmi irányelvek",
-      "lastUpdated": "Utoljára frissítve",
-      "description": "Számunkra fontos az adataid védelme"
-    },
     "terms": {
       "title": "Felhasználási feltételek",
-      "lastUpdated": "Utoljára frissítve",
-      "description": "Kérjük, olvasd el figyelmesen a feltételeket"
+      "lastUpdated": "Utoljára frissítve: 2025. december 15.",
+      "description": "Olvasd el figyelmesen a feltételeket",
+      "backToHome": "Vissza a kezdőlapra",
+      "sections": {
+        "1": {
+          "title": "A feltételek elfogadása",
+          "content": "Az Auktiva elérésével vagy használatával elfogadod, hogy kötelezőnek ismered el ezeket a Felhasználási Feltételeket. Ha nem értesz egyet ezekkel a feltételekkel, ne használd szolgáltatásunkat. Ezek a feltételek a platform minden felhasználójára vonatkoznak, akár a hosztolt verziót, akár saját hosztolt példányt használnak."
+        },
+        "2": {
+          "title": "Mi az az Auktiva",
+          "content": "Az Auktiva egy ingyenes, nyílt forráskódú aukciós platform adománygyűjtésekhez, jótékonysági szervezeteknek, iskoláknak, egyházaknak, céges eseményeknek és közösségi szervezeteknek. A platform lehetővé teszi aukciók létrehozását és kezelését, résztvevők meghívását és a valós idejű licitálás lebonyolítását.",
+          "disclaimerTitle": "Fontos nyilatkozat",
+          "disclaimer": "Az Auktiva megkönnyíti a licitálást, de <strong class=\"text-base-content\">nem dolgoz fel fizetéseket</strong>. Minden tranzakció offline, a résztvevők között kerül rendezésre. Nem vagyunk piactér vagy fizetési feldolgozó."
+        },
+        "3": {
+          "title": "Felhasználói fiókok",
+          "content1": "Az Auktiva használatához létre kell hoznod egy fiókot pontos információkkal, beleértve a nevedet, e-mail címedet és egy biztonságos jelszót. Felelős vagy fiókod hitelesítő adatainak biztonságáért, és nem oszthatod meg fiókodat másokkal.",
+          "content2": "Legalább 18 évesnek kell lenned, vagy szülői beleegyezéssel kell rendelkezned az Auktiva használatához. Tartsd naprakészen a fiókinformációidat, hogy megkapd a fontos értesítéseket az aukcióidról."
+        },
+        "4": {
+          "title": "Szerepkörök és jogosultságok",
+          "content": "Az aukciók szerepkör-alapú jogosultsági rendszert használnak annak szabályozására, hogy az egyes tagok mit tehetnek. Az aukció tulajdonosai felelősek a tagok kezeléséért és az aukcióikon belüli viták rendezéséért.",
+          "owner": "Tulajdonos",
+          "ownerDesc": "Teljes ellenőrzés az aukció felett, beleértve a beállításokat, tagokat, tételeket és a törlést.",
+          "admin": "Adminisztrátor",
+          "adminDesc": "Kezelheti a tagokat, hozzáadhat és szerkeszthet tételeket, valamint módosíthatja az aukció beállításait.",
+          "creator": "Létrehozó",
+          "creatorDesc": "Hozzáadhat új tételeket és szerkesztheti saját tételeit az aukcióban.",
+          "bidder": "Licitáló",
+          "bidderDesc": "Megtekintheti a tételeket és licitálhat az aukcióban."
+        },
+        "5": {
+          "title": "Részvétel az aukción",
+          "content1": "Az aukciókon való részvételkor vállalod, hogy tiszteletben tartod nyertes licitjeidet, és a tranzakciókat offline rendezed a tétel eladójával. Pontos leírást kell adnod az általad listázott tételekről, és tiszteletben kell tartanod az aukció tulajdonosa által meghatározott zárási időket és licitálási szabályokat.",
+          "content2": "Minden aukciónak lehetnek saját, a tulajdonos által meghatározott szabályai. Részvétel előtt tekintsd át az aukció-specifikus irányelveket."
+        },
+        "6": {
+          "title": "Elfogadható használat",
+          "content1": "Vállalod, hogy az Auktivát felelősségteljesen és jogszerűen használod. Nem használhatod a szolgáltatást illegális célokra, nem tehetsz közzé csalárd vagy félrevezető tételeket, és nem vehetsz részt licitmanipulációban.",
+          "content2": "A zaklatás, visszaélés vagy fenyegetés más felhasználókkal szemben szigorúan tilos. Tilos megkísérelni a rendszerhez való jogosulatlan hozzáférést, automatizált botok vagy szkriptek használatát, vagy olyan rosszindulatú tartalom feltöltését, amely veszélyeztetheti a platformot vagy más felhasználókat."
+        },
+        "7": {
+          "title": "Nincs fizetési feldolgozás",
+          "content1": "Az Auktiva nem dolgoz fel fizetéseket, nem gyűjt fizetési információkat, és nem bonyolít le semmilyen pénzügyi tranzakciót. A nyertes licitálók és a tételek eladói kizárólagos felelősséggel tartoznak a fizetési módok egyeztetéséért, a tételek átadásáért és a felmerülő viták rendezéséért.",
+          "content2": "Az Auktiva nem vállal felelősséget a felhasználók közötti offline tranzakciókból eredő vitákért, veszteségekért vagy károkért. Javasoljuk, hogy az aukció vége előtt egyeztessétek a fizetési és átvételi lehetőségeket."
+        },
+        "8": {
+          "title": "Tartalom tulajdonjoga",
+          "content1": "Minden olyan tartalom tulajdonjogát megtartod, amelyet feltöltesz az Auktivára, beleértve a tét képeket és leírásokat. Tartalom feltöltésével nem kizárólagos, jogdíjmentes licencet adsz az Auktivának a tartalom megjelenítésére az aukció résztvevői számára a szolgáltatás működtetése céljából.",
+          "content2": "Kijelented, hogy rendelkezel a joggal az általad beküldött tartalom feltöltésére, és hogy az nem sérti harmadik felek jogait, beleértve a szerzői jogokat, védjegyeket vagy személyiségi jogokat."
+        },
+        "9": {
+          "title": "Nyílt forráskódú licenc",
+          "content": "Az Auktiva nyílt forráskódú szoftver, amely az MIT Licenc alatt került kiadásra. A szoftvert a licenc feltételei szerint használhatod, módosíthatod és terjesztheted. A teljes forráskód elérhető a <a href=\"https://github.com/thomsa/auktiva\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHubon</a>, a teljes részletekért pedig tekintsd meg a <a href=\"https://github.com/thomsa/auktiva/blob/main/LICENSE\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">LICENSE fájlt</a>."
+        },
+        "10": {
+          "title": "Saját szerver",
+          "content": "Az Auktivát futtathatod saját infrastruktúrádon. Saját szerver használata esetén kizárólag te felelsz a szerver biztonságáért és karbantartásáért, az adatok mentéséért és védelméért, a joghatóságod szerinti alkalmazandó törvények betartásáért, valamint a felhasználók támogatásáért és a viták rendezéséért."
+        },
+        "11": {
+          "title": "Felhő alapú szolgáltatás az auktiva.org-on",
+          "content1": "Az auktiva.org-on található hosztolt verzió ingyenes, és teljes egészében ingyenes szintű szolgáltatásokon fut a projekt készítőjének személyes fiókjai alatt. A Vercelt használjuk hosztingra, a Tursót adatbázis tárolásra és a Brevót e-mail küldésre – mindegyiket a saját ingyenes szintjén.",
+          "commitmentTitle": "Elkötelezettségünk:",
+          "commitment": ".org domainként az Auktiva arra törekszik, hogy ingyenes és mindenki számára elérhető maradjon. Elkötelezettek vagyunk az ingyenes és nyílt forráskódú szolgáltatások használata mellett, ahol csak lehetséges, hogy a platformot költségmentesen tartsuk fenn a felhasználók számára.",
+          "content2": "Bár mindent megteszünk a szolgáltatás működésének fenntartása érdekében, vedd figyelembe, hogy az ingyenes szintű szolgáltatásoknak korlátai vannak. Előfordulhatnak használati korlátok, alkalmi leállások vagy szolgáltatásbeli változások, amelyek rajtunk kívül állnak. Kritikus fontosságú felhasználási esetekhez vagy magasabb megbízhatósági követelményekhez javasoljuk az Auktiva saját infrastruktúrán történő futtatását."
+        },
+        "12": {
+          "title": "Szavatosság kizárása",
+          "content": "Az Auktiva „ahogy van” és „ahogy elérhető” alapon biztosított, bármilyen kifejezett vagy hallgatólagos garancia nélkül. Nem garantáljuk, hogy a szolgáltatás megszakításmentes, biztonságos, hibamentes lesz, vagy megfelel az egyedi követelményeidnek. A szolgáltatás használata saját felelősségre történik."
+        },
+        "13": {
+          "title": "Felelősség korlátozása",
+          "content": "A törvény által megengedett maximális mértékben az Auktiva és annak készítői, közreműködői és karbantartói nem vállalnak felelősséget semmilyen közvetett, véletlen, különleges, következményes vagy büntető kártérítésért, amely a szolgáltatás használatából ered. Ez magában foglalja, de nem kizárólagosan, a profitkiesést, adatvesztést vagy jó hírnév elvesztését, sikertelen vagy vitatott tranzakciókat, fiókhoz való jogosulatlan hozzáférést, valamint szolgáltatáskimaradásokat vagy hibákat."
+        },
+        "14": {
+          "title": "Megszüntetés",
+          "content": "Fenntartjuk a jogot azon fiókok felfüggesztésére vagy megszüntetésére, amelyek megsértik ezeket a feltételeket. Fiókodat bármikor törölheted a fiókbeállításokban. Megszüntetéskor a szolgáltatáshoz való hozzáférésed visszavonásra kerül, de az általad létrehozott aukciós adatok megmaradhatnak más résztvevők számára."
+        },
+        "15": {
+          "title": "Feltételek módosítása",
+          "content": "Időről időre frissíthetjük ezeket a Felhasználási Feltételeket. Amikor jelentős változtatásokat eszközölünk, értesítést teszünk közzé a platformon, és frissítjük az „Utoljára frissítve” dátumot ennek az oldalnak a tetején. A szolgáltatás változtatások utáni további használata az új feltételek elfogadását jelenti."
+        },
+        "16": {
+          "title": "Irányadó jog",
+          "content": "Ezekre a feltételekre és azok értelmezésére az alkalmazandó törvények az irányadók. Minden vitát jóhiszemű tárgyalások útján, vagy szükség esetén az illetékes joghatóság megfelelő jogi csatornáin keresztül kell rendezni."
+        },
+        "17": {
+          "title": "Kapcsolat",
+          "content": "Ha kérdéseid vannak ezekkel a Felhasználási Feltételekkel kapcsolatban, vedd fel velünk a kapcsolatot a <a href=\"https://github.com/thomsa/auktiva/issues\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub Issues</a> oldalon, vagy lépj kapcsolatba a projekt karbantartójával a <a href=\"https://www.tamaslorincz.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">tamaslorincz.com</a> oldalon."
+        }
+      }
+    },
+    "privacy": {
+      "title": "Adatvédelmi irányelvek",
+      "lastUpdated": "Utoljára frissítve: 2025. december 15.",
+      "description": "Számunkra fontos az adataid védelme",
+      "backToHome": "Vissza a kezdőlapra",
+      "sections": {
+        "1": {
+          "title": "Bevezetés",
+          "content": "Az Auktiva („mi”, „miénk” vagy „minket”) elkötelezett az adataid védelme mellett. Ez az Adatvédelmi Irányelv elmagyarázza, hogyan gyűjtjük, használjuk és védjük az információidat, amikor ingyenes, nyílt forráskódú aukciós platformunkat használod adománygyűjtésekhez, jótékonysági szervezeteknek és belső eseményekhez."
+        },
+        "2": {
+          "title": "Általunk gyűjtött információk",
+          "content": "Azokat az információkat gyűjtjük, amelyeket közvetlenül adsz meg nekünk az Auktiva használatakor:",
+          "accountInfo": "Fiókinformációk",
+          "accountInfoDesc": "Neved, e-mail címed és jelszavad fiók létrehozásakor.",
+          "auctionData": "Aukciós adatok",
+          "auctionDataDesc": "Információk az általad létrehozott vagy csatlakozott aukciókról, listázott tételekről, leadott licitekről és tagsági szerepköreidről.",
+          "uploadedContent": "Feltöltött tartalom",
+          "uploadedContentDesc": "Aukciós tételekhez és aukciós bélyegképekhez feltöltött képek és leírások.",
+          "preferences": "Beállítások",
+          "preferencesDesc": "E-mail értesítési beállításaid és téma preferenciáid."
+        },
+        "3": {
+          "title": "Hogyan használjuk az információidat",
+          "content": "Az összegyűjtött információkat aukciós szolgáltatásaink nyújtására és fejlesztésére használjuk:",
+          "point1": "Aukciós tevékenységeid, licitjeid és tagsági szerepköreid feldolgozása",
+          "point2": "Valós idejű licitfrissítések és aukciós állapot megjelenítése a résztvevőknek",
+          "point3": "E-mail értesítések küldése az aukciós tevékenységről, ha feliratkoztál",
+          "point4": "Aukciós eredmények generálása és adatok exportálásának lehetővé tétele",
+          "point5": "Válaszadás kérdéseidre és támogatás nyújtása"
+        },
+        "4": {
+          "title": "Adattárolás",
+          "content1": "Ha az auktiva.org hosztolt verzióját használod, az adataidat biztonságosan tároljuk iparági szabványos infrastruktúrán. Az adatbázis-információkat a Turso (elosztott SQLite) tárolja, a feltöltött képeket pedig S3-kompatibilis felhőalapú tárhelyen.",
+          "content2": "Ha úgy döntesz, hogy saját magad hosztolod az Auktivát, te felelsz a saját adattárolásodért és biztonságodért. A saját hosztolt példányok használhatnak helyi SQLite adatbázisokat és helyi fájlrendszer-tárolást az adataid feletti teljes ellenőrzés érdekében."
+        },
+        "5": {
+          "title": "Adatmegosztás",
+          "content1": "Nem adjuk el, nem kereskedünk vele, és nem adjuk át más módon személyes adataidat harmadik feleknek. Aukciós adataid csak azon aukciók tagjai számára láthatók, amelyekben részt veszel, az egyes aukciók tulajdonosai által konfigurált adatvédelmi beállításoknak megfelelően.",
+          "content2": "Az aukciók tulajdonosai konfigurálhatnak adatvédelmi beállításokat, beleértve az anonim licitálást a licitálók kilétének elrejtésére, a csak meghívásos hozzáférési korlátozásokat és a szerepkör-alapú jogosultságokat annak szabályozására, hogy az egyes tagok mit láthatnak és mit tehetnek."
+        },
+        "6": {
+          "title": "E-mail kommunikáció",
+          "content1": "E-maileket küldhetünk üdvözlő üzenetekről regisztrációkor, aukciós meghívókról, ha valaki meghív a részvételre, túllicitálási értesítésekről, ha egy másik felhasználó magasabb licitet tesz, és új tétel értesítésekről az általad csatlakozott aukciókhoz.",
+          "content2": "E-mail beállításaidat bármikor kezelheted a fiókbeállításokban. A túllicitálási és új tétel értesítések alapértelmezés szerint le vannak tiltva a postaládád kímélése érdekében."
+        },
+        "7": {
+          "title": "Sütik és helyi tárolás",
+          "content": "A böngésző helyi tárolását használjuk a téma preferenciád (világos vagy sötét mód) megjegyzésére és a munkamenet-hitelesítés fenntartására. Nem használunk harmadik féltől származó nyomkövető sütiket vagy analitikai szolgáltatásokat, amelyek nyomon követik viselkedésedet a webhelyeken."
+        },
+        "8": {
+          "title": "Nyílt forráskódú átláthatóság",
+          "content": "Az Auktiva 100%-ban nyílt forráskódú szoftver, amely az MIT Licenc alatt került kiadásra. Áttekintheted a teljes kódbázisunkat a <a href=\"https://github.com/thomsa/auktiva\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHubon</a>, hogy pontosan lásd, hogyan gyűjtjük, tároljuk és kezeljük az adataidat. Saját magad is hosztolhatod az Auktivát az információid feletti teljes ellenőrzés érdekében."
+        },
+        "9": {
+          "title": "Jogaid",
+          "content1": "Jogod van hozzáférni személyes adataidhoz a fiókbeállításokon keresztül, javítani a pontatlan információkat profilod frissítésével, kérni fiókod és a hozzá kapcsolódó adatok törlését, exportálni aukciós adataidat JSON vagy CSV formátumban, és kezelni e-mail értesítési beállításaidat.",
+          "content2": "Ezen jogok gyakorlásához látogass el a fiókbeállításokhoz, vagy lépj kapcsolatba velünk az alább felsorolt csatornákon keresztül."
+        },
+        "10": {
+          "title": "Adatmegőrzés",
+          "content": "Adataidat addig őrizzük meg, amíg a fiókod aktív. Az aukciós adatok addig kerülnek megőrzésre, amíg az aukció tulajdonosa nem törli az aukciót. Fiókod törlését bármikor kérheted, és mi eltávolítjuk személyes adataidat rendszereinkből."
+        },
+        "11": {
+          "title": "Gyermekek adatvédelme",
+          "content": "Az Auktiva nem 18 év alatti felhasználók számára készült. Nem gyűjtünk tudatosan személyes adatokat 18 év alatti gyermekektől. Ha úgy gondolod, hogy gyermektől gyűjtöttünk információt, lépj kapcsolatba velünk."
+        },
+        "12": {
+          "title": "Jelen szabályzat változásai",
+          "content": "Időről időre frissíthetjük ezt az Adatvédelmi Irányelvet. Amikor változtatásokat eszközölünk, közzétesszük az új Adatvédelmi Irányelvet ezen az oldalon, és frissítjük az „Utoljára frissítve” dátumot a tetején. Javasoljuk, hogy rendszeresen tekintsd át ezt a szabályzatot."
+        },
+        "13": {
+          "title": "Kapcsolat",
+          "content": "Ha kérdéseid vannak ezzel az Adatvédelmi Irányelvvel vagy adatkezelésünkkel kapcsolatban, vedd fel velünk a kapcsolatot a <a href=\"https://github.com/thomsa/auktiva/issues\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub Issues</a> oldalon, vagy lépj kapcsolatba a projekt karbantartójával a <a href=\"https://www.tamaslorincz.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">tamaslorincz.com</a> oldalon."
+        }
+      }
     }
   }
 }

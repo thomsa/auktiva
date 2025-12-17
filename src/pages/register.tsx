@@ -5,9 +5,10 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import ReCAPTCHA from "react-google-recaptcha";
 import { authOptions } from "@/lib/auth";
-import { AlertMessage, SEO, pageSEO } from "@/components/common";
+import { AlertMessage, SEO } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 const LazyReCAPTCHA = lazy(() => import("react-google-recaptcha"));
 
@@ -17,6 +18,9 @@ interface RegisterPageProps {
 
 export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
   const router = useRouter();
+  const t = useTranslations("auth.register");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -82,20 +86,24 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
 
     // Client-side validation
     if (password !== confirmPassword) {
-      setFieldErrors({ confirmPassword: "Passwords do not match" });
+      setFieldErrors({
+        confirmPassword: tErrors("validation.passwordsDoNotMatch"),
+      });
       setIsLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setFieldErrors({ password: "Password must be at least 6 characters" });
+      setFieldErrors({
+        password: tErrors("validation.passwordTooShort", { min: 6 }),
+      });
       setIsLoading(false);
       return;
     }
 
     // Check reCAPTCHA verification status
     if (recaptchaSiteKey && !isVerified) {
-      setError("Please complete the reCAPTCHA verification.");
+      setError(t("recaptchaRequired"));
       setIsLoading(false);
       return;
     }
@@ -113,13 +121,13 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
         if (data.errors) {
           setFieldErrors(data.errors);
         } else {
-          setError(data.message || "Registration failed");
+          setError(data.message || t("registrationFailed"));
         }
       } else {
         router.push("/login?registered=true");
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setIsLoading(false);
     }
@@ -127,7 +135,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
 
   return (
     <>
-      <SEO {...pageSEO.register} />
+      <SEO title={t("title")} description={t("brandingDescription")} />
       <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
         {/* Left side - Branding (hidden on mobile) */}
         <div className="hidden lg:flex lg:w-1/2 relative bg-base-200 overflow-hidden items-center justify-center">
@@ -144,14 +152,13 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
                 <span className="icon-[tabler--gavel] size-10 text-primary group-hover:-rotate-12 transition-transform duration-300"></span>
               </div>
               <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Auktiva
+                {tCommon("appName")}
               </h1>
             </Link>
 
-            <h2 className="text-2xl font-bold mb-4">Join the Community</h2>
+            <h2 className="text-2xl font-bold mb-4">{t("brandingTitle")}</h2>
             <p className="text-base-content/60 text-lg leading-relaxed">
-              Create your account in seconds and start hosting or bidding on
-              auctions.
+              {t("brandingDescription")}
             </p>
           </div>
         </div>
@@ -164,18 +171,16 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
           >
             <span className="icon-[tabler--gavel] size-6 text-primary"></span>
             <span className="text-lg font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Auktiva
+              {tCommon("appName")}
             </span>
           </Link>
 
           <div className="w-full max-w-[400px]">
             <div className="mb-8">
               <h2 className="text-3xl font-bold text-base-content mb-2">
-                Create Account
+                {t("title")}
               </h2>
-              <p className="text-base-content/60">
-                Get started with your free account
-              </p>
+              <p className="text-base-content/60">{t("subtitle")}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
@@ -184,7 +189,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
               <div className="form-control">
                 <label className="label pl-0" htmlFor="name">
                   <span className="label-text font-medium text-base-content/80">
-                    Full Name
+                    {t("fullName")}
                   </span>
                 </label>
                 <div className="relative">
@@ -193,7 +198,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
                     id="name"
                     name="name"
                     type="text"
-                    placeholder="John Doe"
+                    placeholder={t("fullNamePlaceholder")}
                     autoComplete="name"
                     className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
                       fieldErrors.name ? "input-error" : ""
@@ -213,7 +218,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
               <div className="form-control">
                 <label className="label pl-0" htmlFor="email">
                   <span className="label-text font-medium text-base-content/80">
-                    Email
+                    {t("email")}
                   </span>
                 </label>
                 <div className="relative">
@@ -222,7 +227,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
                     id="email"
                     name="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder={t("emailPlaceholder")}
                     autoComplete="email"
                     className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
                       fieldErrors.email ? "input-error" : ""
@@ -243,7 +248,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
                 <div className="form-control">
                   <label className="label pl-0" htmlFor="password">
                     <span className="label-text font-medium text-base-content/80">
-                      Password
+                      {t("password")}
                     </span>
                   </label>
                   <div className="relative">
@@ -252,7 +257,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
                       id="password"
                       name="password"
                       type="password"
-                      placeholder="••••••"
+                      placeholder={t("passwordPlaceholder")}
                       autoComplete="new-password"
                       className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
                         fieldErrors.password ? "input-error" : ""
@@ -273,7 +278,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
                 <div className="form-control">
                   <label className="label pl-0" htmlFor="confirmPassword">
                     <span className="label-text font-medium text-base-content/80">
-                      Confirm
+                      {t("confirmPassword")}
                     </span>
                   </label>
                   <div className="relative">
@@ -282,7 +287,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
                       id="confirmPassword"
                       name="confirmPassword"
                       type="password"
-                      placeholder="••••••"
+                      placeholder={t("confirmPasswordPlaceholder")}
                       autoComplete="new-password"
                       className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
                         fieldErrors.confirmPassword ? "input-error" : ""
@@ -308,7 +313,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
                     <Suspense
                       fallback={
                         <div className="text-base-content/60 text-sm">
-                          Loading reCAPTCHA...
+                          {t("loadingRecaptcha")}
                         </div>
                       }
                     >
@@ -322,7 +327,7 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
                     </Suspense>
                   ) : (
                     <div className="text-base-content/60 text-sm">
-                      Preparing reCAPTCHA...
+                      {t("preparingRecaptcha")}
                     </div>
                   )}
                 </div>
@@ -333,22 +338,22 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
                 variant="primary"
                 modifier="block"
                 isLoading={isLoading}
-                loadingText="Creating account..."
+                loadingText={t("submitting")}
                 disabled={recaptchaSiteKey ? !isVerified : false}
                 className="btn-lg text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
               >
-                Create Account
+                {t("submitButton")}
               </Button>
             </form>
 
             <div className="mt-8 text-center">
               <p className="text-sm text-base-content/60">
-                Already have an account?{" "}
+                {t("hasAccount")}{" "}
                 <Link
                   href="/login"
                   className="link link-primary font-bold hover:text-primary/80 transition-colors"
                 >
-                  Sign in
+                  {t("signIn")}
                 </Link>
               </p>
             </div>

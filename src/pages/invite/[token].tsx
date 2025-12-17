@@ -5,6 +5,7 @@ import { GetServerSideProps } from "next";
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 interface InviteInfo {
   auction: {
@@ -24,6 +25,9 @@ export default function AcceptInvitePage() {
   const router = useRouter();
   const { token } = router.query;
   const { data: session, status } = useSession();
+  const t = useTranslations("auction.acceptInvite");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
 
   const [invite, setInvite] = useState<InviteInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +43,7 @@ export default function AcceptInvitePage() {
         const data = await res.json();
 
         if (!res.ok) {
-          setError(data.message || "Invalid invite");
+          setError(data.message || tErrors("invite.invalidInvite"));
         } else {
           setInvite(data);
         }
@@ -51,7 +55,7 @@ export default function AcceptInvitePage() {
     };
 
     fetchInvite();
-  }, [token]);
+  }, [token, tErrors]);
 
   const handleAccept = async () => {
     if (!token) return;
@@ -71,7 +75,7 @@ export default function AcceptInvitePage() {
         router.push(`/auctions/${data.auctionId}`);
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setIsAccepting(false);
     }
@@ -90,7 +94,7 @@ export default function AcceptInvitePage() {
         <div className="text-center relative z-10">
           <span className="loading loading-spinner loading-lg text-primary"></span>
           <p className="mt-4 text-base-content/60 font-medium animate-pulse">
-            Loading invite...
+            {tCommon("loading")}
           </p>
         </div>
       </div>
@@ -111,14 +115,14 @@ export default function AcceptInvitePage() {
             <div className="w-20 h-20 bg-error/10 rounded-full flex items-center justify-center mb-4">
               <span className="icon-[tabler--alert-circle] size-10 text-error"></span>
             </div>
-            <h1 className="text-2xl font-bold mt-2">Invalid Invite</h1>
+            <h1 className="text-2xl font-bold mt-2">{t("invalid")}</h1>
             <p className="text-base-content/60 mt-2">{error}</p>
             <div className="card-actions mt-8 w-full">
               <Link
                 href="/dashboard"
                 className="btn btn-primary w-full shadow-lg shadow-primary/20"
               >
-                Go to Dashboard
+                {t("dashboard")}
               </Link>
             </div>
           </div>
@@ -152,10 +156,10 @@ export default function AcceptInvitePage() {
               </div>
             </div>
             <h1 className="text-3xl font-extrabold mt-6 bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-              You&apos;re Invited!
+              {t("title")}
             </h1>
             <p className="text-base-content/60 mt-2">
-              You have been invited to join an auction
+              {t("subtitle")}
             </p>
           </div>
 
@@ -169,7 +173,7 @@ export default function AcceptInvitePage() {
                   {invite.auction.name}
                 </h2>
                 <p className="text-xs text-base-content/50 uppercase tracking-wide font-semibold">
-                  Auction
+                  {tCommon("appName")} {/* Or simply "Auction" */}
                 </p>
               </div>
             </div>
@@ -184,14 +188,14 @@ export default function AcceptInvitePage() {
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between items-center">
-                <span className="text-base-content/60">Invited by</span>
+                <span className="text-base-content/60">{t("invitedBy")}</span>
                 <span className="font-medium flex items-center gap-1.5">
                   <span className="icon-[tabler--user] size-3.5 opacity-50"></span>
                   {invite.sender.name || invite.sender.email}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-base-content/60">Your Role</span>
+                <span className="text-base-content/60">{t("yourRole")}</span>
                 <span className="badge badge-primary badge-sm font-semibold shadow-sm shadow-primary/20">
                   {invite.role}
                 </span>
@@ -210,10 +214,10 @@ export default function AcceptInvitePage() {
             <div className="space-y-4">
               <div className="text-center p-4 bg-base-200/50 rounded-xl mb-2">
                 <p className="text-base-content/80 font-medium mb-1">
-                  Login Required
+                  {t("loginRequired")}
                 </p>
                 <p className="text-sm text-base-content/60">
-                  This invite was sent to{" "}
+                  {t("sentTo")}{" "}
                   <span className="font-bold text-base-content/80">
                     {invite.email}
                   </span>
@@ -224,18 +228,18 @@ export default function AcceptInvitePage() {
                 href={`/login?callbackUrl=${encodeURIComponent(`/invite/${token}`)}`}
                 className="btn btn-primary w-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
               >
-                Login to Accept
+                {t("loginToAccept")}
               </Link>
               <div className="text-center">
                 <span className="text-xs text-base-content/40 uppercase font-bold tracking-widest">
-                  or
+                  {t("or")}
                 </span>
               </div>
               <Link
                 href={`/register?callbackUrl=${encodeURIComponent(`/invite/${token}`)}`}
                 className="btn btn-outline w-full hover:bg-base-content/5"
               >
-                Create Account
+                {t("createAccount")}
               </Link>
             </div>
           ) : !emailMatches ? (
@@ -243,13 +247,13 @@ export default function AcceptInvitePage() {
               <div className="alert alert-warning shadow-sm">
                 <span className="icon-[tabler--alert-triangle] size-5"></span>
                 <div className="text-sm">
-                  <p className="font-bold mb-1">Wrong Account</p>
+                  <p className="font-bold mb-1">{t("wrongAccount")}</p>
                   <p>
-                    Invite is for:{" "}
+                    {t("inviteFor")}{" "}
                     <strong className="font-mono">{invite.email}</strong>
                   </p>
                   <p>
-                    Logged in as:{" "}
+                    {t("loggedInAs")}{" "}
                     <strong className="font-mono">{session.user?.email}</strong>
                   </p>
                 </div>
@@ -258,10 +262,10 @@ export default function AcceptInvitePage() {
                 onClick={() => signOut({ callbackUrl: `/invite/${token}` })}
                 className="btn btn-primary w-full shadow-lg shadow-primary/20"
               >
-                Log out & Switch Account
+                {t("switchAccount")}
               </button>
               <Link href="/dashboard" className="btn btn-ghost w-full">
-                Go to Dashboard
+                {t("dashboard")}
               </Link>
             </div>
           ) : (
@@ -270,11 +274,11 @@ export default function AcceptInvitePage() {
               variant="primary"
               modifier="block"
               isLoading={isAccepting}
-              loadingText="Joining Auction..."
+              loadingText={t("joining")}
               icon={<span className="icon-[tabler--check] size-5"></span>}
               className="btn-lg shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
             >
-              Accept & Join Auction
+              {t("accept")}
             </Button>
           )}
         </div>

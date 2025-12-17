@@ -42,6 +42,8 @@ export function BidForm({
 }: BidFormProps) {
   const t = useTranslations("item.bid");
   const tStatus = useTranslations("status");
+  const tErrors = useTranslations("errors");
+  const tTime = useTranslations("time");
   const { formatDate } = useFormatters();
   const {
     register,
@@ -62,7 +64,7 @@ export function BidForm({
   const onSubmit = async (data: BidFormData) => {
     if (data.amount < minBid) {
       setError("amount", {
-        message: t("minimumBidError", { symbol: item.currency.symbol, amount: minBid.toFixed(2) }),
+        message: tErrors("validation.minBid", { symbol: item.currency.symbol, amount: minBid.toFixed(2) }),
       });
       return;
     }
@@ -84,13 +86,13 @@ export function BidForm({
       const result = await res.json();
 
       if (!res.ok) {
-        setError("root", { message: result.message || "Failed to place bid" });
+        setError("root", { message: result.message || tErrors("bid.placeFailed") });
       } else {
         await onBidPlaced();
         reset();
       }
     } catch {
-      setError("root", { message: "An error occurred. Please try again." });
+      setError("root", { message: tErrors("generic") });
     }
   };
 
@@ -133,7 +135,7 @@ export function BidForm({
         {item.endDate && (
           <div className="text-sm text-base-content/60 mb-4">
             <span className="icon-[tabler--clock] size-4 inline mr-1"></span>
-            {isEnded ? tStatus("ended") : tStatus("ends")}: {formatDate(item.endDate)}
+            {isEnded ? tTime("ended") : tTime("endsAt")}: {formatDate(item.endDate)}
           </div>
         )}
 

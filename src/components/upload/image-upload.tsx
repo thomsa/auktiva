@@ -24,6 +24,7 @@ export function ImageUpload({
   maxImages = 10,
 }: ImageUploadProps) {
   const t = useTranslations("upload");
+  const tErrors = useTranslations("errors");
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +44,7 @@ export function ImageUpload({
 
     if (!res.ok) {
       const data = await res.json();
-      throw new Error(data.message || "Upload failed");
+      throw new Error(data.message || tErrors("generic"));
     }
 
     return res.json();
@@ -66,7 +67,7 @@ export function ImageUpload({
       const uploadedImages = await Promise.all(uploadPromises);
       onImagesChange([...images, ...uploadedImages]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
+      setError(err instanceof Error ? err.message : tErrors("generic"));
     } finally {
       setIsUploading(false);
     }
@@ -111,12 +112,12 @@ export function ImageUpload({
       );
 
       if (!res.ok) {
-        throw new Error("Failed to delete image");
+        throw new Error(tErrors("generic"));
       }
 
       onImagesChange(images.filter((img) => img.id !== imageId));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Delete failed");
+      setError(err instanceof Error ? err.message : tErrors("generic"));
     }
   };
 

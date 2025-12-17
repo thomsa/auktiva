@@ -14,6 +14,8 @@ import {
 import { ImageUpload } from "@/components/upload/image-upload";
 import { Button } from "@/components/ui/button";
 import { useConfirmDialog } from "@/hooks/ui";
+import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 interface Currency {
   code: string;
@@ -66,6 +68,11 @@ export default function EditItemPage({
   images: initialImages,
 }: EditItemProps) {
   const router = useRouter();
+  const t = useTranslations("item.edit");
+  const tCreate = useTranslations("item.create");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
+  const tAuction = useTranslations("auction");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -113,13 +120,13 @@ export default function EditItemPage({
         if (result.errors) {
           setFieldErrors(result.errors);
         } else {
-          setError(result.message || "Failed to update item");
+          setError(result.message || t("updateFailed"));
         }
       } else {
         router.push(`/auctions/${auction.id}/items/${item.id}`);
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setIsLoading(false);
     }
@@ -136,13 +143,13 @@ export default function EditItemPage({
 
       if (!res.ok) {
         const result = await res.json();
-        setError(result.message || "Failed to delete item");
+        setError(result.message || t("deleteFailed"));
         setIsDeleting(false);
       } else {
         router.push(`/auctions/${auction.id}`);
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
       setIsDeleting(false);
     }
   };
@@ -160,14 +167,14 @@ export default function EditItemPage({
 
       if (!res.ok) {
         const result = await res.json();
-        setError(result.message || "Failed to end item");
+        setError(result.message || t("endFailed"));
         setIsEnding(false);
         endDialog.close();
       } else {
         router.push(`/auctions/${auction.id}/items/${item.id}`);
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
       setIsEnding(false);
       endDialog.close();
     }
@@ -178,7 +185,7 @@ export default function EditItemPage({
       <div className="mb-8">
         <BackLink
           href={`/auctions/${auction.id}/items/${item.id}`}
-          label="Back to Item"
+          label={tCommon("back")}
         />
       </div>
 
@@ -189,9 +196,9 @@ export default function EditItemPage({
               <span className="icon-[tabler--edit] size-7"></span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Edit Item</h1>
+              <h1 className="text-2xl font-bold">{t("title")}</h1>
               <p className="text-base-content/60">
-                Manage item details and settings
+                {t("subtitle")}
               </p>
             </div>
           </div>
@@ -199,7 +206,7 @@ export default function EditItemPage({
           {hasBids && (
             <div className="alert alert-warning mb-6 shadow-sm">
               <span className="icon-[tabler--alert-triangle] size-5"></span>
-              <span>This item has bids. Some fields cannot be changed.</span>
+              <span>{t("hasBidsWarning")}</span>
             </div>
           )}
 
@@ -210,19 +217,19 @@ export default function EditItemPage({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">
                 <span className="icon-[tabler--package] size-5"></span>
-                Item Details
+                {tCreate("basicInfo")}
               </h2>
 
               <div className="form-control">
                 <label className="label" htmlFor="name">
-                  <span className="label-text font-medium">Item Name *</span>
+                  <span className="label-text font-medium">{tCreate("itemName")} *</span>
                 </label>
                 <input
                   id="name"
                   name="name"
                   type="text"
                   defaultValue={item.name}
-                  placeholder="e.g., Vintage Watch"
+                  placeholder={tCreate("itemNamePlaceholder")}
                   className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.name ? "input-error" : ""}`}
                   required
                 />
@@ -237,13 +244,13 @@ export default function EditItemPage({
 
               <div className="form-control">
                 <label className="label" htmlFor="description">
-                  <span className="label-text font-medium">Description</span>
+                  <span className="label-text font-medium">{tCreate("description")}</span>
                 </label>
                 <textarea
                   id="description"
                   name="description"
                   defaultValue={item.description || ""}
-                  placeholder="Describe the item in detail..."
+                  placeholder={tCreate("descriptionPlaceholder")}
                   className="textarea textarea-bordered w-full h-32 bg-base-100 focus:bg-base-100 transition-colors"
                 />
               </div>
@@ -252,9 +259,9 @@ export default function EditItemPage({
             {/* Images */}
             <div className="divider opacity-50"></div>
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2 text-secondary">
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
                 <span className="icon-[tabler--photo] size-5"></span>
-                Images
+                {tCreate("images")}
               </h2>
               <ImageUpload
                 auctionId={auction.id}
@@ -267,22 +274,22 @@ export default function EditItemPage({
             {/* Pricing */}
             <div className="divider opacity-50"></div>
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-secondary">
                 <span className="icon-[tabler--currency-dollar] size-5"></span>
-                Pricing
+                {tCreate("pricing")}
               </h2>
 
               <div className="form-control">
                 <label className="label" htmlFor="currencyCode">
-                  <span className="label-text font-medium">Currency *</span>
+                  <span className="label-text font-medium">{tCreate("currency")} *</span>
                 </label>
                 <select
                   id="currencyCode"
                   name="currencyCode"
-                  className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   defaultValue={item.currencyCode}
-                  disabled={hasBids}
+                  className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   required
+                  disabled={hasBids}
                 >
                   {currencies.map((currency) => (
                     <option key={currency.code} value={currency.code}>
@@ -292,8 +299,8 @@ export default function EditItemPage({
                 </select>
                 {hasBids && (
                   <label className="label">
-                    <span className="label-text-alt text-base-content/60">
-                      Cannot change currency after bids are placed
+                    <span className="label-text-alt text-warning">
+                      Cannot change currency after bids have been placed
                     </span>
                   </label>
                 )}
@@ -302,7 +309,7 @@ export default function EditItemPage({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label" htmlFor="startingBid">
-                    <span className="label-text font-medium">Starting Bid</span>
+                    <span className="label-text font-medium">{tCreate("startingBid")}</span>
                   </label>
                   <input
                     id="startingBid"
@@ -311,20 +318,20 @@ export default function EditItemPage({
                     min="0"
                     step="0.01"
                     defaultValue={item.startingBid}
-                    disabled={hasBids}
                     className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.startingBid ? "input-error" : ""}`}
+                    disabled={hasBids}
                   />
+                  {hasBids && (
+                    <label className="label">
+                      <span className="label-text-alt text-warning">
+                        Cannot change starting bid after bids have been placed
+                      </span>
+                    </label>
+                  )}
                   {fieldErrors.startingBid && (
                     <label className="label">
                       <span className="label-text-alt text-error">
                         {fieldErrors.startingBid}
-                      </span>
-                    </label>
-                  )}
-                  {hasBids && (
-                    <label className="label">
-                      <span className="label-text-alt text-base-content/60">
-                        Cannot change after bids
                       </span>
                     </label>
                   )}
@@ -333,7 +340,7 @@ export default function EditItemPage({
                 <div className="form-control">
                   <label className="label" htmlFor="minBidIncrement">
                     <span className="label-text font-medium">
-                      Min Bid Increment
+                      {tCreate("minBidIncrement")}
                     </span>
                   </label>
                   <input
@@ -354,9 +361,9 @@ export default function EditItemPage({
               <>
                 <div className="divider opacity-50"></div>
                 <div className="space-y-4">
-                  <h2 className="text-lg font-semibold flex items-center gap-2">
-                    <span className="icon-[tabler--eye] size-5 text-primary"></span>
-                    Visibility
+                  <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
+                    <span className="icon-[tabler--eye] size-5"></span>
+                    {tAuction("create.biddingSettings")}
                   </h2>
 
                   <div className="form-control">
@@ -369,7 +376,7 @@ export default function EditItemPage({
                       />
                       <div>
                         <span className="label-text font-medium">
-                          Anonymous Bidding
+                          {tAuction("create.alwaysAnonymous")}
                         </span>
                         <p className="text-xs text-base-content/60">
                           Hide bidder names for this item
@@ -386,96 +393,42 @@ export default function EditItemPage({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-info">
                 <span className="icon-[tabler--clock] size-5"></span>
-                Timing
+                {tAuction("create.timing")}
               </h2>
 
-              {/* Item End Mode Info */}
-              <div className="bg-base-200/50 rounded-xl p-4 border border-base-content/5">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="icon-[tabler--info-circle] size-4 text-info"></span>
-                  <span className="font-medium">Item End Mode:</span>
-                  <span className="text-base-content/70">
-                    {auction.itemEndMode === "CUSTOM"
-                      ? "Custom per item"
-                      : auction.itemEndMode === "WITH_AUCTION"
-                        ? "Ends with auction"
-                        : "No end date"}
+              <div className="form-control">
+                <label className="label" htmlFor="endDate">
+                  <span className="label-text font-medium">
+                    {tCreate("endDate")}
                   </span>
-                </div>
-                {auctionHasEndDate && (
-                  <div className="flex items-center gap-2 text-sm mt-2">
-                    <span className="icon-[tabler--calendar] size-4 text-info"></span>
-                    <span className="font-medium">Auction ends:</span>
-                    <span className="text-base-content/70">
-                      {new Date(auction.endDate!).toLocaleString()}
+                </label>
+                <input
+                  id="endDate"
+                  name="endDate"
+                  type="datetime-local"
+                  value={itemEndDate}
+                  onChange={(e) => setItemEndDate(e.target.value)}
+                  className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  disabled={!canSetCustomEndDate}
+                />
+                {canSetCustomEndDate ? (
+                  <label className="label">
+                    <span className="label-text-alt text-base-content/60">
+                      {tAuction("create.endDateHint")}
+                    </span>
+                  </label>
+                ) : (
+                  <div className="mt-2 text-xs text-base-content/60 flex items-center gap-1.5">
+                    <span className="icon-[tabler--info-circle] size-4"></span>
+                    <span>
+                      {auctionHasEndDate
+                        ? "Items end when the auction ends"
+                        : "Items have no end date"}
+                      {" (auction setting)."}
                     </span>
                   </div>
                 )}
               </div>
-
-              {canSetCustomEndDate && (
-                <div className="form-control">
-                  <label className="label" htmlFor="endDate">
-                    <span className="label-text font-medium">
-                      Item End Date (optional)
-                    </span>
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      id="endDate"
-                      name="endDate"
-                      type="datetime-local"
-                      value={itemEndDate}
-                      onChange={(e) => setItemEndDate(e.target.value)}
-                      className="input input-bordered flex-1 bg-base-100 focus:bg-base-100 transition-colors"
-                      disabled={isItemEnded}
-                      max={
-                        auctionHasEndDate
-                          ? auction.endDate!.slice(0, 16)
-                          : undefined
-                      }
-                    />
-                    {itemEndDate && !isItemEnded && (
-                      <button
-                        type="button"
-                        onClick={() => setItemEndDate("")}
-                        className="btn btn-ghost btn-square"
-                        title="Clear end date (defaults to auction end)"
-                      >
-                        <span className="icon-[tabler--x] size-5"></span>
-                      </button>
-                    )}
-                  </div>
-                  <label className="label">
-                    <span className="label-text-alt text-base-content/60">
-                      {isItemEnded
-                        ? "This item has already ended and cannot be extended"
-                        : auctionHasEndDate
-                          ? `Leave empty to end with auction (${new Date(auction.endDate!).toLocaleString()}). Cannot be set after auction end date.`
-                          : "Leave empty for no end date"}
-                    </span>
-                  </label>
-                </div>
-              )}
-
-              {!canSetCustomEndDate &&
-                auction.itemEndMode === "WITH_AUCTION" && (
-                  <div className="alert alert-info shadow-sm">
-                    <span className="icon-[tabler--info-circle] size-5"></span>
-                    <span>
-                      {auctionHasEndDate
-                        ? `This item will end with the auction on ${new Date(auction.endDate!).toLocaleString()}`
-                        : "This item will end when the auction ends. Set an auction end date first."}
-                    </span>
-                  </div>
-                )}
-
-              {!canSetCustomEndDate && auction.itemEndMode === "NONE" && (
-                <div className="alert alert-info shadow-sm">
-                  <span className="icon-[tabler--info-circle] size-5"></span>
-                  <span>This item has no end date (auction setting).</span>
-                </div>
-              )}
             </div>
 
             {/* Submit */}
@@ -485,19 +438,19 @@ export default function EditItemPage({
                 href={`/auctions/${auction.id}/items/${item.id}`}
                 className="btn btn-ghost flex-1"
               >
-                Cancel
+                {tCommon("cancel")}
               </Link>
               <Button
                 type="submit"
                 variant="primary"
                 className="flex-1 shadow-lg shadow-primary/20"
                 isLoading={isLoading}
-                loadingText="Saving..."
+                loadingText={t("saving")}
                 icon={
                   <span className="icon-[tabler--device-floppy] size-5"></span>
                 }
               >
-                Save Changes
+                {t("save")}
               </Button>
             </div>
           </form>
@@ -510,12 +463,11 @@ export default function EditItemPage({
           <div className="card-body p-8">
             <h2 className="card-title text-warning flex items-center gap-2">
               <span className="icon-[tabler--clock-stop] size-6"></span>
-              End Bidding
+              {t("endItem")}
             </h2>
 
             <p className="text-base-content/60 text-sm">
-              End bidding on this item immediately. No more bids will be
-              accepted after this.
+              {t("endDescription")}
             </p>
 
             {!endDialog.isOpen ? (
@@ -524,18 +476,18 @@ export default function EditItemPage({
                 className="btn btn-warning btn-outline mt-4 border-warning/50 hover:bg-warning hover:border-warning"
               >
                 <span className="icon-[tabler--flag-filled] size-5"></span>
-                End Item Now
+                {t("endButton")}
               </button>
             ) : (
               <ConfirmDialog
                 isOpen={endDialog.isOpen}
-                title={`Are you sure you want to end bidding on "${item.name}"?`}
+                title={t("confirmEnd", { name: item.name })}
                 message={
                   hasBids
-                    ? "The current highest bidder will win this item."
-                    : "This item has no bids yet."
+                    ? t("endMessageWithBids")
+                    : t("endMessageNoBids")
                 }
-                confirmLabel="Yes, End Now"
+                confirmLabel={t("endButton")}
                 variant="warning"
                 isLoading={isEnding}
                 onConfirm={handleEndNow}
@@ -550,7 +502,7 @@ export default function EditItemPage({
       {isItemEnded && (
         <div className="alert alert-info mt-8 shadow-sm">
           <span className="icon-[tabler--flag-filled] size-5"></span>
-          <span>This item has already ended. Bidding is closed.</span>
+          <span>{t("endedMessage")}</span>
         </div>
       )}
 
@@ -560,11 +512,11 @@ export default function EditItemPage({
           <div className="card-body p-8">
             <h2 className="card-title text-error flex items-center gap-2">
               <span className="icon-[tabler--alert-triangle] size-6"></span>
-              Danger Zone
+              {t("dangerZone")}
             </h2>
 
             <p className="text-base-content/60 text-sm">
-              Delete this item permanently. This action cannot be undone.
+              {t("deleteDescription")}
             </p>
 
             {!deleteDialog.isOpen ? (
@@ -573,13 +525,13 @@ export default function EditItemPage({
                 className="btn btn-error btn-outline mt-4 border-error/50 hover:bg-error hover:border-error"
               >
                 <span className="icon-[tabler--trash] size-5"></span>
-                Delete Item
+                {t("delete")}
               </button>
             ) : (
               <ConfirmDialog
                 isOpen={deleteDialog.isOpen}
-                title={`Are you sure you want to delete "${item.name}"?`}
-                confirmLabel="Yes, Delete"
+                title={t("confirmDelete", { name: item.name })}
+                confirmLabel={tCommon("delete")}
                 variant="error"
                 isLoading={isDeleting}
                 onConfirm={handleDelete}
@@ -593,7 +545,7 @@ export default function EditItemPage({
       {hasBids && (
         <div className="alert alert-info mt-8 shadow-sm">
           <span className="icon-[tabler--info-circle] size-5"></span>
-          <span>Items with bids cannot be deleted.</span>
+          <span>{t("cannotDeleteWithBids")}</span>
         </div>
       )}
     </PageLayout>
@@ -729,6 +681,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         publicUrl: getPublicUrl(img.url),
         order: img.order,
       })),
+      messages: await getMessages(context.locale as Locale),
     },
   };
 };

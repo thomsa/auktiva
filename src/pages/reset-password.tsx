@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { AlertMessage, SEO } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 interface ResetPasswordPageProps {
   token: string | null;
@@ -14,6 +15,9 @@ interface ResetPasswordPageProps {
 
 export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
   const router = useRouter();
+  const t = useTranslations("auth.resetPassword");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
@@ -31,13 +35,13 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
 
     // Client-side validation
     if (password !== confirmPassword) {
-      setFieldErrors({ confirmPassword: "Passwords do not match" });
+      setFieldErrors({ confirmPassword: tErrors("validation.passwordsDoNotMatch") });
       setIsLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setFieldErrors({ password: "Password must be at least 6 characters" });
+      setFieldErrors({ password: tErrors("validation.passwordTooShort", { min: 6 }) });
       setIsLoading(false);
       return;
     }
@@ -55,7 +59,7 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
         if (data.errors) {
           setFieldErrors(data.errors);
         } else {
-          setError(data.message || "Something went wrong. Please try again.");
+          setError(data.message || tErrors("generic"));
         }
       } else {
         setSuccess(true);
@@ -65,7 +69,7 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
         }, 3000);
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setIsLoading(false);
     }
@@ -76,8 +80,8 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
     return (
       <>
         <SEO
-          title="Reset Password"
-          description="Reset your Auktiva password"
+          title={t("title")}
+          description={t("brandingDescription")}
           noindex
         />
         <div className="min-h-screen flex items-center justify-center bg-base-200 relative overflow-hidden">
@@ -95,17 +99,16 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
               </div>
             </div>
             <h1 className="text-3xl font-extrabold text-base-content mb-4 tracking-tight">
-              Invalid Reset Link
+              {tErrors("auth.invalidToken")}
             </h1>
             <p className="text-base-content/60 mb-8 text-lg">
-              This password reset link is invalid or has expired. Please request
-              a new one to secure your account.
+              {tErrors("invite.invalidInvite")}
             </p>
             <Link
               href="/forgot-password"
               className="btn btn-primary btn-lg shadow-lg shadow-primary/20"
             >
-              Request New Link
+              {t("submitButton")}
             </Link>
           </div>
         </div>
@@ -116,8 +119,8 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
   return (
     <>
       <SEO
-        title="Reset Password"
-        description="Reset your Auktiva password"
+        title={t("title")}
+        description={t("brandingDescription")}
         noindex
       />
       <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
@@ -136,14 +139,13 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
                 <span className="icon-[tabler--gavel] size-10 text-primary group-hover:-rotate-12 transition-transform duration-300"></span>
               </div>
               <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Auktiva
+                {tCommon("appName")}
               </h1>
             </Link>
 
-            <h2 className="text-2xl font-bold mb-4">Secure Your Account</h2>
+            <h2 className="text-2xl font-bold mb-4">{t("brandingTitle")}</h2>
             <p className="text-base-content/60 text-lg leading-relaxed">
-              Create a strong new password to protect your account and bidding
-              history.
+              {t("brandingDescription")}
             </p>
           </div>
         </div>
@@ -156,17 +158,17 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
           >
             <span className="icon-[tabler--gavel] size-6 text-primary"></span>
             <span className="text-lg font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Auktiva
+              {tCommon("appName")}
             </span>
           </Link>
 
           <div className="w-full max-w-[400px]">
             <div className="mb-10">
               <h2 className="text-3xl font-bold text-base-content mb-2">
-                Reset Password
+                {t("title")}
               </h2>
               <p className="text-base-content/60">
-                Create a new password for your account
+                {t("subtitle")}
               </p>
             </div>
 
@@ -177,12 +179,12 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-xl font-bold text-success">
-                    Password Reset!
+                    {t("successTitle")}
                   </h3>
                   <p className="text-base-content/60">
-                    Your password has been updated successfully.
+                    {t("successMessage")}
                     <br />
-                    Redirecting to login...
+                    {t("redirecting")}
                   </p>
                 </div>
                 <div className="pt-4">
@@ -190,7 +192,7 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
                     href="/login"
                     className="btn btn-primary w-full shadow-lg shadow-primary/20"
                   >
-                    Sign In Now
+                    {t("signInNow")}
                   </Link>
                 </div>
               </div>
@@ -201,7 +203,7 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
                 <div className="form-control">
                   <label className="label pl-0" htmlFor="password">
                     <span className="label-text font-medium text-base-content/80">
-                      New Password
+                      {t("newPassword")}
                     </span>
                   </label>
                   <div className="relative">
@@ -231,7 +233,7 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
                 <div className="form-control">
                   <label className="label pl-0" htmlFor="confirmPassword">
                     <span className="label-text font-medium text-base-content/80">
-                      Confirm New Password
+                      {t("confirmNewPassword")}
                     </span>
                   </label>
                   <div className="relative">
@@ -263,10 +265,10 @@ export default function ResetPasswordPage({ token }: ResetPasswordPageProps) {
                   variant="primary"
                   modifier="block"
                   isLoading={isLoading}
-                  loadingText="Resetting..."
+                  loadingText={t("submitting")}
                   className="btn-lg text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
                 >
-                  Reset Password
+                  {t("submitButton")}
                 </Button>
               </form>
             )}

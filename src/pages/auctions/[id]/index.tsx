@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sort-dropdown";
 import { useSortFilter } from "@/hooks/ui";
 import { isUserAdmin, canUserCreateItems } from "@/utils/auction-helpers";
+import { useTranslations } from "next-intl";
 
 interface AuctionDetailProps {
   user: {
@@ -75,6 +76,9 @@ export default function AuctionDetailPage({
   items,
 }: AuctionDetailProps) {
   const router = useRouter();
+  const t = useTranslations("auction");
+  const tCommon = useTranslations("common");
+  const tItem = useTranslations("item");
   const { currentSort } = useSortFilter("sort", "date-desc");
   const viewMode = (router.query.view as "grid" | "list") || "grid";
 
@@ -100,8 +104,8 @@ export default function AuctionDetailPage({
       <div className="mb-8">
         <BackLink
           href="/dashboard"
-          label="Back to Dashboard"
-          shortLabel="Back"
+          label={t("create.backToDashboard")}
+          shortLabel={tCommon("back")}
         />
         <div className="flex items-center gap-3 mt-4">
           <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary to-secondary flex items-center justify-center text-primary-content shadow-lg shadow-primary/20">
@@ -122,7 +126,7 @@ export default function AuctionDetailPage({
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 pb-4 border-b border-base-content/5">
                 <h2 className="card-title flex items-center gap-2">
                   <span className="icon-[tabler--package] size-5 text-primary"></span>
-                  Items
+                  {t("sidebar.items")}
                   <span className="badge badge-secondary badge-sm shadow-sm">
                     {items.length}
                   </span>
@@ -154,8 +158,8 @@ export default function AuctionDetailPage({
                       className="btn btn-primary btn-sm shadow-md shadow-primary/20"
                     >
                       <span className="icon-[tabler--plus] size-4"></span>
-                      <span className="hidden sm:inline">Add Item</span>
-                      <span className="sm:hidden">Add</span>
+                      <span className="hidden sm:inline">{t("sidebar.addItem")}</span>
+                      <span className="sm:hidden">{tCommon("create")}</span>
                     </Link>
                   )}
                 </div>
@@ -166,8 +170,8 @@ export default function AuctionDetailPage({
                 <div className="py-8">
                   <EmptyState
                     icon="icon-[tabler--package-off]"
-                    title="No items yet"
-                    description="This auction doesn't have any items listed yet."
+                    title={tItem("empty.title")}
+                    description={tItem("empty.description")}
                     action={
                       canCreate ? (
                         <Link
@@ -175,7 +179,7 @@ export default function AuctionDetailPage({
                           className="btn btn-primary shadow-lg"
                         >
                           <span className="icon-[tabler--plus] size-5"></span>
-                          Add First Item
+                          {tItem("empty.createFirst")}
                         </Link>
                       ) : undefined
                     }

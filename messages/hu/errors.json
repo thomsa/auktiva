@@ -1,7 +1,7 @@
 {
   "errors": {
-    "generic": "Hiba történt. Kérjük, próbáld újra.",
-    "somethingWentWrong": "Valami hiba történt. Kérlek, próbáld újra.",
+    "generic": "Hiba történt. Próbáld újra.",
+    "somethingWentWrong": "Valami hiba történt. Próbáld újra.",
     "networkError": "Hálózati hiba. Ellenőrizd az internetkapcsolatot.",
     "unauthorized": "Nincs jogosultságod ehhez a művelethez.",
     "notFound": "A kért erőforrás nem található.",
@@ -19,7 +19,7 @@
       "emailInUse": "Ez az e-mail már regisztrálva van",
       "accountNotFound": "Nem található fiók ezzel az e-mail címmel",
       "invalidToken": "Érvénytelen vagy lejárt token",
-      "sessionExpired": "A munkameneted lejárt. Kérlek, jelentkezz be újra."
+      "sessionExpired": "A munkameneted lejárt. Jelentkezz be újra."
     },
     "auction": {
       "createFailed": "Nem sikerült létrehozni az aukciót",

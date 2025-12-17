@@ -19,12 +19,19 @@ interface AuctionCardProps {
 }
 
 export function AuctionCard({ auction }: AuctionCardProps) {
-  const t = useTranslations();
+  const t = useTranslations("auction.card");
+  const tRoles = useTranslations("auction.roles");
   const { formatShortDate } = useFormatters();
   const ended = isAuctionEnded(auction.endDate);
   const href = ended
     ? `/auctions/${auction.id}/results`
     : `/auctions/${auction.id}`;
+
+  const roleKey = auction.role.toLowerCase();
+  // Fallback to the role string if translation is missing (e.g. OWNER might assume admin rights/translation)
+  const roleLabel = ["admin", "creator", "bidder", "owner"].includes(roleKey) 
+    ? tRoles(roleKey === "owner" ? "admin" : roleKey) 
+    : auction.role;
 
   return (
     <Link
@@ -52,14 +59,14 @@ export function AuctionCard({ auction }: AuctionCardProps) {
         )}
         <div className="absolute top-3 left-3">
           <div className="badge badge-sm font-semibold bg-base-100/90 backdrop-blur border-none shadow-sm">
-            {auction.role}
+            {roleLabel}
           </div>
         </div>
         {ended && (
           <div className="absolute top-3 right-3">
             <div className="badge badge-error gap-1 shadow-sm font-medium">
               <span className="icon-[tabler--flag-filled] size-3"></span>
-              {t("auction.card.ended")}
+              {t("ended")}
             </div>
           </div>
         )}
@@ -95,7 +102,7 @@ export function AuctionCard({ auction }: AuctionCardProps) {
               }`}
             >
               <span className="icon-[tabler--clock] size-3.5"></span>
-              {ended ? t("auction.card.ended") : t("auction.card.ends")} {formatShortDate(auction.endDate)}
+              {ended ? t("ended") : t("ends")} {formatShortDate(auction.endDate)}
             </div>
           )}
         </div>

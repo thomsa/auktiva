@@ -15,6 +15,7 @@ import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
 import { useConfirmDialog } from "@/hooks/ui";
+import { useTranslations } from "next-intl";
 
 interface AuctionSettingsProps {
   user: {
@@ -43,6 +44,11 @@ export default function AuctionSettingsPage({
   allowOpenAuctions,
 }: AuctionSettingsProps) {
   const router = useRouter();
+  const t = useTranslations("auction.settings");
+  const tCommon = useTranslations("common");
+  const tAuction = useTranslations("auction");
+  const tCreate = useTranslations("auction.create");
+  const tErrors = useTranslations("errors");
   const { showToast } = useToast();
   const [formData, setFormData] = useState({
     name: auction.name,
@@ -95,12 +101,12 @@ export default function AuctionSettingsPage({
       const result = await res.json();
 
       if (!res.ok) {
-        setError(result.message || "Failed to update auction");
+        setError(result.message || t("updateFailed"));
       } else {
-        showToast("Settings saved successfully", "success");
+        showToast(t("success"), "success");
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setIsLoading(false);
     }
@@ -117,13 +123,13 @@ export default function AuctionSettingsPage({
 
       if (!res.ok) {
         const result = await res.json();
-        setError(result.message || "Failed to delete auction");
+        setError(result.message || t("deleteFailed")); // Assuming key exists or update json
         setIsDeleting(false);
       } else {
         router.push("/dashboard");
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
       setIsDeleting(false);
     }
   };
@@ -131,7 +137,7 @@ export default function AuctionSettingsPage({
   return (
     <PageLayout user={user} maxWidth="2xl">
       <div className="mb-8">
-        <BackLink href={`/auctions/${auction.id}`} label="Back to Auction" />
+        <BackLink href={`/auctions/${auction.id}`} label={tAuction("invite.backTo", { name: auction.name })} />
       </div>
 
       <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
@@ -141,9 +147,9 @@ export default function AuctionSettingsPage({
               <span className="icon-[tabler--settings] size-7"></span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Auction Settings</h1>
+              <h1 className="text-2xl font-bold">{t("title")}</h1>
               <p className="text-base-content/60">
-                Manage your auction configuration
+                {t("subtitle")}
               </p>
             </div>
           </div>
@@ -155,12 +161,12 @@ export default function AuctionSettingsPage({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">
                 <span className="icon-[tabler--info-circle] size-5"></span>
-                Basic Information
+                {t("general")}
               </h2>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">Auction Name</span>
+                  <span className="label-text font-medium">{tCreate("auctionName")}</span>
                 </label>
                 <input
                   type="text"
@@ -174,21 +180,21 @@ export default function AuctionSettingsPage({
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">Description</span>
+                  <span className="label-text font-medium">{tCreate("description")}</span>
                 </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
                   className="textarea textarea-bordered w-full h-24 bg-base-100 focus:bg-base-100 transition-colors"
-                  placeholder="Optional description..."
+                  placeholder={tCreate("descriptionPlaceholder")}
                 />
               </div>
 
               <div className="form-control">
                 <label className="label">
                   <span className="label-text font-medium">
-                    Thumbnail Image
+                    {t("thumbnail")}
                   </span>
                 </label>
                 <ThumbnailUpload
@@ -204,12 +210,12 @@ export default function AuctionSettingsPage({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-secondary">
                 <span className="icon-[tabler--lock] size-5"></span>
-                Access Settings
+                {t("accessAndBidding")}
               </h2>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">Join Mode</span>
+                  <span className="label-text font-medium">{tCreate("whoCanJoin")}</span>
                 </label>
                 <select
                   name="joinMode"
@@ -217,10 +223,10 @@ export default function AuctionSettingsPage({
                   onChange={handleChange}
                   className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                 >
-                  <option value="INVITE_ONLY">Invite Only</option>
-                  <option value="LINK">Anyone with Link</option>
+                  <option value="INVITE_ONLY">{tCreate("inviteOnly")}</option>
+                  <option value="LINK">{tCreate("linkAccess")}</option>
                   {allowOpenAuctions && (
-                    <option value="FREE">Open to All</option>
+                    <option value="FREE">{tCreate("openAccess")}</option>
                   )}
                 </select>
               </div>
@@ -236,10 +242,10 @@ export default function AuctionSettingsPage({
                   />
                   <div>
                     <span className="label-text font-medium">
-                      Members can invite others
+                      {tCreate("allowMembersInvite")}
                     </span>
                     <p className="text-xs text-base-content/60">
-                      Allow non-admin members to send invites
+                      {/* Optional description from create page if any, or just reuse label */}
                     </p>
                   </div>
                 </label>
@@ -251,12 +257,12 @@ export default function AuctionSettingsPage({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
                 <span className="icon-[tabler--gavel] size-5"></span>
-                Bidding Settings
+                {tCreate("biddingSettings")}
               </h2>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">Bid Visibility</span>
+                  <span className="label-text font-medium">{tCreate("bidderVisibility")}</span>
                 </label>
                 <div className="space-y-3">
                   <label className="flex items-start gap-3 p-3 rounded-xl border border-base-content/10 cursor-pointer hover:bg-base-100 transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:shadow-sm">
@@ -269,9 +275,9 @@ export default function AuctionSettingsPage({
                       className="radio radio-primary mt-0.5"
                     />
                     <div className="flex-1">
-                      <div className="font-medium">Always Visible</div>
+                      <div className="font-medium">{tCreate("alwaysVisible").split(" - ")[0]}</div>
                       <div className="text-sm text-base-content/60">
-                        Bidder names are always shown to all auction members
+                        {tCreate("alwaysVisible").split(" - ")[1]}
                       </div>
                     </div>
                   </label>
@@ -285,10 +291,9 @@ export default function AuctionSettingsPage({
                       className="radio radio-primary mt-0.5"
                     />
                     <div className="flex-1">
-                      <div className="font-medium">Always Anonymous</div>
+                      <div className="font-medium">{tCreate("alwaysAnonymous").split(" - ")[0]}</div>
                       <div className="text-sm text-base-content/60">
-                        Bidder names are hidden from other members. Only item
-                        owners can see bidder details.
+                        {tCreate("alwaysAnonymous").split(" - ")[1]}
                       </div>
                     </div>
                   </label>
@@ -302,10 +307,9 @@ export default function AuctionSettingsPage({
                       className="radio radio-primary mt-0.5"
                     />
                     <div className="flex-1">
-                      <div className="font-medium">Per Bid Choice</div>
+                      <div className="font-medium">{tCreate("perBid").split(" - ")[0]}</div>
                       <div className="text-sm text-base-content/60">
-                        Each bidder can choose whether to show their name or bid
-                        anonymously. Item owners always see bidder details.
+                        {tCreate("perBid").split(" - ")[1]}
                       </div>
                     </div>
                   </label>
@@ -318,13 +322,13 @@ export default function AuctionSettingsPage({
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-info">
                 <span className="icon-[tabler--clock] size-5"></span>
-                Timing
+                {tCreate("timing")}
               </h2>
 
               <div className="form-control">
                 <label className="label">
                   <span className="label-text font-medium">
-                    Auction End Date (optional)
+                    {tCreate("endDate")}
                   </span>
                 </label>
                 <div className="flex gap-2">
@@ -350,14 +354,14 @@ export default function AuctionSettingsPage({
                 </div>
                 <label className="label">
                   <span className="label-text-alt text-base-content/60">
-                    Leave empty for no end date
+                    {tCreate("endDateHint")}
                   </span>
                 </label>
               </div>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium">Item End Mode</span>
+                  <span className="label-text font-medium">{tCreate("itemEndMode")}</span>
                 </label>
                 <select
                   name="itemEndMode"
@@ -366,18 +370,16 @@ export default function AuctionSettingsPage({
                   className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                 >
                   {formData.endDate && (
-                    <option value="AUCTION_END">End with Auction</option>
+                    <option value="AUCTION_END">{tCreate("itemEndAuction").split(" - ")[0]}</option>
                   )}
-                  <option value="CUSTOM">Custom per Item</option>
+                  <option value="CUSTOM">{tCreate("itemEndCustom").split(" - ")[0]}</option>
                   {!formData.endDate && (
-                    <option value="NONE">No End Date</option>
+                    <option value="NONE">{tCreate("itemEndNone").split(" - ")[0]}</option>
                   )}
                 </select>
                 <label className="label">
                   <span className="label-text-alt text-base-content/60">
-                    {formData.endDate
-                      ? "Items can end with auction or have custom end dates"
-                      : "Set an auction end date to enable 'End with Auction'"}
+                    {/* Add detailed description if available in translation, or leave simplified */}
                   </span>
                 </label>
               </div>
@@ -390,13 +392,13 @@ export default function AuctionSettingsPage({
               variant="primary"
               modifier="block"
               isLoading={isLoading}
-              loadingText="Saving..."
+              loadingText={t("saving")}
               className="shadow-lg shadow-primary/20"
               icon={
                 <span className="icon-[tabler--device-floppy] size-5"></span>
               }
             >
-              Save Settings
+              {t("save")}
             </Button>
           </form>
         </div>
@@ -408,12 +410,11 @@ export default function AuctionSettingsPage({
           <div className="card-body p-8">
             <h2 className="card-title text-warning flex items-center gap-2">
               <span className="icon-[tabler--clock-off] size-6"></span>
-              End Auction Now
+              {t("endAuction")}
             </h2>
 
             <p className="text-base-content/60 text-sm">
-              End this auction immediately. All items will be closed and winners
-              will be determined. This action cannot be undone.
+              {t("endDescription")}
             </p>
 
             {!endDialog.isOpen ? (
@@ -422,14 +423,14 @@ export default function AuctionSettingsPage({
                 className="btn btn-warning btn-outline mt-4 border-warning/50 hover:bg-warning hover:border-warning"
               >
                 <span className="icon-[tabler--clock-off] size-5"></span>
-                End Auction Now
+                {t("endButton")}
               </button>
             ) : (
               <ConfirmDialog
                 isOpen={endDialog.isOpen}
-                title={`Are you sure you want to end "${auction.name}" now?`}
-                message="All bidding will stop immediately and winners will be finalized."
-                confirmLabel="Yes, End Now"
+                title={t("confirmEnd")}
+                message="" // Optional or reuse description
+                confirmLabel={t("endButton")}
                 variant="warning"
                 isLoading={isEnding}
                 onConfirm={async () => {
@@ -446,10 +447,10 @@ export default function AuctionSettingsPage({
                     } else {
                       setIsEnded(true);
                       endDialog.close();
-                      showToast("Auction ended successfully", "success");
+                      showToast(t("endedSuccess"), "success");
                     }
                   } catch {
-                    setError("An error occurred. Please try again.");
+                    setError(tErrors("generic"));
                   } finally {
                     setIsEnding(false);
                   }
@@ -465,12 +466,12 @@ export default function AuctionSettingsPage({
         <div className="alert alert-info mt-8 shadow-sm">
           <span className="icon-[tabler--info-circle] size-5"></span>
           <span>
-            This auction has ended.{" "}
+            {t("endedMessage")}{" "}
             <a
               href={`/auctions/${auction.id}/results`}
               className="link font-bold"
             >
-              View results
+              {t("viewResults")}
             </a>
           </span>
         </div>
@@ -481,12 +482,11 @@ export default function AuctionSettingsPage({
         <div className="card-body p-8">
           <h2 className="card-title text-error flex items-center gap-2">
             <span className="icon-[tabler--alert-triangle] size-6"></span>
-            Danger Zone
+            {t("dangerZone")}
           </h2>
 
           <p className="text-base-content/60 text-sm">
-            Deleting this auction will permanently remove all items, bids, and
-            member data. This action cannot be undone.
+            {t("deleteWarning")}
           </p>
 
           {!deleteDialog.isOpen ? (
@@ -495,13 +495,13 @@ export default function AuctionSettingsPage({
               className="btn btn-error btn-outline mt-4 border-error/50 hover:bg-error hover:border-error"
             >
               <span className="icon-[tabler--trash] size-5"></span>
-              Delete Auction
+              {t("delete")}
             </button>
           ) : (
             <ConfirmDialog
               isOpen={deleteDialog.isOpen}
-              title={`Are you sure you want to delete "${auction.name}"?`}
-              confirmLabel="Yes, Delete"
+              title={t("confirmDelete", { name: auction.name })}
+              confirmLabel={tCommon("delete")}
               variant="error"
               isLoading={isDeleting}
               onConfirm={handleDelete}

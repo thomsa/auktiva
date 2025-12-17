@@ -6,8 +6,12 @@ import { authOptions } from "@/lib/auth";
 import { AlertMessage, SEO } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 export default function ForgotPasswordPage() {
+  const t = useTranslations("auth.forgotPassword");
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,12 +35,12 @@ export default function ForgotPasswordPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || "Something went wrong. Please try again.");
+        setError(data.message || tErrors("generic"));
       } else {
         setSuccess(true);
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setIsLoading(false);
     }
@@ -45,8 +49,8 @@ export default function ForgotPasswordPage() {
   return (
     <>
       <SEO
-        title="Forgot Password"
-        description="Reset your Auktiva password"
+        title={t("title")}
+        description={t("brandingDescription")}
         noindex
       />
       <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
@@ -65,14 +69,13 @@ export default function ForgotPasswordPage() {
                 <span className="icon-[tabler--gavel] size-10 text-primary group-hover:-rotate-12 transition-transform duration-300"></span>
               </div>
               <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Auktiva
+                {tCommon("appName")}
               </h1>
             </Link>
 
-            <h2 className="text-2xl font-bold mb-4">Password Recovery</h2>
+            <h2 className="text-2xl font-bold mb-4">{t("brandingTitle")}</h2>
             <p className="text-base-content/60 text-lg leading-relaxed">
-              Don&apos;t worry, it happens to the best of us. We&apos;ll help
-              you get back into your account.
+              {t("brandingDescription")}
             </p>
           </div>
         </div>
@@ -85,17 +88,17 @@ export default function ForgotPasswordPage() {
           >
             <span className="icon-[tabler--gavel] size-6 text-primary"></span>
             <span className="text-lg font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Auktiva
+              {tCommon("appName")}
             </span>
           </Link>
 
           <div className="w-full max-w-[400px]">
             <div className="mb-10">
               <h2 className="text-3xl font-bold text-base-content mb-2">
-                Forgot Password?
+                {t("title")}
               </h2>
               <p className="text-base-content/60">
-                Enter your email to receive a reset link
+                {t("subtitle")}
               </p>
             </div>
 
@@ -104,25 +107,23 @@ export default function ForgotPasswordPage() {
                 <div className="alert alert-success shadow-lg border-none bg-success/10 text-success-content">
                   <span className="icon-[tabler--mail-check] size-6"></span>
                   <div>
-                    <h3 className="font-bold">Check your inbox</h3>
+                    <h3 className="font-bold">{t("successTitle")}</h3>
                     <div className="text-sm opacity-90 mt-1">
-                      If an account exists, we&apos;ve sent a password reset
-                      link.
+                      {t("successMessage")}
                     </div>
                   </div>
                 </div>
 
                 <p className="text-sm text-base-content/60 bg-base-200/50 p-4 rounded-xl">
-                  <span className="font-semibold block mb-1">Note:</span>
-                  The link will expire in 10 minutes. If you don&apos;t see the
-                  email, check your spam folder.
+                  <span className="font-semibold block mb-1">{t("note")}</span>
+                  {t("successNote")}
                 </p>
 
                 <Link
                   href="/login"
                   className="btn btn-primary w-full shadow-lg shadow-primary/20"
                 >
-                  Back to Sign In
+                  {t("backToSignIn")}
                 </Link>
               </div>
             ) : (
@@ -132,7 +133,7 @@ export default function ForgotPasswordPage() {
                 <div className="form-control">
                   <label className="label pl-0" htmlFor="email">
                     <span className="label-text font-medium text-base-content/80">
-                      Email Address
+                      {t("email")}
                     </span>
                   </label>
                   <div className="relative">
@@ -141,7 +142,7 @@ export default function ForgotPasswordPage() {
                       id="email"
                       name="email"
                       type="email"
-                      placeholder="you@example.com"
+                      placeholder={t("emailPlaceholder")}
                       autoComplete="email"
                       className="input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors"
                       required
@@ -154,23 +155,23 @@ export default function ForgotPasswordPage() {
                   variant="primary"
                   modifier="block"
                   isLoading={isLoading}
-                  loadingText="Sending..."
+                  loadingText={t("submitting")}
                   className="btn-lg text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
                   icon={<span className="icon-[tabler--send] size-5"></span>}
                 >
-                  Send Reset Link
+                  {t("submitButton")}
                 </Button>
               </form>
             )}
 
             <div className="mt-8 text-center">
               <p className="text-sm text-base-content/60">
-                Remember your password?{" "}
+                {t("rememberPassword")}{" "}
                 <Link
                   href="/login"
                   className="link link-primary font-bold hover:text-primary/80 transition-colors"
                 >
-                  Sign in
+                  {t("signIn")}
                 </Link>
               </p>
             </div>

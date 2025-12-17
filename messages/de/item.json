@@ -25,19 +25,44 @@
       "startingAt": "Starting at"
     },
     "create": {
-      "title": "Add New Item",
-      "subtitle": "Add an item to your auction",
-      "itemName": "Item Name",
-      "itemNamePlaceholder": "e.g., Vintage Watch",
-      "description": "Description",
-      "descriptionPlaceholder": "Describe your item...",
-      "images": "Images",
-      "startingBid": "Starting Bid",
-      "minBidIncrement": "Minimum Bid Increment",
-      "currency": "Currency",
-      "endDate": "End Date (optional)",
-      "submitButton": "Add Item",
-      "submitting": "Adding..."
+      "title": "Neuen Artikel hinzufügen",
+      "subtitle": "Füge einen Artikel zu deiner Auktion hinzu",
+      "itemName": "Artikelname",
+      "itemNamePlaceholder": "z.B. Vintage-Uhr",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Beschreibe deinen Artikel...",
+      "images": "Bilder",
+      "startingBid": "Startgebot",
+      "minBidIncrement": "Mindestgebotserhöhung",
+      "currency": "Währung",
+      "endDate": "Enddatum (optional)",
+      "submitButton": "Artikel hinzufügen",
+      "submitting": "Hinzufügen...",
+      "basicInfo": "Artikeldetails",
+      "pricing": "Preisgestaltung",
+      "createFailed": "Artikel konnte nicht erstellt werden"
+    },
+    "edit": {
+      "title": "Artikel bearbeiten",
+      "subtitle": "Artikeldetails und Einstellungen verwalten",
+      "save": "Änderungen speichern",
+      "saving": "Speichern...",
+      "dangerZone": "Gefahrenzone",
+      "delete": "Artikel löschen",
+      "deleteDescription": "Diesen Artikel dauerhaft löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "confirmDelete": "Bist du sicher, dass du \"{name}\" löschen möchtest?",
+      "endItem": "Gebot beenden",
+      "endDescription": "Beende das Bieten auf diesen Artikel sofort. Danach werden keine weiteren Gebote akzeptiert.",
+      "endButton": "Artikel jetzt beenden",
+      "confirmEnd": "Bist du sicher, dass du das Bieten auf \"{name}\" beenden möchtest?",
+      "endMessageWithBids": "Der aktuelle Höchstbietende gewinnt diesen Artikel.",
+      "endMessageNoBids": "Dieser Artikel hat noch keine Gebote.",
+      "hasBidsWarning": "Dieser Artikel hat Gebote. Einige Felder können nicht geändert werden.",
+      "endedMessage": "Dieser Artikel ist bereits beendet. Das Bieten ist geschlossen.",
+      "cannotDeleteWithBids": "Artikel mit Geboten können nicht gelöscht werden.",
+      "updateFailed": "Artikel konnte nicht aktualisiert werden",
+      "deleteFailed": "Artikel konnte nicht gelöscht werden",
+      "endFailed": "Artikel konnte nicht beendet werden"
     },
     "gallery": {
       "imageOf": "Image {current} of {total}",
@@ -58,12 +83,22 @@
       "highest": "Highest"
     },
     "status": {
-      "active": "Active",
-      "ended": "Ended",
-      "winning": "Winning",
-      "outbid": "Outbid",
-      "won": "Won",
-      "lost": "Lost"
+      "active": "Aktiv",
+      "ended": "Beendet",
+      "winning": "Führend",
+      "outbid": "Überboten",
+      "won": "Gewonnen",
+      "lost": "Verloren"
+    },
+    "joinModes": {
+      "inviteOnly": "Nur mit Einladung",
+      "link": "Link-Zugang",
+      "free": "Offen"
+    },
+    "empty": {
+      "title": "Noch keine Artikel",
+      "description": "Diese Auktion hat noch keine Artikel.",
+      "createFirst": "Ersten Artikel hinzufügen"
     }
   }
 }

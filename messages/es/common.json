@@ -63,16 +63,16 @@
     "leastBids": "Least Bids"
   },
   "status": {
-    "active": "Active",
-    "ended": "Ended",
-    "ends": "Ends",
-    "pending": "Pending",
-    "accepted": "Accepted",
-    "winning": "Winning",
-    "outbid": "Outbid",
-    "won": "Won",
-    "lost": "Lost",
-    "live": "Live"
+    "active": "Activo",
+    "ended": "Finalizado",
+    "ends": "Termina",
+    "pending": "Pendiente",
+    "accepted": "Aceptado",
+    "winning": "Ganando",
+    "outbid": "Superado",
+    "won": "Ganado",
+    "lost": "Perdido",
+    "live": "En vivo"
   },
   "time": {
     "ends": "Ends",
@@ -94,14 +94,15 @@
     "select": "Select language"
   },
   "footer": {
-    "resources": "Resources",
+    "resources": "Recursos",
     "legal": "Legal",
-    "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service",
-    "allRightsReserved": "All rights reserved.",
-    "designedBy": "Designed & Built by",
-    "description": "A free, open-source auction platform designed for fundraisers, charities, and communities. Built with modern tech for modern events.",
-    "reportIssue": "Report Issue"
+    "privacyPolicy": "Política de privacidad",
+    "termsOfService": "Términos de servicio",
+    "allRightsReserved": "Todos los derechos reservados.",
+    "designedBy": "Diseñado y desarrollado por",
+    "description": "Una plataforma de subastas gratuita y de código abierto diseñada para recaudaciones, organizaciones benéficas y comunidades. Construida con tecnología moderna para eventos modernos.",
+    "reportIssue": "Reportar problema",
+    "github": "GitHub"
   },
   "member": {
     "noName": "No name",

@@ -37,7 +37,32 @@
       "currency": "Pénznem",
       "endDate": "Záró dátum (opcionális)",
       "submitButton": "Tétel hozzáadása",
-      "submitting": "Hozzáadás..."
+      "submitting": "Hozzáadás...",
+      "basicInfo": "Tétel részletei",
+      "pricing": "Árazás",
+      "createFailed": "Nem sikerült létrehozni a tételt"
+    },
+    "edit": {
+      "title": "Tétel szerkesztése",
+      "subtitle": "Tétel részleteinek és beállításainak kezelése",
+      "save": "Változtatások mentése",
+      "saving": "Mentés...",
+      "dangerZone": "Veszélyzóna",
+      "delete": "Tétel törlése",
+      "deleteDescription": "Tétel végleges törlése. Ez a művelet nem vonható vissza.",
+      "confirmDelete": "Biztosan törölni szeretnéd a(z) \"{name}\" tételt?",
+      "endItem": "Licitálás lezárása",
+      "endDescription": "Tétel licitálásának azonnali lezárása. Ezután nem fogadunk el több licitet.",
+      "endButton": "Tétel lezárása most",
+      "confirmEnd": "Biztosan le akarod zárni a(z) \"{name}\" licitálását?",
+      "endMessageWithBids": "A jelenlegi legmagasabb licitáló nyeri meg ezt a tételt.",
+      "endMessageNoBids": "Erre a tételre még nincs licit.",
+      "hasBidsWarning": "Erre a tételre már vannak licitek. Egyes mezők nem módosíthatók.",
+      "endedMessage": "Ez a tétel már lezárult. A licitálás lezárva.",
+      "cannotDeleteWithBids": "Licitekkel rendelkező tételek nem törölhetők.",
+      "updateFailed": "Nem sikerült frissíteni a tételt",
+      "deleteFailed": "Nem sikerült törölni a tételt",
+      "endFailed": "Nem sikerült lezárni a tételt"
     },
     "gallery": {
       "imageOf": "{current}. kép a {total}-ból",
@@ -64,6 +89,16 @@
       "outbid": "Túllicitálva",
       "won": "Nyert",
       "lost": "Nem nyert"
+    },
+    "joinModes": {
+      "inviteOnly": "Csak meghívóval",
+      "link": "Link hozzáférés",
+      "free": "Nyílt"
+    },
+    "empty": {
+      "title": "Még nincsenek tételek",
+      "description": "Ez az aukció még nem tartalmaz tételeket.",
+      "createFirst": "Első tétel hozzáadása"
     }
   }
 }

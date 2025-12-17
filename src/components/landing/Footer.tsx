@@ -11,7 +11,7 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-2 mb-6">
               <span className="icon-[tabler--gavel] size-8 text-primary"></span>
               <span className="text-2xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Auktiva
+                {t("common.appName")}
               </span>
             </Link>
             <p className="text-base-content/60 max-w-md mb-8">
@@ -48,7 +48,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   className="hover:text-primary transition-colors"
                 >
-                  GitHub
+                  {t("footer.github")}
                 </Link>
               </li>
             </ul>
@@ -78,7 +78,10 @@ export function Footer() {
         </div>
 
         <div className="border-t border-base-content/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-base-content/40">
-          <p>© {new Date().getFullYear()} {t("common.appName")}. {t("footer.allRightsReserved")}</p>
+          <p>
+            © {new Date().getFullYear()} {t("common.appName")}.{" "}
+            {t("footer.allRightsReserved")}
+          </p>
           <p>
             {t("footer.designedBy")}{" "}
             <a

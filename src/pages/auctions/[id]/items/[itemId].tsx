@@ -17,6 +17,7 @@ import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { canUserBid } from "@/utils/auction-helpers";
 import { getPublicUrl } from "@/lib/storage";
+import { useTranslations } from "next-intl";
 
 interface Bid {
   id: string;
@@ -113,13 +114,18 @@ export default function ItemDetailPage({
   images,
 }: ItemDetailProps) {
   const router = useRouter();
+  const t = useTranslations("item");
+  const tCommon = useTranslations("common");
+  const tTime = useTranslations("time");
+  const tErrors = useTranslations("errors");
+  const tAuction = useTranslations("auction");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [bidAmount, setBidAmount] = useState("");
   const [bidAsAnonymous, setBidAsAnonymous] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    initialSidebarCollapsed,
+    initialSidebarCollapsed
   );
 
   // Sidebar sorting
@@ -139,7 +145,7 @@ export default function ItemDetailPage({
       fallbackData: { item: initialItem, bids: initialBids },
       refreshInterval: isEnded ? 0 : 5000,
       revalidateOnFocus: true,
-    },
+    }
   );
 
   const item = data?.item ?? initialItem;
@@ -168,7 +174,12 @@ export default function ItemDetailPage({
 
     const amount = parseFloat(bidAmount);
     if (isNaN(amount) || amount < minBid) {
-      setError(`Minimum bid is ${item.currency.symbol}${minBid.toFixed(2)}`);
+      setError(
+        tErrors("validation.minBid", {
+          symbol: item.currency.symbol,
+          amount: minBid.toFixed(2),
+        })
+      );
       setIsLoading(false);
       return;
     }
@@ -186,20 +197,20 @@ export default function ItemDetailPage({
                 ? bidAsAnonymous
                 : undefined,
           }),
-        },
+        }
       );
 
       const result = await res.json();
 
       if (!res.ok) {
-        setError(result.message || "Failed to place bid");
+        setError(result.message || tErrors("bid.placeFailed"));
       } else {
         // Revalidate SWR data
         await mutate();
         setBidAmount("");
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setIsLoading(false);
     }
@@ -243,7 +254,7 @@ export default function ItemDetailPage({
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-bold text-sm uppercase tracking-wider text-base-content/60 flex items-center gap-2">
                     <span className="icon-[tabler--list] size-4"></span>
-                    Items in Auction
+                    {t("sidebar.title")}
                   </h2>
                   <span className="badge badge-sm badge-ghost">
                     {auctionItems.length}
@@ -324,7 +335,9 @@ export default function ItemDetailPage({
                           </div>
                           <div className="flex-1 min-w-0">
                             <div
-                              className={`font-medium truncate text-sm ${isActive ? "text-primary" : ""}`}
+                              className={`font-medium truncate text-sm ${
+                                isActive ? "text-primary" : ""
+                              }`}
                             >
                               {auctionItem.name}
                             </div>
@@ -333,8 +346,8 @@ export default function ItemDetailPage({
                                 isEnded
                                   ? "text-base-content/50"
                                   : isActive
-                                    ? "text-primary"
-                                    : "text-base-content/70"
+                                  ? "text-primary"
+                                  : "text-base-content/70"
                               }`}
                             >
                               {auctionItem.currency.symbol}
@@ -359,7 +372,7 @@ export default function ItemDetailPage({
             className="hidden lg:flex fixed z-20 bg-base-100 border border-base-content/10 rounded-r-lg p-1.5 shadow-md hover:bg-base-200 transition-all items-center justify-center top-24"
             style={{ left: sidebarCollapsed ? 0 : "20rem" }}
             aria-label={
-              sidebarCollapsed ? "Show items sidebar" : "Hide items sidebar"
+              sidebarCollapsed ? t("sidebar.show") : t("sidebar.hide")
             }
           >
             <span
@@ -378,7 +391,7 @@ export default function ItemDetailPage({
                   className="btn btn-ghost btn-sm gap-2 hover:bg-base-content/5"
                 >
                   <span className="icon-[tabler--arrow-left] size-4"></span>
-                  Back to Auction
+                  {tAuction("invite.backTo", { name: tCommon("back") })}
                 </Link>
 
                 {/* Mobile: Show items count */}
@@ -388,7 +401,7 @@ export default function ItemDetailPage({
                     className="btn btn-ghost btn-sm gap-2"
                   >
                     <span className="icon-[tabler--list] size-4"></span>
-                    {auctionItems.length} items
+                    {auctionItems.length} {tAuction("card.items")}
                   </Link>
                 </div>
               </div>
@@ -405,7 +418,7 @@ export default function ItemDetailPage({
                           </h1>
                           <div className="flex items-center gap-2 text-sm text-base-content/60">
                             <span className="icon-[tabler--user] size-4"></span>
-                            Listed by{" "}
+                            <span>Listed by</span>
                             <span className="font-medium text-base-content/80">
                               {item.creator.name || item.creator.email}
                             </span>
@@ -416,7 +429,7 @@ export default function ItemDetailPage({
                           {isEnded && (
                             <div className="badge badge-error gap-1 font-bold">
                               <span className="icon-[tabler--flag-filled] size-3"></span>
-                              Ended
+                              {tCommon("status.ended")}
                             </div>
                           )}
                           {canEdit && (
@@ -425,7 +438,7 @@ export default function ItemDetailPage({
                               className="btn btn-outline btn-sm gap-2"
                             >
                               <span className="icon-[tabler--edit] size-4"></span>
-                              Edit Item
+                              {tCommon("edit")}
                             </Link>
                           )}
                         </div>
@@ -439,9 +452,10 @@ export default function ItemDetailPage({
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={images[selectedImageIndex]?.publicUrl}
-                              alt={`${item.name} - Image ${
-                                selectedImageIndex + 1
-                              }`}
+                              alt={`${item.name} - ${t("gallery.imageOf", {
+                                current: selectedImageIndex + 1,
+                                total: images.length,
+                              })}`}
                               className="w-full h-full object-contain"
                             />
                             {/* Navigation Buttons */}
@@ -450,22 +464,22 @@ export default function ItemDetailPage({
                                 <button
                                   onClick={() =>
                                     setSelectedImageIndex((prev) =>
-                                      prev === 0 ? images.length - 1 : prev - 1,
+                                      prev === 0 ? images.length - 1 : prev - 1
                                     )
                                   }
                                   className="absolute left-4 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-base-100/80 backdrop-blur border-none hover:bg-base-100 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                                  aria-label="Previous image"
+                                  aria-label={t("gallery.previousImage")}
                                 >
                                   <span className="icon-[tabler--chevron-left] size-5"></span>
                                 </button>
                                 <button
                                   onClick={() =>
                                     setSelectedImageIndex((prev) =>
-                                      prev === images.length - 1 ? 0 : prev + 1,
+                                      prev === images.length - 1 ? 0 : prev + 1
                                     )
                                   }
                                   className="absolute right-4 top-1/2 -translate-y-1/2 btn btn-circle btn-sm bg-base-100/80 backdrop-blur border-none hover:bg-base-100 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                                  aria-label="Next image"
+                                  aria-label={t("gallery.nextImage")}
                                 >
                                   <span className="icon-[tabler--chevron-right] size-5"></span>
                                 </button>
@@ -492,7 +506,9 @@ export default function ItemDetailPage({
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
                                     src={img.publicUrl}
-                                    alt={`Thumbnail ${index + 1}`}
+                                    alt={t("gallery.thumbnail", {
+                                      index: index + 1,
+                                    })}
                                     className="w-full h-full object-cover"
                                   />
                                 </button>
@@ -504,7 +520,7 @@ export default function ItemDetailPage({
                         <div className="mb-8 aspect-video bg-base-200/50 rounded-2xl flex items-center justify-center border border-base-content/5">
                           <div className="text-center text-base-content/30">
                             <span className="icon-[tabler--photo-off] size-16 mb-2"></span>
-                            <p>No images available</p>
+                            <p>{t("gallery.noImages")}</p>
                           </div>
                         </div>
                       )}
@@ -513,7 +529,7 @@ export default function ItemDetailPage({
                         <div className="mb-8">
                           <h2 className="font-bold text-lg mb-3 flex items-center gap-2">
                             <span className="icon-[tabler--file-description] size-5 text-primary"></span>
-                            Description
+                            {t("create.description")}
                           </h2>
                           <div className="prose prose-sm max-w-none text-base-content/80 bg-base-200/30 p-4 rounded-xl border border-base-content/5">
                             <p className="whitespace-pre-wrap">
@@ -530,7 +546,7 @@ export default function ItemDetailPage({
                         <div className="flex items-center justify-between mb-6">
                           <h2 className="font-bold text-lg flex items-center gap-2">
                             <span className="icon-[tabler--history] size-5 text-secondary"></span>
-                            Bid History
+                            {t("history.title")}
                             <span className="badge badge-sm badge-ghost">
                               {bids.length}
                             </span>
@@ -543,10 +559,7 @@ export default function ItemDetailPage({
                               <span className="icon-[tabler--gavel] size-6 text-base-content/30"></span>
                             </div>
                             <p className="text-base-content/60 font-medium">
-                              No bids yet
-                            </p>
-                            <p className="text-xs text-base-content/40 mt-1">
-                              Be the first to place a bid!
+                              {t("history.noBids")}
                             </p>
                           </div>
                         ) : (
@@ -562,7 +575,11 @@ export default function ItemDetailPage({
                               >
                                 <div className="flex items-center gap-3">
                                   <div
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center ${index === 0 ? "bg-primary text-primary-content" : "bg-base-300 text-base-content/60"}`}
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                      index === 0
+                                        ? "bg-primary text-primary-content"
+                                        : "bg-base-300 text-base-content/60"
+                                    }`}
                                   >
                                     {index === 0 ? (
                                       <span className="icon-[tabler--trophy] size-4"></span>
@@ -573,15 +590,18 @@ export default function ItemDetailPage({
                                   <div>
                                     <div className="flex items-center gap-2">
                                       <span
-                                        className={`font-semibold ${index === 0 ? "text-primary" : ""}`}
+                                        className={`font-semibold ${
+                                          index === 0 ? "text-primary" : ""
+                                        }`}
                                       >
                                         {bid.user
-                                          ? bid.user.name || "Anonymous"
-                                          : "Anonymous"}
+                                          ? bid.user.name ||
+                                            t("history.anonymous")
+                                          : t("history.anonymous")}
                                       </span>
                                       {index === 0 && (
                                         <span className="badge badge-primary badge-xs">
-                                          Highest
+                                          {t("history.highest")}
                                         </span>
                                       )}
                                     </div>
@@ -611,18 +631,18 @@ export default function ItemDetailPage({
                     <div className="card-body p-6">
                       <h2 className="card-title flex items-center gap-2 mb-2">
                         <span className="icon-[tabler--gavel] size-6 text-primary"></span>
-                        Place Bid
+                        {t("bid.title")}
                       </h2>
 
                       <div className="bg-base-200/50 border border-base-content/5 rounded-xl p-5 my-4">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-sm font-medium text-base-content/60 uppercase tracking-wide">
-                            Current Price
+                            {t("bid.currentBid")}
                           </span>
                           {!isEnded && (
                             <span className="badge badge-sm badge-success gap-1 animate-pulse">
                               <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
-                              Live
+                              {tCommon("status.live")}
                             </span>
                           )}
                         </div>
@@ -632,7 +652,7 @@ export default function ItemDetailPage({
                         </div>
                         <div className="flex items-center gap-2 text-xs text-base-content/50">
                           <span className="icon-[tabler--arrow-up] size-3"></span>
-                          Starting Price: {item.currency.symbol}
+                          {t("bid.startingBid")}: {item.currency.symbol}
                           {item.startingBid.toFixed(2)}
                         </div>
                       </div>
@@ -641,25 +661,32 @@ export default function ItemDetailPage({
                         <div className="alert alert-success shadow-sm mb-4 border-none bg-success/10 text-success-content">
                           <span className="icon-[tabler--trophy] size-5 text-success"></span>
                           <span className="font-semibold text-success">
-                            You&apos;re the highest bidder!
+                            {t("bid.highestBidder")}
                           </span>
                         </div>
                       )}
 
                       {item.endDate && (
                         <div
-                          className={`flex items-center gap-2 text-sm mb-6 p-3 rounded-lg ${isEnded ? "bg-error/10 text-error" : "bg-base-200/50 text-base-content/70"}`}
+                          className={`flex items-center gap-2 text-sm mb-6 p-3 rounded-lg ${
+                            isEnded
+                              ? "bg-error/10 text-error"
+                              : "bg-base-200/50 text-base-content/70"
+                          }`}
                         >
                           <span
-                            className={`icon-[tabler--${isEnded ? "flag-filled" : "clock"}] size-5`}
+                            className={`icon-[tabler--${
+                              isEnded ? "flag-filled" : "clock"
+                            }] size-5`}
                           ></span>
                           <span className="font-medium">
-                            {isEnded ? "Auction Ended" : "Time Remaining"}:
+                            {isEnded
+                              ? t("bid.biddingEnded")
+                              : tTime("endsAt")}
+                            :
                           </span>
                           <span className="font-mono">
-                            {isEnded
-                              ? formatDate(item.endDate)
-                              : formatDate(item.endDate)}
+                            {formatDate(item.endDate)}
                           </span>
                         </div>
                       )}
@@ -676,10 +703,10 @@ export default function ItemDetailPage({
                           <div className="form-control">
                             <label className="label">
                               <span className="label-text font-medium">
-                                Your Bid Amount
+                                {t("bid.yourBid")}
                               </span>
                               <span className="label-text-alt text-base-content/60">
-                                Min: {item.currency.symbol}
+                                {t("bid.minBid")}: {item.currency.symbol}
                                 {minBid.toFixed(2)}
                               </span>
                             </label>
@@ -713,11 +740,11 @@ export default function ItemDetailPage({
                               <div className="flex-1">
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-sm font-medium">
-                                    Bid anonymously
+                                    {t("bid.bidAsAnonymous")}
                                   </span>
                                   <div
                                     className="tooltip tooltip-top"
-                                    data-tip="Your name will be hidden from other bidders. The item owner will still see your details."
+                                    data-tip={t("bid.anonymousTooltip")}
                                   >
                                     <span className="icon-[tabler--info-circle] size-3.5 text-base-content/40 cursor-help"></span>
                                   </div>
@@ -731,13 +758,13 @@ export default function ItemDetailPage({
                             variant="primary"
                             modifier="block"
                             isLoading={isLoading}
-                            loadingText="Placing Bid..."
+                            loadingText={t("bid.placingBid")}
                             className="btn-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all"
                             icon={
                               <span className="icon-[tabler--gavel] size-5"></span>
                             }
                           >
-                            Place Bid
+                            {t("bid.placeBid")}
                           </Button>
                         </form>
                       ) : isEnded ? (
@@ -745,7 +772,7 @@ export default function ItemDetailPage({
                           <div className="text-center py-6 bg-base-200/30 rounded-xl border border-base-content/5">
                             <span className="icon-[tabler--gavel-off] size-8 text-base-content/20 mb-2"></span>
                             <div className="text-base-content/60 font-medium">
-                              Bidding has ended
+                              {t("bid.biddingEnded")}
                             </div>
                           </div>
                           {winnerEmail && (

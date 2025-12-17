@@ -3,10 +3,11 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { PageLayout } from "@/components/common";
+import { PageLayout, SEO } from "@/components/common";
 import { useTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 interface UserSettings {
   emailOnNewItem: boolean;
@@ -27,6 +28,8 @@ export default function SettingsPage({
   initialSettings,
 }: SettingsPageProps) {
   const { theme, setTheme } = useTheme();
+  const t = useTranslations("settings");
+  const tErrors = useTranslations("errors");
 
   // Profile form state
   const [name, setName] = useState(user.name || "");
@@ -75,7 +78,7 @@ export default function SettingsPage({
       });
 
       if (res.ok) {
-        setEmailSettingsSuccess("Settings saved");
+        setEmailSettingsSuccess(t("emailNotifications.settingsSaved"));
         setTimeout(() => setEmailSettingsSuccess(null), 2000);
       }
     } catch (err) {
@@ -107,13 +110,13 @@ export default function SettingsPage({
       const result = await res.json();
 
       if (!res.ok) {
-        setProfileError(result.message || "Failed to update profile");
+        setProfileError(result.message || tErrors("profile.updateFailed"));
       } else {
-        setProfileSuccess("Profile updated successfully");
+        setProfileSuccess(t("profile.profileUpdated"));
         setTimeout(() => setProfileSuccess(null), 3000);
       }
     } catch {
-      setProfileError("An error occurred. Please try again.");
+      setProfileError(tErrors("generic"));
     } finally {
       setProfileLoading(false);
     }
@@ -125,12 +128,12 @@ export default function SettingsPage({
     setPasswordSuccess(null);
 
     if (newPassword !== confirmPassword) {
-      setPasswordError("New passwords do not match");
+      setPasswordError(tErrors("validation.passwordsDoNotMatch"));
       return;
     }
 
     if (newPassword.length < 8) {
-      setPasswordError("Password must be at least 8 characters");
+      setPasswordError(tErrors("validation.passwordTooShort", { min: 8 }));
       return;
     }
 
@@ -146,16 +149,16 @@ export default function SettingsPage({
       const result = await res.json();
 
       if (!res.ok) {
-        setPasswordError(result.message || "Failed to change password");
+        setPasswordError(result.message || tErrors("profile.passwordChangeFailed"));
       } else {
-        setPasswordSuccess("Password changed successfully");
+        setPasswordSuccess(t("password.passwordChanged"));
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
         setTimeout(() => setPasswordSuccess(null), 3000);
       }
     } catch {
-      setPasswordError("An error occurred. Please try again.");
+      setPasswordError(tErrors("generic"));
     } finally {
       setPasswordLoading(false);
     }
@@ -163,12 +166,13 @@ export default function SettingsPage({
 
   return (
     <PageLayout user={user} maxWidth="2xl">
+      <SEO title={t("seo.title")} description={t("seo.description")} />
       <div className="mb-10">
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-linear-to-r from-base-content to-base-content/60 bg-clip-text text-transparent mb-2">
-          Settings
+          {t("title")}
         </h1>
         <p className="text-base-content/60 text-lg">
-          Manage your account preferences and profile
+          {t("subtitle")}
         </p>
       </div>
 
@@ -179,7 +183,7 @@ export default function SettingsPage({
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <span className="icon-[tabler--user] size-6"></span>
             </div>
-            Profile
+            {t("profile.title")}
           </h2>
 
           <form onSubmit={handleProfileSubmit} className="space-y-5">
@@ -199,7 +203,7 @@ export default function SettingsPage({
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Email</span>
+                <span className="label-text font-medium">{t("profile.email")}</span>
               </label>
               <input
                 type="email"
@@ -210,20 +214,20 @@ export default function SettingsPage({
               <label className="label">
                 <span className="label-text-alt text-base-content/50 flex items-center gap-1">
                   <span className="icon-[tabler--lock] size-3"></span>
-                  Email cannot be changed
+                  {t("profile.emailCannotChange")}
                 </span>
               </label>
             </div>
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Display Name</span>
+                <span className="label-text font-medium">{t("profile.displayName")}</span>
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
+                placeholder={t("profile.displayNamePlaceholder")}
                 className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
               />
             </div>
@@ -233,13 +237,13 @@ export default function SettingsPage({
                 type="submit"
                 variant="primary"
                 isLoading={profileLoading}
-                loadingText="Saving..."
+                loadingText={t("profile.saving")}
                 icon={
                   <span className="icon-[tabler--device-floppy] size-5"></span>
                 }
                 className="shadow-lg shadow-primary/20"
               >
-                Save Profile
+                {t("profile.saveProfile")}
               </Button>
             </div>
           </form>
@@ -253,7 +257,7 @@ export default function SettingsPage({
             <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
               <span className="icon-[tabler--lock] size-6"></span>
             </div>
-            Change Password
+            {t("password.title")}
           </h2>
 
           <form onSubmit={handlePasswordSubmit} className="space-y-5">
@@ -273,7 +277,7 @@ export default function SettingsPage({
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Current Password</span>
+                <span className="label-text font-medium">{t("password.currentPassword")}</span>
               </label>
               <input
                 type="password"
@@ -286,13 +290,13 @@ export default function SettingsPage({
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">New Password</span>
+                <span className="label-text font-medium">{t("password.newPassword")}</span>
               </label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="At least 8 characters"
+                placeholder={t("password.newPasswordPlaceholder")}
                 className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                 required
                 minLength={8}
@@ -302,7 +306,7 @@ export default function SettingsPage({
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">
-                  Confirm New Password
+                  {t("password.confirmNewPassword")}
                 </span>
               </label>
               <input
@@ -319,10 +323,10 @@ export default function SettingsPage({
                 type="submit"
                 buttonStyle="outline"
                 isLoading={passwordLoading}
-                loadingText="Changing..."
+                loadingText={t("password.changing")}
                 icon={<span className="icon-[tabler--key] size-5"></span>}
               >
-                Change Password
+                {t("password.changePassword")}
               </Button>
             </div>
           </form>
@@ -336,7 +340,7 @@ export default function SettingsPage({
             <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
               <span className="icon-[tabler--mail] size-6"></span>
             </div>
-            Email Notifications
+            {t("emailNotifications.title")}
           </h2>
 
           {emailSettingsSuccess && (
@@ -351,11 +355,10 @@ export default function SettingsPage({
               <label className="label cursor-pointer justify-between gap-4 p-0">
                 <div className="flex-1">
                   <span className="label-text font-bold text-base block mb-1">
-                    New item notifications
+                    {t("emailNotifications.newItemNotifications")}
                   </span>
                   <p className="text-sm text-base-content/60 leading-tight">
-                    Receive an email when a new item is added to an auction
-                    you&apos;re a member of
+                    {t("emailNotifications.newItemDescription")}
                   </p>
                 </div>
                 <input
@@ -374,10 +377,10 @@ export default function SettingsPage({
               <label className="label cursor-pointer justify-between gap-4 p-0">
                 <div className="flex-1">
                   <span className="label-text font-bold text-base block mb-1">
-                    Outbid notifications
+                    {t("emailNotifications.outbidNotifications")}
                   </span>
                   <p className="text-sm text-base-content/60 leading-tight">
-                    Receive an email when someone outbids you on an item
+                    {t("emailNotifications.outbidDescription")}
                   </p>
                 </div>
                 <input
@@ -402,12 +405,12 @@ export default function SettingsPage({
             <div className="w-10 h-10 rounded-xl bg-neutral/10 flex items-center justify-center text-neutral-content">
               <span className="icon-[tabler--palette] size-6 text-base-content"></span>
             </div>
-            Appearance
+            {t("appearance.title")}
           </h2>
 
           <div className="form-control mt-2">
             <label className="label">
-              <span className="label-text font-medium">Theme Preference</span>
+              <span className="label-text font-medium">{t("appearance.themePreference")}</span>
             </label>
             <div className="grid grid-cols-3 gap-3">
               <button
@@ -415,21 +418,21 @@ export default function SettingsPage({
                 className={`btn h-20 flex-col gap-2 ${theme === "light" ? "btn-primary ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "btn-outline border-base-content/10 hover:bg-base-200 hover:border-base-content/20"}`}
               >
                 <span className="icon-[tabler--sun] size-6"></span>
-                Light
+                {t("appearance.light")}
               </button>
               <button
                 onClick={() => setTheme("dark")}
                 className={`btn h-20 flex-col gap-2 ${theme === "dark" ? "btn-primary ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "btn-outline border-base-content/10 hover:bg-base-200 hover:border-base-content/20"}`}
               >
                 <span className="icon-[tabler--moon] size-6"></span>
-                Dark
+                {t("appearance.dark")}
               </button>
               <button
                 onClick={() => setTheme("system")}
                 className={`btn h-20 flex-col gap-2 ${theme === "system" ? "btn-primary ring-2 ring-primary ring-offset-2 ring-offset-base-100" : "btn-outline border-base-content/10 hover:bg-base-200 hover:border-base-content/20"}`}
               >
                 <span className="icon-[tabler--device-desktop] size-6"></span>
-                System
+                {t("appearance.system")}
               </button>
             </div>
           </div>

@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 
 export function Navbar() {
   const t = useTranslations("nav");
+  const tCommon = useTranslations("common");
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -47,7 +48,7 @@ export function Navbar() {
             <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
           <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent font-extrabold tracking-tight">
-            Auktiva
+            {tCommon("appName")}
           </span>
         </Link>
 

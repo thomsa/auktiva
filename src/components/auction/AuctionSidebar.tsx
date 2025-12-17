@@ -28,13 +28,40 @@ interface AuctionSidebarProps {
 }
 
 export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
-  const t = useTranslations();
+  const t = useTranslations("auction");
+  const tRoles = useTranslations("auction.roles");
+  const tJoinModes = useTranslations("auction.joinModes");
+  const tVisibilities = useTranslations("auction.create"); // Reusing from create form translations
   const { formatShortDate } = useFormatters();
   const ended = isAuctionEnded(auction.endDate);
   const isOwner = membership.role === "OWNER";
   const isAdmin = membership.role === "ADMIN" || isOwner;
   const canCreateItems = isAdmin || membership.role === "CREATOR";
   const canInvite = isAdmin || auction.memberCanInvite;
+
+  const roleKey = membership.role.toLowerCase();
+  const roleLabel = ["admin", "creator", "bidder", "owner"].includes(roleKey)
+    ? tRoles(roleKey === "owner" ? "admin" : roleKey)
+    : membership.role;
+
+  // Map enum values to translation keys
+  const getJoinModeLabel = (mode: string) => {
+    switch (mode) {
+      case "INVITE_ONLY": return tJoinModes("inviteOnly");
+      case "LINK": return tJoinModes("link");
+      case "FREE": return tJoinModes("free");
+      default: return mode.replace("_", " ");
+    }
+  };
+
+  const getVisibilityLabel = (visibility: string) => {
+    switch (visibility) {
+      case "VISIBLE": return tVisibilities("alwaysVisible").split(" - ")[0];
+      case "ANONYMOUS": return tVisibilities("alwaysAnonymous").split(" - ")[0];
+      case "PER_BID": return tVisibilities("perBid").split(" - ")[0];
+      default: return visibility.replace("_", " ");
+    }
+  };
 
   return (
     <div className="w-full lg:w-80 space-y-6">
@@ -59,11 +86,11 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
         <div className="card-body p-5">
           <div className="flex items-center justify-between mb-4">
             <span className="badge badge-primary badge-sm font-semibold shadow-sm shadow-primary/20">
-              {membership.role}
+              {roleLabel}
             </span>
             {ended && (
               <span className="badge badge-error badge-sm gap-1">
-                <span className="icon-[tabler--flag-filled] size-3"></span>{t("auction.card.ended")}
+                <span className="icon-[tabler--flag-filled] size-3"></span>{t("card.ended")}
               </span>
             )}
           </div>
@@ -78,7 +105,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
             <div className="flex justify-between items-center text-sm">
               <span className="text-base-content/60 flex items-center gap-2">
                 <span className="icon-[tabler--package] size-4"></span>
-                {t("auction.sidebar.items")}
+                {t("sidebar.items")}
               </span>
               <span className="font-bold text-base-content">
                 {auction._count.items}
@@ -87,7 +114,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
             <div className="flex justify-between items-center text-sm">
               <span className="text-base-content/60 flex items-center gap-2">
                 <span className="icon-[tabler--users] size-4"></span>
-                {t("auction.sidebar.members")}
+                {t("sidebar.members")}
               </span>
               <span className="font-bold text-base-content">
                 {auction._count.members}
@@ -97,7 +124,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
               <div className="flex justify-between items-center text-sm">
                 <span className="text-base-content/60 flex items-center gap-2">
                   <span className="icon-[tabler--clock] size-4"></span>
-                  {t("auction.card.ends")}
+                  {t("card.ends")}
                 </span>
                 <span
                   className={`font-medium ${ended ? "text-error" : "text-primary"}`}
@@ -110,7 +137,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
 
           <div className="text-xs text-base-content/40 text-center flex items-center justify-center gap-1">
             <span className="icon-[tabler--user] size-3"></span>
-            {t("auction.sidebar.hostedBy")}{" "}
+            {t("sidebar.hostedBy")}{" "}
             <span className="font-medium text-base-content/60">
               {auction.creator.name || auction.creator.email}
             </span>
@@ -123,7 +150,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
         <div className="card-body p-5">
           <h3 className="font-bold text-sm uppercase tracking-wider text-base-content/40 mb-3 flex items-center gap-2">
             <span className="icon-[tabler--bolt] size-4"></span>
-            {t("auction.sidebar.quickActions")}
+            {t("sidebar.quickActions")}
           </h3>
           <div className="space-y-2">
             {canCreateItems && (
@@ -132,7 +159,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                 className="btn btn-primary btn-sm btn-block justify-start shadow-sm shadow-primary/20"
               >
                 <span className="icon-[tabler--plus] size-4"></span>
-                {t("auction.sidebar.addItem")}
+                {t("sidebar.addItem")}
               </Link>
             )}
             {canInvite && (
@@ -141,7 +168,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                 className="btn btn-outline btn-sm btn-block justify-start border-base-content/10 hover:bg-base-200 hover:border-base-content/20 text-base-content"
               >
                 <span className="icon-[tabler--user-plus] size-4"></span>
-                {t("auction.sidebar.invitePeople")}
+                {t("sidebar.invitePeople")}
               </Link>
             )}
             <Link
@@ -149,7 +176,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
               className="btn btn-ghost btn-sm btn-block justify-start hover:bg-base-content/5"
             >
               <span className="icon-[tabler--trophy] size-4"></span>
-              {t("auction.sidebar.results")}
+              {t("sidebar.results")}
             </Link>
           </div>
         </div>
@@ -161,7 +188,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
           <div className="card-body p-5">
             <h3 className="font-bold text-sm uppercase tracking-wider text-base-content/40 mb-3 flex items-center gap-2">
               <span className="icon-[tabler--settings] size-4"></span>
-              {t("auction.sidebar.manage")}
+              {t("sidebar.manage")}
             </h3>
             <div className="space-y-2">
               <Link
@@ -169,7 +196,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                 className="btn btn-ghost btn-sm btn-block justify-start hover:bg-base-content/5"
               >
                 <span className="icon-[tabler--users] size-4"></span>
-                {t("auction.sidebar.manageMembers")}
+                {t("sidebar.manageMembers")}
               </Link>
               {isOwner && (
                 <Link
@@ -177,7 +204,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                   className="btn btn-ghost btn-sm btn-block justify-start hover:bg-base-content/5"
                 >
                   <span className="icon-[tabler--adjustments-horizontal] size-4"></span>
-                  {t("auction.sidebar.settings")}
+                  {t("sidebar.settings")}
                 </Link>
               )}
             </div>
@@ -186,15 +213,15 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
 
             <div className="space-y-2.5">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-base-content/50">{t("auction.sidebar.joinMode")}</span>
+                <span className="text-base-content/50">{t("sidebar.joinMode")}</span>
                 <span className="badge badge-ghost badge-xs text-[10px] uppercase font-bold tracking-wide">
-                  {auction.joinMode.replace("_", " ")}
+                  {getJoinModeLabel(auction.joinMode)}
                 </span>
               </div>
               <div className="flex justify-between items-center text-xs">
-                <span className="text-base-content/50">{t("auction.sidebar.visibility")}</span>
+                <span className="text-base-content/50">{t("sidebar.visibility")}</span>
                 <span className="badge badge-ghost badge-xs text-[10px] uppercase font-bold tracking-wide">
-                  {auction.bidderVisibility.replace("_", " ")}
+                  {getVisibilityLabel(auction.bidderVisibility)}
                 </span>
               </div>
             </div>

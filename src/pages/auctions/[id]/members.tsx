@@ -8,6 +8,7 @@ import { PageLayout, BackLink, AlertMessage } from "@/components/common";
 import { MemberCard, MemberRow } from "@/components/member";
 import { useToast } from "@/components/ui/toast";
 import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 interface Member {
   id: string;
@@ -46,6 +47,10 @@ export default function MembersPage({
   isOwner,
   isAdmin,
 }: MembersPageProps) {
+  const t = useTranslations("auction.members");
+  const tCommon = useTranslations("common");
+  const tAuction = useTranslations("auction");
+  const tErrors = useTranslations("errors");
   const [members, setMembers] = useState(initialMembers);
   const [error, setError] = useState<string | null>(null);
   const [loadingMemberId, setLoadingMemberId] = useState<string | null>(null);
@@ -68,15 +73,15 @@ export default function MembersPage({
       const result = await res.json();
 
       if (!res.ok) {
-        setError(result.message || "Failed to update role");
+        setError(result.message || tErrors("generic"));
       } else {
         setMembers(
           members.map((m) => (m.id === memberId ? { ...m, role: newRole } : m)),
         );
-        showToast("Role updated successfully", "success");
+        showToast(t("updateSuccess"), "success");
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setLoadingMemberId(null);
     }
@@ -85,7 +90,7 @@ export default function MembersPage({
   const handleRemoveMember = async (memberId: string, memberName: string) => {
     if (
       !confirm(
-        `Are you sure you want to remove ${memberName} from this auction?`,
+        t("confirmRemove", { name: memberName }),
       )
     ) {
       return;
@@ -105,13 +110,13 @@ export default function MembersPage({
       const result = await res.json();
 
       if (!res.ok) {
-        setError(result.message || "Failed to remove member");
+        setError(result.message || tErrors("generic"));
       } else {
         setMembers(members.filter((m) => m.id !== memberId));
-        showToast("Member removed successfully", "success");
+        showToast(t("removeSuccess"), "success");
       }
     } catch {
-      setError("An error occurred. Please try again.");
+      setError(tErrors("generic"));
     } finally {
       setLoadingMemberId(null);
     }
@@ -123,12 +128,12 @@ export default function MembersPage({
         <div>
           <BackLink
             href={`/auctions/${auction.id}`}
-            label={`Back to ${auction.name}`}
-            shortLabel="Back"
+            label={tAuction("invite.backTo", { name: auction.name })}
+            shortLabel={tCommon("back")}
           />
           <h1 className="text-2xl sm:text-3xl font-bold mt-4 flex items-center gap-3">
             <span className="icon-[tabler--users] size-8 text-primary"></span>
-            Members
+            {t("title")}
             <span className="badge badge-neutral text-lg">
               {members.length}
             </span>
@@ -141,26 +146,23 @@ export default function MembersPage({
             className="btn btn-primary shadow-lg shadow-primary/20 gap-2"
           >
             <span className="icon-[tabler--user-plus] size-5"></span>
-            Invite Members
+            {t("invite")}
           </Link>
         )}
       </div>
 
       <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
-        <div className="card-body p-6">
+        <div className="card-body p-0 sm:p-6">
           {error && (
-            <AlertMessage type="error" className="mb-6">
-              {error}
-            </AlertMessage>
+            <div className="p-6 pb-0">
+              <AlertMessage type="error">{error}</AlertMessage>
+            </div>
           )}
 
           {/* Mobile Card View */}
-          <div className="space-y-4 md:hidden">
+          <div className="sm:hidden divide-y divide-base-content/5">
             {members.map((member) => (
-              <div
-                key={member.id}
-                className="bg-base-100 rounded-xl p-4 border border-base-content/5 shadow-sm"
-              >
+              <div key={member.id} className="p-4">
                 <MemberCard
                   member={member}
                   currentUserId={user.id}
@@ -179,20 +181,20 @@ export default function MembersPage({
               <thead>
                 <tr className="border-b-base-content/5">
                   <th className="bg-base-200/30 text-base-content/60 font-semibold pl-6">
-                    Member
+                    {t("member")}
                   </th>
                   <th className="bg-base-200/30 text-base-content/60 font-semibold">
-                    Role
+                    {t("role")}
                   </th>
                   <th className="bg-base-200/30 text-base-content/60 font-semibold">
-                    Joined
+                    {t("joined")}
                   </th>
                   <th className="bg-base-200/30 text-base-content/60 font-semibold">
-                    Invited By
+                    {t("invitedBy")}
                   </th>
                   {isAdmin && (
                     <th className="bg-base-200/30 text-base-content/60 font-semibold text-right pr-6">
-                      Actions
+                      {t("actions")}
                     </th>
                   )}
                 </tr>

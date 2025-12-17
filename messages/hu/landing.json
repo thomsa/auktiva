@@ -70,7 +70,9 @@
       "sectionTitleHighlight": "összegyűjtve",
       "sectionDescription": "Minden hozzájárulás számít. Nézd meg, hogyan állnak össze az egyéni adományok valódi segítséggé.",
       "totalValue": "Teljes érték",
-      "itemsCollected": "Összegyűjtött tételek"
+      "itemsCollected": "Összegyűjtött tételek",
+      "exampleAuctionName": "Karácsonyi jótékonysági aukció",
+      "moreItems": "+{count}"
     },
     "cta": {
       "title": "Készen állsz a következő adománygyűjtésre?",

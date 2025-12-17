@@ -109,12 +109,12 @@ export function ItemListItem({
                 }`}
               >
                 {bidStatus === "winning"
-                  ? t("item.status.winning")
+                  ? t("status.winning")
                   : bidStatus === "won"
-                    ? t("item.status.won")
+                    ? t("status.won")
                     : bidStatus === "outbid"
-                      ? t("item.status.outbid")
-                      : t("item.status.lost")}
+                      ? t("status.outbid")
+                      : t("status.lost")}
               </div>
             )}
           </div>

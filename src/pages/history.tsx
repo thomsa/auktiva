@@ -7,6 +7,7 @@ import { PageLayout, EmptyState } from "@/components/common";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
 import { formatDate } from "@/utils/formatters";
 import { getMessages, Locale } from "@/i18n";
+import { useTranslations } from "next-intl";
 
 interface BidHistory {
   id: string;
@@ -49,6 +50,12 @@ interface HistoryPageProps {
 }
 
 export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
+  const t = useTranslations("nav");
+  const tStats = useTranslations("dashboard.stats");
+  const tHistory = useTranslations("item.history");
+  const tStatus = useTranslations("status");
+  const tItem = useTranslations("item");
+
   const formatBidDate = (dateStr: string) => {
     return formatDate(dateStr, {
       year: "numeric",
@@ -64,7 +71,7 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-10">
         <div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-linear-to-r from-base-content to-base-content/60 bg-clip-text text-transparent mb-2">
-            Bid History
+            {t("bidHistory")}
           </h1>
           <p className="text-base-content/60 text-lg">
             Track your bidding activity and results
@@ -78,13 +85,13 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
           icon="icon-[tabler--gavel]"
           iconColor="primary"
           value={stats.totalBids}
-          label="Total Bids"
+          label={tStats("totalBids")}
         />
         <StatsCard
           icon="icon-[tabler--trophy]"
           iconColor="success"
           value={stats.winningBids}
-          label="Winning Bids"
+          label={tStats("currentlyWinning")} // Or create a new key "winningBids"
         />
         <CurrencyStatsCard
           icon="icon-[tabler--currency-dollar]"
@@ -107,7 +114,7 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
             <div className="pb-6 px-6 sm:pb-0 sm:px-0">
               <EmptyState
                 icon="icon-[tabler--gavel]"
-                title="No bids yet"
+                title={tHistory("noBids")}
                 action={
                   <Link
                     href="/dashboard"
@@ -138,11 +145,11 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
                         {bid.isWinning ? (
                           <span className="badge badge-success badge-sm gap-1 shadow-sm">
                             <span className="icon-[tabler--trophy] size-3"></span>
-                            {isEnded ? "Won" : "Winning"}
+                            {isEnded ? tStatus("won") : tStatus("winning")}
                           </span>
                         ) : (
                           <span className="badge badge-ghost badge-sm bg-base-content/5">
-                            {isEnded ? "Lost" : "Outbid"}
+                            {isEnded ? tStatus("lost") : tStatus("outbid")}
                           </span>
                         )}
                       </div>
@@ -153,7 +160,7 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
                       <div className="flex justify-between text-sm bg-base-200/50 p-3 rounded-lg">
                         <div className="flex flex-col">
                           <span className="text-xs text-base-content/50 uppercase font-semibold">
-                            Your bid
+                            {tItem("bid.yourBid")}
                           </span>
                           <span className="font-mono font-bold text-primary">
                             {bid.item.currency.symbol}
@@ -162,7 +169,7 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
                         </div>
                         <div className="flex flex-col items-end">
                           <span className="text-xs text-base-content/50 uppercase font-semibold">
-                            Current
+                            {tItem("bid.currentBid")}
                           </span>
                           <span className="font-mono font-medium">
                             {bid.item.currency.symbol}
@@ -190,10 +197,10 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
                         Auction
                       </th>
                       <th className="text-right bg-transparent text-base-content/60 font-semibold">
-                        Your Bid
+                        {tItem("bid.yourBid")}
                       </th>
                       <th className="text-right bg-transparent text-base-content/60 font-semibold">
-                        Current
+                        {tItem("bid.currentBid")}
                       </th>
                       <th className="bg-transparent text-base-content/60 font-semibold text-center">
                         Status
@@ -243,11 +250,11 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
                             {bid.isWinning ? (
                               <span className="badge badge-success gap-1 shadow-sm font-medium">
                                 <span className="icon-[tabler--trophy] size-3"></span>
-                                {isEnded ? "Won" : "Winning"}
+                                {isEnded ? tStatus("won") : tStatus("winning")}
                               </span>
                             ) : (
                               <span className="badge badge-ghost bg-base-content/5 font-medium">
-                                {isEnded ? "Lost" : "Outbid"}
+                                {isEnded ? tStatus("lost") : tStatus("outbid")}
                               </span>
                             )}
                           </td>

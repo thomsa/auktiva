@@ -101,7 +101,8 @@
     "allRightsReserved": "Wszelkie prawa zastrzeżone.",
     "designedBy": "Zaprojektowane i zbudowane przez",
     "description": "Darmowa platforma aukcyjna open-source zaprojektowana dla zbiórek, organizacji charytatywnych i społeczności. Zbudowana z nowoczesną technologią dla nowoczesnych wydarzeń.",
-    "reportIssue": "Zgłoś problem"
+    "reportIssue": "Zgłoś problem",
+    "github": "GitHub"
   },
   "member": {
     "noName": "Brak nazwy",

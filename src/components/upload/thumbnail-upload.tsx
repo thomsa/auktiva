@@ -13,6 +13,7 @@ export function ThumbnailUpload({
   onThumbnailChange,
 }: ThumbnailUploadProps) {
   const t = useTranslations("upload");
+  const tErrors = useTranslations("errors");
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,13 +36,13 @@ export function ThumbnailUpload({
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message || "Upload failed");
+        throw new Error(data.message || tErrors("generic"));
       }
 
       const data = await res.json();
       onThumbnailChange(data.publicUrl);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
+      setError(err instanceof Error ? err.message : tErrors("generic"));
     } finally {
       setIsUploading(false);
       // Reset input
@@ -61,12 +62,12 @@ export function ThumbnailUpload({
       });
 
       if (!res.ok) {
-        throw new Error("Failed to remove thumbnail");
+        throw new Error(tErrors("generic"));
       }
 
       onThumbnailChange(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Delete failed");
+      setError(err instanceof Error ? err.message : tErrors("generic"));
     } finally {
       setIsUploading(false);
     }

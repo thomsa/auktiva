@@ -1,7 +1,7 @@
 {
   "dashboard": {
     "title": "Irányítópult",
-    "welcome": "Üdvözöljük újra, {name}!",
+    "welcome": "Szia, {name}!",
     "createAuction": "Aukció létrehozása",
     "stats": {
       "totalBids": "Összes licit",

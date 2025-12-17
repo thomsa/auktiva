@@ -70,7 +70,9 @@
       "sectionTitleHighlight": "Zebrane",
       "sectionDescription": "Każdy wkład się liczy. Zobacz, jak indywidualne darowizny łączą się, aby wypełnić słoik możliwości.",
       "totalValue": "Całkowita wartość",
-      "itemsCollected": "Zebrane przedmioty"
+      "itemsCollected": "Zebrane przedmioty",
+      "exampleAuctionName": "Bożonarodzeniowa zbiórka charytatywna",
+      "moreItems": "+{count}"
     },
     "cta": {
       "title": "Gotowy na następną zbiórkę?",

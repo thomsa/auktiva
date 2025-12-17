@@ -25,19 +25,44 @@
       "startingAt": "Starting at"
     },
     "create": {
-      "title": "Add New Item",
-      "subtitle": "Add an item to your auction",
-      "itemName": "Item Name",
-      "itemNamePlaceholder": "e.g., Vintage Watch",
-      "description": "Description",
-      "descriptionPlaceholder": "Describe your item...",
-      "images": "Images",
-      "startingBid": "Starting Bid",
-      "minBidIncrement": "Minimum Bid Increment",
-      "currency": "Currency",
-      "endDate": "End Date (optional)",
-      "submitButton": "Add Item",
-      "submitting": "Adding..."
+      "title": "Añadir nuevo artículo",
+      "subtitle": "Añade un artículo a tu subasta",
+      "itemName": "Nombre del artículo",
+      "itemNamePlaceholder": "ej. Reloj vintage",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Describe tu artículo...",
+      "images": "Imágenes",
+      "startingBid": "Puja inicial",
+      "minBidIncrement": "Incremento mínimo de puja",
+      "currency": "Moneda",
+      "endDate": "Fecha de fin (opcional)",
+      "submitButton": "Añadir artículo",
+      "submitting": "Añadiendo...",
+      "basicInfo": "Detalles del artículo",
+      "pricing": "Precios",
+      "createFailed": "Error al crear el artículo"
+    },
+    "edit": {
+      "title": "Editar artículo",
+      "subtitle": "Gestiona los detalles y configuración del artículo",
+      "save": "Guardar cambios",
+      "saving": "Guardando...",
+      "dangerZone": "Zona de peligro",
+      "delete": "Eliminar artículo",
+      "deleteDescription": "Elimina este artículo permanentemente. Esta acción no se puede deshacer.",
+      "confirmDelete": "¿Estás seguro de que quieres eliminar \"{name}\"?",
+      "endItem": "Finalizar puja",
+      "endDescription": "Finaliza la puja de este artículo inmediatamente. No se aceptarán más pujas después de esto.",
+      "endButton": "Finalizar artículo ahora",
+      "confirmEnd": "¿Estás seguro de que quieres finalizar la puja de \"{name}\"?",
+      "endMessageWithBids": "El pujador más alto actual ganará este artículo.",
+      "endMessageNoBids": "Este artículo aún no tiene pujas.",
+      "hasBidsWarning": "Este artículo tiene pujas. Algunos campos no se pueden cambiar.",
+      "endedMessage": "Este artículo ya ha finalizado. La puja está cerrada.",
+      "cannotDeleteWithBids": "Los artículos con pujas no se pueden eliminar.",
+      "updateFailed": "Error al actualizar el artículo",
+      "deleteFailed": "Error al eliminar el artículo",
+      "endFailed": "Error al finalizar el artículo"
     },
     "gallery": {
       "imageOf": "Image {current} of {total}",
@@ -58,12 +83,22 @@
       "highest": "Highest"
     },
     "status": {
-      "active": "Active",
-      "ended": "Ended",
-      "winning": "Winning",
-      "outbid": "Outbid",
-      "won": "Won",
-      "lost": "Lost"
+      "active": "Activo",
+      "ended": "Finalizado",
+      "winning": "Ganando",
+      "outbid": "Superado",
+      "won": "Ganado",
+      "lost": "Perdido"
+    },
+    "joinModes": {
+      "inviteOnly": "Solo invitación",
+      "link": "Acceso por enlace",
+      "free": "Abierta"
+    },
+    "empty": {
+      "title": "Aún no hay artículos",
+      "description": "Esta subasta aún no tiene artículos listados.",
+      "createFirst": "Añadir primer artículo"
     }
   }
 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { getMessages, Locale } from "@/i18n";
 import { prisma } from "@/lib/prisma";
-import { PageLayout, EmptyState, SEO, pageSEO } from "@/components/common";
+import { PageLayout, EmptyState, SEO } from "@/components/common";
 import { AuctionCard } from "@/components/auction";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
 import {
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sort-dropdown";
 import { useSortFilter } from "@/hooks/ui";
 import { isItemEnded, getBidStatus } from "@/utils/auction-helpers";
+import { useTranslations } from "next-intl";
 
 interface Auction {
   id: string;
@@ -72,6 +73,7 @@ interface DashboardProps {
 }
 
 function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
+  const t = useTranslations("status");
   const ended = isItemEnded(item.endDate);
   const isWinning = item.highestBidderId === userId;
   const status = getBidStatus(isWinning, ended);
@@ -121,13 +123,7 @@ function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
                 : "badge-warning"
             }`}
           >
-            {status === "won"
-              ? "Won"
-              : status === "lost"
-                ? "Lost"
-                : status === "winning"
-                  ? "Winning"
-                  : "Outbid"}
+            {t(status)}
           </span>
           <span className="text-xs font-semibold">
             {item.currencySymbol}
@@ -145,6 +141,9 @@ export default function DashboardPage({
   bidItems,
   bidStats,
 }: DashboardProps) {
+  const t = useTranslations("dashboard");
+  const tStats = useTranslations("dashboard.stats");
+  const tEmpty = useTranslations("dashboard.empty");
   const { currentSort: auctionSort } = useSortFilter(
     "auctionSort",
     "date-desc",
@@ -163,16 +162,16 @@ export default function DashboardPage({
 
   return (
     <>
-      <SEO {...pageSEO.dashboard} />
+      <SEO title={t("seo.title")} description={t("seo.description")} />
       <PageLayout user={user}>
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-base-content">
-              Dashboard
+              {t("title")}
             </h1>
             <p className="text-base-content/60 mt-1 text-sm sm:text-base">
-              Welcome back, {user.name || user.email}!
+              {t("welcome", { name: user.name || user.email })}
             </p>
           </div>
           <Link
@@ -180,7 +179,7 @@ export default function DashboardPage({
             className="btn btn-primary w-full sm:w-auto"
           >
             <span className="icon-[tabler--plus] size-5"></span>
-            Create Auction
+            {t("createAuction")}
           </Link>
         </div>
 
@@ -191,25 +190,25 @@ export default function DashboardPage({
               icon="icon-[tabler--gavel]"
               iconColor="primary"
               value={bidStats.totalBids}
-              label="Total Bids"
+              label={tStats("totalBids")}
             />
             <CurrencyStatsCard
               icon="icon-[tabler--currency-dollar]"
               iconColor="secondary"
               currencyTotals={bidStats.currencyTotals}
-              label="Total Bid Amount"
+              label={tStats("totalBidAmount")}
             />
             <StatsCard
               icon="icon-[tabler--package]"
               iconColor="accent"
               value={bidStats.itemsBidOn}
-              label="Items Bid On"
+              label={tStats("itemsBidOn")}
             />
             <StatsCard
               icon="icon-[tabler--trophy]"
               iconColor="success"
               value={bidStats.currentlyWinning}
-              label="Currently Winning"
+              label={tStats("currentlyWinning")}
             />
           </div>
         )}
@@ -219,7 +218,7 @@ export default function DashboardPage({
           <div className="mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
               <h2 className="text-lg sm:text-xl font-semibold text-base-content">
-                Your Active Bids
+                {t("activeBids.title")}
               </h2>
               <SortDropdown
                 options={sidebarItemSortOptions}
@@ -245,12 +244,12 @@ export default function DashboardPage({
             <div className="card-body">
               <EmptyState
                 icon="icon-[tabler--gavel]"
-                title="No auctions yet"
-                description="You haven't joined or created any auctions yet. Create your first auction or join one using an invite link."
+                title={tEmpty("title")}
+                description={tEmpty("description")}
                 action={
                   <Link href="/auctions/create" className="btn btn-primary">
                     <span className="icon-[tabler--plus] size-5"></span>
-                    Create Your First Auction
+                    {tEmpty("createFirst")}
                   </Link>
                 }
               />
@@ -260,7 +259,7 @@ export default function DashboardPage({
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
               <h2 className="text-lg sm:text-xl font-semibold text-base-content">
-                Auctions you have joined
+                {t("auctions.title")}
               </h2>
               <SortDropdown
                 options={auctionSortOptions}

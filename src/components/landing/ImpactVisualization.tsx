@@ -6,6 +6,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Particle {
   id: number;
@@ -69,6 +70,7 @@ function Counter({
 }
 
 export function ImpactVisualization() {
+  const t = useTranslations("landing.impact");
   const [state, setState] = useState<VisualState>({
     mounted: false,
     particles: [],
@@ -138,12 +140,10 @@ export function ImpactVisualization() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Real Impact, <span className="text-secondary">Visualized</span>
+            {t("sectionTitle")} <span className="text-secondary">{t("sectionTitleHighlight")}</span>
           </h2>
           <p className="text-xl opacity-70 max-w-2xl mx-auto">
-            Experience the power of collective giving. Watch as every bid flows
-            into a stream of support, helping you reach fundraising goals and
-            make a real difference.
+            {t("sectionDescription")}
           </p>
         </div>
 
@@ -353,7 +353,7 @@ export function ImpactVisualization() {
               className="text-sm font-bold uppercase tracking-widest opacity-50 fill-base-content"
               style={{ fontSize: "12px" }}
             >
-              Christmas Fundraiser for Charity
+              {t("exampleAuctionName")}
             </text>
 
             {/* Track for the gauge - top arc */}
@@ -384,7 +384,7 @@ export function ImpactVisualization() {
 
           {/* Floating UI Elements on top of SVG */}
           <div className="absolute top-8 left-8 bg-base-100/80 backdrop-blur px-4 py-2 rounded-lg border border-base-content/5 shadow-lg">
-            <div className="text-xs text-base-content/60">Total Raised</div>
+            <div className="text-xs text-base-content/60">{t("totalValue")}</div>
             <div className="text-lg font-bold font-mono text-primary">
               <Counter
                 value={124500}
@@ -396,13 +396,13 @@ export function ImpactVisualization() {
           </div>
 
           <div className="absolute bottom-8 right-8 bg-base-100/80 backdrop-blur px-4 py-2 rounded-lg border border-base-content/5 shadow-lg">
-            <div className="text-xs text-base-content/60">Donors Active</div>
+            <div className="text-xs text-base-content/60">{t("itemsCollected")}</div>
             <div className="flex -space-x-2 mt-1">
               <div className="w-6 h-6 rounded-full bg-primary/20 border border-base-100"></div>
               <div className="w-6 h-6 rounded-full bg-secondary/20 border border-base-100"></div>
               <div className="w-6 h-6 rounded-full bg-accent/20 border border-base-100"></div>
               <div className="w-6 h-6 rounded-full bg-base-200 border border-base-100 flex items-center justify-center text-[10px] font-bold">
-                +42
+                {t("moreItems", { count: 42 })}
               </div>
             </div>
           </div>
