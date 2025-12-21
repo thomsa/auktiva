@@ -138,47 +138,56 @@ export default async function handler(
 
   // PATCH - Update item
   if (req.method === "PATCH") {
-    // Get item and auction to check ownership and settings
-    const item = await prisma.auctionItem.findUnique({
-      where: { id: itemId },
-      include: {
-        _count: {
-          select: { bids: true },
-        },
-        auction: {
-          select: {
-            endDate: true,
-            itemEndMode: true,
+    try {
+      // Get item and auction to check ownership and settings
+      const item = await prisma.auctionItem.findUnique({
+        where: { id: itemId },
+        include: {
+          _count: {
+            select: { bids: true },
+          },
+          auction: {
+            select: {
+              endDate: true,
+              itemEndMode: true,
+            },
           },
         },
-      },
-    });
-
-    if (!item || item.auctionId !== auctionId) {
-      return res.status(404).json({ message: "Item not found" });
-    }
-
-    // Only item creator, OWNER, or ADMIN can edit
-    const isCreator = item.creatorId === session.user.id;
-    const isAdmin = ["OWNER", "ADMIN"].includes(membership.role);
-
-    if (!isCreator && !isAdmin) {
-      return res
-        .status(403)
-        .json({ message: "You don't have permission to edit this item" });
-    }
-
-    const parsed = updateItemSchema.safeParse(req.body);
-
-    if (!parsed.success) {
-      const errors = parsed.error.flatten().fieldErrors;
-      return res.status(400).json({
-        message: Object.values(errors).flat()[0] || "Invalid input",
-        errors,
       });
-    }
 
-    try {
+      if (!item || item.auctionId !== auctionId) {
+        console.error("Item not found:", { itemId, auctionId, found: !!item });
+        return res.status(404).json({ message: "Item not found" });
+      }
+
+      // Only item creator, OWNER, or ADMIN can edit
+      const isCreator = item.creatorId === session.user.id;
+      const isAdmin = ["OWNER", "ADMIN"].includes(membership.role);
+
+      if (!isCreator && !isAdmin) {
+        console.error("Permission denied:", {
+          userId: session.user.id,
+          itemCreatorId: item.creatorId,
+          membershipRole: membership.role,
+        });
+        return res
+          .status(403)
+          .json({ message: "You don't have permission to edit this item" });
+      }
+
+      const parsed = updateItemSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        const errors = parsed.error.flatten().fieldErrors;
+        console.error("Validation failed:", {
+          body: req.body,
+          errors,
+        });
+        return res.status(400).json({
+          message: Object.values(errors).flat()[0] || "Invalid input",
+          errors,
+        });
+      }
       const hasBids = item._count.bids > 0;
       const updateData: Record<string, unknown> = {};
 
@@ -201,6 +210,11 @@ export default async function handler(
 
         // Rule 1: If item already ended, cannot change end date to future
         if (isItemEnded && newEndDate && newEndDate > now) {
+          console.error("Cannot extend ended item:", {
+            itemEndDate: item.endDate,
+            newEndDate,
+            now,
+          });
           return res.status(400).json({
             message:
               "Cannot extend end date for an item that has already ended",
@@ -213,6 +227,10 @@ export default async function handler(
           item.auction.endDate &&
           newEndDate > item.auction.endDate
         ) {
+          console.error("Item end date after auction end date:", {
+            itemEndDate: newEndDate,
+            auctionEndDate: item.auction.endDate,
+          });
           return res.status(400).json({
             message: "Item end date cannot be after the auction end date",
           });
@@ -220,6 +238,10 @@ export default async function handler(
 
         // Rule 3: Can only set custom end date if itemEndMode is CUSTOM
         if (item.auction.itemEndMode !== "CUSTOM" && newEndDate !== null) {
+          console.error("Custom end date not allowed:", {
+            itemEndMode: item.auction.itemEndMode,
+            newEndDate,
+          });
           return res.status(400).json({
             message: "Custom item end dates are not allowed for this auction",
           });
@@ -254,7 +276,12 @@ export default async function handler(
         updatedAt: updated.updatedAt.toISOString(),
       });
     } catch (error) {
-      console.error("Update item error:", error);
+      console.error("Update item error:", {
+        error,
+        itemId,
+        auctionId,
+        body: req.body,
+      });
       return res.status(500).json({ message: "Internal server error" });
     }
   }
