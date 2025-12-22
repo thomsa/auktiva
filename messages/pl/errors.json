@@ -51,6 +51,23 @@
       "updateFailed": "Nie udało się zaktualizować profilu",
       "passwordChangeFailed": "Nie udało się zmienić hasła",
       "incorrectPassword": "Aktualne hasło jest nieprawidłowe"
+    },
+    "upload": {
+      "imageFailed": "Nie udało się przesłać zdjęcia",
+      "thumbnailFailed": "Nie udało się przesłać miniatury",
+      "deleteFailed": "Nie udało się usunąć zdjęcia",
+      "reorderFailed": "Nie udało się zmienić kolejności zdjęć"
+    },
+    "member": {
+      "updateRoleFailed": "Nie udało się zaktualizować roli członka",
+      "removeFailed": "Nie udało się usunąć członka"
+    },
+    "notification": {
+      "markReadFailed": "Nie udało się oznaczyć powiadomienia jako przeczytane",
+      "markAllReadFailed": "Nie udało się oznaczyć wszystkich powiadomień jako przeczytane"
+    },
+    "settings": {
+      "updateFailed": "Nie udało się zaktualizować ustawień"
     }
   }
 }

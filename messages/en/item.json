@@ -73,7 +73,8 @@
       "imageOf": "Image {current} of {total}",
       "previousImage": "Previous image",
       "nextImage": "Next image",
-      "thumbnail": "Thumbnail {index}"
+      "thumbnail": "Thumbnail {index}",
+      "noImages": "No images"
     },
     "sidebar": {
       "title": "Items in Auction",

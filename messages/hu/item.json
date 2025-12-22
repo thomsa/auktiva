@@ -73,7 +73,8 @@
       "imageOf": "{current}. kép a {total}-ból",
       "previousImage": "Előző kép",
       "nextImage": "Következő kép",
-      "thumbnail": "{index}. bélyegkép"
+      "thumbnail": "{index}. bélyegkép",
+      "noImages": "Nincsenek képek"
     },
     "sidebar": {
       "title": "Tételek az aukcióban",

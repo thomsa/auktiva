@@ -28,7 +28,8 @@
       "itemEndAuction": "Koniec aukcji - Wszystkie przedmioty kończą się wraz z aukcją",
       "itemEndNone": "Bez końca - Przedmioty nie mają daty zakończenia",
       "submitButton": "Utwórz aukcję",
-      "submitting": "Tworzenie..."
+      "submitting": "Tworzenie...",
+      "createSuccess": "Aukcja utworzona pomyślnie"
     },
     "card": {
       "ended": "Zakończona",
@@ -103,6 +104,7 @@
       "deleting": "Usuwanie...",
       "updateFailed": "Nie udało się zaktualizować aukcji",
       "success": "Ustawienia zapisane pomyślnie",
+      "deleteSuccess": "Aukcja usunięta pomyślnie",
       "endedSuccess": "Aukcja zakończona pomyślnie"
     },
     "members": {

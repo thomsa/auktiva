@@ -73,7 +73,8 @@
       "imageOf": "Imagen {current} de {total}",
       "previousImage": "Imagen anterior",
       "nextImage": "Imagen siguiente",
-      "thumbnail": "Miniatura {index}"
+      "thumbnail": "Miniatura {index}",
+      "noImages": "Sin imágenes"
     },
     "sidebar": {
       "title": "Artículos en Subasta",

@@ -8,6 +8,7 @@
       "minBid": "Min",
       "placeBid": "Złóż ofertę",
       "placingBid": "Składanie oferty...",
+      "bidPlaced": "Oferta złożona pomyślnie",
       "highestBidder": "Masz najwyższą ofertę!",
       "biddingEnded": "Licytacja tego przedmiotu zakończyła się.",
       "cannotBidOwn": "Nie możesz licytować własnego przedmiotu.",
@@ -40,6 +41,7 @@
       "submitting": "Dodawanie...",
       "basicInfo": "Szczegóły przedmiotu",
       "pricing": "Ceny",
+      "createSuccess": "Przedmiot utworzony pomyślnie",
       "createFailed": "Nie udało się utworzyć przedmiotu"
     },
     "edit": {
@@ -60,6 +62,9 @@
       "hasBidsWarning": "Ten przedmiot ma oferty. Niektóre pola nie mogą być zmienione.",
       "endedMessage": "Ten przedmiot już się zakończył. Licytacja jest zamknięta.",
       "cannotDeleteWithBids": "Przedmioty z ofertami nie mogą być usunięte.",
+      "updateSuccess": "Przedmiot zaktualizowany pomyślnie",
+      "deleteSuccess": "Przedmiot usunięty pomyślnie",
+      "endNowSuccess": "Licytacja przedmiotu zakończona pomyślnie",
       "updateFailed": "Nie udało się zaktualizować przedmiotu",
       "deleteFailed": "Nie udało się usunąć przedmiotu",
       "endFailed": "Nie udało się zakończyć przedmiotu"
@@ -68,7 +73,8 @@
       "imageOf": "Zdjęcie {current} z {total}",
       "previousImage": "Poprzednie zdjęcie",
       "nextImage": "Następne zdjęcie",
-      "thumbnail": "Miniatura {index}"
+      "thumbnail": "Miniatura {index}",
+      "noImages": "Brak zdjęć"
     },
     "sidebar": {
       "title": "Przedmioty na aukcji",
