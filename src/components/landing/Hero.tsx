@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import { useTranslations } from "next-intl";
 import packageJson from "../../../package.json";
 
 export function Hero() {
   const t = useTranslations("landing.hero");
-  const [mounted, setMounted] = useState(false);
   const modalRef = useRef<HTMLDialogElement>(null);
 
   const openModal = () => {
@@ -15,10 +14,6 @@ export function Hero() {
   const closeModal = () => {
     modalRef.current?.close();
   };
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
@@ -30,11 +25,7 @@ export function Hero() {
       </div>
 
       <div className="container mx-auto px-4 text-center relative z-10">
-        <div
-          className={`transition-all duration-1000 transform ${
-            mounted ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-          }`}
-        >
+        <div className="animate-fade-in-up">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-base-200/50 border border-base-content/10 backdrop-blur-sm mb-8 hover:border-primary/50 transition-colors cursor-default">
             <span className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>

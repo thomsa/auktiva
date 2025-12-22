@@ -1,5 +1,6 @@
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
+import dynamic from "next/dynamic";
 import { authOptions } from "@/lib/auth";
 import { getMessages } from "@/i18n/getMessages";
 import { Locale } from "@/i18n/config";
@@ -13,11 +14,34 @@ import {
 } from "@/components/common";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
-import { FeatureGrid } from "@/components/landing/FeatureGrid";
-import { HowItWorks } from "@/components/landing/HowItWorks";
-import { CallToAction } from "@/components/landing/CallToAction";
 import { Footer } from "@/components/landing/Footer";
-import { ImpactVisualization } from "@/components/landing/ImpactVisualization";
+
+// Dynamically import below-the-fold components to reduce initial bundle
+const FeatureGrid = dynamic(
+  () =>
+    import("@/components/landing/FeatureGrid").then((mod) => mod.FeatureGrid),
+  { ssr: true }
+);
+
+const HowItWorks = dynamic(
+  () => import("@/components/landing/HowItWorks").then((mod) => mod.HowItWorks),
+  { ssr: true }
+);
+
+const CallToAction = dynamic(
+  () =>
+    import("@/components/landing/CallToAction").then((mod) => mod.CallToAction),
+  { ssr: true }
+);
+
+// Heavy animation component - no SSR needed
+const ImpactVisualization = dynamic(
+  () =>
+    import("@/components/landing/ImpactVisualization").then(
+      (mod) => mod.ImpactVisualization
+    ),
+  { ssr: false }
+);
 
 export default function LandingPage() {
   // Homepage-specific structured data with FAQ schema for better SEO

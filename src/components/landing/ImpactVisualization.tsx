@@ -21,12 +21,6 @@ interface Sparkle {
   delay: number;
 }
 
-interface VisualState {
-  mounted: boolean;
-  particles: Particle[];
-  sparkles: Sparkle[];
-}
-
 function Counter({
   value,
   duration,
@@ -60,7 +54,7 @@ function Counter({
           style: "currency",
           currency: "USD",
           maximumFractionDigits: 0,
-        }),
+        })
       );
     });
     return () => unsubscribe();
@@ -69,14 +63,28 @@ function Counter({
   return <span>{displayValue}</span>;
 }
 
+// Generate particles once (stable across renders)
+const generateParticles = (): Particle[] =>
+  Array.from({ length: 10 }).map((_, i) => ({
+    id: i,
+    delay: -(i * 0.5), // Staggered delays instead of random for stability
+    duration: 3 + (i % 3),
+    xStart: (i * 10) % 100,
+  }));
+
+const generateSparkles = (): Sparkle[] =>
+  Array.from({ length: 12 }).map((_, i) => ({
+    id: i,
+    angle: (i * 360) / 12,
+    delay: (i % 6) * 0.1,
+  }));
+
+// Pre-generate to avoid hydration issues
+const PARTICLES = generateParticles();
+const SPARKLES = generateSparkles();
+
 export function ImpactVisualization() {
   const t = useTranslations("landing.impact");
-  const [state, setState] = useState<VisualState>({
-    mounted: false,
-    particles: [],
-    sparkles: [],
-  });
-
   const [animationPhase, setAnimationPhase] = useState<
     "idle" | "building" | "active"
   >("idle");
@@ -84,7 +92,7 @@ export function ImpactVisualization() {
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
 
   // Animation settings
-  const BUILD_DURATION = 8; // Significantly slower as requested
+  const BUILD_DURATION = 8;
 
   useEffect(() => {
     if (isInView && animationPhase === "idle") {
@@ -95,35 +103,8 @@ export function ImpactVisualization() {
     }
   }, [isInView, animationPhase]);
 
-  useEffect(() => {
-    // Generate random particles for the flow
-    const particleCount = 20;
-    const particles = Array.from({ length: particleCount }).map((_, i) => ({
-      id: i,
-      delay: -Math.random() * 5, // Negative delay to start mid-animation (instant flow)
-      duration: 3 + Math.random() * 2,
-      xStart: Math.random() * 100, // Percentage
-    }));
-
-    // Sparkles for the "Goal Reached" effect
-    const sparkleCount = 12;
-    const sparkles = Array.from({ length: sparkleCount }).map((_, i) => ({
-      id: i,
-      angle: (i * 360) / sparkleCount,
-      delay: Math.random() * 0.5,
-    }));
-
-    const timer = setTimeout(() => {
-      setState({
-        mounted: true,
-        particles,
-        sparkles,
-      });
-    }, 0);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const { particles, sparkles } = state;
+  const particles = PARTICLES;
+  const sparkles = SPARKLES;
   const showParticles = animationPhase === "building";
   const showPulse = animationPhase === "active";
 
@@ -154,6 +135,7 @@ export function ImpactVisualization() {
             viewBox="0 0 800 400"
             className="w-full h-full"
             preserveAspectRatio="xMidYMid slice"
+            style={{ willChange: "transform" }}
           >
             <defs>
               <linearGradient
@@ -252,12 +234,13 @@ export function ImpactVisualization() {
               }}
             />
 
-            {/* Incoming Flow Particles - Only show when active */}
-            {particles.map((p) => (
+            {/* Incoming Flow Particles - Only show when active - reduced count for performance */}
+            {particles.slice(0, 8).map((p) => (
               <motion.circle
                 key={`p-${p.id}`}
                 r="3"
                 className="fill-primary"
+                style={{ willChange: "transform, opacity" }}
                 initial={{
                   cx: p.xStart > 50 ? 850 : -50,
                   cy: 450,
@@ -282,8 +265,8 @@ export function ImpactVisualization() {
               />
             ))}
 
-            {/* Trails for particles */}
-            {particles.map((p) => (
+            {/* Trails for particles - reduced for performance */}
+            {particles.slice(0, 8).map((p) => (
               <motion.path
                 key={`t-${p.id}`}
                 d={`M ${p.xStart > 50 ? 800 : 0} 400 Q ${
@@ -292,6 +275,7 @@ export function ImpactVisualization() {
                 className="stroke-primary"
                 strokeWidth="1"
                 fill="none"
+                style={{ willChange: "stroke-dashoffset, opacity" }}
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={
                   showParticles
@@ -310,8 +294,8 @@ export function ImpactVisualization() {
               />
             ))}
 
-            {/* Sparkles / Explosion effects - Show when active */}
-            {sparkles.map((s) => {
+            {/* Sparkles / Explosion effects - Show when active - reduced for performance */}
+            {sparkles.slice(0, 6).map((s) => {
               const rad = (s.angle * Math.PI) / 180;
               const xEnd = 400 + Math.cos(rad) * 120;
               const yEnd = 200 + Math.sin(rad) * 120;
@@ -323,6 +307,7 @@ export function ImpactVisualization() {
                     cy="200"
                     r="2"
                     className="fill-accent"
+                    style={{ willChange: "transform, opacity" }}
                     initial={{ opacity: 0 }}
                     animate={
                       showParticles
