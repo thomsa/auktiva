@@ -8,54 +8,59 @@ export const SITE_AUTHOR_URL = "https://www.tamaslorincz.com";
 export const SITE_TWITTER = "@auktiva";
 
 // Comprehensive keyword list for auction platform SEO
+// Primary target searches:
+// - "open source auction platform charity"
+// - "auction platform free", "auction free"
+// - "auction fundraiser", "auction charity"
+// - "auction platform charity", "auction platform fundraiser"
+// - "auction platform charity free", "auction platform fundraiser free"
 export const SITE_KEYWORDS = [
-  // Primary keywords
-  "auction platform",
-  "online auction software",
-  "auction management system",
-  // Charity & Fundraising
-  "charity auction",
-  "fundraiser auction",
-  "nonprofit auction",
-  "silent auction software",
+  // Primary high-intent keywords (exact match targets)
+  "open source auction platform charity",
+  "auction platform free",
+  "auction free",
+  "auction fundraiser",
+  "auction charity",
+  "auction platform charity",
+  "auction platform fundraiser",
+  "auction platform charity free",
+  "auction platform fundraiser free",
+  "free auction platform",
+  // Charity & Fundraising variations
+  "free charity auction software",
+  "free fundraiser auction platform",
+  "nonprofit auction platform free",
+  "charity auction software free",
+  "fundraising auction platform",
+  "silent auction software free",
   "charity fundraising platform",
-  "donation auction",
-  "benefit auction",
-  "gala auction software",
-  // Event types
-  "school auction",
-  "church auction",
-  "company auction",
-  "corporate auction",
-  "internal auction",
-  "private auction",
-  "community auction",
-  "club auction",
-  // Features
-  "real-time bidding",
-  "live auction",
-  "online bidding platform",
-  "auction bid management",
-  "mobile auction app",
-  "auction event management",
-  // Open source
-  "open source auction",
-  "free auction software",
-  "self-hosted auction",
+  "donation auction free",
+  "benefit auction software",
+  "gala auction platform",
+  // Open source variations
+  "open source auction software",
+  "open source fundraiser platform",
+  "open source charity software",
+  "self-hosted auction platform",
   "auction platform github",
-  // Use cases
-  "fundraising event software",
-  "silent auction app",
-  "auction website builder",
-  "virtual auction platform",
-  "hybrid auction software",
+  // Event types
+  "school auction platform free",
+  "church auction software free",
+  "nonprofit auction software",
+  "community auction platform",
+  "private auction software",
+  // Features
+  "real-time bidding platform",
+  "silent auction app free",
+  "online auction software free",
+  "auction management system",
 ].join(", ");
 
 export const SITE_DESCRIPTION =
-  "Auktiva is a free, open-source auction platform designed for fundraisers, charities, schools, churches, and internal company events. Host private silent auctions with real-time bidding, member management, and multi-currency support. No payment processing fees - all settlements happen offline. Self-host or use our cloud service.";
+  "Auktiva is a 100% free, open-source auction platform for charity fundraisers, nonprofit events, schools, and churches. Create unlimited auctions with real-time bidding, member management, and multi-currency support. No fees, no limits, no credit card required. Self-host for free or use our cloud service also for free.";
 
 export const SITE_DESCRIPTION_SHORT =
-  "Free, open-source auction platform for fundraisers, charities, and internal events. Host private auctions with real-time bidding - no payment fees.";
+  "Free open-source auction platform for charity fundraisers and nonprofit events. Host unlimited auctions with real-time bidding - completely free, no fees ever.";
 
 interface SEOProps {
   title?: string;

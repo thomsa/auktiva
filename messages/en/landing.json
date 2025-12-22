@@ -2,10 +2,10 @@
   "landing": {
     "hero": {
       "badge": "{version} is now live",
-      "title": "Auctions made",
-      "titleHighlight": "simple & social",
-      "description": "The open-source platform for modern fundraising. Host private auctions, invite your community, and manage everything in one place.",
-      "startAuction": "Start Your Auction",
+      "title": "Free Auction Platform for",
+      "titleHighlight": "Charity Fundraisers",
+      "description": "100% free, open-source auction platform for charity events, nonprofit fundraisers, schools, and churches. No fees, no limits - just powerful silent auctions with real-time bidding.",
+      "startAuction": "Start Free Auction",
       "viewOnGithub": "View on GitHub",
       "demoAlt": "Interactive Demo Preview",
       "bidNow": "Bid Now",
@@ -80,12 +80,12 @@
       "moreItems": "+{count}"
     },
     "cta": {
-      "title": "Ready to run your next fundraiser?",
-      "description": "Join organizers using Auktiva to run charity auctions. Open source, free, and built for communities.",
-      "getStarted": "Get Started",
-      "freeForever": "It's free and will always be free",
+      "title": "Ready to run your charity fundraiser?",
+      "description": "Join thousands of nonprofits using Auktiva for free charity auctions. Open source, completely free forever, and built for fundraising communities.",
+      "getStarted": "Start Free Auction",
+      "freeForever": "100% free forever - no fees, no limits",
       "selfHostTitle": "Prefer to self-host?",
-      "selfHostDescription": "Run Auktiva on your own server with full control over your data. One command to get started.",
+      "selfHostDescription": "Run this open-source auction platform on your own server with full control. One command to get started.",
       "seeDocumentation": "See the <link>developer documentation</link> for more details."
     }
   }

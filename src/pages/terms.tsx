@@ -102,6 +102,19 @@ export default function TermsPage() {
               </p>
             </section>
 
+            {/* Third-Party Authentication */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-4 text-base-content">
+                {tSections("3b.title")}
+              </h2>
+              <p className="text-base-content/80 leading-relaxed mb-4">
+                {tSections("3b.content1")}
+              </p>
+              <p className="text-base-content/80 leading-relaxed">
+                {tSections("3b.content2")}
+              </p>
+            </section>
+
             {/* Roles and Permissions */}
             <section>
               <h2 className="flex items-center gap-3 text-2xl font-bold mb-6">

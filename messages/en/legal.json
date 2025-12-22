@@ -14,7 +14,7 @@
           "title": "Information We Collect",
           "content": "We collect information you provide directly to us when you use Auktiva:",
           "accountInfo": "Account Information",
-          "accountInfoDesc": "Your name, email address, and password when you create an account.",
+          "accountInfoDesc": "Your name, email address, and password when you create an account. If you sign in with Google, we receive your name, email address, and profile picture from Google.",
           "auctionData": "Auction Data",
           "auctionDataDesc": "Information about auctions you create or join, items you list, bids you place, and your membership roles.",
           "uploadedContent": "Uploaded Content",
@@ -40,6 +40,11 @@
           "title": "Data Sharing",
           "content1": "We do not sell, trade, or otherwise transfer your personal information to third parties. Your auction data is only visible to members of the auctions you participate in, according to the privacy settings configured by each auction owner.",
           "content2": "Auction owners can configure privacy settings including anonymous bidding to hide bidder identities, invite-only access restrictions, and role-based permissions to control what each member can see and do."
+        },
+        "5b": {
+          "title": "Third-Party Authentication (Google OAuth)",
+          "content1": "If you choose to sign in with Google, we use Google's OAuth 2.0 service to authenticate your identity. When you sign in with Google, we receive your basic profile information (name, email address, and profile picture) from Google.",
+          "content2": "We do not receive or store your Google password. Google's use of your information is governed by Google's Privacy Policy. You can revoke Auktiva's access to your Google account at any time through your Google Account settings at myaccount.google.com."
         },
         "6": {
           "title": "Email Communications",
@@ -95,8 +100,13 @@
         },
         "3": {
           "title": "User Accounts",
-          "content1": "To use Auktiva, you must create an account with accurate information including your name, email address, and a secure password. You are responsible for maintaining the security of your account credentials and should not share your account with others.",
+          "content1": "To use Auktiva, you must create an account with accurate information including your name, email address, and a secure password. Alternatively, you may sign in using Google OAuth, which allows you to use your existing Google account credentials. You are responsible for maintaining the security of your account credentials and should not share your account with others.",
           "content2": "You must be at least 18 years old or have parental consent to use Auktiva. Please keep your account information up to date to ensure you receive important notifications about your auctions."
+        },
+        "3b": {
+          "title": "Third-Party Authentication",
+          "content1": "Auktiva offers sign-in through Google OAuth as a convenience. When you use Google sign-in, you authorize Google to share your basic profile information (name, email, profile picture) with us. We use this information solely to create and manage your Auktiva account.",
+          "content2": "Your use of Google sign-in is also subject to Google's Terms of Service and Privacy Policy. You can disconnect your Google account from Auktiva at any time, though you may need to set a password to continue accessing your account."
         },
         "4": {
           "title": "Roles and Permissions",

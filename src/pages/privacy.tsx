@@ -161,6 +161,19 @@ export default function PrivacyPage() {
               </p>
             </section>
 
+            {/* Third-Party Authentication (Google OAuth) */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-4 text-base-content">
+                {tSections("5b.title")}
+              </h2>
+              <p className="text-base-content/80 leading-relaxed mb-4">
+                {tSections("5b.content1")}
+              </p>
+              <p className="text-base-content/80 leading-relaxed">
+                {tSections("5b.content2")}
+              </p>
+            </section>
+
             {/* Email Communications */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
