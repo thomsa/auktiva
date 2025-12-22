@@ -23,7 +23,11 @@ export function Navbar({ user }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // This is an intentional hydration pattern to prevent SSR mismatch
+    setMounted(true); // eslint-disable-line
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };

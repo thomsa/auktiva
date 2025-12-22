@@ -9,12 +9,15 @@ export function Navbar() {
   const tCommon = useTranslations("common");
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    setMounted(true);
+    // This is an intentional hydration pattern to prevent SSR mismatch
+    setMounted(true); // eslint-disable-line
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
@@ -23,7 +26,7 @@ export function Navbar() {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
   const closeMobileMenu = () => {
@@ -85,7 +88,7 @@ export function Navbar() {
                 className="btn btn-ghost btn-sm btn-circle"
                 aria-label="Toggle theme"
               >
-                {theme === "dark" ? (
+                {resolvedTheme === "dark" ? (
                   <span className="icon-[tabler--sun] size-5"></span>
                 ) : (
                   <span className="icon-[tabler--moon] size-5"></span>
@@ -116,7 +119,7 @@ export function Navbar() {
               className="btn btn-ghost btn-sm btn-circle"
               aria-label="Toggle theme"
             >
-              {theme === "dark" ? (
+              {resolvedTheme === "dark" ? (
                 <span className="icon-[tabler--sun] size-5"></span>
               ) : (
                 <span className="icon-[tabler--moon] size-5"></span>
