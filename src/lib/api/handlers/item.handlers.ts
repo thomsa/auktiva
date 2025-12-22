@@ -26,7 +26,7 @@ export const createItemSchema = z.object({
 export const updateItemSchema = z.object({
   name: z.string().min(1, "Name is required").max(200).optional(),
   description: z.string().max(2000).nullable().optional(),
-  currencyCode: z.string().length(3).optional(),
+  currencyCode: z.string().length(3).nullable().optional(),
   startingBid: z.number().min(0).optional(),
   minBidIncrement: z.number().min(0.01).optional(),
   bidderAnonymous: z.boolean().optional(),

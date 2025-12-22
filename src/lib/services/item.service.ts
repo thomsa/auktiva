@@ -54,7 +54,7 @@ export interface CreateItemInput {
 export interface UpdateItemInput {
   name?: string;
   description?: string | null;
-  currencyCode?: string;
+  currencyCode?: string | null;
   startingBid?: number;
   minBidIncrement?: number;
   bidderAnonymous?: boolean;
@@ -750,7 +750,7 @@ export async function updateItem(
 
   // Only allow these if no bids
   if (!hasBids) {
-    if (input.currencyCode !== undefined)
+    if (input.currencyCode !== undefined && input.currencyCode !== null)
       updateData.currencyCode = input.currencyCode;
     if (input.startingBid !== undefined)
       updateData.startingBid = input.startingBid;
