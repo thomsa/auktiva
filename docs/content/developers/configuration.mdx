@@ -106,6 +106,20 @@ Failed emails are logged to the database and automatically retried via a cron jo
   the app will function normally.
 </Callout>
 
+## Google OAuth (Optional)
+
+Enable Google sign-in for your users. See [Authentication](/developers/authentication) for detailed setup instructions.
+
+```bash
+# Google OAuth credentials (from Google Cloud Console)
+GOOGLE_CLIENT_ID="your-client-id.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="your-client-secret"
+```
+
+<Callout type="info">
+  Google OAuth is optional. If not configured, users can still register and login with email/password. The Google sign-in button only appears when these variables are set.
+</Callout>
+
 ## Feature Flags
 
 ```bash
@@ -115,26 +129,28 @@ ALLOW_OPEN_AUCTIONS="true"
 
 ## All Environment Variables
 
-| Variable               | Required   | Default               | Description                        |
-| ---------------------- | ---------- | --------------------- | ---------------------------------- |
-| `DATABASE_URL`         | Yes        | -                     | Database connection string         |
-| `DATABASE_AUTH_TOKEN`  | Turso only | -                     | Turso authentication token         |
-| `AUTH_SECRET`          | Yes        | -                     | Session encryption secret          |
-| `AUTH_URL`             | Yes        | -                     | Application base URL               |
-| `STORAGE_PROVIDER`     | No         | `local`               | Storage provider (`local` or `s3`) |
-| `STORAGE_LOCAL_PATH`   | Local only | `./uploads`           | Path for local file storage        |
-| `S3_BUCKET`            | S3 only    | -                     | S3 bucket name                     |
-| `S3_REGION`            | S3 only    | -                     | S3 region                          |
-| `S3_ACCESS_KEY_ID`     | S3 only    | -                     | S3 access key                      |
-| `S3_SECRET_ACCESS_KEY` | S3 only    | -                     | S3 secret key                      |
-| `S3_ENDPOINT`          | No         | -                     | Custom S3 endpoint                 |
-| `S3_PUBLIC_URL`        | No         | -                     | Custom public URL for files        |
-| `BREVO_API_KEY`        | No         | -                     | Brevo API key for emails           |
-| `MAIL_FROM`            | No         | `noreply@auktiva.org` | Sender email address               |
-| `MAIL_FROM_NAME`       | No         | `Auktiva.org`         | Sender display name                |
-| `NEXT_PUBLIC_APP_URL`  | No         | -                     | App URL for email links            |
-| `CRON_SECRET`          | No         | -                     | Secret for cron endpoint auth      |
-| `ALLOW_OPEN_AUCTIONS`  | No         | `false`               | Enable open auction creation       |
+| Variable                | Required   | Default               | Description                        |
+| ----------------------- | ---------- | --------------------- | ---------------------------------- |
+| `DATABASE_URL`          | Yes        | -                     | Database connection string         |
+| `DATABASE_AUTH_TOKEN`   | Turso only | -                     | Turso authentication token         |
+| `AUTH_SECRET`           | Yes        | -                     | Session encryption secret          |
+| `AUTH_URL`              | Yes        | -                     | Application base URL               |
+| `GOOGLE_CLIENT_ID`      | No         | -                     | Google OAuth client ID             |
+| `GOOGLE_CLIENT_SECRET`  | No         | -                     | Google OAuth client secret         |
+| `STORAGE_PROVIDER`      | No         | `local`               | Storage provider (`local` or `s3`) |
+| `STORAGE_LOCAL_PATH`    | Local only | `./uploads`           | Path for local file storage        |
+| `S3_BUCKET`             | S3 only    | -                     | S3 bucket name                     |
+| `S3_REGION`             | S3 only    | -                     | S3 region                          |
+| `S3_ACCESS_KEY_ID`      | S3 only    | -                     | S3 access key                      |
+| `S3_SECRET_ACCESS_KEY`  | S3 only    | -                     | S3 secret key                      |
+| `S3_ENDPOINT`           | No         | -                     | Custom S3 endpoint                 |
+| `S3_PUBLIC_URL`         | No         | -                     | Custom public URL for files        |
+| `BREVO_API_KEY`         | No         | -                     | Brevo API key for emails           |
+| `MAIL_FROM`             | No         | `noreply@auktiva.org` | Sender email address               |
+| `MAIL_FROM_NAME`        | No         | `Auktiva.org`         | Sender display name                |
+| `NEXT_PUBLIC_APP_URL`   | No         | -                     | App URL for email links            |
+| `CRON_SECRET`           | No         | -                     | Secret for cron endpoint auth      |
+| `ALLOW_OPEN_AUCTIONS`   | No         | `false`               | Enable open auction creation       |
 
 ## Example Configurations
 

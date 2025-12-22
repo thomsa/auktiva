@@ -1,6 +1,6 @@
 # Authentication
 
-Auktiva uses [NextAuth.js](https://next-auth.js.org/) v4 for authentication, providing secure session management with credentials-based login.
+Auktiva uses [NextAuth.js](https://next-auth.js.org/) v4 for authentication, supporting both credentials-based login and OAuth providers (Google).
 
 ## Configuration
 
@@ -32,21 +32,81 @@ import { Callout } from "nextra/components";
   Never use the example secret in production. Always generate a unique value.
 </Callout>
 
+## Google OAuth (Optional)
+
+Auktiva supports Google OAuth for seamless sign-in. When enabled, users can sign up/login with their Google account.
+
+### Setting Up Google OAuth
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Navigate to **APIs & Services** → **Credentials**
+4. Click **Create Credentials** → **OAuth client ID**
+5. Select **Web application** as the application type
+6. Add authorized redirect URIs:
+   - Development: `http://localhost:3000/api/auth/callback/google`
+   - Production: `https://yourdomain.com/api/auth/callback/google`
+7. Copy the **Client ID** and **Client Secret**
+
+### Environment Variables
+
+```bash
+# Google OAuth credentials
+GOOGLE_CLIENT_ID="your-google-client-id.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+```
+
+<Callout type="info">
+  Google OAuth is optional. If these variables are not set, the Google sign-in button will not appear on login/register pages.
+</Callout>
+
+### How Google OAuth Works
+
+1. User clicks "Continue with Google"
+2. User authenticates with Google
+3. Auktiva receives user profile (email, name, avatar)
+4. If email exists → account is linked automatically
+5. If email is new → new user is created (no password required)
+
+### Account Linking
+
+When a user signs in with Google:
+
+- **New email**: Creates a new account with Google profile data
+- **Existing email**: Links Google to the existing account
+- **Already linked**: Signs in normally
+
+Users can view their connected accounts in **Settings** → **Connected Accounts**.
+
 ## How It Works
 
-### Registration
+### Registration (Email/Password)
 
 1. User submits email, name, and password
-2. Password is hashed using bcrypt (10 rounds)
+2. Password is hashed using bcrypt (12 rounds)
 3. User record is created in the database
-4. User is automatically logged in
+4. User redirected to login
 
-### Login
+### Registration (Google OAuth)
+
+1. User clicks "Continue with Google"
+2. Google authenticates and returns profile
+3. User and Account records are created
+4. Session is created automatically
+
+### Login (Email/Password)
 
 1. User submits email and password
 2. Password is verified against stored hash
-3. Session is created and stored in database
+3. JWT token is created
 4. Session cookie is set in browser
+
+### Login (Google OAuth)
+
+1. User clicks "Continue with Google"
+2. Google authenticates user
+3. Account is verified/linked
+4. JWT token is created
 
 ### Sessions
 
