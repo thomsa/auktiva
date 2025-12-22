@@ -8,7 +8,12 @@
       "startAuction": "Starte deine Auktion",
       "viewOnGithub": "Auf GitHub ansehen",
       "demoAlt": "Interaktive Demo-Vorschau",
-      "bidNow": "Jetzt bieten"
+      "bidNow": "Jetzt bieten",
+      "showDemo": "Demo ansehen",
+      "demoHint": "Klicke, um zu sehen wie Auktiva funktioniert",
+      "demoTitle": "Auktiva Demo",
+      "videoNotSupported": "Dein Browser unterstützt das Video-Element nicht.",
+      "close": "Schließen"
     },
     "features": {
       "sectionTitle": "Alles, was du für eine",

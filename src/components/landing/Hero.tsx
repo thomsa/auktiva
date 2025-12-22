@@ -1,15 +1,22 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import packageJson from "../../../package.json";
 
 export function Hero() {
   const t = useTranslations("landing.hero");
   const [mounted, setMounted] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const modalRef = useRef<HTMLDialogElement>(null);
+
+  const openModal = () => {
+    modalRef.current?.showModal();
+  };
+
+  const closeModal = () => {
+    modalRef.current?.close();
+  };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     setMounted(true);
   }, []);
 
@@ -68,19 +75,21 @@ export function Hero() {
           </div>
 
           <div className="mt-16 p-4 mb-18 rounded-2xl bg-base-200/30 border border-base-content/5 backdrop-blur-sm max-w-4xl mx-auto shadow-2xl transform hover:scale-[1.01] transition-transform duration-500">
-            {/* Mock UI/Screenshot placeholder */}
-            <div className="aspect-video rounded-xl overflow-hidden relative group bg-base-200 ">
-              {!imageLoaded && (
-                <div className="absolute inset-0 skeleton w-full h-full rounded-none"></div>
-              )}
-              <img
-                src="/pictures/recording.gif"
-                alt={t("demoAlt")}
-                className={`w-full h-full object-cover transition-opacity duration-500 ${
-                  imageLoaded ? "opacity-100" : "opacity-0"
-                }`}
-                onLoad={() => setImageLoaded(true)}
-              />
+            {/* Demo Preview Card */}
+            <div className="aspect-video rounded-xl overflow-hidden relative group bg-base-200">
+              {/* Static preview with play button overlay */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-primary/10 via-base-200 to-secondary/10">
+                <button
+                  onClick={openModal}
+                  className="btn btn-primary btn-lg gap-3 rounded-full shadow-xl shadow-primary/30 hover:shadow-primary/50 hover:scale-105 transition-all duration-300"
+                >
+                  <span className="icon-[tabler--player-play-filled] size-6"></span>
+                  {t("showDemo")}
+                </button>
+                <p className="mt-4 text-base-content/50 text-sm">
+                  {t("demoHint")}
+                </p>
+              </div>
 
               {/* Floating Cards Animation */}
               <div className="absolute top-10 left-10 w-64 h-40 bg-base-100 rounded-lg shadow-lg border border-base-content/5 p-4 transform -rotate-6 group-hover:-rotate-3 transition-transform duration-500 hidden sm:block">
@@ -116,6 +125,36 @@ export function Hero() {
               </div>
             </div>
           </div>
+
+          {/* Fullscreen Demo Modal */}
+          <dialog ref={modalRef} className="modal">
+            <div className="modal-box w-full max-w-7xl h-[90vh] p-0 bg-base-300">
+              <div className="sticky top-0 z-10 flex justify-between items-center p-4 bg-base-300/80 backdrop-blur-sm border-b border-base-content/10">
+                <h3 className="font-bold text-lg">{t("demoTitle")}</h3>
+                <button
+                  onClick={closeModal}
+                  className="btn btn-sm btn-circle btn-ghost"
+                >
+                  <span className="icon-[tabler--x] size-5"></span>
+                </button>
+              </div>
+              <div className="p-4 h-[calc(100%-4rem)] flex items-center justify-center">
+                <video
+                  className="max-w-full max-h-full rounded-lg shadow-2xl"
+                  controls
+                  autoPlay
+                  loop
+                >
+                  <source src="/pictures/demo.mov" type="video/quicktime" />
+                  <source src="/pictures/recording.gif" type="image/gif" />
+                  {t("videoNotSupported")}
+                </video>
+              </div>
+            </div>
+            <form method="dialog" className="modal-backdrop">
+              <button>{t("close")}</button>
+            </form>
+          </dialog>
         </div>
       </div>
     </section>

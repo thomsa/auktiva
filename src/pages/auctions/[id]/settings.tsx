@@ -461,7 +461,10 @@ export default function AuctionSettingsPage({
                     );
                     if (!res.ok) {
                       const result = await res.json();
-                      showToast(result.message || tErrors("auction.updateFailed"), "error");
+                      showToast(
+                        result.message || tErrors("auction.updateFailed"),
+                        "error",
+                      );
                     } else {
                       setIsEnded(true);
                       endDialog.close();

@@ -1,20 +1,24 @@
 # Error Handling Audit - Toast Implementation
 
 ## Summary
+
 Comprehensive audit and update of all async actions to display translated error toast messages when operations fail.
 
 ## Completed Updates
 
 ### ✅ Translation Files
+
 Added comprehensive error translations to all 4 language files (en, de, es, hu):
+
 - `errors.upload.*` - Image/thumbnail upload errors
-- `errors.member.*` - Member management errors  
+- `errors.member.*` - Member management errors
 - `errors.notification.*` - Notification errors
 - `errors.settings.*` - Settings update errors
 
 ### ✅ Components Updated
 
 #### Upload Components
+
 - **`src/components/upload/image-upload.tsx`**
   - ✅ Added `useToast` hook
   - ✅ Upload success/error toasts
@@ -29,6 +33,7 @@ Added comprehensive error translations to all 4 language files (en, de, es, hu):
   - ✅ Removed inline error state
 
 #### Item Components
+
 - **`src/components/item/BidForm.tsx`**
   - ✅ Added `useToast` hook
   - ✅ Bid placement success/error toasts
@@ -37,6 +42,7 @@ Added comprehensive error translations to all 4 language files (en, de, es, hu):
 ### ✅ Pages Updated
 
 #### Item Pages
+
 - **`src/pages/auctions/[id]/items/[itemId]/edit.tsx`**
   - ✅ Added `useToast` hook
   - ✅ Update success/error toasts
@@ -51,6 +57,7 @@ Added comprehensive error translations to all 4 language files (en, de, es, hu):
   - ✅ Removed inline error state
 
 #### Auction Pages
+
 - **`src/pages/auctions/create.tsx`**
   - ✅ Added `useToast` hook
   - ✅ Create success/error toasts
@@ -69,20 +76,26 @@ Added comprehensive error translations to all 4 language files (en, de, es, hu):
 ### 🔄 High Priority - User-Facing Actions
 
 #### Auction Management
+
 - **`src/pages/auctions/[id]/invite.tsx`** - Invitation sending
 - **`src/pages/auctions/[id]/members.tsx`** - Member role updates, removals
 
 #### User Settings
+
 - **`src/pages/settings.tsx`** - Profile updates, password changes, email settings
 
 #### Notifications
+
 - **`src/components/notifications/notification-bell.tsx`** - Mark read, mark all read
 
 #### Item Actions
+
 - **`src/pages/auctions/[id]/items/[itemId].tsx`** - Bid placement (if has inline fetch)
 
 ### 🔄 Medium Priority - Auth Pages
+
 These pages already have some error handling but should be reviewed:
+
 - **`src/pages/register.tsx`** - Registration errors
 - **`src/pages/login.tsx`** - Login errors (uses AlertMessage)
 - **`src/pages/forgot-password.tsx`** - Password reset request
@@ -92,6 +105,7 @@ These pages already have some error handling but should be reviewed:
 ## Pattern to Follow
 
 ### 1. Add useToast Hook
+
 ```typescript
 import { useToast } from "@/components/ui/toast";
 
@@ -100,6 +114,7 @@ const { showToast } = useToast();
 ```
 
 ### 2. Remove Error State
+
 ```typescript
 // REMOVE:
 const [error, setError] = useState<string | null>(null);
@@ -109,6 +124,7 @@ const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 ```
 
 ### 3. Replace Error Handling
+
 ```typescript
 // BEFORE:
 if (!res.ok) {
@@ -127,6 +143,7 @@ if (!res.ok) {
 ```
 
 ### 4. Remove AlertMessage Usage
+
 ```typescript
 // REMOVE from JSX:
 {error && <AlertMessage type="error">{error}</AlertMessage>}
@@ -138,6 +155,7 @@ import { AlertMessage } from "@/components/common";
 ## Translation Keys Used
 
 ### Success Messages
+
 - `t("createSuccess")` - Item/auction created
 - `t("updateSuccess")` - Item/auction updated
 - `t("deleteSuccess")` - Item/auction deleted
@@ -145,6 +163,7 @@ import { AlertMessage } from "@/components/common";
 - `t("bidPlaced")` - Bid placed successfully
 
 ### Error Messages (from errors.json)
+
 - `tErrors("generic")` - Generic error fallback
 - `tErrors("item.createFailed")` - Item creation failed
 - `tErrors("item.updateFailed")` - Item update failed

@@ -29,7 +29,7 @@ export function HowItWorks() {
             <div className="space-y-8">
               {steps.map((step, idx) => (
                 <div key={idx} className="flex gap-6 group">
-                  <div className="shrink-0 w-12 h-12 rounded-full border-2 border-base-content/10 flex items-center justify-center font-bold text-lg text-base-content/40 group-hover:border-primary group-hover:text-primary transition-colors duration-300">
+                  <div className="shrink-0 w-12 h-12 rounded-full border-2 border-base-content/20 flex items-center justify-center font-bold text-lg text-base-content/70 group-hover:border-primary group-hover:text-primary transition-colors duration-300">
                     {step.num}
                   </div>
                   <div>

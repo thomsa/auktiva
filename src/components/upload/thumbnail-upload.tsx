@@ -43,7 +43,10 @@ export function ThumbnailUpload({
       onThumbnailChange(data.publicUrl);
       showToast(t("uploadSuccess"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : tErrors("upload.thumbnailFailed"), "error");
+      showToast(
+        err instanceof Error ? err.message : tErrors("upload.thumbnailFailed"),
+        "error",
+      );
     } finally {
       setIsUploading(false);
       // Reset input
@@ -68,7 +71,10 @@ export function ThumbnailUpload({
       onThumbnailChange(null);
       showToast(t("deleteSuccess"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : tErrors("upload.deleteFailed"), "error");
+      showToast(
+        err instanceof Error ? err.message : tErrors("upload.deleteFailed"),
+        "error",
+      );
     } finally {
       setIsUploading(false);
     }
@@ -135,7 +141,6 @@ export function ThumbnailUpload({
           </p>
         </div>
       </div>
-
     </div>
   );
 }

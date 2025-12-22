@@ -8,7 +8,12 @@
       "startAuction": "Aukció indítása",
       "viewOnGithub": "Megtekintés GitHubon",
       "demoAlt": "Interaktív demó",
-      "bidNow": "Licitálj most"
+      "bidNow": "Licitálj most",
+      "showDemo": "Mutasd a demót",
+      "demoHint": "Kattints, hogy megnézd hogyan működik az Auktiva",
+      "demoTitle": "Auktiva Demó",
+      "videoNotSupported": "A böngésződ nem támogatja a videó elemet.",
+      "close": "Bezárás"
     },
     "features": {
       "sectionTitle": "Minden egy helyen a",

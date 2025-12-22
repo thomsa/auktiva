@@ -68,7 +68,10 @@ export function ImageUpload({
       onImagesChange([...images, ...uploadedImages]);
       showToast(t("uploadSuccess"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : tErrors("upload.imageFailed"), "error");
+      showToast(
+        err instanceof Error ? err.message : tErrors("upload.imageFailed"),
+        "error",
+      );
     } finally {
       setIsUploading(false);
     }
@@ -119,7 +122,10 @@ export function ImageUpload({
       onImagesChange(images.filter((img) => img.id !== imageId));
       showToast(t("deleteSuccess"), "success");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : tErrors("upload.deleteFailed"), "error");
+      showToast(
+        err instanceof Error ? err.message : tErrors("upload.deleteFailed"),
+        "error",
+      );
     }
   };
 
@@ -133,16 +139,22 @@ export function ImageUpload({
 
     // Persist order to server
     try {
-      const res = await fetch(`/api/auctions/${auctionId}/items/${itemId}/images`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageIds: newImages.map((img) => img.id) }),
-      });
+      const res = await fetch(
+        `/api/auctions/${auctionId}/items/${itemId}/images`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageIds: newImages.map((img) => img.id) }),
+        },
+      );
       if (!res.ok) {
         throw new Error(tErrors("upload.reorderFailed"));
       }
     } catch (err) {
-      showToast(err instanceof Error ? err.message : tErrors("upload.reorderFailed"), "error");
+      showToast(
+        err instanceof Error ? err.message : tErrors("upload.reorderFailed"),
+        "error",
+      );
       // Revert order on error
       onImagesChange(images);
     }

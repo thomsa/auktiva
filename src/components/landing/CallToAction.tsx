@@ -77,7 +77,7 @@ export function CallToAction() {
             </pre>
           </div>
 
-          <p className="text-sm text-base-content/50 mt-4">
+          <p className="text-sm text-base-content/70 mt-4">
             {t.rich("seeDocumentation", {
               link: (chunks) => (
                 <Link

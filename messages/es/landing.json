@@ -8,7 +8,12 @@
       "startAuction": "Empieza Tu Subasta",
       "viewOnGithub": "Ver en GitHub",
       "demoAlt": "Vista previa interactiva de demostración",
-      "bidNow": "Pujar Ahora"
+      "bidNow": "Pujar Ahora",
+      "showDemo": "Ver demostración",
+      "demoHint": "Haz clic para ver cómo funciona Auktiva",
+      "demoTitle": "Demo de Auktiva",
+      "videoNotSupported": "Tu navegador no soporta el elemento de video.",
+      "close": "Cerrar"
     },
     "features": {
       "sectionTitle": "Todo lo que necesitas para una",

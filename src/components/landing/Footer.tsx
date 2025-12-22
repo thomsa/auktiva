@@ -23,8 +23,12 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-ghost btn-circle hover:bg-base-content/5"
+                aria-label="GitHub"
               >
-                <span className="icon-[tabler--brand-github] size-6"></span>
+                <span
+                  className="icon-[tabler--brand-github] size-6"
+                  aria-hidden="true"
+                ></span>
               </a>
             </div>
           </div>
@@ -77,7 +81,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-base-content/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-base-content/40">
+        <div className="border-t border-base-content/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-base-content/60">
           <p>
             © {new Date().getFullYear()} {t("common.appName")}.{" "}
             {t("footer.allRightsReserved")}
@@ -86,7 +90,7 @@ export function Footer() {
             {t("footer.designedBy")}{" "}
             <a
               href="https://tamaslorincz.com"
-              className="text-base-content/60 hover:text-primary transition-colors"
+              className="text-base-content/80 underline decoration-base-content/30 hover:text-primary hover:decoration-primary transition-colors"
             >
               Tamas Lorincz
             </a>
