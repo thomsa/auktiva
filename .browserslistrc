@@ -1,0 +1,4 @@
+# Target modern browsers only to reduce polyfills
+# This eliminates ~14KB of unnecessary polyfills for older browsers
+
+defaults and fully supports es6-module

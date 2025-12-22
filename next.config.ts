@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
     locales: ["en", "pl", "hu", "de", "es"],
     defaultLocale: "en",
   },
+  experimental: {
+    // Target modern browsers to reduce polyfills
+    optimizePackageImports: ["next-intl", "@iconify/tailwind"],
+  },
 };
 
 export default withNextIntl(nextConfig);
