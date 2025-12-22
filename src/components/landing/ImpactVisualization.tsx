@@ -195,16 +195,17 @@ export function ImpactVisualization() {
             <motion.circle
               cx="400"
               cy="200"
-              r="40"
+              r={40}
               className="fill-secondary"
               fillOpacity="0.2"
+              style={{ transformOrigin: "400px 200px" }}
               animate={
                 showPulse
                   ? {
-                      r: [40, 45, 40],
+                      scale: [1, 1.125, 1],
                       opacity: [0.2, 0.4, 0.2],
                     }
-                  : { r: 40, opacity: 0.2 }
+                  : { scale: 1, opacity: 0.2 }
               }
               transition={{
                 duration: 3,

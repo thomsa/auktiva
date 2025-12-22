@@ -31,7 +31,7 @@ export function CallToAction() {
             <h2 className="text-4xl md:text-6xl font-extrabold mb-8 tracking-tight">
               {t("title")}
             </h2>
-            <p className="text-xl opacity-90 mb-12 max-w-2xl mx-auto font-light">
+            <p className="text-xl mb-12 max-w-2xl mx-auto font-light">
               {t("description")}
             </p>
 
@@ -43,7 +43,9 @@ export function CallToAction() {
                 {t("getStarted")}{" "}
                 <span className="icon-[tabler--rocket] size-6"></span>
               </Link>
-              <p className="text-sm opacity-70">{t("freeForever")}</p>
+              <p className="text-sm text-primary-content/90">
+                {t("freeForever")}
+              </p>
             </div>
           </div>
         </div>
