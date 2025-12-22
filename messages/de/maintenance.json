@@ -1,0 +1,24 @@
+{
+  "maintenance": {
+    "meta": {
+      "title": "Wartungsarbeiten | {siteName}",
+      "description": "Wir führen derzeit geplante Wartungsarbeiten durch. Wir sind bald zurück!"
+    },
+    "badge": "Geplante Wartung",
+    "title": "Wir sind",
+    "titleHighlight": "Gleich zurück",
+    "description": "Wir führen derzeit geplante Wartungsarbeiten durch, um Ihr Erlebnis zu verbessern. Das dauert nicht lange!",
+    "progressLabel": "Wartung läuft",
+    "duration": {
+      "title": "Voraussichtliche Dauer",
+      "text": "Normalerweise weniger als 30 Minuten"
+    },
+    "status": {
+      "title": "Bleiben Sie informiert",
+      "text": "Folgen Sie unserer Statusseite"
+    },
+    "tryAgain": "Erneut versuchen",
+    "viewStatus": "Status anzeigen",
+    "thankYou": "Vielen Dank für Ihre Geduld. Wir arbeiten hart daran, Ihnen ein noch besseres Erlebnis zu bieten."
+  }
+}

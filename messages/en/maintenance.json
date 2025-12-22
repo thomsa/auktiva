@@ -1,0 +1,24 @@
+{
+  "maintenance": {
+    "meta": {
+      "title": "Under Maintenance | {siteName}",
+      "description": "We're currently performing scheduled maintenance. We'll be back shortly!"
+    },
+    "badge": "Scheduled Maintenance",
+    "title": "We'll Be",
+    "titleHighlight": "Right Back",
+    "description": "We're currently performing scheduled maintenance to improve your experience. This won't take long!",
+    "progressLabel": "Maintenance in progress",
+    "duration": {
+      "title": "Expected Duration",
+      "text": "Usually less than 30 minutes"
+    },
+    "status": {
+      "title": "Stay Updated",
+      "text": "Follow our status page for updates"
+    },
+    "tryAgain": "Try Again",
+    "viewStatus": "View Status",
+    "thankYou": "Thank you for your patience. We're working hard to bring you an even better experience."
+  }
+}

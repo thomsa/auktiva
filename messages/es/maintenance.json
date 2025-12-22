@@ -1,0 +1,24 @@
+{
+  "maintenance": {
+    "meta": {
+      "title": "En mantenimiento | {siteName}",
+      "description": "Actualmente estamos realizando un mantenimiento programado. ¡Volveremos pronto!"
+    },
+    "badge": "Mantenimiento programado",
+    "title": "Volveremos",
+    "titleHighlight": "Enseguida",
+    "description": "Actualmente estamos realizando un mantenimiento programado para mejorar tu experiencia. ¡No tardará mucho!",
+    "progressLabel": "Mantenimiento en progreso",
+    "duration": {
+      "title": "Duración estimada",
+      "text": "Normalmente menos de 30 minutos"
+    },
+    "status": {
+      "title": "Mantente informado",
+      "text": "Sigue nuestra página de estado"
+    },
+    "tryAgain": "Intentar de nuevo",
+    "viewStatus": "Ver estado",
+    "thankYou": "Gracias por tu paciencia. Estamos trabajando duro para ofrecerte una experiencia aún mejor."
+  }
+}

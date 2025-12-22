@@ -1,0 +1,24 @@
+{
+  "maintenance": {
+    "meta": {
+      "title": "Przerwa techniczna | {siteName}",
+      "description": "Obecnie przeprowadzamy zaplanowaną konserwację. Wrócimy wkrótce!"
+    },
+    "badge": "Zaplanowana konserwacja",
+    "title": "Zaraz",
+    "titleHighlight": "Wracamy",
+    "description": "Obecnie przeprowadzamy zaplanowaną konserwację, aby poprawić Twoje doświadczenie. To nie potrwa długo!",
+    "progressLabel": "Konserwacja w toku",
+    "duration": {
+      "title": "Przewidywany czas",
+      "text": "Zwykle mniej niż 30 minut"
+    },
+    "status": {
+      "title": "Bądź na bieżąco",
+      "text": "Śledź naszą stronę statusu"
+    },
+    "tryAgain": "Spróbuj ponownie",
+    "viewStatus": "Zobacz status",
+    "thankYou": "Dziękujemy za cierpliwość. Pracujemy nad jeszcze lepszym doświadczeniem."
+  }
+}

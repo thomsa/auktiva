@@ -1,0 +1,24 @@
+{
+  "maintenance": {
+    "meta": {
+      "title": "Karbantartás alatt | {siteName}",
+      "description": "Jelenleg ütemezett karbantartást végzünk. Hamarosan visszatérünk!"
+    },
+    "badge": "Ütemezett karbantartás",
+    "title": "Hamarosan",
+    "titleHighlight": "Visszatérünk",
+    "description": "Jelenleg ütemezett karbantartást végzünk, hogy javítsuk az élményedet. Nem fog sokàig tartani!",
+    "progressLabel": "Karbantartás folyamatban",
+    "duration": {
+      "title": "Várható időtartam",
+      "text": "Általában kevesebb mint 30 perc"
+    },
+    "status": {
+      "title": "Maradj naprakész",
+      "text": "Kövesd az állapotoldalunkat"
+    },
+    "tryAgain": "Próbáld újra",
+    "viewStatus": "Állapot megtekintése",
+    "thankYou": "Köszönjük a türelmedet. Keményen dolgozunk, hogy még jobb élményt nyújtsunk."
+  }
+}
