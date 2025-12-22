@@ -59,7 +59,6 @@ export default function AuctionSettingsPage({
     itemEndMode: auction.itemEndMode,
     endDate: auction.endDate ? auction.endDate.slice(0, 16) : "",
   });
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEnding, setIsEnding] = useState(false);
@@ -85,7 +84,6 @@ export default function AuctionSettingsPage({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     setIsLoading(true);
 
     try {
@@ -101,12 +99,12 @@ export default function AuctionSettingsPage({
       const result = await res.json();
 
       if (!res.ok) {
-        setError(result.message || t("updateFailed"));
+        showToast(result.message || tErrors("auction.updateFailed"), "error");
       } else {
         showToast(t("success"), "success");
       }
     } catch {
-      setError(tErrors("generic"));
+      showToast(tErrors("generic"), "error");
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +112,6 @@ export default function AuctionSettingsPage({
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    setError(null);
 
     try {
       const res = await fetch(`/api/auctions/${auction.id}`, {
@@ -123,13 +120,14 @@ export default function AuctionSettingsPage({
 
       if (!res.ok) {
         const result = await res.json();
-        setError(result.message || t("deleteFailed")); // Assuming key exists or update json
+        showToast(result.message || tErrors("auction.deleteFailed"), "error");
         setIsDeleting(false);
       } else {
+        showToast(t("deleteSuccess"), "success");
         router.push("/dashboard");
       }
     } catch {
-      setError(tErrors("generic"));
+      showToast(tErrors("generic"), "error");
       setIsDeleting(false);
     }
   };
@@ -156,8 +154,6 @@ export default function AuctionSettingsPage({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            {error && <AlertMessage type="error">{error}</AlertMessage>}
-
             {/* Basic Info */}
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">
@@ -458,7 +454,6 @@ export default function AuctionSettingsPage({
                 isLoading={isEnding}
                 onConfirm={async () => {
                   setIsEnding(true);
-                  setError(null);
                   try {
                     const res = await fetch(
                       `/api/auctions/${auction.id}/close`,
@@ -466,14 +461,14 @@ export default function AuctionSettingsPage({
                     );
                     if (!res.ok) {
                       const result = await res.json();
-                      setError(result.message || "Failed to end auction");
+                      showToast(result.message || tErrors("auction.updateFailed"), "error");
                     } else {
                       setIsEnded(true);
                       endDialog.close();
                       showToast(t("endedSuccess"), "success");
                     }
                   } catch {
-                    setError(tErrors("generic"));
+                    showToast(tErrors("generic"), "error");
                   } finally {
                     setIsEnding(false);
                   }

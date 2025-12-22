@@ -21,6 +21,9 @@ export interface ItemListItem {
   thumbnailUrl: string | null;
   highestBidderId: string | null;
   userHasBid: boolean;
+  currency: {
+    symbol: string;
+  };
   _count: {
     bids: number;
   };
@@ -392,6 +395,9 @@ export async function getAuctionItemsForListPage(
   const items = await prisma.auctionItem.findMany({
     where: { auctionId },
     include: {
+      currency: {
+        select: { symbol: true },
+      },
       images: {
         orderBy: { order: "asc" },
         take: 1,
@@ -428,6 +434,9 @@ export async function getAuctionItemsForListPage(
     createdAt: item.createdAt.toISOString(),
     creatorId: item.creatorId,
     thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
+    currency: {
+      symbol: item.currency.symbol,
+    },
     _count: item._count,
   }));
 }

@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { useToast } from "@/components/ui/toast";
 
 interface ThumbnailUploadProps {
   auctionId: string;
@@ -14,15 +15,14 @@ export function ThumbnailUpload({
 }: ThumbnailUploadProps) {
   const t = useTranslations("upload");
   const tErrors = useTranslations("errors");
+  const { showToast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setError(null);
     setIsUploading(true);
 
     try {
@@ -41,8 +41,9 @@ export function ThumbnailUpload({
 
       const data = await res.json();
       onThumbnailChange(data.publicUrl);
+      showToast(t("uploadSuccess"), "success");
     } catch (err) {
-      setError(err instanceof Error ? err.message : tErrors("generic"));
+      showToast(err instanceof Error ? err.message : tErrors("upload.thumbnailFailed"), "error");
     } finally {
       setIsUploading(false);
       // Reset input
@@ -53,7 +54,6 @@ export function ThumbnailUpload({
   };
 
   const handleDelete = async () => {
-    setError(null);
     setIsUploading(true);
 
     try {
@@ -66,8 +66,9 @@ export function ThumbnailUpload({
       }
 
       onThumbnailChange(null);
+      showToast(t("deleteSuccess"), "success");
     } catch (err) {
-      setError(err instanceof Error ? err.message : tErrors("generic"));
+      showToast(err instanceof Error ? err.message : tErrors("upload.deleteFailed"), "error");
     } finally {
       setIsUploading(false);
     }
@@ -135,13 +136,6 @@ export function ThumbnailUpload({
         </div>
       </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="alert alert-error alert-sm">
-          <span className="icon-[tabler--alert-circle] size-4"></span>
-          <span>{error}</span>
-        </div>
-      )}
     </div>
   );
 }

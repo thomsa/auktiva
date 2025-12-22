@@ -28,7 +28,8 @@
       "itemEndAuction": "Auktionsende - Alle Artikel enden, wenn die Auktion endet",
       "itemEndNone": "Kein Ende - Artikel haben kein Enddatum",
       "submitButton": "Auktion erstellen",
-      "submitting": "Erstelle..."
+      "submitting": "Erstelle...",
+      "createSuccess": "Auktion erfolgreich erstellt"
     },
     "card": {
       "ended": "Beendet",
@@ -101,8 +102,9 @@
       "confirmEnd": "Bist du sicher, dass du diese Auktion beenden möchtest?",
       "ending": "Beende...",
       "deleting": "Lösche...",
-      "updateFailed": "Aktualisieren der Auktion fehlgeschlagen",
+      "updateFailed": "Auktion konnte nicht aktualisiert werden",
       "success": "Einstellungen erfolgreich gespeichert",
+      "deleteSuccess": "Auktion erfolgreich gelöscht",
       "endedSuccess": "Auktion erfolgreich beendet"
     },
     "members": {

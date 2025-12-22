@@ -26,9 +26,10 @@
       "itemEndMode": "Tételek zárási módja",
       "itemEndCustom": "Egyéni - Tételekre szabott lezárási idő",
       "itemEndAuction": "Aukcióval együtt - Minden tétel az aukció végén zárul",
-      "itemEndNone": "Nincs lezárás - A tételek határozatlan ideig nyitva állnak",
+      "itemEndNone": "Nincs vége - A tételeknek nincs záró dátuma",
       "submitButton": "Aukció létrehozása",
-      "submitting": "Létrehozás..."
+      "submitting": "Létrehozás...",
+      "createSuccess": "Aukció sikeresen létrehozva"
     },
     "card": {
       "ended": "Lezárult",
@@ -103,6 +104,7 @@
       "deleting": "Törlés...",
       "updateFailed": "Nem sikerült frissíteni az aukciót",
       "success": "Beállítások sikeresen mentve",
+      "deleteSuccess": "Aukció sikeresen törölve",
       "endedSuccess": "Aukció sikeresen lezárva"
     },
     "members": {

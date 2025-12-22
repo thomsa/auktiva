@@ -51,6 +51,23 @@
       "updateFailed": "Failed to update profile",
       "passwordChangeFailed": "Failed to change password",
       "incorrectPassword": "Current password is incorrect"
+    },
+    "upload": {
+      "imageFailed": "Failed to upload image",
+      "thumbnailFailed": "Failed to upload thumbnail",
+      "deleteFailed": "Failed to delete image",
+      "reorderFailed": "Failed to reorder images"
+    },
+    "member": {
+      "updateRoleFailed": "Failed to update member role",
+      "removeFailed": "Failed to remove member"
+    },
+    "notification": {
+      "markReadFailed": "Failed to mark notification as read",
+      "markAllReadFailed": "Failed to mark all notifications as read"
+    },
+    "settings": {
+      "updateFailed": "Failed to update settings"
     }
   }
 }

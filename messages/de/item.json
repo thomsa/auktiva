@@ -7,8 +7,9 @@
       "yourBid": "Dein Gebot",
       "minBid": "Min",
       "placeBid": "Gebot abgeben",
-      "placingBid": "Gebe Gebot ab...",
-      "highestBidder": "Du bist der Höchstbietende!",
+      "placingBid": "Gebot wird abgegeben...",
+      "bidPlaced": "Gebot erfolgreich abgegeben",
+      "highestBidder": "Sie sind der Höchstbietende!",
       "biddingEnded": "Das Bieten für diesen Artikel ist beendet.",
       "cannotBidOwn": "Du kannst nicht auf deinen eigenen Artikel bieten.",
       "cannotBid": "Du kannst auf diesen Artikel nicht bieten.",
@@ -37,10 +38,11 @@
       "currency": "Währung",
       "endDate": "Enddatum (optional)",
       "submitButton": "Artikel hinzufügen",
-      "submitting": "Füge hinzu...",
+      "submitting": "Wird hinzugefügt...",
       "basicInfo": "Artikeldetails",
       "pricing": "Preisgestaltung",
-      "createFailed": "Erstellen des Artikels fehlgeschlagen"
+      "createSuccess": "Artikel erfolgreich erstellt",
+      "createFailed": "Artikel konnte nicht erstellt werden"
     },
     "edit": {
       "title": "Artikel bearbeiten",
@@ -58,11 +60,14 @@
       "endMessageWithBids": "Der aktuell Höchstbietende gewinnt diesen Artikel.",
       "endMessageNoBids": "Dieser Artikel hat noch keine Gebote.",
       "hasBidsWarning": "Dieser Artikel hat Gebote. Einige Felder können nicht geändert werden.",
-      "endedMessage": "Dieser Artikel ist bereits beendet. Bieten ist geschlossen.",
+      "endedMessage": "Dieser Artikel ist bereits beendet. Die Gebote sind geschlossen.",
       "cannotDeleteWithBids": "Artikel mit Geboten können nicht gelöscht werden.",
-      "updateFailed": "Aktualisieren des Artikels fehlgeschlagen",
-      "deleteFailed": "Löschen des Artikels fehlgeschlagen",
-      "endFailed": "Beenden des Artikels fehlgeschlagen"
+      "updateSuccess": "Artikel erfolgreich aktualisiert",
+      "deleteSuccess": "Artikel erfolgreich gelöscht",
+      "endNowSuccess": "Artikelgebote erfolgreich beendet",
+      "updateFailed": "Artikel konnte nicht aktualisiert werden",
+      "deleteFailed": "Artikel konnte nicht gelöscht werden",
+      "endFailed": "Artikel konnte nicht beendet werden"
     },
     "gallery": {
       "imageOf": "Bild {current} von {total}",

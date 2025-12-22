@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { AlertMessage } from "@/components/common";
+import { useToast } from "@/components/ui/toast";
 import { calculateMinBid } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
 
@@ -45,6 +46,7 @@ export function BidForm({
   const tErrors = useTranslations("errors");
   const tTime = useTranslations("time");
   const { formatDate } = useFormatters();
+  const { showToast } = useToast();
   const {
     register,
     handleSubmit,
@@ -89,15 +91,14 @@ export function BidForm({
       const result = await res.json();
 
       if (!res.ok) {
-        setError("root", {
-          message: result.message || tErrors("bid.placeFailed"),
-        });
+        showToast(result.message || tErrors("bid.placeFailed"), "error");
       } else {
         await onBidPlaced();
         reset();
+        showToast(t("bidPlaced"), "success");
       }
     } catch {
-      setError("root", { message: tErrors("generic") });
+      showToast(tErrors("generic"), "error");
     }
   };
 

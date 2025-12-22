@@ -51,6 +51,23 @@
       "updateFailed": "Error al actualizar perfil",
       "passwordChangeFailed": "Error al cambiar contraseña",
       "incorrectPassword": "La contraseña actual es incorrecta"
+    },
+    "upload": {
+      "imageFailed": "Error al subir imagen",
+      "thumbnailFailed": "Error al subir miniatura",
+      "deleteFailed": "Error al eliminar imagen",
+      "reorderFailed": "Error al reordenar imágenes"
+    },
+    "member": {
+      "updateRoleFailed": "Error al actualizar rol del miembro",
+      "removeFailed": "Error al eliminar miembro"
+    },
+    "notification": {
+      "markReadFailed": "Error al marcar notificación como leída",
+      "markAllReadFailed": "Error al marcar todas las notificaciones como leídas"
+    },
+    "settings": {
+      "updateFailed": "Error al actualizar configuración"
     }
   }
 }

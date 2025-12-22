@@ -26,9 +26,10 @@
       "itemEndMode": "Modo de Fin de Artículo",
       "itemEndCustom": "Personalizado - Cada artículo puede tener su propia fecha de fin",
       "itemEndAuction": "Fin de Subasta - Todos los artículos terminan cuando la subasta termina",
-      "itemEndNone": "Sin Fin - Los artículos no tienen fecha de fin",
-      "submitButton": "Crear Subasta",
-      "submitting": "Creando..."
+      "itemEndNone": "Sin fin - Los artículos no tienen fecha de fin",
+      "submitButton": "Crear subasta",
+      "submitting": "Creando...",
+      "createSuccess": "Subasta creada con éxito"
     },
     "card": {
       "ended": "Finalizada",
@@ -102,8 +103,9 @@
       "ending": "Finalizando...",
       "deleting": "Eliminando...",
       "updateFailed": "Error al actualizar la subasta",
-      "success": "Ajustes guardados correctamente",
-      "endedSuccess": "Subasta finalizada correctamente"
+      "success": "Configuración guardada con éxito",
+      "deleteSuccess": "Subasta eliminada con éxito",
+      "endedSuccess": "Subasta finalizada con éxito"
     },
     "members": {
       "title": "Miembros",

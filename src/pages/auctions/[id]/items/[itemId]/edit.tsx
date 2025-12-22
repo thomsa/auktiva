@@ -16,6 +16,7 @@ import {
 import { ImageUpload } from "@/components/upload/image-upload";
 import { Button } from "@/components/ui/button";
 import { useConfirmDialog } from "@/hooks/ui";
+import { useToast } from "@/components/ui/toast";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 
@@ -75,10 +76,10 @@ export default function EditItemPage({
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
   const tAuction = useTranslations("auction");
-  const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { showToast } = useToast();
   const [images, setImages] = useState<ItemImage[]>(initialImages);
   const [isEnding, setIsEnding] = useState(false);
   const deleteDialog = useConfirmDialog();
@@ -93,7 +94,6 @@ export default function EditItemPage({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
     setFieldErrors({});
     setIsLoading(true);
 
@@ -121,14 +121,16 @@ export default function EditItemPage({
       if (!res.ok) {
         if (result.errors) {
           setFieldErrors(result.errors);
+          showToast(tErrors("item.updateFailed"), "error");
         } else {
-          setError(result.message || t("updateFailed"));
+          showToast(result.message || tErrors("item.updateFailed"), "error");
         }
       } else {
+        showToast(t("updateSuccess"), "success");
         router.push(`/auctions/${auction.id}/items/${item.id}`);
       }
     } catch {
-      setError(tErrors("generic"));
+      showToast(tErrors("generic"), "error");
     } finally {
       setIsLoading(false);
     }
@@ -136,7 +138,6 @@ export default function EditItemPage({
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    setError(null);
 
     try {
       const res = await fetch(`/api/auctions/${auction.id}/items/${item.id}`, {
@@ -144,21 +145,21 @@ export default function EditItemPage({
       });
 
       if (!res.ok) {
-        const result = await res.json();
-        setError(result.message || t("deleteFailed"));
-        setIsDeleting(false);
+        const data = await res.json();
+        showToast(data.message || tErrors("item.deleteFailed"), "error");
       } else {
+        showToast(t("deleteSuccess"), "success");
         router.push(`/auctions/${auction.id}`);
       }
     } catch {
-      setError(tErrors("generic"));
+      showToast(tErrors("generic"), "error");
+    } finally {
       setIsDeleting(false);
     }
   };
 
   const handleEndNow = async () => {
     setIsEnding(true);
-    setError(null);
 
     try {
       const res = await fetch(`/api/auctions/${auction.id}/items/${item.id}`, {
@@ -169,14 +170,15 @@ export default function EditItemPage({
 
       if (!res.ok) {
         const result = await res.json();
-        setError(result.message || t("endFailed"));
+        showToast(result.message || tErrors("item.updateFailed"), "error");
         setIsEnding(false);
         endDialog.close();
       } else {
+        showToast(t("endNowSuccess"), "success");
         router.push(`/auctions/${auction.id}/items/${item.id}`);
       }
     } catch {
-      setError(tErrors("generic"));
+      showToast(tErrors("generic"), "error");
       setIsEnding(false);
       endDialog.close();
     }
@@ -211,8 +213,6 @@ export default function EditItemPage({
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            {error && <AlertMessage type="error">{error}</AlertMessage>}
-
             {/* Basic Info */}
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">

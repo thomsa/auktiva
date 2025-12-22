@@ -51,6 +51,23 @@
       "updateFailed": "Aktualisieren des Profils fehlgeschlagen",
       "passwordChangeFailed": "Ändern des Passworts fehlgeschlagen",
       "incorrectPassword": "Das aktuelle Passwort ist falsch"
+    },
+    "upload": {
+      "imageFailed": "Hochladen des Bildes fehlgeschlagen",
+      "thumbnailFailed": "Hochladen des Vorschaubildes fehlgeschlagen",
+      "deleteFailed": "Löschen des Bildes fehlgeschlagen",
+      "reorderFailed": "Neuordnen der Bilder fehlgeschlagen"
+    },
+    "member": {
+      "updateRoleFailed": "Aktualisieren der Mitgliederrolle fehlgeschlagen",
+      "removeFailed": "Entfernen des Mitglieds fehlgeschlagen"
+    },
+    "notification": {
+      "markReadFailed": "Markieren der Benachrichtigung als gelesen fehlgeschlagen",
+      "markAllReadFailed": "Markieren aller Benachrichtigungen als gelesen fehlgeschlagen"
+    },
+    "settings": {
+      "updateFailed": "Aktualisieren der Einstellungen fehlgeschlagen"
     }
   }
 }

@@ -4,8 +4,9 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { PageLayout, BackLink, AlertMessage } from "@/components/common";
+import { PageLayout, BackLink } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 
@@ -26,13 +27,12 @@ export default function CreateAuctionPage({
   const t = useTranslations("auction.create");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
-  const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
     setFieldErrors({});
     setIsLoading(true);
 
@@ -59,14 +59,16 @@ export default function CreateAuctionPage({
       if (!res.ok) {
         if (result.errors) {
           setFieldErrors(result.errors);
+          showToast(tErrors("auction.createFailed"), "error");
         } else {
-          setError(result.message || tErrors("auction.createFailed"));
+          showToast(result.message || tErrors("auction.createFailed"), "error");
         }
       } else {
+        showToast(t("createSuccess"), "success");
         router.push(`/auctions/${result.id}`);
       }
     } catch {
-      setError(tErrors("generic"));
+      showToast(tErrors("generic"), "error");
     } finally {
       setIsLoading(false);
     }
@@ -91,8 +93,6 @@ export default function CreateAuctionPage({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            {error && <AlertMessage type="error">{error}</AlertMessage>}
-
             {/* Basic Info */}
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">

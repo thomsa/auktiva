@@ -51,6 +51,23 @@
       "updateFailed": "Nem sikerült frissíteni a profilt",
       "passwordChangeFailed": "Nem sikerült módosítani a jelszót",
       "incorrectPassword": "A jelenlegi jelszó helytelen"
+    },
+    "upload": {
+      "imageFailed": "Nem sikerült feltölteni a képet",
+      "thumbnailFailed": "Nem sikerült feltölteni az előnézeti képet",
+      "deleteFailed": "Nem sikerült törölni a képet",
+      "reorderFailed": "Nem sikerült átrendezni a képeket"
+    },
+    "member": {
+      "updateRoleFailed": "Nem sikerült frissíteni a tag szerepét",
+      "removeFailed": "Nem sikerült eltávolítani a tagot"
+    },
+    "notification": {
+      "markReadFailed": "Nem sikerült olvasottnak jelölni az értesítést",
+      "markAllReadFailed": "Nem sikerült olvasottnak jelölni az összes értesítést"
+    },
+    "settings": {
+      "updateFailed": "Nem sikerült frissíteni a beállításokat"
     }
   }
 }

@@ -64,6 +64,7 @@ export interface AuctionDetailForPage {
   itemEndMode: string;
   inviteToken: string | null;
   createdAt: string;
+  updatedAt: string;
   thumbnailUrl: string | null;
   creator: {
     id: string;
@@ -150,6 +151,7 @@ export async function getAuctionForDetailPage(
     ...auction,
     endDate: auction.endDate?.toISOString() || null,
     createdAt: auction.createdAt.toISOString(),
+    updatedAt: auction.updatedAt.toISOString(),
     thumbnailUrl: auction.thumbnailUrl
       ? getPublicUrl(auction.thumbnailUrl)
       : null,

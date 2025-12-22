@@ -8,6 +8,7 @@
       "minBid": "Min",
       "placeBid": "Place Bid",
       "placingBid": "Placing Bid...",
+      "bidPlaced": "Bid placed successfully",
       "highestBidder": "You're the highest bidder!",
       "biddingEnded": "This item's bidding has ended.",
       "cannotBidOwn": "You cannot bid on your own item.",
@@ -40,6 +41,7 @@
       "submitting": "Adding...",
       "basicInfo": "Item Details",
       "pricing": "Pricing",
+      "createSuccess": "Item created successfully",
       "createFailed": "Failed to create item"
     },
     "edit": {
@@ -60,6 +62,9 @@
       "hasBidsWarning": "This item has bids. Some fields cannot be changed.",
       "endedMessage": "This item has already ended. Bidding is closed.",
       "cannotDeleteWithBids": "Items with bids cannot be deleted.",
+      "updateSuccess": "Item updated successfully",
+      "deleteSuccess": "Item deleted successfully",
+      "endNowSuccess": "Item bidding ended successfully",
       "updateFailed": "Failed to update item",
       "deleteFailed": "Failed to delete item",
       "endFailed": "Failed to end item"

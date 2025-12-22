@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { useToast } from "@/components/ui/toast";
 
 interface UploadedImage {
   id: string;
@@ -25,9 +26,9 @@ export function ImageUpload({
 }: ImageUploadProps) {
   const t = useTranslations("upload");
   const tErrors = useTranslations("errors");
+  const { showToast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const uploadFile = async (file: File) => {
@@ -55,19 +56,19 @@ export function ImageUpload({
     const remainingSlots = maxImages - images.length;
 
     if (fileArray.length > remainingSlots) {
-      setError(t("maxImagesError", { count: remainingSlots }));
+      showToast(t("maxImagesError", { count: remainingSlots }), "error");
       return;
     }
 
-    setError(null);
     setIsUploading(true);
 
     try {
       const uploadPromises = fileArray.map((file) => uploadFile(file));
       const uploadedImages = await Promise.all(uploadPromises);
       onImagesChange([...images, ...uploadedImages]);
+      showToast(t("uploadSuccess"), "success");
     } catch (err) {
-      setError(err instanceof Error ? err.message : tErrors("generic"));
+      showToast(err instanceof Error ? err.message : tErrors("upload.imageFailed"), "error");
     } finally {
       setIsUploading(false);
     }
@@ -112,12 +113,13 @@ export function ImageUpload({
       );
 
       if (!res.ok) {
-        throw new Error(tErrors("generic"));
+        throw new Error(tErrors("upload.deleteFailed"));
       }
 
       onImagesChange(images.filter((img) => img.id !== imageId));
+      showToast(t("deleteSuccess"), "success");
     } catch (err) {
-      setError(err instanceof Error ? err.message : tErrors("generic"));
+      showToast(err instanceof Error ? err.message : tErrors("upload.deleteFailed"), "error");
     }
   };
 
@@ -131,13 +133,18 @@ export function ImageUpload({
 
     // Persist order to server
     try {
-      await fetch(`/api/auctions/${auctionId}/items/${itemId}/images`, {
+      const res = await fetch(`/api/auctions/${auctionId}/items/${itemId}/images`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageIds: newImages.map((img) => img.id) }),
       });
+      if (!res.ok) {
+        throw new Error(tErrors("upload.reorderFailed"));
+      }
     } catch (err) {
-      console.error("Failed to save image order:", err);
+      showToast(err instanceof Error ? err.message : tErrors("upload.reorderFailed"), "error");
+      // Revert order on error
+      onImagesChange(images);
     }
   };
 
@@ -189,21 +196,6 @@ export function ImageUpload({
           </div>
         )}
       </div>
-
-      {/* Error Message */}
-      {error && (
-        <div className="alert alert-error alert-sm">
-          <span className="icon-[tabler--alert-circle] size-4"></span>
-          <span>{error}</span>
-          <button
-            type="button"
-            className="btn btn-ghost btn-xs"
-            onClick={() => setError(null)}
-          >
-            <span className="icon-[tabler--x] size-4"></span>
-          </button>
-        </div>
-      )}
 
       {/* Image Gallery */}
       {images.length > 0 && (
