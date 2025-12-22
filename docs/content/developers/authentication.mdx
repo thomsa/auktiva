@@ -57,7 +57,8 @@ GOOGLE_CLIENT_SECRET="your-google-client-secret"
 ```
 
 <Callout type="info">
-  Google OAuth is optional. If these variables are not set, the Google sign-in button will not appear on login/register pages.
+  Google OAuth is optional. If these variables are not set, the Google sign-in
+  button will not appear on login/register pages.
 </Callout>
 
 ### How Google OAuth Works
@@ -78,6 +79,46 @@ When a user signs in with Google:
 
 Users can view their connected accounts in **Settings** → **Connected Accounts**.
 
+## Microsoft OAuth (Optional)
+
+Auktiva supports Microsoft OAuth (Azure AD) for seamless sign-in with personal Microsoft accounts and work/school accounts.
+
+### Setting Up Microsoft OAuth
+
+1. Go to [Azure Portal](https://portal.azure.com/)
+2. Navigate to **Azure Active Directory** → **App registrations** → **New registration**
+3. Configure your app:
+   - **Name**: Your app name (e.g., "Auktiva")
+   - **Supported account types**: Select "Accounts in any organizational directory and personal Microsoft accounts"
+   - **Redirect URI**: Select "Web" platform
+4. Add redirect URIs:
+   - Development: `http://localhost:3000/api/auth/callback/azure-ad`
+   - Production: `https://yourdomain.com/api/auth/callback/azure-ad`
+5. After creation, copy the **Application (client) ID**
+6. Go to **Certificates & secrets** → **New client secret**
+7. Copy the secret **Value** (not the Secret ID)
+
+### Environment Variables
+
+```bash
+# Microsoft OAuth credentials
+MICROSOFT_CLIENT_ID="your-application-client-id"
+MICROSOFT_CLIENT_SECRET="your-client-secret-value"
+```
+
+<Callout type="info">
+  Microsoft OAuth is optional. If these variables are not set, the Microsoft
+  sign-in button will not appear on login/register pages.
+</Callout>
+
+### How Microsoft OAuth Works
+
+1. User clicks "Continue with Microsoft"
+2. User authenticates with their Microsoft account
+3. Auktiva receives user profile (email, name, avatar)
+4. If email exists → account is linked automatically
+5. If email is new → new user is created (no password required)
+
 ## How It Works
 
 ### Registration (Email/Password)
@@ -87,10 +128,10 @@ Users can view their connected accounts in **Settings** → **Connected Accounts
 3. User record is created in the database
 4. User redirected to login
 
-### Registration (Google OAuth)
+### Registration (OAuth - Google/Microsoft)
 
-1. User clicks "Continue with Google"
-2. Google authenticates and returns profile
+1. User clicks "Continue with Google" or "Continue with Microsoft"
+2. Provider authenticates and returns profile
 3. User and Account records are created
 4. Session is created automatically
 
@@ -101,10 +142,10 @@ Users can view their connected accounts in **Settings** → **Connected Accounts
 3. JWT token is created
 4. Session cookie is set in browser
 
-### Login (Google OAuth)
+### Login (OAuth - Google/Microsoft)
 
-1. User clicks "Continue with Google"
-2. Google authenticates user
+1. User clicks OAuth provider button
+2. Provider authenticates user
 3. Account is verified/linked
 4. JWT token is created
 

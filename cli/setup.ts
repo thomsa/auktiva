@@ -47,6 +47,11 @@ interface EnvConfig {
   MAIL_FROM_NAME?: string;
   NEXT_PUBLIC_APP_URL?: string;
   CRON_SECRET?: string;
+  // OAuth configuration
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  MICROSOFT_CLIENT_ID?: string;
+  MICROSOFT_CLIENT_SECRET?: string;
 }
 
 // =============================================================================
@@ -343,6 +348,112 @@ async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
   };
 }
 
+async function setupOAuth(authUrl: string): Promise<Partial<EnvConfig>> {
+  const config: Partial<EnvConfig> = {};
+
+  // Google OAuth
+  const wantGoogle = await confirm({
+    message: "Do you want to enable Google OAuth sign-in?",
+    default: false,
+  });
+
+  if (wantGoogle) {
+    console.log();
+    console.log(
+      chalk.dim(
+        "Google OAuth allows users to sign in with their Google account.",
+      ),
+    );
+    console.log();
+    console.log(
+      chalk.cyan("Setup instructions: ") +
+        chalk.bold("https://console.cloud.google.com/apis/credentials"),
+    );
+    console.log(chalk.dim("1. Create a new project or select existing"));
+    console.log(
+      chalk.dim(
+        "2. Go to APIs & Services → Credentials → Create Credentials → OAuth client ID",
+      ),
+    );
+    console.log(chalk.dim("3. Application type: Web application"));
+    console.log(
+      chalk.dim(`4. Add redirect URI: ${authUrl}/api/auth/callback/google`),
+    );
+    console.log();
+
+    const googleClientId = await input({
+      message: "Google Client ID:",
+      required: true,
+    });
+
+    const googleClientSecret = await password({
+      message: "Google Client Secret:",
+    });
+
+    if (googleClientId && googleClientSecret) {
+      config.GOOGLE_CLIENT_ID = googleClientId;
+      config.GOOGLE_CLIENT_SECRET = googleClientSecret;
+      printSuccess("Google OAuth configured");
+    }
+  }
+
+  // Microsoft OAuth
+  const wantMicrosoft = await confirm({
+    message: "Do you want to enable Microsoft OAuth sign-in?",
+    default: false,
+  });
+
+  if (wantMicrosoft) {
+    console.log();
+    console.log(
+      chalk.dim(
+        "Microsoft OAuth allows users to sign in with their Microsoft account.",
+      ),
+    );
+    console.log();
+    console.log(
+      chalk.cyan("Setup instructions: ") +
+        chalk.bold(
+          "https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps",
+        ),
+    );
+    console.log(
+      chalk.dim("1. Go to Azure AD → App registrations → New registration"),
+    );
+    console.log(
+      chalk.dim(
+        "2. Select 'Accounts in any organizational directory and personal Microsoft accounts'",
+      ),
+    );
+    console.log(
+      chalk.dim(
+        `3. Add redirect URI (Web): ${authUrl}/api/auth/callback/azure-ad`,
+      ),
+    );
+    console.log(
+      chalk.dim("4. Go to Certificates & secrets → New client secret"),
+    );
+    console.log();
+
+    const microsoftClientId = await input({
+      message: "Microsoft Client ID (Application ID):",
+      required: true,
+    });
+
+    const microsoftClientSecret = await password({
+      message: "Microsoft Client Secret:",
+    });
+
+    if (microsoftClientId && microsoftClientSecret) {
+      config.MICROSOFT_CLIENT_ID = microsoftClientId;
+      config.MICROSOFT_CLIENT_SECRET = microsoftClientSecret;
+      printSuccess("Microsoft OAuth configured");
+    }
+  }
+
+  return config;
+}
+
 // =============================================================================
 // ENV FILE GENERATION
 // =============================================================================
@@ -408,6 +519,25 @@ MAIL_FROM_NAME="${config.MAIL_FROM_NAME}"
 NEXT_PUBLIC_APP_URL="${config.NEXT_PUBLIC_APP_URL}"
 CRON_SECRET="${config.CRON_SECRET}"
 `;
+  }
+
+  // OAuth configuration (optional)
+  if (config.GOOGLE_CLIENT_ID || config.MICROSOFT_CLIENT_ID) {
+    env += `
+# =============================================================================
+# OAUTH (Optional)
+# =============================================================================
+`;
+    if (config.GOOGLE_CLIENT_ID) {
+      env += `GOOGLE_CLIENT_ID="${config.GOOGLE_CLIENT_ID}"
+GOOGLE_CLIENT_SECRET="${config.GOOGLE_CLIENT_SECRET}"
+`;
+    }
+    if (config.MICROSOFT_CLIENT_ID) {
+      env += `MICROSOFT_CLIENT_ID="${config.MICROSOFT_CLIENT_ID}"
+MICROSOFT_CLIENT_SECRET="${config.MICROSOFT_CLIENT_SECRET}"
+`;
+    }
   }
 
   return env;
@@ -546,26 +676,33 @@ async function main() {
   const config: Partial<EnvConfig> = {};
 
   // Step 1: Storage
-  printHeader("Image Storage", { current: 1, total: 5 });
+  printHeader("Image Storage", { current: 1, total: 6 });
   Object.assign(config, await setupStorage());
 
   // Step 2: Database
-  printHeader("Database", { current: 2, total: 5 });
+  printHeader("Database", { current: 2, total: 6 });
   Object.assign(config, await setupDatabase());
 
   // Step 3: Authentication
-  printHeader("Authentication & Domain", { current: 3, total: 5 });
+  printHeader("Authentication & Domain", { current: 3, total: 6 });
   Object.assign(config, await setupAuth());
 
   // Step 4: Features
-  printHeader("Features", { current: 4, total: 5 });
+  printHeader("Features", { current: 4, total: 6 });
   Object.assign(config, await setupFeatures());
 
   // Step 5: Email
-  printHeader("Email Notifications", { current: 5, total: 5 });
+  printHeader("Email Notifications", { current: 5, total: 6 });
   Object.assign(
     config,
     await setupEmail(config.AUTH_URL || "http://localhost:3000"),
+  );
+
+  // Step 6: OAuth
+  printHeader("OAuth Sign-in (Optional)", { current: 6, total: 6 });
+  Object.assign(
+    config,
+    await setupOAuth(config.AUTH_URL || "http://localhost:3000"),
   );
 
   // Summary
@@ -588,6 +725,13 @@ async function main() {
   );
   console.log(
     `  ${chalk.dim("Email:")}         ${config.BREVO_API_KEY ? chalk.green("Enabled (Brevo)") : chalk.yellow("Disabled")}`,
+  );
+  // OAuth summary
+  const oauthProviders: string[] = [];
+  if (config.GOOGLE_CLIENT_ID) oauthProviders.push("Google");
+  if (config.MICROSOFT_CLIENT_ID) oauthProviders.push("Microsoft");
+  console.log(
+    `  ${chalk.dim("OAuth:")}         ${oauthProviders.length > 0 ? chalk.green(oauthProviders.join(", ")) : chalk.yellow("Disabled")}`,
   );
   console.log();
 

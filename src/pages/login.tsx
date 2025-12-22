@@ -8,14 +8,19 @@ import { authOptions } from "@/lib/auth";
 import { AlertMessage, SEO } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
+import { MicrosoftSignInButton } from "@/components/auth/microsoft-sign-in-button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 
 interface LoginPageProps {
   googleOAuthEnabled: boolean;
+  microsoftOAuthEnabled: boolean;
 }
 
-export default function LoginPage({ googleOAuthEnabled }: LoginPageProps) {
+export default function LoginPage({
+  googleOAuthEnabled,
+  microsoftOAuthEnabled,
+}: LoginPageProps) {
   const router = useRouter();
   const t = useTranslations("auth.login");
   const tCommon = useTranslations("common");
@@ -54,8 +59,8 @@ export default function LoginPage({ googleOAuthEnabled }: LoginPageProps) {
   return (
     <>
       <SEO
-        title={t("title")}
-        description={tErrors("auth.brandingDescription")}
+        title={t("seo.loginTitle")}
+        description={t("seo.loginDescription")}
       />
       <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
         {/* Left side - Branding (hidden on mobile) */}
@@ -192,12 +197,15 @@ export default function LoginPage({ googleOAuthEnabled }: LoginPageProps) {
               </Button>
             </form>
 
-            {googleOAuthEnabled && (
+            {(googleOAuthEnabled || microsoftOAuthEnabled) && (
               <>
                 <div className="divider my-6 text-base-content/40 text-sm">
                   {t("orContinueWith")}
                 </div>
-                <GoogleSignInButton />
+                <div className="flex flex-col gap-3">
+                  {googleOAuthEnabled && <GoogleSignInButton />}
+                  {microsoftOAuthEnabled && <MicrosoftSignInButton />}
+                </div>
               </>
             )}
 
@@ -233,15 +241,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const messages = await getMessages(context.locale as Locale);
 
-  // Check if Google OAuth is enabled
+  // Check if OAuth providers are enabled
   const googleOAuthEnabled = !!(
     process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+  );
+  const microsoftOAuthEnabled = !!(
+    process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET
   );
 
   return {
     props: {
       messages,
       googleOAuthEnabled,
+      microsoftOAuthEnabled,
     },
   };
 };

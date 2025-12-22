@@ -8,6 +8,7 @@ import { authOptions } from "@/lib/auth";
 import { AlertMessage, SEO } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
+import { MicrosoftSignInButton } from "@/components/auth/microsoft-sign-in-button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 
@@ -16,11 +17,13 @@ const LazyReCAPTCHA = lazy(() => import("react-google-recaptcha"));
 interface RegisterPageProps {
   recaptchaSiteKey: string | null;
   googleOAuthEnabled: boolean;
+  microsoftOAuthEnabled: boolean;
 }
 
 export default function RegisterPage({
   recaptchaSiteKey,
   googleOAuthEnabled,
+  microsoftOAuthEnabled,
 }: RegisterPageProps) {
   const router = useRouter();
   const t = useTranslations("auth.register");
@@ -351,12 +354,15 @@ export default function RegisterPage({
               </Button>
             </form>
 
-            {googleOAuthEnabled && (
+            {(googleOAuthEnabled || microsoftOAuthEnabled) && (
               <>
                 <div className="divider my-6 text-base-content/40 text-sm">
                   {t("orContinueWith")}
                 </div>
-                <GoogleSignInButton />
+                <div className="flex flex-col gap-3">
+                  {googleOAuthEnabled && <GoogleSignInButton />}
+                  {microsoftOAuthEnabled && <MicrosoftSignInButton />}
+                </div>
               </>
             )}
 
@@ -396,9 +402,12 @@ export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async (
   const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || null;
   const messages = await getMessages(context.locale as Locale);
 
-  // Check if Google OAuth is enabled
+  // Check if OAuth providers are enabled
   const googleOAuthEnabled = !!(
     process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+  );
+  const microsoftOAuthEnabled = !!(
+    process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET
   );
 
   return {
@@ -406,6 +415,7 @@ export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async (
       recaptchaSiteKey,
       messages,
       googleOAuthEnabled,
+      microsoftOAuthEnabled,
     },
   };
 };

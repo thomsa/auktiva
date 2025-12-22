@@ -1,6 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import AzureADProvider from "next-auth/providers/azure-ad";
 import { compare } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
@@ -60,6 +61,17 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   );
 }
 
+// Add Microsoft (Azure AD) provider if credentials are configured
+if (process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET) {
+  providers.push(
+    AzureADProvider({
+      clientId: process.env.MICROSOFT_CLIENT_ID,
+      clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+      tenantId: "common", // Allows personal + work/school accounts
+    }),
+  );
+}
+
 export const authOptions: NextAuthOptions = {
   providers,
   pages: {
@@ -68,23 +80,26 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account }) {
+      // List of OAuth providers we handle
+      const oauthProviders = ["google", "azure-ad"];
+
       // For OAuth sign-ins, create or link user account
-      if (account?.provider === "google" && user.email) {
+      if (account && oauthProviders.includes(account.provider) && user.email) {
         const existingUser = await prisma.user.findUnique({
           where: { email: user.email.toLowerCase() },
           include: { accounts: true },
         });
 
         if (existingUser) {
-          // Check if this Google account is already linked
+          // Check if this OAuth account is already linked
           const existingAccount = existingUser.accounts.find(
             (acc) =>
-              acc.provider === "google" &&
+              acc.provider === account.provider &&
               acc.providerAccountId === account.providerAccountId,
           );
 
           if (!existingAccount) {
-            // Link Google account to existing user
+            // Link OAuth account to existing user
             await prisma.account.create({
               data: {
                 userId: existingUser.id,
@@ -102,7 +117,7 @@ export const authOptions: NextAuthOptions = {
             });
           }
 
-          // Update user info from Google if not set
+          // Update user info from OAuth provider if not set
           if (!existingUser.name || !existingUser.image) {
             await prisma.user.update({
               where: { id: existingUser.id },
@@ -113,7 +128,7 @@ export const authOptions: NextAuthOptions = {
             });
           }
         } else {
-          // Create new user with Google account
+          // Create new user with OAuth account
           await prisma.user.create({
             data: {
               email: user.email.toLowerCase(),
@@ -142,7 +157,12 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       if (user) {
         // For OAuth, we need to fetch the user ID from our database
-        if (account?.provider === "google" && user.email) {
+        const oauthProviders = ["google", "azure-ad"];
+        if (
+          account &&
+          oauthProviders.includes(account.provider) &&
+          user.email
+        ) {
           const dbUser = await prisma.user.findUnique({
             where: { email: user.email.toLowerCase() },
           });
