@@ -16,6 +16,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
+    "analyze": "ANALYZE=true next build",
     "start": "next start",
     "lint": "eslint",
     "setup": "npx tsx cli/setup.ts",
@@ -67,6 +68,7 @@
     "@faker-js/faker": "^9.9.0",
     "@iconify-json/tabler": "^1.2.23",
     "@iconify/tailwind4": "^1.2.0",
+    "@next/bundle-analyzer": "^16.1.0",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/formidable": "^3.4.6",

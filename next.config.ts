@@ -1,5 +1,10 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import bundleAnalyzer from "@next/bundle-analyzer";
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
@@ -9,9 +14,20 @@ const nextConfig: NextConfig = {
     defaultLocale: "en",
   },
   experimental: {
-    // Target modern browsers to reduce polyfills
-    optimizePackageImports: ["next-intl", "@iconify/tailwind"],
+    // Optimize package imports to reduce bundle size
+    optimizePackageImports: [
+      "next-intl",
+      "@iconify/tailwind4",
+      "lucide-react",
+      "framer-motion",
+    ],
   },
+  compiler: {
+    // Remove console.log in production
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+  // Disable x-powered-by header
+  poweredByHeader: false,
 };
 
-export default withNextIntl(nextConfig);
+export default withBundleAnalyzer(withNextIntl(nextConfig));
