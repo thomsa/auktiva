@@ -4,6 +4,7 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import * as auctionService from "@/lib/services/auction.service";
 import { prisma } from "@/lib/prisma";
 import { PageLayout, BackLink, AlertMessage } from "@/components/common";
 import { Button } from "@/components/ui/button";
@@ -344,14 +345,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const auctionId = context.params?.id as string;
 
   // Check membership and permission
-  const membership = await prisma.auctionMember.findUnique({
-    where: {
-      auctionId_userId: {
-        auctionId,
-        userId: session.user.id,
-      },
-    },
-  });
+  const membership = await auctionService.getUserMembership(
+    auctionId,
+    session.user.id,
+  );
 
   if (!membership) {
     return {
@@ -363,7 +360,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   // Only OWNER, ADMIN, or CREATOR can add items
-  if (!["OWNER", "ADMIN", "CREATOR"].includes(membership.role)) {
+  if (!auctionService.canCreateItems(membership)) {
     return {
       redirect: {
         destination: `/auctions/${auctionId}`,
@@ -372,16 +369,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const auction = await prisma.auction.findUnique({
-    where: { id: auctionId },
-    select: {
-      id: true,
-      name: true,
-      bidderVisibility: true,
-      itemEndMode: true,
-      endDate: true,
-    },
-  });
+  const auction = await auctionService.getAuctionForDetailPage(auctionId);
 
   if (!auction) {
     return {
@@ -404,8 +392,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         email: session.user.email || "",
       },
       auction: {
-        ...auction,
-        endDate: auction.endDate?.toISOString() || null,
+        id: auction.id,
+        name: auction.name,
+        bidderVisibility: auction.bidderVisibility,
+        itemEndMode: auction.itemEndMode,
+        endDate: auction.endDate,
       },
       currencies,
       messages: await getMessages(context.locale as Locale),

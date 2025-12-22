@@ -4,9 +4,9 @@ import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { getMessages, Locale } from "@/i18n";
-import { MemberRole } from "@/generated/prisma/enums";
+import * as auctionService from "@/lib/services/auction.service";
+import * as itemService from "@/lib/services/item.service";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { AuctionSidebar } from "@/components/auction";
 import { ItemCard, ItemListItem } from "@/components/item";
@@ -247,21 +247,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const auctionId = context.params?.id as string;
 
-  // First fetch the auction to check its joinMode
-  const auction = await prisma.auction.findUnique({
-    where: { id: auctionId },
-    include: {
-      creator: {
-        select: { id: true, name: true, email: true },
-      },
-      _count: {
-        select: {
-          items: true,
-          members: true,
-        },
-      },
-    },
-  });
+  // Get auction details
+  const auction = await auctionService.getAuctionForDetailPage(auctionId);
 
   if (!auction) {
     return {
@@ -273,26 +260,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   // Get membership check
-  let membership = await prisma.auctionMember.findUnique({
-    where: {
-      auctionId_userId: {
-        auctionId,
-        userId: session.user.id,
-      },
-    },
-  });
+  let membership = await auctionService.getUserMembership(
+    auctionId,
+    session.user.id,
+  );
 
   // If not a member, check if this is an OPEN or LINK auction
   if (!membership) {
     if (auction.joinMode === "FREE" || auction.joinMode === "LINK") {
       // Auto-join the user to the open/link auction
-      membership = await prisma.auctionMember.create({
-        data: {
-          auctionId,
-          userId: session.user.id,
-          role: MemberRole.BIDDER,
-        },
-      });
+      membership = await auctionService.autoJoinAuction(
+        auctionId,
+        session.user.id,
+      );
     } else {
       // Not a member and not an open/link auction - redirect
       return {
@@ -304,34 +284,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
-  const items = await prisma.auctionItem.findMany({
-    where: { auctionId },
-    include: {
-      images: {
-        orderBy: { order: "asc" },
-        take: 1,
-      },
-      _count: {
-        select: { bids: true },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
-
-  // Generate public URL for thumbnail
-  const { getPublicUrl } = await import("@/lib/storage");
-
-  // Fetch items user has bid on to determine status
-  const userBids = await prisma.bid.findMany({
-    where: {
-      userId: session.user.id,
-      auctionItem: { auctionId },
-    },
-    select: { auctionItemId: true },
-    distinct: ["auctionItemId"],
-  });
-
-  const userBidItemIds = new Set(userBids.map((b) => b.auctionItemId));
+  // Get items for list page
+  const items = await itemService.getAuctionItemsForListPage(
+    auctionId,
+    session.user.id,
+  );
 
   return {
     props: {
@@ -340,35 +297,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         name: session.user.name || null,
         email: session.user.email || "",
       },
-      auction: {
-        ...auction,
-        endDate: auction.endDate?.toISOString() || null,
-        createdAt: auction.createdAt.toISOString(),
-        updatedAt: auction.updatedAt.toISOString(),
-        thumbnailUrl: auction.thumbnailUrl
-          ? getPublicUrl(auction.thumbnailUrl)
-          : null,
-      },
+      auction,
       membership: {
         role: membership.role,
       },
-      items: items.map((item) => ({
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        currencyCode: item.currencyCode,
-        startingBid: item.startingBid,
-        currentBid: item.currentBid,
-        highestBidderId: item.highestBidderId, // Include highestBidderId
-        userHasBid: userBidItemIds.has(item.id), // Add userHasBid status
-        endDate: item.endDate?.toISOString() || null,
-        createdAt: item.createdAt.toISOString(),
-        creatorId: item.creatorId,
-        thumbnailUrl: item.images[0]?.url
-          ? getPublicUrl(item.images[0].url)
-          : null,
-        _count: item._count,
-      })),
+      items,
       messages: await getMessages(context.locale as Locale),
     },
   };

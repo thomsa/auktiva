@@ -2,7 +2,7 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import * as auctionService from "@/lib/services/auction.service";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { StatsCard } from "@/components/ui/stats-card";
 import { getMessages, Locale } from "@/i18n";
@@ -353,14 +353,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const auctionId = context.params?.id as string;
 
   // Check membership
-  const membership = await prisma.auctionMember.findUnique({
-    where: {
-      auctionId_userId: {
-        auctionId,
-        userId: session.user.id,
-      },
-    },
-  });
+  const membership = await auctionService.getUserMembership(
+    auctionId,
+    session.user.id,
+  );
 
   if (!membership) {
     return {
@@ -371,11 +367,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const auction = await prisma.auction.findUnique({
-    where: { id: auctionId },
-  });
+  // Get auction results data
+  const resultsData = await auctionService.getAuctionResultsData(
+    auctionId,
+    session.user.id,
+  );
 
-  if (!auction) {
+  if (!resultsData) {
     return {
       redirect: {
         destination: "/dashboard",
@@ -384,56 +382,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  // Get all items with their highest bids and first image
-  const items = await prisma.auctionItem.findMany({
-    where: { auctionId },
-    include: {
-      currency: true,
-      images: {
-        orderBy: { order: "asc" },
-        take: 1,
-      },
-      bids: {
-        orderBy: { amount: "desc" },
-        take: 1,
-        include: {
-          user: {
-            select: { id: true, name: true, email: true },
-          },
-        },
-      },
-      _count: {
-        select: { bids: true },
-      },
-    },
-  });
-
-  const totalBids = items.reduce((sum, item) => sum + item._count.bids, 0);
-
-  // Generate public URLs for images
-  const { getPublicUrl } = await import("@/lib/storage");
-
-  const winners = items
-    .filter((item) => item.bids.length > 0)
-    .map((item) => ({
-      itemId: item.id,
-      itemName: item.name,
-      thumbnailUrl: item.images[0]?.url
-        ? getPublicUrl(item.images[0].url)
-        : null,
-      winningBid: item.bids[0].amount,
-      currencyCode: item.currencyCode,
-      currencySymbol: item.currency.symbol,
-      winner: item.bidderAnonymous ? null : item.bids[0].user,
-      isCurrentUser: item.bids[0].userId === session.user.id,
-    }));
-
-  const userWins = winners.filter((w) => w.isCurrentUser);
-
-  const isEnded = auction.endDate
-    ? new Date(auction.endDate) < new Date()
-    : false;
-  const isAdmin = ["OWNER", "ADMIN"].includes(membership.role);
+  const isAdmin = auctionService.isAdmin(membership);
 
   return {
     props: {
@@ -442,17 +391,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         name: session.user.name || null,
         email: session.user.email || "",
       },
-      auction: {
-        id: auction.id,
-        name: auction.name,
-        description: auction.description,
-        endDate: auction.endDate?.toISOString() || null,
-        isEnded,
-      },
-      winners,
-      userWins,
-      totalItems: items.length,
-      totalBids,
+      auction: resultsData.auction,
+      winners: resultsData.winners,
+      userWins: resultsData.userWins,
+      totalItems: resultsData.totalItems,
+      totalBids: resultsData.totalBids,
       isAdmin,
       messages: await getMessages(context.locale as Locale),
     },

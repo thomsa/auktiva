@@ -5,6 +5,8 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import * as auctionService from "@/lib/services/auction.service";
+import * as itemService from "@/lib/services/item.service";
 import {
   PageLayout,
   BackLink,
@@ -571,34 +573,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const auctionId = context.params?.id as string;
   const itemId = context.params?.itemId as string;
 
-  // Get item with creator info
-  const item = await prisma.auctionItem.findUnique({
-    where: { id: itemId },
-    include: {
-      _count: {
-        select: { bids: true },
-      },
-    },
-  });
-
-  if (!item || item.auctionId !== auctionId) {
-    return {
-      redirect: {
-        destination: `/auctions/${auctionId}`,
-        permanent: false,
-      },
-    };
-  }
-
-  // Check if user is the creator or an admin
-  const membership = await prisma.auctionMember.findUnique({
-    where: {
-      auctionId_userId: {
-        auctionId,
-        userId: session.user.id,
-      },
-    },
-  });
+  // Check membership
+  const membership = await auctionService.getUserMembership(
+    auctionId,
+    session.user.id,
+  );
 
   if (!membership) {
     return {
@@ -609,11 +588,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  // Only item creator, OWNER, or ADMIN can edit
-  const isCreator = item.creatorId === session.user.id;
-  const isAdmin = ["OWNER", "ADMIN"].includes(membership.role);
+  // Get item for edit page
+  const editData = await itemService.getItemForEditPage(
+    itemId,
+    auctionId,
+    session.user.id,
+    auctionService.isAdmin(membership),
+  );
 
-  if (!isCreator && !isAdmin) {
+  if (!editData) {
+    return {
+      redirect: {
+        destination: `/auctions/${auctionId}`,
+        permanent: false,
+      },
+    };
+  }
+
+  // Check edit permission
+  if (!editData.canEdit) {
     return {
       redirect: {
         destination: `/auctions/${auctionId}/items/${itemId}`,
@@ -622,16 +615,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const auction = await prisma.auction.findUnique({
-    where: { id: auctionId },
-    select: {
-      id: true,
-      name: true,
-      bidderVisibility: true,
-      itemEndMode: true,
-      endDate: true,
-    },
-  });
+  const auction = await auctionService.getAuctionForDetailPage(auctionId);
 
   if (!auction) {
     return {
@@ -646,15 +630,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     orderBy: { code: "asc" },
   });
 
-  // Get item images
-  const images = await prisma.auctionItemImage.findMany({
-    where: { auctionItemId: itemId },
-    orderBy: { order: "asc" },
-  });
-
-  // Generate public URLs for images
-  const { getPublicUrl } = await import("@/lib/storage");
-
   return {
     props: {
       user: {
@@ -663,28 +638,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         email: session.user.email || "",
       },
       auction: {
-        ...auction,
-        endDate: auction.endDate?.toISOString() || null,
+        id: auction.id,
+        name: auction.name,
+        bidderVisibility: auction.bidderVisibility,
+        itemEndMode: auction.itemEndMode,
+        endDate: auction.endDate,
       },
-      item: {
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        currencyCode: item.currencyCode,
-        startingBid: item.startingBid,
-        minBidIncrement: item.minBidIncrement,
-        bidderAnonymous: item.bidderAnonymous,
-        endDate: item.endDate?.toISOString() || null,
-        currentBid: item.currentBid,
-      },
+      item: editData.item,
       currencies,
-      hasBids: item._count.bids > 0,
-      images: images.map((img) => ({
-        id: img.id,
-        url: img.url,
-        publicUrl: getPublicUrl(img.url),
-        order: img.order,
-      })),
+      hasBids: editData.hasBids,
+      images: editData.images,
       messages: await getMessages(context.locale as Locale),
     },
   };

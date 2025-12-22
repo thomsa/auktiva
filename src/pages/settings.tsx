@@ -2,7 +2,7 @@ import { useState } from "react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import * as userService from "@/lib/services/user.service";
 import { PageLayout, SEO } from "@/components/common";
 import { useTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
@@ -501,10 +501,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { id: true, name: true, email: true },
-  });
+  const user = await userService.getUserById(session.user.id);
 
   if (!user) {
     return {
@@ -516,23 +513,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   // Get or create user settings
-  let settings = await prisma.userSettings.findUnique({
-    where: { userId: session.user.id },
-    select: { emailOnNewItem: true, emailOnOutbid: true },
-  });
-
-  if (!settings) {
-    settings = await prisma.userSettings.create({
-      data: { userId: session.user.id },
-      select: { emailOnNewItem: true, emailOnOutbid: true },
-    });
-  }
+  const settings = await userService.getOrCreateUserSettings(session.user.id);
 
   const messages = await getMessages(context.locale as Locale);
 
   return {
     props: {
-      user,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
       initialSettings: {
         emailOnNewItem: settings.emailOnNewItem,
         emailOnOutbid: settings.emailOnOutbid,

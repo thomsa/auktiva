@@ -3,7 +3,8 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import * as auctionService from "@/lib/services/auction.service";
+import * as inviteService from "@/lib/services/invite.service";
 import { Navbar } from "@/components/layout/navbar";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
@@ -334,23 +335,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const auctionId = context.params?.id as string;
 
-  const membership = await prisma.auctionMember.findUnique({
-    where: {
-      auctionId_userId: {
-        auctionId,
-        userId: session.user.id,
-      },
-    },
-    include: {
-      auction: {
-        select: {
-          id: true,
-          name: true,
-          memberCanInvite: true,
-        },
-      },
-    },
-  });
+  const membership = await auctionService.getUserMembershipWithAuction(
+    auctionId,
+    session.user.id,
+  );
 
   if (!membership) {
     return {
@@ -361,7 +349,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const isAdmin = ["OWNER", "ADMIN"].includes(membership.role);
+  const isAdmin = auctionService.isAdmin(membership);
   const canInvite = isAdmin || membership.auction.memberCanInvite;
 
   if (!canInvite) {
@@ -375,15 +363,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   // Only admins can see invite list
   const invites = isAdmin
-    ? await prisma.auctionInvite.findMany({
-        where: { auctionId },
-        include: {
-          sender: {
-            select: { name: true, email: true },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-      })
+    ? await inviteService.getAuctionInvitesForPage(auctionId)
     : [];
 
   return {
@@ -393,14 +373,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         name: session.user.name || null,
         email: session.user.email || "",
       },
-      auction: membership.auction,
+      auction: {
+        id: membership.auction.id,
+        name: membership.auction.name,
+        memberCanInvite: membership.auction.memberCanInvite,
+      },
       isAdmin,
-      invites: invites.map((i) => ({
-        ...i,
-        usedAt: i.usedAt?.toISOString() || null,
-        expiresAt: i.expiresAt?.toISOString() || null,
-        createdAt: i.createdAt.toISOString(),
-      })),
+      invites,
       messages: await getMessages(context.locale as Locale),
     },
   };

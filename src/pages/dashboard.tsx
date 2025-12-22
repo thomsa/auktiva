@@ -4,7 +4,8 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import { getMessages, Locale } from "@/i18n";
-import { prisma } from "@/lib/prisma";
+import * as auctionService from "@/lib/services/auction.service";
+import * as bidService from "@/lib/services/bid.service";
 import { PageLayout, EmptyState, SEO } from "@/components/common";
 import { AuctionCard } from "@/components/auction";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
@@ -291,149 +292,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const memberships = await prisma.auctionMember.findMany({
-    where: { userId: session.user.id },
-    include: {
-      auction: {
-        include: {
-          _count: {
-            select: {
-              items: true,
-              members: true,
-            },
-          },
-        },
-      },
-    },
-  });
+  // Use services for data fetching
+  const [memberAuctions, openAuctions, bidStats, bidItems] = await Promise.all([
+    auctionService.getUserAuctions(session.user.id),
+    auctionService.getOpenAuctionsForUser(session.user.id),
+    bidService.getUserBidStats(session.user.id),
+    bidService.getUserBidItems(session.user.id),
+  ]);
 
-  const memberAuctionIds = memberships.map((m) => m.auctionId);
-
-  const openAuctions = await prisma.auction.findMany({
-    where: {
-      joinMode: "FREE",
-      id: { notIn: memberAuctionIds },
-    },
-    include: {
-      _count: {
-        select: {
-          items: true,
-          members: true,
-        },
-      },
-    },
-  });
-
-  const { getPublicUrl } = await import("@/lib/storage");
-
-  const memberAuctions = memberships.map((m) => ({
-    id: m.auction.id,
-    name: m.auction.name,
-    description: m.auction.description,
-    endDate: m.auction.endDate?.toISOString() || null,
-    createdAt: m.auction.createdAt.toISOString(),
-    role: m.role,
-    thumbnailUrl: m.auction.thumbnailUrl
-      ? getPublicUrl(m.auction.thumbnailUrl)
-      : null,
-    _count: m.auction._count,
-  }));
-
-  const openAuctionsList = openAuctions.map((auction) => ({
-    id: auction.id,
-    name: auction.name,
-    description: auction.description,
-    endDate: auction.endDate?.toISOString() || null,
-    createdAt: auction.createdAt.toISOString(),
-    role: "Open",
-    thumbnailUrl: auction.thumbnailUrl
-      ? getPublicUrl(auction.thumbnailUrl)
-      : null,
-    _count: auction._count,
-  }));
-
-  const auctions = [...memberAuctions, ...openAuctionsList];
-
-  const userBids = await prisma.bid.findMany({
-    where: { userId: session.user.id },
-    include: {
-      auctionItem: {
-        include: {
-          currency: { select: { code: true, symbol: true } },
-          auction: { select: { id: true, name: true } },
-          images: {
-            select: { url: true },
-            orderBy: { order: "asc" },
-            take: 1,
-          },
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
-
-  const totalBids = userBids.length;
-
-  const currencyMap = new Map<
-    string,
-    { code: string; symbol: string; total: number }
-  >();
-  for (const bid of userBids) {
-    const code = bid.auctionItem.currency.code;
-    const symbol = bid.auctionItem.currency.symbol;
-    const existing = currencyMap.get(code);
-    if (existing) {
-      existing.total += bid.amount;
-    } else {
-      currencyMap.set(code, { code, symbol, total: bid.amount });
-    }
-  }
-  const currencyTotals = Array.from(currencyMap.values()).sort(
-    (a, b) => b.total - a.total,
-  );
-
-  const itemsMap = new Map<
-    string,
-    (typeof userBids)[0]["auctionItem"] & { userHighestBid: number }
-  >();
-  for (const bid of userBids) {
-    const existing = itemsMap.get(bid.auctionItemId);
-    if (!existing || bid.amount > existing.userHighestBid) {
-      itemsMap.set(bid.auctionItemId, {
-        ...bid.auctionItem,
-        userHighestBid: bid.amount,
-      });
-    }
-  }
-
-  const uniqueItems = Array.from(itemsMap.values());
-  const itemsBidOn = uniqueItems.length;
-  const currentlyWinning = uniqueItems.filter(
-    (item) => item.highestBidderId === session.user.id,
-  ).length;
-
-  const bidItems = uniqueItems.map((item) => ({
-    id: item.id,
-    name: item.name,
-    thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
-    currentBid: item.currentBid,
-    startingBid: item.startingBid,
-    highestBidderId: item.highestBidderId,
-    endDate: item.endDate?.toISOString() || null,
-    createdAt: item.createdAt.toISOString(),
-    currencySymbol: item.currency.symbol,
-    auctionId: item.auction.id,
-    auctionName: item.auction.name,
-    userHighestBid: item.userHighestBid,
-  }));
-
-  const bidStats = {
-    totalBids,
-    currencyTotals,
-    itemsBidOn,
-    currentlyWinning,
-  };
-
+  const auctions = [...memberAuctions, ...openAuctions];
   const messages = await getMessages(context.locale as Locale);
 
   return {

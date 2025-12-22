@@ -2,7 +2,7 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import * as bidService from "@/lib/services/bid.service";
 import { PageLayout, EmptyState } from "@/components/common";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
 import { formatDate } from "@/utils/formatters";
@@ -287,46 +287,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  // Get all bids by user
-  const bids = await prisma.bid.findMany({
-    where: { userId: session.user.id },
-    include: {
-      auctionItem: {
-        include: {
-          currency: true,
-          auction: {
-            select: { id: true, name: true },
-          },
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-  });
-
-  // Calculate stats
-  const winningBids = bids.filter(
-    (b) => b.auctionItem.highestBidderId === session.user.id,
-  );
-
-  // Calculate per-currency totals for winning bids
-  const currencyMap = new Map<
-    string,
-    { code: string; symbol: string; total: number }
-  >();
-  for (const bid of winningBids) {
-    const code = bid.auctionItem.currency.code;
-    const symbol = bid.auctionItem.currency.symbol;
-    const existing = currencyMap.get(code);
-    if (existing) {
-      existing.total += bid.amount;
-    } else {
-      currencyMap.set(code, { code, symbol, total: bid.amount });
-    }
-  }
-  const winningTotals = Array.from(currencyMap.values()).sort(
-    (a, b) => b.total - a.total,
-  );
+  // Get bid history data
+  const historyData = await bidService.getUserBidHistory(session.user.id);
 
   return {
     props: {
@@ -335,27 +297,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         name: session.user.name || null,
         email: session.user.email || "",
       },
-      bids: bids.map((b) => ({
-        id: b.id,
-        amount: b.amount,
-        createdAt: b.createdAt.toISOString(),
-        isWinning: b.auctionItem.highestBidderId === session.user.id,
-        item: {
-          id: b.auctionItem.id,
-          name: b.auctionItem.name,
-          currentBid: b.auctionItem.currentBid,
-          endDate: b.auctionItem.endDate?.toISOString() || null,
-          currency: {
-            symbol: b.auctionItem.currency.symbol,
-          },
-        },
-        auction: b.auctionItem.auction,
-      })),
-      stats: {
-        totalBids: bids.length,
-        winningBids: winningBids.length,
-        winningTotals,
-      },
+      bids: historyData.bids,
+      stats: historyData.stats,
       messages: await getMessages(context.locale as Locale),
     },
   };

@@ -3,7 +3,8 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import * as auctionService from "@/lib/services/auction.service";
+import * as memberService from "@/lib/services/member.service";
 import { PageLayout, BackLink, AlertMessage } from "@/components/common";
 import { MemberCard, MemberRow } from "@/components/member";
 import { useToast } from "@/components/ui/toast";
@@ -230,19 +231,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const auctionId = context.params?.id as string;
 
-  const membership = await prisma.auctionMember.findUnique({
-    where: {
-      auctionId_userId: {
-        auctionId,
-        userId: session.user.id,
-      },
-    },
-    include: {
-      auction: {
-        select: { id: true, name: true },
-      },
-    },
-  });
+  const membership = await auctionService.getUserMembershipWithAuction(
+    auctionId,
+    session.user.id,
+  );
 
   if (!membership) {
     return {
@@ -253,8 +245,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const isOwner = membership.role === "OWNER";
-  const isAdmin = isOwner || membership.role === "ADMIN";
+  const isOwner = auctionService.isOwner(membership);
+  const isAdmin = auctionService.isAdmin(membership);
 
   // Only admins can view member list
   if (!isAdmin) {
@@ -266,30 +258,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const members = await prisma.auctionMember.findMany({
-    where: { auctionId },
-    include: {
-      user: {
-        select: { id: true, name: true, email: true },
-      },
-    },
-    orderBy: [{ role: "asc" }, { joinedAt: "asc" }],
-  });
-
-  // Fetch inviter info for members who were invited
-  const inviterIds = members
-    .filter((m) => m.invitedById)
-    .map((m) => m.invitedById as string);
-
-  const inviters =
-    inviterIds.length > 0
-      ? await prisma.user.findMany({
-          where: { id: { in: inviterIds } },
-          select: { id: true, name: true, email: true },
-        })
-      : [];
-
-  const inviterMap = new Map(inviters.map((i) => [i.id, i]));
+  const members = await memberService.getAuctionMembersForListPage(auctionId);
 
   return {
     props: {
@@ -298,14 +267,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         name: session.user.name || null,
         email: session.user.email || "",
       },
-      auction: membership.auction,
-      members: members.map((m) => ({
-        id: m.id,
-        role: m.role,
-        joinedAt: m.joinedAt.toISOString(),
-        user: m.user,
-        invitedBy: m.invitedById ? inviterMap.get(m.invitedById) || null : null,
-      })),
+      auction: {
+        id: membership.auction.id,
+        name: membership.auction.name,
+      },
+      members,
       isOwner,
       isAdmin,
       messages: await getMessages(context.locale as Locale),

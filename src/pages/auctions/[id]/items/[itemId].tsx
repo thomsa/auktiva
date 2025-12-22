@@ -4,7 +4,6 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { getMessages, Locale } from "@/i18n";
 import { Navbar } from "@/components/layout/navbar";
 import {
@@ -15,9 +14,10 @@ import {
 import { Button } from "@/components/ui/button";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
-import { canUserBid } from "@/utils/auction-helpers";
-import { getPublicUrl } from "@/lib/storage";
 import { useTranslations } from "next-intl";
+import * as auctionService from "@/lib/services/auction.service";
+import * as itemService from "@/lib/services/item.service";
+import * as userService from "@/lib/services/user.service";
 
 interface Bid {
   id: string;
@@ -854,24 +854,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const auctionId = context.params?.id as string;
   const itemId = context.params?.itemId as string;
 
-  // Check membership
-  const membership = await prisma.auctionMember.findUnique({
-    where: {
-      auctionId_userId: {
-        auctionId,
-        userId: session.user.id,
-      },
-    },
-    include: {
-      auction: {
-        select: {
-          id: true,
-          name: true,
-          bidderVisibility: true,
-        },
-      },
-    },
-  });
+  // Check membership with auction info
+  const membership = await auctionService.getUserMembershipWithAuction(
+    auctionId,
+    session.user.id,
+  );
 
   if (!membership) {
     return {
@@ -882,17 +869,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const item = await prisma.auctionItem.findUnique({
-    where: { id: itemId },
-    include: {
-      currency: true,
-      creator: {
-        select: { id: true, name: true, email: true },
-      },
-    },
-  });
+  // Get item detail for page
+  const itemData = await itemService.getItemDetailPageData(
+    itemId,
+    auctionId,
+    session.user.id,
+    membership.auction.bidderVisibility,
+    auctionService.isAdmin(membership),
+  );
 
-  if (!item || item.auctionId !== auctionId) {
+  if (!itemData) {
     return {
       redirect: {
         destination: `/auctions/${auctionId}`,
@@ -901,110 +887,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  // Get bids with user info - we'll filter based on visibility settings (no email)
-  const bidsRaw = await prisma.bid.findMany({
-    where: { auctionItemId: itemId },
-    include: {
-      user: {
-        select: { id: true, name: true },
-      },
-    },
-    orderBy: { amount: "desc" },
-  });
-
-  // Check if item has ended and determine winner
-  const isItemEnded = item.endDate && new Date(item.endDate) < new Date();
-  const isItemOwner = item.creatorId === session.user.id;
-  const highestBid = bidsRaw[0] || null;
-
-  // Get winner email only if item ended and viewer is item owner
-  let winnerEmail: string | null = null;
-  if (isItemEnded && isItemOwner && highestBid) {
-    const winner = await prisma.user.findUnique({
-      where: { id: highestBid.userId },
-      select: { email: true },
-    });
-    winnerEmail = winner?.email || null;
-  }
-
-  // Filter user info based on visibility settings (never include email)
-  const bids = bidsRaw.map((bid) => {
-    // Item owner always sees bidder names
-    if (isItemOwner) {
-      return { ...bid, isAnonymous: bid.isAnonymous };
-    }
-
-    // Always visible - show all bidders
-    if (membership.auction.bidderVisibility === "VISIBLE") {
-      return { ...bid, isAnonymous: false };
-    }
-
-    // Always anonymous - hide all bidders
-    if (membership.auction.bidderVisibility === "ANONYMOUS") {
-      return { ...bid, user: null, isAnonymous: true };
-    }
-
-    // PER_BID - respect each bid's isAnonymous setting
-    if (bid.isAnonymous) {
-      return { ...bid, user: null };
-    }
-    return bid;
-  });
-
-  const isHighestBidder = item.highestBidderId === session.user.id;
-
-  // Check if user can edit this item
-  const isCreator = item.creatorId === session.user.id;
-  const isAdmin = ["OWNER", "ADMIN"].includes(membership.role);
-  const canEdit = isCreator || isAdmin;
-
-  // Get item images
-  const images = await prisma.auctionItemImage.findMany({
-    where: { auctionItemId: itemId },
-    orderBy: { order: "asc" },
-  });
-
-  // Get all items in this auction for sidebar
-  const auctionItems = await prisma.auctionItem.findMany({
-    where: { auctionId },
-    select: {
-      id: true,
-      name: true,
-      currentBid: true,
-      startingBid: true,
-      endDate: true,
-      createdAt: true,
-      highestBidderId: true, // Need this for sidebar status
-      currency: {
-        select: { symbol: true },
-      },
-      images: {
-        select: { url: true },
-        orderBy: { order: "asc" },
-        take: 1,
-      },
-    },
-    orderBy: { createdAt: "asc" },
-  });
+  // Get sidebar items
+  const auctionItems = await itemService.getAuctionItemsForListPage(
+    auctionId,
+    session.user.id,
+  );
 
   // Get user settings
-  const userSettings = await prisma.userSettings.findUnique({
-    where: { userId: session.user.id },
-  });
-
-  // Get user's bids to show which items they've bid on in sidebar
-  const userBids = await prisma.bid.findMany({
-    where: {
-      userId: session.user.id,
-      auctionItem: { auctionId },
-    },
-    select: { auctionItemId: true },
-    distinct: ["auctionItemId"],
-  });
-
-  const userBidItemIds = new Set(userBids.map((b) => b.auctionItemId));
-
-  // ...
+  const userSettings = await userService.getUserSettings(session.user.id);
 
   return {
     props: {
@@ -1013,39 +903,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         name: session.user.name || null,
         email: session.user.email || "",
       },
-      auction: membership.auction,
-      auctionItems: auctionItems.map((ai) => ({
-        ...ai,
-        endDate: ai.endDate?.toISOString() || null,
-        createdAt: ai.createdAt.toISOString(),
-        thumbnailUrl: ai.images[0]?.url ? getPublicUrl(ai.images[0].url) : null,
-        userHasBid: userBidItemIds.has(ai.id), // Pass bid status
-      })),
-      itemSidebarCollapsed: userSettings?.itemSidebarCollapsed ?? false,
-      item: {
-        ...item,
-        endDate: item.endDate?.toISOString() || null,
-        createdAt: item.createdAt.toISOString(),
-        updatedAt: item.updatedAt.toISOString(),
+      auction: {
+        id: membership.auction.id,
+        name: membership.auction.name,
+        bidderVisibility: membership.auction.bidderVisibility,
       },
-      bids: bids.map((b) => ({
-        id: b.id,
-        amount: b.amount,
-        createdAt: b.createdAt.toISOString(),
-        isAnonymous: b.isAnonymous,
-        user: b.user,
-      })),
-      isHighestBidder,
-      canBid: canUserBid(session.user.id, item.creatorId, !!isItemEnded),
-      canEdit,
-      isItemOwner: isCreator,
-      winnerEmail,
-      images: images.map((img) => ({
-        id: img.id,
-        url: img.url,
-        publicUrl: getPublicUrl(img.url),
-        order: img.order,
-      })),
+      auctionItems,
+      itemSidebarCollapsed: userSettings?.itemSidebarCollapsed ?? false,
+      item: itemData.item,
+      bids: itemData.bids,
+      isHighestBidder: itemData.isHighestBidder,
+      canBid: itemData.canBid,
+      canEdit: itemData.canEdit,
+      isItemOwner: itemData.isItemOwner,
+      winnerEmail: itemData.winnerEmail,
+      images: itemData.images,
       messages: await getMessages(context.locale as Locale),
     },
   };

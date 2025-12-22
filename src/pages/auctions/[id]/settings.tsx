@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import * as auctionService from "@/lib/services/auction.service";
 import {
   PageLayout,
   BackLink,
@@ -550,16 +550,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const auctionId = context.params?.id as string;
 
   // Check if user is owner
-  const membership = await prisma.auctionMember.findUnique({
-    where: {
-      auctionId_userId: {
-        auctionId,
-        userId: session.user.id,
-      },
-    },
-  });
+  const membership = await auctionService.getUserMembership(
+    auctionId,
+    session.user.id,
+  );
 
-  if (!membership || membership.role !== "OWNER") {
+  if (!membership || !auctionService.isOwner(membership)) {
     return {
       redirect: {
         destination: `/auctions/${auctionId}`,
@@ -568,9 +564,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const auction = await prisma.auction.findUnique({
-    where: { id: auctionId },
-  });
+  const auction = await auctionService.getAuctionForDetailPage(auctionId);
 
   if (!auction) {
     return {
@@ -580,9 +574,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-
-  // Generate public URL for thumbnail
-  const { getPublicUrl } = await import("@/lib/storage");
 
   return {
     props: {
@@ -599,13 +590,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         memberCanInvite: auction.memberCanInvite,
         bidderVisibility: auction.bidderVisibility,
         itemEndMode: auction.itemEndMode,
-        endDate: auction.endDate?.toISOString() || null,
+        endDate: auction.endDate,
         isEnded: auction.endDate
           ? new Date(auction.endDate) < new Date()
           : false,
-        thumbnailUrl: auction.thumbnailUrl
-          ? getPublicUrl(auction.thumbnailUrl)
-          : null,
+        thumbnailUrl: auction.thumbnailUrl,
       },
       allowOpenAuctions: process.env.ALLOW_OPEN_AUCTIONS === "true",
       messages: await getMessages(context.locale as Locale),
