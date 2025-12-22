@@ -44,6 +44,11 @@
       "selectLanguage": "Nyelv kiválasztása",
       "languageDescription": "Válaszd ki a preferált nyelvet a felülethez"
     },
+    "connectedAccounts": {
+      "title": "Kapcsolt fiókok",
+      "connected": "Kapcsolódva",
+      "notConnected": "Nincs kapcsolva"
+    },
     "seo": {
       "title": "Beállítások",
       "description": "Kezeld a fiók beállításaidat"

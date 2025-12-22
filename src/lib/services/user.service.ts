@@ -41,6 +41,32 @@ export async function getUserById(userId: string): Promise<User | null> {
 }
 
 /**
+ * Get user's connected OAuth accounts
+ */
+export async function getUserConnectedAccounts(
+  userId: string,
+): Promise<{ provider: string; providerAccountId: string }[]> {
+  const accounts = await prisma.account.findMany({
+    where: { userId },
+    select: { provider: true, providerAccountId: true },
+  });
+
+  return accounts;
+}
+
+/**
+ * Check if user has a password set (for OAuth-only users)
+ */
+export async function userHasPassword(userId: string): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { passwordHash: true },
+  });
+
+  return !!user?.passwordHash;
+}
+
+/**
  * Get user profile
  */
 export async function getUserProfile(

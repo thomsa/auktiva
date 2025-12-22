@@ -7,6 +7,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { authOptions } from "@/lib/auth";
 import { AlertMessage, SEO } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 
@@ -14,9 +15,13 @@ const LazyReCAPTCHA = lazy(() => import("react-google-recaptcha"));
 
 interface RegisterPageProps {
   recaptchaSiteKey: string | null;
+  googleOAuthEnabled: boolean;
 }
 
-export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
+export default function RegisterPage({
+  recaptchaSiteKey,
+  googleOAuthEnabled,
+}: RegisterPageProps) {
   const router = useRouter();
   const t = useTranslations("auth.register");
   const tCommon = useTranslations("common");
@@ -346,6 +351,15 @@ export default function RegisterPage({ recaptchaSiteKey }: RegisterPageProps) {
               </Button>
             </form>
 
+            {googleOAuthEnabled && (
+              <>
+                <div className="divider my-6 text-base-content/40 text-sm">
+                  {t("orContinueWith")}
+                </div>
+                <GoogleSignInButton />
+              </>
+            )}
+
             <div className="mt-8 text-center">
               <p className="text-sm text-base-content/60">
                 {t("hasAccount")}{" "}
@@ -382,10 +396,16 @@ export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async (
   const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || null;
   const messages = await getMessages(context.locale as Locale);
 
+  // Check if Google OAuth is enabled
+  const googleOAuthEnabled = !!(
+    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+  );
+
   return {
     props: {
       recaptchaSiteKey,
       messages,
+      googleOAuthEnabled,
     },
   };
 };

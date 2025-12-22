@@ -17,12 +17,14 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
-  passwordHash  String
+  passwordHash  String?   // Optional for OAuth users
   name          String?
+  image         String?   // Profile image from OAuth provider
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   // Relations
+  accounts            Account[]
   auctionMemberships  AuctionMember[]
   createdAuctions     Auction[]            @relation("AuctionCreator")
   createdItems        AuctionItem[]        @relation("ItemCreator")
@@ -33,6 +35,30 @@ model User {
   passwordResetTokens PasswordResetToken[]
 
   @@map("users")
+}
+
+// ============================================
+// OAUTH ACCOUNTS (NextAuth)
+// ============================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 // ============================================

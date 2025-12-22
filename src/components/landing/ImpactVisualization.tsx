@@ -54,7 +54,7 @@ function Counter({
           style: "currency",
           currency: "USD",
           maximumFractionDigits: 0,
-        })
+        }),
       );
     });
     return () => unsubscribe();

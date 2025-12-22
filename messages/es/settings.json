@@ -44,6 +44,11 @@
       "selectLanguage": "Seleccionar Idioma",
       "languageDescription": "Elige tu idioma preferido para la interfaz"
     },
+    "connectedAccounts": {
+      "title": "Cuentas conectadas",
+      "connected": "Conectada",
+      "notConnected": "No conectada"
+    },
     "seo": {
       "title": "Ajustes",
       "description": "Gestiona los ajustes de tu cuenta"

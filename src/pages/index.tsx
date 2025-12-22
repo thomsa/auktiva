@@ -20,27 +20,27 @@ import { Footer } from "@/components/landing/Footer";
 const FeatureGrid = dynamic(
   () =>
     import("@/components/landing/FeatureGrid").then((mod) => mod.FeatureGrid),
-  { ssr: true }
+  { ssr: true },
 );
 
 const HowItWorks = dynamic(
   () => import("@/components/landing/HowItWorks").then((mod) => mod.HowItWorks),
-  { ssr: true }
+  { ssr: true },
 );
 
 const CallToAction = dynamic(
   () =>
     import("@/components/landing/CallToAction").then((mod) => mod.CallToAction),
-  { ssr: true }
+  { ssr: true },
 );
 
 // Heavy animation component - no SSR needed
 const ImpactVisualization = dynamic(
   () =>
     import("@/components/landing/ImpactVisualization").then(
-      (mod) => mod.ImpactVisualization
+      (mod) => mod.ImpactVisualization,
     ),
-  { ssr: false }
+  { ssr: false },
 );
 
 export default function LandingPage() {

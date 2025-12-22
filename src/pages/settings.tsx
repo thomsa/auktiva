@@ -15,6 +15,10 @@ interface UserSettings {
   emailOnOutbid: boolean;
 }
 
+interface ConnectedAccount {
+  provider: string;
+}
+
 interface SettingsPageProps {
   user: {
     id: string;
@@ -22,11 +26,17 @@ interface SettingsPageProps {
     email: string;
   };
   initialSettings: UserSettings;
+  connectedAccounts: ConnectedAccount[];
+  hasPassword: boolean;
+  googleOAuthEnabled: boolean;
 }
 
 export default function SettingsPage({
   user,
   initialSettings,
+  connectedAccounts,
+  hasPassword,
+  googleOAuthEnabled,
 }: SettingsPageProps) {
   const { theme, setTheme } = useTheme();
   const t = useTranslations("settings");
@@ -255,92 +265,156 @@ export default function SettingsPage({
         </div>
       </div>
 
-      {/* Password Section */}
-      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
-        <div className="card-body">
-          <h2 className="card-title flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
-              <span className="icon-[tabler--lock] size-6"></span>
-            </div>
-            {t("password.title")}
-          </h2>
-
-          <form onSubmit={handlePasswordSubmit} className="space-y-5">
-            {passwordError && (
-              <div className="alert alert-error">
-                <span className="icon-[tabler--alert-circle] size-5"></span>
-                <span>{passwordError}</span>
+      {/* Connected Accounts Section */}
+      {googleOAuthEnabled && (
+        <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center text-success">
+                <span className="icon-[tabler--link] size-6"></span>
               </div>
-            )}
+              {t("connectedAccounts.title")}
+            </h2>
 
-            {passwordSuccess && (
-              <div className="alert alert-success">
-                <span className="icon-[tabler--check] size-5"></span>
-                <span>{passwordSuccess}</span>
+            <div className="space-y-3 mt-2">
+              {/* Google Account */}
+              <div className="flex items-center justify-between p-4 rounded-xl bg-base-200/50 border border-base-content/5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                    <svg className="size-5" viewBox="0 0 24 24">
+                      <path
+                        fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium">Google</p>
+                    <p className="text-sm text-base-content/60">
+                      {connectedAccounts.some(
+                        (acc) => acc.provider === "google",
+                      )
+                        ? t("connectedAccounts.connected")
+                        : t("connectedAccounts.notConnected")}
+                    </p>
+                  </div>
+                </div>
+                {connectedAccounts.some((acc) => acc.provider === "google") ? (
+                  <span className="badge badge-success gap-1">
+                    <span className="icon-[tabler--check] size-3"></span>
+                    {t("connectedAccounts.connected")}
+                  </span>
+                ) : (
+                  <span className="badge badge-ghost">
+                    {t("connectedAccounts.notConnected")}
+                  </span>
+                )}
               </div>
-            )}
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  {t("password.currentPassword")}
-                </span>
-              </label>
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                required
-              />
             </div>
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  {t("password.newPassword")}
-                </span>
-              </label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder={t("password.newPasswordPlaceholder")}
-                className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                required
-                minLength={8}
-              />
-            </div>
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  {t("password.confirmNewPassword")}
-                </span>
-              </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                required
-              />
-            </div>
-
-            <div className="pt-2">
-              <Button
-                type="submit"
-                buttonStyle="outline"
-                isLoading={passwordLoading}
-                loadingText={t("password.changing")}
-                icon={<span className="icon-[tabler--key] size-5"></span>}
-              >
-                {t("password.changePassword")}
-              </Button>
-            </div>
-          </form>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Password Section - Only show if user has a password */}
+      {hasPassword && (
+        <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
+                <span className="icon-[tabler--lock] size-6"></span>
+              </div>
+              {t("password.title")}
+            </h2>
+
+            <form onSubmit={handlePasswordSubmit} className="space-y-5">
+              {passwordError && (
+                <div className="alert alert-error">
+                  <span className="icon-[tabler--alert-circle] size-5"></span>
+                  <span>{passwordError}</span>
+                </div>
+              )}
+
+              {passwordSuccess && (
+                <div className="alert alert-success">
+                  <span className="icon-[tabler--check] size-5"></span>
+                  <span>{passwordSuccess}</span>
+                </div>
+              )}
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">
+                    {t("password.currentPassword")}
+                  </span>
+                </label>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  required
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">
+                    {t("password.newPassword")}
+                  </span>
+                </label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder={t("password.newPasswordPlaceholder")}
+                  className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  required
+                  minLength={8}
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">
+                    {t("password.confirmNewPassword")}
+                  </span>
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  required
+                />
+              </div>
+
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  buttonStyle="outline"
+                  isLoading={passwordLoading}
+                  loadingText={t("password.changing")}
+                  icon={<span className="icon-[tabler--key] size-5"></span>}
+                >
+                  {t("password.changePassword")}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Email Notifications Section */}
       <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
@@ -515,6 +589,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // Get or create user settings
   const settings = await userService.getOrCreateUserSettings(session.user.id);
 
+  // Get connected OAuth accounts
+  const connectedAccounts = await userService.getUserConnectedAccounts(
+    session.user.id,
+  );
+
+  // Check if user has a password (for OAuth-only users)
+  const hasPassword = await userService.userHasPassword(session.user.id);
+
+  // Check if Google OAuth is enabled
+  const googleOAuthEnabled = !!(
+    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+  );
+
   const messages = await getMessages(context.locale as Locale);
 
   return {
@@ -528,6 +615,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         emailOnNewItem: settings.emailOnNewItem,
         emailOnOutbid: settings.emailOnOutbid,
       },
+      connectedAccounts: connectedAccounts.map((acc) => ({
+        provider: acc.provider,
+      })),
+      hasPassword,
+      googleOAuthEnabled,
       messages,
     },
   };

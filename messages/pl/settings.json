@@ -41,8 +41,13 @@
     },
     "language": {
       "title": "Język",
-      "selectLanguage": "",
+      "selectLanguage": "Wybierz język",
       "languageDescription": "Wybierz preferowany język interfejsu"
+    },
+    "connectedAccounts": {
+      "title": "Połączone konta",
+      "connected": "Połączono",
+      "notConnected": "Nie połączono"
     },
     "seo": {
       "title": "Ustawienia",
