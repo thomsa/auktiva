@@ -157,6 +157,7 @@
     "updating": "Frissítés...",
     "updateFailed": "A frissítés sikertelen. Ellenőrizze a szerver naplókat.",
     "updateStarted": "Frissítés elindítva!",
-    "appRestarting": "Az alkalmazás hamarosan újraindul."
+    "appRestarting": "Az alkalmazás hamarosan újraindul.",
+    "updateTimeout": "A frissítés időtúllépés miatt megszakadt. Az alkalmazást manuálisan kell újraindítani."
   }
 }

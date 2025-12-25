@@ -86,9 +86,10 @@ export default async function handler(
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  // Don't show update notifications on Vercel (cloud deployment)
+  // Don't show update notifications on Vercel or hosted deployments
   const isVercel = !!process.env.VERCEL;
-  if (isVercel) {
+  const isHosted = process.env.HOSTED === "true";
+  if (isVercel || isHosted) {
     return res.status(200).json({
       currentVersion: packageJson.version,
       latestVersion: null,

@@ -157,6 +157,7 @@
     "updating": "Aktualizowanie...",
     "updateFailed": "Aktualizacja nie powiodła się. Sprawdź logi serwera.",
     "updateStarted": "Aktualizacja rozpoczęta!",
-    "appRestarting": "Aplikacja zostanie wkrótce uruchomiona ponownie."
+    "appRestarting": "Aplikacja zostanie wkrótce uruchomiona ponownie.",
+    "updateTimeout": "Przekroczono limit czasu aktualizacji. Aplikacja może wymagać ręcznego restartu."
   }
 }

@@ -157,6 +157,7 @@
     "updating": "Aktualisierung...",
     "updateFailed": "Update fehlgeschlagen. Überprüfen Sie die Server-Logs.",
     "updateStarted": "Update gestartet!",
-    "appRestarting": "Die Anwendung wird in Kürze neu gestartet."
+    "appRestarting": "Die Anwendung wird in Kürze neu gestartet.",
+    "updateTimeout": "Update-Zeitüberschreitung. Die Anwendung muss möglicherweise manuell neu gestartet werden."
   }
 }

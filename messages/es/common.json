@@ -157,6 +157,7 @@
     "updating": "Actualizando...",
     "updateFailed": "La actualización falló. Revise los logs del servidor.",
     "updateStarted": "¡Actualización iniciada!",
-    "appRestarting": "La aplicación se reiniciará en breve."
+    "appRestarting": "La aplicación se reiniciará en breve.",
+    "updateTimeout": "Tiempo de actualización agotado. La aplicación puede necesitar reinicio manual."
   }
 }

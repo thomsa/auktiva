@@ -75,6 +75,34 @@ export function UpdateBanner() {
     }
   };
 
+  const pollForAvailability = useCallback(async () => {
+    const maxAttempts = 60; // Poll for up to 2 minutes
+    const pollInterval = 5000; // 5 seconds between attempts
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, pollInterval));
+
+      try {
+        const response = await fetch("/api/version", {
+          method: "GET",
+          cache: "no-store",
+        });
+
+        if (response.ok) {
+          // App is back online, refresh the page
+          window.location.reload();
+          return;
+        }
+      } catch {
+        // App still down, continue polling
+      }
+    }
+
+    // Timeout - app didn't come back up
+    setUpdateError(t("updateTimeout"));
+    setIsUpdating(false);
+  }, [t]);
+
   const handleUpdate = async () => {
     setIsUpdating(true);
     setUpdateError(null);
@@ -88,14 +116,17 @@ export function UpdateBanner() {
 
       if (result.success) {
         setUpdateSuccess(true);
-        // The app will restart, so show a success message
+        // Start polling for when the app comes back online
+        pollForAvailability();
       } else {
         setUpdateError(result.message || t("updateFailed"));
+        setIsUpdating(false);
       }
     } catch {
-      setUpdateError(t("updateFailed"));
-    } finally {
-      setIsUpdating(false);
+      // The request might fail if the app restarts during the request
+      // Start polling anyway in case the update was triggered
+      setUpdateSuccess(true);
+      pollForAvailability();
     }
   };
 
@@ -104,14 +135,14 @@ export function UpdateBanner() {
     return null;
   }
 
-  // Show success state
+  // Show success state with progress bar
   if (updateSuccess) {
     return (
       <div className="fixed bottom-4 left-4 z-50 w-80 max-w-[calc(100vw-2rem)]">
-        <div className="card bg-success/95 backdrop-blur-sm shadow-xl border border-success/20">
+        <div className="card bg-success/95 backdrop-blur-sm shadow-xl border border-success/20 overflow-hidden">
           <div className="card-body p-4">
             <div className="flex items-start gap-3">
-              <span className="icon-[tabler--check] size-5 text-success-content shrink-0 mt-0.5" />
+              <span className="icon-[tabler--refresh] size-5 text-success-content shrink-0 mt-0.5 animate-spin" />
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-success-content">
                   {t("updateStarted")}
@@ -121,6 +152,10 @@ export function UpdateBanner() {
                 </p>
               </div>
             </div>
+          </div>
+          {/* Indeterminate progress bar */}
+          <div className="h-1 w-full bg-success-content/20 overflow-hidden">
+            <div className="h-full w-1/3 bg-success-content/60 animate-[progress_1.5s_ease-in-out_infinite]" />
           </div>
         </div>
       </div>
@@ -135,7 +170,9 @@ export function UpdateBanner() {
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2">
               <span className="icon-[tabler--sparkles] size-5 text-primary shrink-0" />
-              <h3 className="font-semibold text-sm">{t("newVersion", { version: data.latestVersion })}</h3>
+              <h3 className="font-semibold text-sm">
+                {t("newVersion", { version: data.latestVersion })}
+              </h3>
             </div>
             <button
               onClick={handleDismiss}
@@ -182,7 +219,9 @@ export function UpdateBanner() {
                 href={data.releaseUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`btn btn-ghost btn-sm ${data.isDeploymentAdmin ? "" : "flex-1"}`}
+                className={`btn btn-ghost btn-sm ${
+                  data.isDeploymentAdmin ? "" : "flex-1"
+                }`}
               >
                 <span className="icon-[tabler--external-link] size-4" />
                 {t("viewRelease")}

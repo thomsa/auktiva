@@ -157,6 +157,7 @@
     "updating": "Updating...",
     "updateFailed": "Update failed. Check server logs.",
     "updateStarted": "Update started!",
-    "appRestarting": "The application will restart shortly."
+    "appRestarting": "The application will restart shortly.",
+    "updateTimeout": "Update timed out. The application may need manual restart."
   }
 }
