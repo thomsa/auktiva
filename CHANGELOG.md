@@ -2,10 +2,11 @@
 
 All notable changes to Auktiva will be documented in this file.
 
-## [Unreleased]
+## [1.1.12] - 2025-12-25
 
 ### 📚 Documentation
 
+- Update changelog [skip ci] by @github-actions[bot]
 - Update changelog [skip ci] by @github-actions[bot]
 - Update changelog [skip ci] by @github-actions[bot]
 
