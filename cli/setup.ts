@@ -47,6 +47,8 @@ interface EnvConfig {
   MAIL_FROM_NAME?: string;
   NEXT_PUBLIC_APP_URL?: string;
   CRON_SECRET?: string;
+  // Deployment admin
+  DEPLOYMENT_ADMIN_EMAIL?: string;
 }
 
 // =============================================================================
@@ -282,6 +284,31 @@ async function setupFeatures(): Promise<Partial<EnvConfig>> {
   };
 }
 
+async function setupDeploymentAdmin(): Promise<Partial<EnvConfig>> {
+  console.log(
+    chalk.dim("The deployment admin can install updates directly from the app."),
+  );
+  console.log();
+
+  const adminEmail = await input({
+    message: "Deployment admin email address:",
+    validate: (value) => {
+      if (!value) return true; // Optional
+      if (!value.includes("@")) return "Please enter a valid email address";
+      return true;
+    },
+  });
+
+  if (!adminEmail) {
+    printInfo("No deployment admin set. Any user can claim this role later in Settings.");
+    return {};
+  }
+
+  return {
+    DEPLOYMENT_ADMIN_EMAIL: adminEmail,
+  };
+}
+
 async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
   const wantEmail = await confirm({
     message: "Do you want to enable email notifications?",
@@ -456,6 +483,15 @@ async function runPostSetupTasks(config: EnvConfig): Promise<void> {
     spinner.start("Seeding currencies...");
     execSync("npm run seed:currencies", { stdio: "pipe" });
     spinner.succeed("Currencies seeded");
+
+    // Set deployment admin if provided
+    if (config.DEPLOYMENT_ADMIN_EMAIL) {
+      spinner.start("Setting deployment admin...");
+      execSync(`npx tsx prisma/seed-deployment-admin.ts "${config.DEPLOYMENT_ADMIN_EMAIL}"`, { 
+        stdio: "pipe" 
+      });
+      spinner.succeed(`Deployment admin set to ${config.DEPLOYMENT_ADMIN_EMAIL}`);
+    }
   } catch (error) {
     spinner.fail("Database initialization failed");
     console.error(chalk.red((error as Error).message));
@@ -546,23 +582,27 @@ async function main() {
   const config: Partial<EnvConfig> = {};
 
   // Step 1: Storage
-  printHeader("Image Storage", { current: 1, total: 5 });
+  printHeader("Image Storage", { current: 1, total: 6 });
   Object.assign(config, await setupStorage());
 
   // Step 2: Database
-  printHeader("Database", { current: 2, total: 5 });
+  printHeader("Database", { current: 2, total: 6 });
   Object.assign(config, await setupDatabase());
 
   // Step 3: Authentication
-  printHeader("Authentication & Domain", { current: 3, total: 5 });
+  printHeader("Authentication & Domain", { current: 3, total: 6 });
   Object.assign(config, await setupAuth());
 
   // Step 4: Features
-  printHeader("Features", { current: 4, total: 5 });
+  printHeader("Features", { current: 4, total: 6 });
   Object.assign(config, await setupFeatures());
 
-  // Step 5: Email
-  printHeader("Email Notifications", { current: 5, total: 5 });
+  // Step 5: Deployment Admin
+  printHeader("Deployment Administration", { current: 5, total: 6 });
+  Object.assign(config, await setupDeploymentAdmin());
+
+  // Step 6: Email
+  printHeader("Email Notifications", { current: 6, total: 6 });
   Object.assign(
     config,
     await setupEmail(config.AUTH_URL || "http://localhost:3000"),
@@ -588,6 +628,9 @@ async function main() {
   );
   console.log(
     `  ${chalk.dim("Email:")}         ${config.BREVO_API_KEY ? chalk.green("Enabled (Brevo)") : chalk.yellow("Disabled")}`,
+  );
+  console.log(
+    `  ${chalk.dim("Deploy Admin:")} ${config.DEPLOYMENT_ADMIN_EMAIL ? chalk.green(config.DEPLOYMENT_ADMIN_EMAIL) : chalk.yellow("Not set")}`,
   );
   console.log();
 

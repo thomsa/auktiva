@@ -49,6 +49,22 @@
       "connected": "Conectada",
       "notConnected": "No conectada"
     },
+    "deploymentAdmin": {
+      "title": "Administración del despliegue",
+      "description": "Gestiona quién puede instalar actualizaciones y administrar este despliegue.",
+      "youAreAdmin": "Eres el administrador del despliegue",
+      "adminDescription": "Puedes instalar actualizaciones directamente desde el banner de actualización.",
+      "noAdminSet": "No hay administrador de despliegue configurado",
+      "claimAdminDescription": "Sé el primero en reclamar los derechos de administrador para esta instancia.",
+      "becomeAdmin": "Convertirse en administrador del despliegue",
+      "claiming": "Reclamando...",
+      "becameAdmin": "Ahora eres el administrador del despliegue",
+      "removeAdmin": "Eliminar derechos de administrador",
+      "removing": "Eliminando...",
+      "removedAdmin": "Administrador del despliegue eliminado",
+      "adminAlreadySet": "Otro usuario es el administrador del despliegue",
+      "contactCurrentAdmin": "Contacta al administrador actual para transferir los derechos."
+    },
     "seo": {
       "title": "Ajustes",
       "description": "Gestiona los ajustes de tu cuenta"

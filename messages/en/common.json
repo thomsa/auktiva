@@ -146,5 +146,17 @@
   "stats": {
     "more": "+{count} more",
     "allCurrencies": "All Currencies"
+  },
+  "update": {
+    "newVersion": "Version {version} is available!",
+    "contactAdmin": "Contact your administrator to update.",
+    "clickToUpdate": "Click to install the update.",
+    "viewRelease": "View release notes",
+    "dismiss": "Dismiss",
+    "installUpdate": "Install Update",
+    "updating": "Updating...",
+    "updateFailed": "Update failed. Check server logs.",
+    "updateStarted": "Update started!",
+    "appRestarting": "The application will restart shortly."
   }
 }

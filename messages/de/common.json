@@ -146,5 +146,17 @@
   "stats": {
     "more": "+{count} mehr",
     "allCurrencies": "Alle Währungen"
+  },
+  "update": {
+    "newVersion": "Version {version} ist verfügbar!",
+    "contactAdmin": "Kontaktieren Sie Ihren Administrator für das Update.",
+    "clickToUpdate": "Klicken Sie, um das Update zu installieren.",
+    "viewRelease": "Versionshinweise anzeigen",
+    "dismiss": "Schließen",
+    "installUpdate": "Update installieren",
+    "updating": "Aktualisierung...",
+    "updateFailed": "Update fehlgeschlagen. Überprüfen Sie die Server-Logs.",
+    "updateStarted": "Update gestartet!",
+    "appRestarting": "Die Anwendung wird in Kürze neu gestartet."
   }
 }

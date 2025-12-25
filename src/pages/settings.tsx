@@ -3,6 +3,7 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import * as userService from "@/lib/services/user.service";
+import * as systemService from "@/lib/services/system.service";
 import { PageLayout, SEO } from "@/components/common";
 import { useTheme } from "@/components/providers/theme-provider";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,8 @@ interface SettingsPageProps {
   connectedAccounts: ConnectedAccount[];
   hasPassword: boolean;
   googleOAuthEnabled: boolean;
+  isDeploymentAdmin: boolean;
+  hasDeploymentAdmin: boolean;
 }
 
 export default function SettingsPage({
@@ -37,6 +40,8 @@ export default function SettingsPage({
   connectedAccounts,
   hasPassword,
   googleOAuthEnabled,
+  isDeploymentAdmin: initialIsDeploymentAdmin,
+  hasDeploymentAdmin: initialHasDeploymentAdmin,
 }: SettingsPageProps) {
   const { theme, setTheme } = useTheme();
   const t = useTranslations("settings");
@@ -67,6 +72,13 @@ export default function SettingsPage({
   const [emailSettingsSuccess, setEmailSettingsSuccess] = useState<
     string | null
   >(null);
+
+  // Deployment admin state
+  const [isDeploymentAdmin, setIsDeploymentAdmin] = useState(initialIsDeploymentAdmin);
+  const [hasDeploymentAdmin, setHasDeploymentAdmin] = useState(initialHasDeploymentAdmin);
+  const [deploymentAdminLoading, setDeploymentAdminLoading] = useState(false);
+  const [deploymentAdminError, setDeploymentAdminError] = useState<string | null>(null);
+  const [deploymentAdminSuccess, setDeploymentAdminSuccess] = useState<string | null>(null);
 
   const handleEmailSettingChange = async (
     setting: "emailOnNewItem" | "emailOnOutbid",
@@ -174,6 +186,64 @@ export default function SettingsPage({
       setPasswordError(tErrors("generic"));
     } finally {
       setPasswordLoading(false);
+    }
+  };
+
+  const handleBecomeDeploymentAdmin = async () => {
+    setDeploymentAdminLoading(true);
+    setDeploymentAdminError(null);
+    setDeploymentAdminSuccess(null);
+
+    try {
+      const res = await fetch("/api/system/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deploymentAdminEmail: user.email }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setDeploymentAdminError(result.error || tErrors("generic"));
+      } else {
+        setIsDeploymentAdmin(true);
+        setHasDeploymentAdmin(true);
+        setDeploymentAdminSuccess(t("deploymentAdmin.becameAdmin"));
+        setTimeout(() => setDeploymentAdminSuccess(null), 3000);
+      }
+    } catch {
+      setDeploymentAdminError(tErrors("generic"));
+    } finally {
+      setDeploymentAdminLoading(false);
+    }
+  };
+
+  const handleRemoveDeploymentAdmin = async () => {
+    setDeploymentAdminLoading(true);
+    setDeploymentAdminError(null);
+    setDeploymentAdminSuccess(null);
+
+    try {
+      const res = await fetch("/api/system/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ deploymentAdminEmail: null }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setDeploymentAdminError(result.error || tErrors("generic"));
+      } else {
+        setIsDeploymentAdmin(false);
+        setHasDeploymentAdmin(false);
+        setDeploymentAdminSuccess(t("deploymentAdmin.removedAdmin"));
+        setTimeout(() => setDeploymentAdminSuccess(null), 3000);
+      }
+    } catch {
+      setDeploymentAdminError(tErrors("generic"));
+    } finally {
+      setDeploymentAdminLoading(false);
     }
   };
 
@@ -506,7 +576,7 @@ export default function SettingsPage({
       </div>
 
       {/* Appearance Section */}
-      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
         <div className="card-body">
           <h2 className="card-title flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-neutral/10 flex items-center justify-center text-neutral-content">
@@ -559,6 +629,98 @@ export default function SettingsPage({
           </div>
         </div>
       </div>
+
+      {/* Deployment Admin Section */}
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center text-warning">
+              <span className="icon-[tabler--server] size-6"></span>
+            </div>
+            {t("deploymentAdmin.title")}
+          </h2>
+
+          {deploymentAdminError && (
+            <div className="alert alert-error py-2 text-sm shadow-sm mb-2">
+              <span className="icon-[tabler--alert-circle] size-5"></span>
+              <span>{deploymentAdminError}</span>
+            </div>
+          )}
+
+          {deploymentAdminSuccess && (
+            <div className="alert alert-success py-2 text-sm shadow-sm mb-2">
+              <span className="icon-[tabler--check] size-5"></span>
+              <span>{deploymentAdminSuccess}</span>
+            </div>
+          )}
+
+          <p className="text-sm text-base-content/60 mb-4">
+            {t("deploymentAdmin.description")}
+          </p>
+
+          {isDeploymentAdmin ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-success/10 border border-success/20">
+                <span className="icon-[tabler--shield-check] size-6 text-success"></span>
+                <div>
+                  <p className="font-medium text-success">
+                    {t("deploymentAdmin.youAreAdmin")}
+                  </p>
+                  <p className="text-sm text-base-content/60">
+                    {t("deploymentAdmin.adminDescription")}
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={handleRemoveDeploymentAdmin}
+                buttonStyle="outline"
+                isLoading={deploymentAdminLoading}
+                loadingText={t("deploymentAdmin.removing")}
+                icon={<span className="icon-[tabler--shield-off] size-5"></span>}
+                className="text-error border-error/30 hover:bg-error/10"
+              >
+                {t("deploymentAdmin.removeAdmin")}
+              </Button>
+            </div>
+          ) : hasDeploymentAdmin ? (
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-base-200/50 border border-base-content/5">
+              <span className="icon-[tabler--shield-lock] size-6 text-base-content/50"></span>
+              <div>
+                <p className="font-medium">
+                  {t("deploymentAdmin.adminAlreadySet")}
+                </p>
+                <p className="text-sm text-base-content/60">
+                  {t("deploymentAdmin.contactCurrentAdmin")}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-warning/10 border border-warning/20">
+                <span className="icon-[tabler--alert-triangle] size-6 text-warning"></span>
+                <div>
+                  <p className="font-medium text-warning">
+                    {t("deploymentAdmin.noAdminSet")}
+                  </p>
+                  <p className="text-sm text-base-content/60">
+                    {t("deploymentAdmin.claimAdminDescription")}
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={handleBecomeDeploymentAdmin}
+                variant="primary"
+                isLoading={deploymentAdminLoading}
+                loadingText={t("deploymentAdmin.claiming")}
+                icon={<span className="icon-[tabler--shield-plus] size-5"></span>}
+                className="shadow-lg shadow-primary/20"
+              >
+                {t("deploymentAdmin.becomeAdmin")}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
     </PageLayout>
   );
 }
@@ -602,6 +764,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
   );
 
+  // Check deployment admin status
+  const systemSettings = await systemService.getSystemSettings();
+  const isDeploymentAdmin = systemSettings.deploymentAdminEmail === user.email;
+  const hasDeploymentAdmin = !!systemSettings.deploymentAdminEmail;
+
   const messages = await getMessages(context.locale as Locale);
 
   return {
@@ -620,6 +787,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       })),
       hasPassword,
       googleOAuthEnabled,
+      isDeploymentAdmin,
+      hasDeploymentAdmin,
       messages,
     },
   };

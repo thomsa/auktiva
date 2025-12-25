@@ -49,6 +49,22 @@
       "connected": "Verbunden",
       "notConnected": "Nicht verbunden"
     },
+    "deploymentAdmin": {
+      "title": "Deployment-Administration",
+      "description": "Verwalte, wer Updates installieren und dieses Deployment administrieren kann.",
+      "youAreAdmin": "Du bist der Deployment-Admin",
+      "adminDescription": "Du kannst Updates direkt über das Update-Banner installieren.",
+      "noAdminSet": "Kein Deployment-Admin festgelegt",
+      "claimAdminDescription": "Sei der Erste, der die Deployment-Admin-Rechte für diese Instanz beansprucht.",
+      "becomeAdmin": "Deployment-Admin werden",
+      "claiming": "Beanspruche...",
+      "becameAdmin": "Du bist jetzt der Deployment-Admin",
+      "removeAdmin": "Admin-Rechte entfernen",
+      "removing": "Entferne...",
+      "removedAdmin": "Deployment-Admin entfernt",
+      "adminAlreadySet": "Ein anderer Benutzer ist der Deployment-Admin",
+      "contactCurrentAdmin": "Kontaktiere den aktuellen Admin, um die Rechte zu übertragen."
+    },
     "seo": {
       "title": "Einstellungen",
       "description": "Verwalte deine Kontoeinstellungen"

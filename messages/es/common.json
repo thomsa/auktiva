@@ -146,5 +146,17 @@
   "stats": {
     "more": "+{count} más",
     "allCurrencies": "Todas las monedas"
+  },
+  "update": {
+    "newVersion": "¡La versión {version} está disponible!",
+    "contactAdmin": "Contacte a su administrador para actualizar.",
+    "clickToUpdate": "Haga clic para instalar la actualización.",
+    "viewRelease": "Ver notas de la versión",
+    "dismiss": "Cerrar",
+    "installUpdate": "Instalar actualización",
+    "updating": "Actualizando...",
+    "updateFailed": "La actualización falló. Revise los logs del servidor.",
+    "updateStarted": "¡Actualización iniciada!",
+    "appRestarting": "La aplicación se reiniciará en breve."
   }
 }

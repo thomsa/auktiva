@@ -6,6 +6,7 @@ import { ToastProvider } from "@/components/ui/toast";
 import { Analytics } from "@vercel/analytics/next";
 import { NextIntlClientProvider } from "next-intl";
 import { useRouter } from "next/router";
+import { UpdateBanner } from "@/components/common";
 
 export default function App({
   Component,
@@ -22,6 +23,7 @@ export default function App({
       <SessionProvider session={session}>
         <ThemeProvider>
           <ToastProvider>
+            <UpdateBanner />
             <Component {...pageProps} />
             <Analytics />
           </ToastProvider>

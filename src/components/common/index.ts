@@ -6,3 +6,4 @@ export * from "./ConfirmDialog";
 export * from "./PriceDisplay";
 export * from "./AlertMessage";
 export * from "./seo";
+export * from "./UpdateBanner";

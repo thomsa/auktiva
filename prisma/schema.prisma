@@ -385,6 +385,25 @@ model EmailLog {
 }
 
 // ============================================
+// SYSTEM SETTINGS (singleton)
+// ============================================
+
+model SystemSettings {
+  id                    String   @id @default("system")  // Always "system" - singleton pattern
+  
+  // Deployment admin - can trigger updates
+  deploymentAdminEmail  String?  // Email of user who can manage deployments
+  
+  // Update settings
+  autoCheckUpdates      Boolean  @default(true)  // Whether to check for updates
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+// ============================================
 // PASSWORD RESET TOKENS
 // ============================================
 

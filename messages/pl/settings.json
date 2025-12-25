@@ -49,6 +49,22 @@
       "connected": "Połączono",
       "notConnected": "Nie połączono"
     },
+    "deploymentAdmin": {
+      "title": "Administracja wdrożenia",
+      "description": "Zarządzaj uprawnieniami do instalacji aktualizacji.",
+      "youAreAdmin": "Jesteś administratorem wdrożenia",
+      "adminDescription": "Możesz instalować aktualizacje bezpośrednio z banera aktualizacji.",
+      "noAdminSet": "Brak administratora wdrożenia",
+      "claimAdminDescription": "Bądź pierwszym, który przejmie prawa administratora dla tej instancji.",
+      "becomeAdmin": "Zostań administratorem wdrożenia",
+      "claiming": "Przejmowanie...",
+      "becameAdmin": "Jesteś teraz administratorem wdrożenia",
+      "removeAdmin": "Usuń prawa administratora",
+      "removing": "Usuwanie...",
+      "removedAdmin": "Administrator wdrożenia usunięty",
+      "adminAlreadySet": "Inny użytkownik jest administratorem wdrożenia",
+      "contactCurrentAdmin": "Skontaktuj się z obecnym administratorem, aby przenieść uprawnienia."
+    },
     "seo": {
       "title": "Ustawienia",
       "description": "Zarządzaj ustawieniami konta"

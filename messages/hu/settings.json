@@ -49,6 +49,22 @@
       "connected": "Kapcsolódva",
       "notConnected": "Nincs kapcsolva"
     },
+    "deploymentAdmin": {
+      "title": "Telepítés adminisztráció",
+      "description": "Kezeld, ki telepíthet frissítéseket és adminisztrálhatja ezt a telepítést.",
+      "youAreAdmin": "Te vagy a telepítés adminisztrátor",
+      "adminDescription": "Közvetlenül telepíthetsz frissítéseket a frissítési bannerből.",
+      "noAdminSet": "Nincs telepítés adminisztrátor beállítva",
+      "claimAdminDescription": "Legyél az első, aki átveszi az adminisztrátori jogokat ehhez a példányhoz.",
+      "becomeAdmin": "Telepítés adminisztrátor leszek",
+      "claiming": "Átvétel...",
+      "becameAdmin": "Mostantól te vagy a telepítés adminisztrátor",
+      "removeAdmin": "Adminisztrátori jogok eltávolítása",
+      "removing": "Eltávolítás...",
+      "removedAdmin": "Telepítés adminisztrátor eltávolítva",
+      "adminAlreadySet": "Egy másik felhasználó a telepítés adminisztrátor",
+      "contactCurrentAdmin": "Lépj kapcsolatba a jelenlegi adminisztrátorral a jogok átadásához."
+    },
     "seo": {
       "title": "Beállítások",
       "description": "Kezeld a fiók beállításaidat"

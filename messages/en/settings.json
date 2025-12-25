@@ -49,6 +49,22 @@
       "connected": "Connected",
       "notConnected": "Not connected"
     },
+    "deploymentAdmin": {
+      "title": "Deployment Administration",
+      "description": "Manage who can install updates and administer this deployment.",
+      "youAreAdmin": "You are the Deployment Admin",
+      "adminDescription": "You can install updates directly from the update banner.",
+      "noAdminSet": "No Deployment Admin Set",
+      "claimAdminDescription": "Be the first to claim deployment admin rights for this instance.",
+      "becomeAdmin": "Become Deployment Admin",
+      "claiming": "Claiming...",
+      "becameAdmin": "You are now the deployment admin",
+      "removeAdmin": "Remove Admin Rights",
+      "removing": "Removing...",
+      "removedAdmin": "Deployment admin removed",
+      "adminAlreadySet": "Another user is the Deployment Admin",
+      "contactCurrentAdmin": "Contact the current admin to transfer rights."
+    },
     "seo": {
       "title": "Settings",
       "description": "Manage your account settings"
