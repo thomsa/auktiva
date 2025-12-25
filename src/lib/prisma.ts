@@ -9,11 +9,22 @@ const globalForPrisma = globalThis as unknown as {
 const databaseUrl = process.env.DATABASE_URL || "file:./dev.db";
 
 function createAdapter() {
-  if (
-    databaseUrl.startsWith("libsql://") ||
-    databaseUrl.startsWith("https://")
-  ) {
+  const isTursoUrl =
+    databaseUrl.startsWith("libsql://") || databaseUrl.startsWith("https://");
+
+  console.log("[Prisma] Creating adapter:", {
+    isTurso: isTursoUrl,
+    urlPrefix: databaseUrl.substring(0, 20) + "...",
+    hasAuthToken: !!process.env.DATABASE_AUTH_TOKEN,
+  });
+
+  if (isTursoUrl) {
     // Turso/LibSQL
+    if (!process.env.DATABASE_AUTH_TOKEN) {
+      console.error(
+        "[Prisma] ERROR: DATABASE_AUTH_TOKEN is not set for Turso connection!"
+      );
+    }
     return new PrismaLibSql({
       url: databaseUrl,
       authToken: process.env.DATABASE_AUTH_TOKEN,

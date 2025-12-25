@@ -55,20 +55,40 @@ export function getStorage(): Storage {
       endpoint: s3Config.endpoint || "(AWS default)",
     });
 
-    storageInstance = new Storage(s3Config);
+    try {
+      storageInstance = new Storage(s3Config);
+      console.log("[Storage] S3 Storage instance created successfully");
+    } catch (err) {
+      console.error("[Storage] Failed to create S3 Storage instance:", err);
+      console.error("[Storage] Error details:", {
+        name: err instanceof Error ? err.name : "Unknown",
+        message: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+      });
+      throw new Error(
+        `S3 initialization failed: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
   } else {
     // Local filesystem configuration
     const directory = process.env.STORAGE_LOCAL_PATH || "./public/uploads";
     console.log("[Storage] Local config:", { directory });
-    storageInstance = new Storage({
-      provider: "local",
-      directory,
-      bucketName: "images", // Required subdirectory for local storage
-      mode: 0o755,
-    });
+    try {
+      storageInstance = new Storage({
+        provider: "local",
+        directory,
+        bucketName: "images", // Required subdirectory for local storage
+        mode: 0o755,
+      });
+      console.log("[Storage] Local Storage instance created successfully");
+    } catch (err) {
+      console.error("[Storage] Failed to create local Storage instance:", err);
+      throw new Error(
+        `Local storage initialization failed: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
   }
 
-  console.log("[Storage] Storage instance created successfully");
   return storageInstance;
 }
 
