@@ -39,7 +39,12 @@
         "5": {
           "title": "Udostępnianie danych",
           "content1": "Nie sprzedajemy, nie wymieniamy ani w inny sposób nie przekazujemy Twoich danych osobowych stronom trzecim. Twoje dane aukcyjne są widoczne tylko dla członków aukcji, w których uczestniczysz, zgodnie z ustawieniami prywatności skonfigurowanymi przez każdego właściciela aukcji.",
-          "content2": "Właściciele aukcji mogą konfigurować ustawienia prywatności, w tym anonimowe licytowanie w celu ukrycia tożsamości licytujących, ograniczenia dostępu tylko na zaproszenie oraz uprawnienia oparte na rolach w celu kontrolowania, co każdy członek może zobaczyć i zrobić."
+          "content2": "Właściciele aukcji mogą konfigurować ustawienia prywatności, w tym anonimowe licytowanie w celu ukrycia tożsamości licytujących, ograniczenia dostępu tylko na zaproszenie oraz uprawnienia oparte na rolach, aby kontrolować, co każdy członek może zobaczyć i zrobić."
+        },
+        "5b": {
+          "title": "Uwierzytelnianie przez stronę trzecią (Google OAuth)",
+          "content1": "Jeśli zdecydujesz się zalogować za pomocą Google, używamy usługi Google OAuth 2.0 do uwierzytelnienia Twojej tożsamości. Gdy logujesz się za pomocą Google, otrzymujemy podstawowe informacje o profilu (imię i nazwisko, adres e-mail i zdjęcie profilowe) od Google.",
+          "content2": "Nie otrzymujemy ani nie przechowujemy Twojego hasła Google. Wykorzystanie Twoich informacji przez Google podlega Polityce prywatności Google. Możesz w każdej chwili cofnąć dostęp Auktiva do swojego konta Google za pośrednictwem ustawień konta Google na myaccount.google.com."
         },
         "6": {
           "title": "Komunikacja e-mail",
@@ -95,8 +100,13 @@
         },
         "3": {
           "title": "Konta użytkowników",
-          "content1": "Aby korzystać z Auktiva, musisz utworzyć konto z dokładnymi informacjami, w tym imieniem i nazwiskiem, adresem e-mail oraz bezpiecznym hasłem. Jesteś odpowiedzialny za utrzymanie bezpieczeństwa danych logowania do konta i nie powinieneś udostępniać konta innym osobom.",
-          "content2": "Musisz mieć co najmniej 18 lat lub posiadać zgodę rodziców, aby korzystać z Auktiva. Prosimy o aktualizowanie informacji o koncie, aby otrzymywać ważne powiadomienia o swoich aukcjach."
+          "content1": "Aby korzystać z Auktiva, musisz utworzyć konto z dokładnymi informacjami, w tym imieniem i nazwiskiem, adresem e-mail i bezpiecznym hasłem. Alternatywnie możesz zalogować się za pomocą Google OAuth, co pozwala na użycie istniejących danych logowania do konta Google. Jesteś odpowiedzialny za utrzymanie bezpieczeństwa danych logowania do konta i nie powinieneś udostępniać swojego konta innym.",
+          "content2": "Musisz mieć co najmniej 18 lat lub zgodę rodziców, aby korzystać z Auktiva. Aktualizuj informacje o koncie, aby otrzymywać ważne powiadomienia o swoich aukcjach."
+        },
+        "3b": {
+          "title": "Uwierzytelnianie przez stronę trzecią",
+          "content1": "Auktiva oferuje logowanie przez Google OAuth dla wygody. Gdy korzystasz z logowania Google, upoważniasz Google do udostępnienia nam podstawowych informacji o profilu (imię i nazwisko, e-mail, zdjęcie profilowe). Używamy tych informacji wyłącznie do utworzenia i zarządzania Twoim kontem Auktiva.",
+          "content2": "Twoje korzystanie z logowania Google podlega również Warunkom korzystania z usług i Polityce prywatności Google. Możesz w każdej chwili odłączyć swoje konto Google od Auktiva, chociaż może być konieczne ustawienie hasła, aby kontynuować dostęp do konta."
         },
         "4": {
           "title": "Role i uprawnienia",

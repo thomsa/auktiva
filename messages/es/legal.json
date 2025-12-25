@@ -38,8 +38,13 @@
         },
         "5": {
           "title": "Compartir Datos",
-          "content1": "No vendemos, comerciamos ni transferimos tu información personal a terceros. Tus datos de subasta son solo visibles para los miembros de las subastas en las que participas, de acuerdo con los ajustes de privacidad configurados por cada propietario de subasta.",
-          "content2": "Los propietarios de subastas pueden configurar ajustes de privacidad incluyendo pujas anónimas para ocultar identidades de pujadores, restricciones de acceso solo por invitación, y permisos basados en roles para controlar lo que cada miembro puede ver y hacer."
+          "content1": "No vendemos, intercambiamos ni transferimos de ninguna otra manera tu información personal a terceros. Tus datos de subasta solo son visibles para los miembros de las subastas en las que participas, según la configuración de privacidad establecida por cada propietario de subasta.",
+          "content2": "Los propietarios de subastas pueden configurar ajustes de privacidad, incluyendo pujas anónimas para ocultar identidades de pujadores, restricciones de acceso solo por invitación y permisos basados en roles para controlar lo que cada miembro puede ver y hacer."
+        },
+        "5b": {
+          "title": "Autenticación de terceros (Google OAuth)",
+          "content1": "Si eliges iniciar sesión con Google, usamos el servicio OAuth 2.0 de Google para autenticar tu identidad. Cuando inicias sesión con Google, recibimos tu información básica de perfil (nombre, dirección de correo electrónico y foto de perfil) de Google.",
+          "content2": "No recibimos ni almacenamos tu contraseña de Google. El uso de tu información por parte de Google se rige por la Política de Privacidad de Google. Puedes revocar el acceso de Auktiva a tu cuenta de Google en cualquier momento a través de la configuración de tu cuenta de Google en myaccount.google.com."
         },
         "6": {
           "title": "Comunicaciones por Correo",
@@ -94,9 +99,14 @@
           "disclaimer": "Auktiva facilita las pujas pero <strong class=\"text-base-content\">no procesa pagos</strong>. Todas las transacciones se liquidan offline entre los participantes. No somos un mercado ni un procesador de pagos."
         },
         "3": {
-          "title": "Cuentas de Usuario",
-          "content1": "Para usar Auktiva, debes crear una cuenta con información precisa incluyendo tu nombre, dirección de correo electrónico y una contraseña segura. Eres responsable de mantener la seguridad de las credenciales de tu cuenta y no debes compartir tu cuenta con otros.",
-          "content2": "Debes tener al menos 18 años o tener consentimiento parental para usar Auktiva. Por favor mantén tu información de cuenta actualizada para asegurar que recibes notificaciones importantes sobre tus subastas."
+          "title": "Cuentas de usuario",
+          "content1": "Para usar Auktiva, debes crear una cuenta con información precisa, incluyendo tu nombre, dirección de correo electrónico y una contraseña segura. Alternativamente, puedes iniciar sesión usando Google OAuth, lo que te permite usar las credenciales de tu cuenta de Google existente. Eres responsable de mantener la seguridad de las credenciales de tu cuenta y no debes compartir tu cuenta con otros.",
+          "content2": "Debes tener al menos 18 años o contar con el consentimiento de tus padres para usar Auktiva. Mantén actualizada la información de tu cuenta para asegurarte de recibir notificaciones importantes sobre tus subastas."
+        },
+        "3b": {
+          "title": "Autenticación de terceros",
+          "content1": "Auktiva ofrece inicio de sesión a través de Google OAuth como una conveniencia. Cuando usas el inicio de sesión de Google, autorizas a Google a compartir tu información básica de perfil (nombre, correo electrónico, foto de perfil) con nosotros. Usamos esta información únicamente para crear y administrar tu cuenta de Auktiva.",
+          "content2": "Tu uso del inicio de sesión de Google también está sujeto a los Términos de Servicio y la Política de Privacidad de Google. Puedes desconectar tu cuenta de Google de Auktiva en cualquier momento, aunque es posible que necesites establecer una contraseña para continuar accediendo a tu cuenta."
         },
         "4": {
           "title": "Roles y Permisos",

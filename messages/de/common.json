@@ -127,7 +127,9 @@
     "change": "Ändern",
     "upload": "Hochladen",
     "remove": "Entfernen",
-    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Max. 5MB • Quadratisch empfohlen"
+    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Max. 5MB • Quadratisch empfohlen",
+    "uploadSuccess": "Upload erfolgreich",
+    "deleteSuccess": "Erfolgreich gelöscht"
   },
   "notifications": {
     "title": "Benachrichtigungen",

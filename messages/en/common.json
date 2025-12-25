@@ -127,7 +127,9 @@
     "change": "Change",
     "upload": "Upload",
     "remove": "Remove",
-    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Max 5MB • Square recommended"
+    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Max 5MB • Square recommended",
+    "uploadSuccess": "Upload successful",
+    "deleteSuccess": "Deleted successfully"
   },
   "notifications": {
     "title": "Notifications",

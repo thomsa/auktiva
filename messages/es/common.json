@@ -127,7 +127,9 @@
     "change": "Cambiar",
     "upload": "Subir",
     "remove": "Eliminar",
-    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Máx 5MB • Se recomienda cuadrado"
+    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Máx 5MB • Se recomienda cuadrado",
+    "uploadSuccess": "Subida exitosa",
+    "deleteSuccess": "Eliminado exitosamente"
   },
   "notifications": {
     "title": "Notificaciones",

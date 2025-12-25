@@ -18,8 +18,13 @@
         },
         "3": {
           "title": "Felhasználói fiókok",
-          "content1": "Az Auktiva használatához létre kell hoznod egy fiókot pontos információkkal, beleértve a nevedet, e-mail címedet és egy biztonságos jelszót. Felelős vagy fiókod hitelesítő adatainak biztonságáért, és nem oszthatod meg fiókodat másokkal.",
+          "content1": "Az Auktiva használatához létre kell hoznod egy fiókot pontos információkkal, beleértve a nevedet, e-mail címedet és egy biztonságos jelszót. Alternatívaként bejelentkezhetsz Google OAuth használatával, amely lehetővé teszi a meglévő Google fiókod hitelesítő adatainak használatát. Felelős vagy fiókod hitelesítő adatainak biztonságáért, és nem oszthatod meg fiókodat másokkal.",
           "content2": "Legalább 18 évesnek kell lenned, vagy szülői beleegyezéssel kell rendelkezned az Auktiva használatához. Tartsd naprakészen a fiókinformációidat, hogy megkapd a fontos értesítéseket az aukcióidról."
+        },
+        "3b": {
+          "title": "Harmadik féltől származó hitelesítés",
+          "content1": "Az Auktiva kényelmi okokból Google OAuth bejelentkezést kínál. Amikor Google bejelentkezést használsz, felhatalmazod a Google-t, hogy megossza veled az alapvető profilinformációidat (név, e-mail, profilkép). Ezeket az információkat kizárólag az Auktiva fiókod létrehozására és kezelésére használjuk.",
+          "content2": "A Google bejelentkezés használata a Google Felhasználási Feltételeinek és Adatvédelmi Irányelveinek is alá van vetve. Bármikor leválaszthatod Google fiókodat az Auktivától, bár lehet, hogy jelszót kell beállítanod a fiókodhoz való hozzáférés folytatásához."
         },
         "4": {
           "title": "Szerepkörök és jogosultságok",
@@ -134,6 +139,11 @@
           "title": "Adatmegosztás",
           "content1": "Nem adjuk el, nem kereskedünk vele, és nem adjuk át más módon személyes adataidat harmadik feleknek. Aukciós adataid csak azon aukciók tagjai számára láthatók, amelyekben részt veszel, az egyes aukciók tulajdonosai által konfigurált adatvédelmi beállításoknak megfelelően.",
           "content2": "Az aukciók tulajdonosai konfigurálhatnak adatvédelmi beállításokat, beleértve az anonim licitálást a licitálók kilétének elrejtésére, a csak meghívásos hozzáférési korlátozásokat és a szerepkör-alapú jogosultságokat annak szabályozására, hogy az egyes tagok mit láthatnak és mit tehetnek."
+        },
+        "5b": {
+          "title": "Harmadik féltől származó hitelesítés (Google OAuth)",
+          "content1": "Ha úgy döntesz, hogy Google-lal jelentkezel be, a Google OAuth 2.0 szolgáltatását használjuk a személyazonosságod hitelesítésére. Amikor Google-lal jelentkezel be, megkapjuk az alapvető profilinformációidat (név, e-mail cím és profilkép) a Google-tól.",
+          "content2": "Nem kapjuk meg és nem tároljuk a Google jelszavadat. A Google által az információid felhasználását a Google Adatvédelmi Irányelve szabályozza. Bármikor visszavonhatod az Auktiva hozzáférését a Google fiókodhoz a Google Fiók beállításain keresztül a myaccount.google.com címen."
         },
         "6": {
           "title": "E-mail kommunikáció",

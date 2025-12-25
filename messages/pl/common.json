@@ -127,7 +127,9 @@
     "change": "Zmień",
     "upload": "Prześlij",
     "remove": "Usuń",
-    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Maks. 5MB • Zalecany kwadrat"
+    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Maks. 5MB • Zalecany kwadrat",
+    "uploadSuccess": "Przesłano pomyślnie",
+    "deleteSuccess": "Usunięto pomyślnie"
   },
   "notifications": {
     "title": "Powiadomienia",

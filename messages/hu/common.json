@@ -127,7 +127,9 @@
     "change": "Módosítás",
     "upload": "Feltöltés",
     "remove": "Eltávolítás",
-    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Max 5MB • Négyzet ajánlott"
+    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Max 5MB • Négyzet ajánlott",
+    "uploadSuccess": "Sikeres feltöltés",
+    "deleteSuccess": "Sikeresen törölve"
   },
   "notifications": {
     "title": "Értesítések",
