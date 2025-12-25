@@ -70,7 +70,13 @@
       "transfer": "Transferir",
       "transferring": "Transfiriendo...",
       "transferred": "Derechos de administrador transferidos exitosamente",
-      "enterEmail": "Por favor ingresa una dirección de correo"
+      "enterEmail": "Por favor ingresa una dirección de correo",
+      "versionTitle": "Información de versión",
+      "currentVersion": "Versión actual",
+      "latestVersion": "Última versión",
+      "viewChangelog": "Registro de cambios",
+      "updateNow": "Actualizar ahora",
+      "updating": "Actualizando..."
     },
     "seo": {
       "title": "Ajustes",

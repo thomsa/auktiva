@@ -70,7 +70,13 @@
       "transfer": "Übertragen",
       "transferring": "Übertrage...",
       "transferred": "Admin-Rechte erfolgreich übertragen",
-      "enterEmail": "Bitte gib eine E-Mail-Adresse ein"
+      "enterEmail": "Bitte gib eine E-Mail-Adresse ein",
+      "versionTitle": "Versionsinformationen",
+      "currentVersion": "Aktuelle Version",
+      "latestVersion": "Neueste Version",
+      "viewChangelog": "Änderungsprotokoll",
+      "updateNow": "Jetzt aktualisieren",
+      "updating": "Aktualisiere..."
     },
     "seo": {
       "title": "Einstellungen",

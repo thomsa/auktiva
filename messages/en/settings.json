@@ -70,7 +70,13 @@
       "transfer": "Transfer",
       "transferring": "Transferring...",
       "transferred": "Admin rights transferred successfully",
-      "enterEmail": "Please enter an email address"
+      "enterEmail": "Please enter an email address",
+      "versionTitle": "Version Information",
+      "currentVersion": "Current Version",
+      "latestVersion": "Latest Version",
+      "viewChangelog": "Changelog",
+      "updateNow": "Update Now",
+      "updating": "Updating..."
     },
     "seo": {
       "title": "Settings",

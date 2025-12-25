@@ -70,7 +70,13 @@
       "transfer": "Przenieś",
       "transferring": "Przenoszenie...",
       "transferred": "Uprawnienia administratora przeniesione pomyślnie",
-      "enterEmail": "Proszę wprowadzić adres email"
+      "enterEmail": "Proszę wprowadzić adres email",
+      "versionTitle": "Informacje o wersji",
+      "currentVersion": "Aktualna wersja",
+      "latestVersion": "Najnowsza wersja",
+      "viewChangelog": "Historia zmian",
+      "updateNow": "Aktualizuj teraz",
+      "updating": "Aktualizowanie..."
     },
     "seo": {
       "title": "Ustawienia",

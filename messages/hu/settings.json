@@ -70,7 +70,13 @@
       "transfer": "Átadás",
       "transferring": "Átadás...",
       "transferred": "Adminisztrátori jogok sikeresen átadva",
-      "enterEmail": "Kérlek adj meg egy email címet"
+      "enterEmail": "Kérlek adj meg egy email címet",
+      "versionTitle": "Verzió információ",
+      "currentVersion": "Jelenlegi verzió",
+      "latestVersion": "Legújabb verzió",
+      "viewChangelog": "Változásnapló",
+      "updateNow": "Frissítés most",
+      "updating": "Frissítés..."
     },
     "seo": {
       "title": "Beállítások",

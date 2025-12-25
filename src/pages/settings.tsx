@@ -20,6 +20,13 @@ interface ConnectedAccount {
   provider: string;
 }
 
+interface VersionInfo {
+  currentVersion: string;
+  latestVersion: string | null;
+  updateAvailable: boolean;
+  releaseUrl: string | null;
+}
+
 interface SettingsPageProps {
   user: {
     id: string;
@@ -32,6 +39,7 @@ interface SettingsPageProps {
   googleOAuthEnabled: boolean;
   isDeploymentAdmin: boolean;
   hasDeploymentAdmin: boolean;
+  versionInfo: VersionInfo | null;
 }
 
 export default function SettingsPage({
@@ -42,6 +50,7 @@ export default function SettingsPage({
   googleOAuthEnabled,
   isDeploymentAdmin: initialIsDeploymentAdmin,
   hasDeploymentAdmin: initialHasDeploymentAdmin,
+  versionInfo,
 }: SettingsPageProps) {
   const { theme, setTheme } = useTheme();
   const t = useTranslations("settings");
@@ -88,6 +97,7 @@ export default function SettingsPage({
     string | null
   >(null);
   const [transferEmail, setTransferEmail] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleEmailSettingChange = async (
     setting: "emailOnNewItem" | "emailOnOutbid",
@@ -225,6 +235,16 @@ export default function SettingsPage({
     } finally {
       setDeploymentAdminLoading(false);
     }
+  };
+
+  const handleUpdate = async () => {
+    setIsUpdating(true);
+    // Fire and forget - the app will restart
+    fetch("/api/system/update", { method: "POST" }).catch(() => {});
+    // Redirect to home after a short delay to let the update start
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 1000);
   };
 
   const handleTransferDeploymentAdmin = async () => {
@@ -687,6 +707,66 @@ export default function SettingsPage({
                 </div>
               </div>
 
+              {/* Version info */}
+              {versionInfo && (
+                <div className="p-4 rounded-xl bg-base-200/50 border border-base-content/5">
+                  <p className="font-medium mb-3">
+                    {t("deploymentAdmin.versionTitle")}
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-base-content/60">
+                        {t("deploymentAdmin.currentVersion")}
+                      </span>
+                      <span className="font-mono text-sm">
+                        v{versionInfo.currentVersion}
+                      </span>
+                    </div>
+                    {versionInfo.latestVersion && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-base-content/60">
+                          {t("deploymentAdmin.latestVersion")}
+                        </span>
+                        <span
+                          className={`font-mono text-sm ${
+                            versionInfo.updateAvailable
+                              ? "text-warning font-medium"
+                              : "text-success"
+                          }`}
+                        >
+                          v{versionInfo.latestVersion}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mt-4">
+                    <a
+                      href="https://github.com/thomsa/auktiva/blob/main/CHANGELOG.md"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-ghost btn-sm"
+                    >
+                      <span className="icon-[tabler--file-text] size-4" />
+                      {t("deploymentAdmin.viewChangelog")}
+                    </a>
+                    {versionInfo.updateAvailable && (
+                      <Button
+                        onClick={handleUpdate}
+                        variant="primary"
+                        size="sm"
+                        isLoading={isUpdating}
+                        loadingText={t("deploymentAdmin.updating")}
+                        icon={
+                          <span className="icon-[tabler--download] size-4" />
+                        }
+                      >
+                        {t("deploymentAdmin.updateNow")}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Transfer admin rights */}
               <div className="p-4 rounded-xl bg-base-200/50 border border-base-content/5">
                 <p className="font-medium mb-2">
@@ -806,6 +886,56 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const isDeploymentAdmin = systemSettings.deploymentAdminEmail === user.email;
   const hasDeploymentAdmin = !!systemSettings.deploymentAdminEmail;
 
+  // Fetch version info for deployment admin
+  let versionInfo: VersionInfo | null = null;
+  if (isDeploymentAdmin) {
+    try {
+      const packageJson = await import("../../package.json");
+      const currentVersion = packageJson.version;
+
+      // Fetch latest version from GitHub
+      const response = await fetch(
+        "https://api.github.com/repos/thomsa/auktiva/releases/latest",
+        {
+          headers: {
+            Accept: "application/vnd.github.v3+json",
+            "User-Agent": "Auktiva",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const release = await response.json();
+        const latestVersion = release.tag_name?.replace(/^v/, "") || null;
+        const updateAvailable =
+          latestVersion && latestVersion !== currentVersion;
+
+        versionInfo = {
+          currentVersion,
+          latestVersion,
+          updateAvailable: !!updateAvailable,
+          releaseUrl: release.html_url || null,
+        };
+      } else {
+        versionInfo = {
+          currentVersion,
+          latestVersion: null,
+          updateAvailable: false,
+          releaseUrl: null,
+        };
+      }
+    } catch {
+      // If fetching fails, just show current version
+      const packageJson = await import("../../package.json");
+      versionInfo = {
+        currentVersion: packageJson.version,
+        latestVersion: null,
+        updateAvailable: false,
+        releaseUrl: null,
+      };
+    }
+  }
+
   const messages = await getMessages(context.locale as Locale);
 
   return {
@@ -826,6 +956,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       googleOAuthEnabled,
       isDeploymentAdmin,
       hasDeploymentAdmin,
+      versionInfo,
       messages,
     },
   };
