@@ -2,7 +2,7 @@
 
 All notable changes to Auktiva will be documented in this file.
 
-## [Unreleased]
+## [1.1.15] - 2025-12-25
 
 ### 🚀 Features
 
