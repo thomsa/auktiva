@@ -1,11 +1,17 @@
 # Auktiva
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthomsa%2Fauktiva&env=AUTH_SECRET,AUTH_URL,DATABASE_URL&envDescription=Required%20environment%20variables%20for%20Auktiva&envLink=https%3A%2F%2Fdocs.auktiva.org%2Fdevelopers%2Fdeployment&project-name=auktiva&repository-name=auktiva)
+[![GitHub release](https://img.shields.io/github/v/release/thomsa/auktiva?include_prereleases)](https://github.com/thomsa/auktiva/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/thomsa/auktiva)](https://github.com/thomsa/auktiva/stargazers)
+
 A free, open-source auction platform for hosting private and public auctions. Perfect for charity events, fundraisers, schools, churches, company events, and community organizations.
 
 **No payment processing** - all transactions are settled offline between participants.
 
 🌐 **Live Demo**: [auktiva.org](https://auktiva.org)  
-📚 **Documentation**: [docs.auktiva.org](https://docs.auktiva.org)
+📚 **Documentation**: [docs.auktiva.org](https://docs.auktiva.org)  
+📝 **Changelog**: [CHANGELOG.md](./CHANGELOG.md)
 
 ## Features
 
@@ -228,6 +234,7 @@ Auktiva can send email notifications for:
 1. **Create a Brevo account** at [brevo.com](https://www.brevo.com/)
 
 2. **Get your API key**
+
    - Go to [Settings → API Keys](https://app.brevo.com/settings/keys/api)
    - Create a new API key
 
@@ -263,6 +270,7 @@ Email notifications are disabled by default to conserve email quota. Users can e
 Protect registration from bots with Google reCAPTCHA v2 checkbox. If not configured, reCAPTCHA is completely disabled (useful for local development and self-hosting).
 
 1. **Get reCAPTCHA keys** at [google.com/recaptcha/admin](https://www.google.com/recaptcha/admin)
+
    - Choose reCAPTCHA v2 → "I'm not a robot" Checkbox
    - Add your domain(s)
 

@@ -1,0 +1,47 @@
+name: Generate Changelog
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        uses: orhun/git-cliff-action@v3
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG.md
+          GITHUB_REPO: ${{ github.repository }}
+
+      - name: Commit changelog
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Check if CHANGELOG.md has changes
+          if git diff --quiet CHANGELOG.md; then
+            echo "No changes to CHANGELOG.md"
+            exit 0
+          fi
+          
+          git add CHANGELOG.md
+          git commit -m "docs: update changelog"
+          git push
