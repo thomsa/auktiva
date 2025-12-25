@@ -4,6 +4,27 @@ All notable changes to Auktiva will be documented in this file.
 
 ## [Unreleased]
 
+### 📚 Documentation
+
+- Update changelog [skip ci] by @github-actions[bot]
+
+### 🚀 Features
+
+- Add auto-push on version bump and improve update UI/logging by @thomsa
+
+## [1.1.10] - 2025-12-25
+
+### 📚 Documentation
+
+- Update changelog [skip ci] by @github-actions[bot]
+- Update changelog [skip ci] by @github-actions[bot]
+
+### 🚀 Features
+
+- Add npm version tag prefix configuration by @thomsa
+
+## [1.1.8] - 2025-12-25
+
 ### 🐛 Bug Fixes
 
 - Improve CLI setup database initialization and error handling by @thomsa
@@ -16,14 +37,11 @@ All notable changes to Auktiva will be documented in this file.
 - Update changelog [skip ci] by @github-actions[bot]
 - Update changelog [skip ci] by @github-actions[bot]
 - Update changelog [skip ci] by @github-actions[bot]
-- Update changelog [skip ci] by @github-actions[bot]
-- Update changelog [skip ci] by @github-actions[bot]
 - Update changelog by @github-actions[bot]
 - Update changelog by @github-actions[bot]
 
 ### 🚀 Features
 
-- Add npm version tag prefix configuration by @thomsa
 - Add update timeout handling and progress indicator by @thomsa
 - Add deployment admin role and in-app update system by @thomsa
 - Add automatic changelog and release workflows by @thomsa
