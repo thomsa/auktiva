@@ -90,47 +90,106 @@ const uploadThumbnail: ApiHandler = async (req, res, ctx) => {
   const { auction } = ctx as typeof ctx & ContextWithAuction;
   const auctionId = ctx.params.id;
 
-  const { files } = await parseForm(req);
+  console.log("[ThumbnailUpload] Starting upload for auction:", auctionId);
+
+  console.log("[ThumbnailUpload] Parsing form data...");
+  let files;
+  try {
+    const formResult = await parseForm(req);
+    files = formResult.files;
+    console.log("[ThumbnailUpload] Form parsed, files:", Object.keys(files));
+  } catch (parseError) {
+    console.error("[ThumbnailUpload] Form parse error:", parseError);
+    throw new BadRequestError(
+      `Failed to parse upload: ${parseError instanceof Error ? parseError.message : "Unknown error"}`,
+    );
+  }
+
   const fileArray = files.thumbnail;
 
   if (!fileArray || (Array.isArray(fileArray) && fileArray.length === 0)) {
+    console.log("[ThumbnailUpload] No thumbnail file in request");
     throw new BadRequestError("No image file provided");
   }
 
   const file = Array.isArray(fileArray) ? fileArray[0] : fileArray;
+  console.log("[ThumbnailUpload] File received:", {
+    originalFilename: file.originalFilename,
+    mimetype: file.mimetype,
+    size: file.size,
+  });
 
   if (!file.mimetype || !ALLOWED_TYPES.includes(file.mimetype)) {
+    console.log("[ThumbnailUpload] Invalid file type:", file.mimetype);
     throw new BadRequestError(
       "Invalid file type. Allowed: JPEG, PNG, WebP, GIF",
     );
   }
 
   // Process image
-  const processedBuffer = await processImage(file.filepath);
+  console.log("[ThumbnailUpload] Processing image with sharp...");
+  let processedBuffer: Buffer;
+  try {
+    processedBuffer = await processImage(file.filepath);
+    console.log("[ThumbnailUpload] Image processed, buffer size:", processedBuffer.length);
+  } catch (processError) {
+    console.error("[ThumbnailUpload] Image processing error:", processError);
+    throw new BadRequestError(
+      `Failed to process image: ${processError instanceof Error ? processError.message : "Unknown error"}`,
+    );
+  }
 
   // Generate filename
   const filename = `auctions/${auctionId}/thumbnail-${Date.now()}.jpg`;
+  console.log("[ThumbnailUpload] Generated filename:", filename);
 
   // Delete old thumbnail if exists
   if (auction.thumbnailUrl) {
+    console.log("[ThumbnailUpload] Deleting old thumbnail:", auction.thumbnailUrl);
     const storage = getStorage();
     try {
       await storage.removeFile(auction.thumbnailUrl);
-    } catch {
+      console.log("[ThumbnailUpload] Old thumbnail deleted");
+    } catch (deleteError) {
+      console.warn("[ThumbnailUpload] Failed to delete old thumbnail:", deleteError);
       // Ignore errors when deleting old file
     }
   }
 
   // Upload to storage
-  const storage = getStorage();
-  const result = await storage.addFileFromBuffer({
-    buffer: processedBuffer,
-    targetPath: filename,
-  });
+  console.log("[ThumbnailUpload] Getting storage instance...");
+  let storage;
+  try {
+    storage = getStorage();
+    console.log("[ThumbnailUpload] Storage instance obtained");
+  } catch (storageError) {
+    console.error("[ThumbnailUpload] Failed to get storage:", storageError);
+    throw new BadRequestError(
+      `Storage configuration error: ${storageError instanceof Error ? storageError.message : "Unknown error"}`,
+    );
+  }
+
+  console.log("[ThumbnailUpload] Uploading to storage...");
+  let result;
+  try {
+    result = await storage.addFileFromBuffer({
+      buffer: processedBuffer,
+      targetPath: filename,
+    });
+    console.log("[ThumbnailUpload] Storage upload result:", {
+      error: result.error,
+      value: result.value,
+    });
+  } catch (uploadError) {
+    console.error("[ThumbnailUpload] Storage upload exception:", uploadError);
+    throw new BadRequestError(
+      `Storage upload failed: ${uploadError instanceof Error ? uploadError.message : "Unknown error"}`,
+    );
+  }
 
   if (result.error) {
-    console.error("Storage upload error:", result.error);
-    throw new BadRequestError("Failed to upload image");
+    console.error("[ThumbnailUpload] Storage upload error:", result.error);
+    throw new BadRequestError(`Failed to upload image: ${result.error}`);
   }
 
   // Update auction
