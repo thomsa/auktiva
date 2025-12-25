@@ -43,6 +43,26 @@ async function parseForm(
   });
 }
 
+/**
+ * Parse JSON body manually since bodyParser is disabled for file uploads
+ */
+async function parseJsonBody<T>(req: Parameters<ApiHandler>[0]): Promise<T> {
+  return new Promise((resolve, reject) => {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+    req.on("end", () => {
+      try {
+        resolve(JSON.parse(body));
+      } catch {
+        reject(new BadRequestError("Invalid JSON body"));
+      }
+    });
+    req.on("error", reject);
+  });
+}
+
 async function processImage(filePath: string): Promise<Buffer> {
   // Resize and optimize image
   return sharp(filePath)
@@ -281,7 +301,8 @@ const deleteImage: ApiHandler = async (req, res, ctx) => {
 
 const reorderImages: ApiHandler = async (req, res, ctx) => {
   const itemId = ctx.params.itemId;
-  const { imageIds } = req.body;
+  const body = await parseJsonBody<{ imageIds?: string[] }>(req);
+  const { imageIds } = body;
 
   if (!Array.isArray(imageIds)) {
     throw new BadRequestError("imageIds array required");
