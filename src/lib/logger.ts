@@ -45,5 +45,6 @@ export const storageLogger = createLogger("storage");
 export const prismaLogger = createLogger("prisma");
 export const uploadLogger = createLogger("upload");
 export const apiLogger = createLogger("api");
+export const updateLogger = createLogger("update");
 
 export default logger;

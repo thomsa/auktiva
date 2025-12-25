@@ -30,7 +30,8 @@
     "db:generate": "prisma generate",
     "seed:currencies": "npx tsx prisma/seed-currencies.ts",
     "seed:test-db": "npx tsx prisma/seed.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "@getbrevo/brevo": "^3.0.1",

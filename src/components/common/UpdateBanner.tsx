@@ -199,17 +199,17 @@ export function UpdateBanner() {
               <button
                 onClick={handleUpdate}
                 disabled={isUpdating}
-                className="btn btn-primary btn-sm flex-1"
+                className="btn btn-primary btn-sm flex-1 min-w-0"
               >
                 {isUpdating ? (
                   <>
-                    <span className="loading loading-spinner loading-xs" />
-                    {t("updating")}
+                    <span className="loading loading-spinner loading-xs shrink-0" />
+                    <span className="truncate">{t("updating")}</span>
                   </>
                 ) : (
                   <>
-                    <span className="icon-[tabler--download] size-4" />
-                    {t("installUpdate")}
+                    <span className="icon-[tabler--download] size-4 shrink-0" />
+                    <span className="truncate">{t("installUpdate")}</span>
                   </>
                 )}
               </button>
@@ -219,12 +219,12 @@ export function UpdateBanner() {
                 href={data.releaseUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`btn btn-ghost btn-sm ${
+                className={`btn btn-ghost btn-sm min-w-0 ${
                   data.isDeploymentAdmin ? "" : "flex-1"
                 }`}
               >
-                <span className="icon-[tabler--external-link] size-4" />
-                {t("viewRelease")}
+                <span className="icon-[tabler--external-link] size-4 shrink-0" />
+                <span className="truncate">{t("viewRelease")}</span>
               </a>
             )}
           </div>

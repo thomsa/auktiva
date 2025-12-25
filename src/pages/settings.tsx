@@ -63,10 +63,10 @@ export default function SettingsPage({
 
   // Email notification settings
   const [emailOnNewItem, setEmailOnNewItem] = useState(
-    initialSettings.emailOnNewItem,
+    initialSettings.emailOnNewItem
   );
   const [emailOnOutbid, setEmailOnOutbid] = useState(
-    initialSettings.emailOnOutbid,
+    initialSettings.emailOnOutbid
   );
   const [emailSettingsLoading, setEmailSettingsLoading] = useState(false);
   const [emailSettingsSuccess, setEmailSettingsSuccess] = useState<
@@ -74,15 +74,23 @@ export default function SettingsPage({
   >(null);
 
   // Deployment admin state
-  const [isDeploymentAdmin, setIsDeploymentAdmin] = useState(initialIsDeploymentAdmin);
-  const [hasDeploymentAdmin, setHasDeploymentAdmin] = useState(initialHasDeploymentAdmin);
+  const [isDeploymentAdmin, setIsDeploymentAdmin] = useState(
+    initialIsDeploymentAdmin
+  );
+  const [hasDeploymentAdmin, setHasDeploymentAdmin] = useState(
+    initialHasDeploymentAdmin
+  );
   const [deploymentAdminLoading, setDeploymentAdminLoading] = useState(false);
-  const [deploymentAdminError, setDeploymentAdminError] = useState<string | null>(null);
-  const [deploymentAdminSuccess, setDeploymentAdminSuccess] = useState<string | null>(null);
+  const [deploymentAdminError, setDeploymentAdminError] = useState<
+    string | null
+  >(null);
+  const [deploymentAdminSuccess, setDeploymentAdminSuccess] = useState<
+    string | null
+  >(null);
 
   const handleEmailSettingChange = async (
     setting: "emailOnNewItem" | "emailOnOutbid",
-    value: boolean,
+    value: boolean
   ) => {
     if (setting === "emailOnNewItem") {
       setEmailOnNewItem(value);
@@ -173,7 +181,7 @@ export default function SettingsPage({
 
       if (!res.ok) {
         setPasswordError(
-          result.message || tErrors("profile.passwordChangeFailed"),
+          result.message || tErrors("profile.passwordChangeFailed")
         );
       } else {
         setPasswordSuccess(t("password.passwordChanged"));
@@ -374,7 +382,7 @@ export default function SettingsPage({
                     <p className="font-medium">Google</p>
                     <p className="text-sm text-base-content/60">
                       {connectedAccounts.some(
-                        (acc) => acc.provider === "google",
+                        (acc) => acc.provider === "google"
                       )
                         ? t("connectedAccounts.connected")
                         : t("connectedAccounts.notConnected")}
@@ -671,16 +679,6 @@ export default function SettingsPage({
                   </p>
                 </div>
               </div>
-              <Button
-                onClick={handleRemoveDeploymentAdmin}
-                buttonStyle="outline"
-                isLoading={deploymentAdminLoading}
-                loadingText={t("deploymentAdmin.removing")}
-                icon={<span className="icon-[tabler--shield-off] size-5"></span>}
-                className="text-error border-error/30 hover:bg-error/10"
-              >
-                {t("deploymentAdmin.removeAdmin")}
-              </Button>
             </div>
           ) : hasDeploymentAdmin ? (
             <div className="flex items-center gap-3 p-4 rounded-xl bg-base-200/50 border border-base-content/5">
@@ -712,7 +710,9 @@ export default function SettingsPage({
                 variant="primary"
                 isLoading={deploymentAdminLoading}
                 loadingText={t("deploymentAdmin.claiming")}
-                icon={<span className="icon-[tabler--shield-plus] size-5"></span>}
+                icon={
+                  <span className="icon-[tabler--shield-plus] size-5"></span>
+                }
                 className="shadow-lg shadow-primary/20"
               >
                 {t("deploymentAdmin.becomeAdmin")}
@@ -753,7 +753,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   // Get connected OAuth accounts
   const connectedAccounts = await userService.getUserConnectedAccounts(
-    session.user.id,
+    session.user.id
   );
 
   // Check if user has a password (for OAuth-only users)
