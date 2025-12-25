@@ -37,19 +37,21 @@ npm run build
 
 echo ""
 echo "=== Step 6: Restarting application ==="
-# Uncomment and modify based on your deployment:
 
-# For PM2:
-# pm2 restart auktiva
-
-# For systemd:
-# sudo systemctl restart auktiva
-
-# For Docker:
-# docker-compose restart app
-
-# For development (just exits, Next.js dev server will restart):
-echo "Build complete. Please restart your application manually if needed."
+# Check if PM2 is available and auktiva process exists
+if command -v pm2 &> /dev/null; then
+  if pm2 list | grep -q "auktiva"; then
+    echo "Restarting PM2 process 'auktiva'..."
+    pm2 restart auktiva
+    echo "PM2 process restarted successfully"
+  else
+    echo "PM2 is installed but 'auktiva' process not found"
+    echo "Build complete. Please start the application manually."
+  fi
+else
+  echo "PM2 not found. Build complete."
+  echo "Please restart your application manually if needed."
+fi
 
 echo ""
 echo "=== Update completed at $(date) ==="
