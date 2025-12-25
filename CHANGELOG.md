@@ -7,13 +7,47 @@ All notable changes to Auktiva will be documented in this file.
 ### 🐛 Bug Fixes
 
 - Use pre-built git-cliff binary instead of Docker action by @thomsa
-- Missing translations added by @thomsa
-- Use executeMultiple for Turso migrations to handle PRAGMA and table dependencies by @thomsa
+
+### 📚 Documentation
+
+- Update changelog by @github-actions[bot]
 
 ### 🚀 Features
 
 - Add automatic changelog and release workflows by @thomsa
+
+## [1.1.5] - 2025-12-25
+
+## [1.1.4] - 2025-12-25
+
+## [1.1.3] - 2025-12-25
+
+## [1.1.2] - 2025-12-25
+
+## [1.1.1] - 2025-12-17
+
+### 🐛 Bug Fixes
+
+- Missing translations added by @thomsa
+
+## [1.1.0] - 2025-12-17
+
+### 🚀 Features
+
 - Add recording of main features to landing by @thomsa
+
+## [1.0.0] - 2025-12-16
+
+## [0.2.0] - 2025-12-15
+
+## [0.1.1] - 2025-12-15
+
+### 🐛 Bug Fixes
+
+- Use executeMultiple for Turso migrations to handle PRAGMA and table dependencies by @thomsa
+
+### 🚀 Features
+
 - Add conditional currency seeding to Vercel build by @thomsa
 
 ---
