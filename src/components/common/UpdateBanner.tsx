@@ -104,30 +104,21 @@ export function UpdateBanner() {
   }, [t]);
 
   const handleUpdate = async () => {
+    // Immediately show updating state and start polling
+    // The API call may never return if the server restarts during the update
     setIsUpdating(true);
     setUpdateError(null);
+    setUpdateSuccess(true);
 
-    try {
-      const response = await fetch("/api/system/update", {
-        method: "POST",
-      });
+    // Start polling immediately - don't wait for API response
+    pollForAvailability();
 
-      const result = await response.json();
-
-      if (result.success) {
-        setUpdateSuccess(true);
-        // Start polling for when the app comes back online
-        pollForAvailability();
-      } else {
-        setUpdateError(result.message || t("updateFailed"));
-        setIsUpdating(false);
-      }
-    } catch {
-      // The request might fail if the app restarts during the request
-      // Start polling anyway in case the update was triggered
-      setUpdateSuccess(true);
-      pollForAvailability();
-    }
+    // Fire and forget the update request
+    fetch("/api/system/update", {
+      method: "POST",
+    }).catch(() => {
+      // Expected - the server will restart and kill the connection
+    });
   };
 
   // Don't render anything if no update or dismissed
