@@ -13,6 +13,9 @@
     "url": "https://github.com/thomsa/auktiva/issues"
   },
   "private": true,
+  "config": {
+    "tag-version-prefix": "v"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
