@@ -12,9 +12,6 @@ const execAsync = promisify(exec);
 
 interface UpdateResponse {
   success: boolean;
-  message: string;
-  output?: string;
-  error?: string;
 }
 
 export default async function handler(
@@ -26,20 +23,14 @@ export default async function handler(
   if (req.method !== "POST") {
     updateLogger.warn({ method: req.method }, "Invalid method");
     res.setHeader("Allow", ["POST"]);
-    return res.status(405).json({
-      success: false,
-      message: `Method ${req.method} Not Allowed`,
-    });
+    return res.status(405).json({ success: false });
   }
 
   // Check authentication
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.email) {
     updateLogger.warn("Unauthorized update attempt - no session");
-    return res.status(401).json({
-      success: false,
-      message: "Unauthorized",
-    });
+    return res.status(401).json({ success: false });
   }
 
   updateLogger.info({ email: session.user.email }, "Update requested by user");
@@ -51,10 +42,7 @@ export default async function handler(
       { email: session.user.email },
       "Non-admin user attempted update"
     );
-    return res.status(403).json({
-      success: false,
-      message: "Only deployment admin can trigger updates",
-    });
+    return res.status(403).json({ success: false });
   }
 
   updateLogger.info(
@@ -74,12 +62,12 @@ export default async function handler(
   // Check if update script exists
   if (!fs.existsSync(updateScriptPath)) {
     updateLogger.error({ updateScriptPath }, "Update script not found");
-    return res.status(400).json({
-      success: false,
-      message: "Update script not found. Please create scripts/update.sh",
-      error: `Expected script at: ${updateScriptPath}`,
-    });
+    return res.status(400).json({ success: false });
   }
+
+  // Return success immediately - the update will run in the background
+  // The client will poll for availability
+  res.status(200).json({ success: true });
 
   updateLogger.info("Update script found, executing...");
 
@@ -107,13 +95,6 @@ export default async function handler(
     if (stderr) {
       updateLogger.warn({ stderr }, "Update stderr");
     }
-
-    return res.status(200).json({
-      success: true,
-      message: "Update triggered successfully. The application will restart.",
-      output: stdout,
-      error: stderr || undefined,
-    });
   } catch (error) {
     const execError = error as {
       stdout?: string;
@@ -128,11 +109,5 @@ export default async function handler(
       },
       "Update script failed"
     );
-    return res.status(500).json({
-      success: false,
-      message: "Update failed",
-      output: execError.stdout,
-      error: execError.stderr || execError.message,
-    });
   }
 }
