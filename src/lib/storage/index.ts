@@ -1,5 +1,13 @@
 import { Storage } from "@tweedegolf/storage-abstraction";
+// Force static imports of adapters to ensure bundler includes them for Vercel serverless
+// These imports are used by Storage internally via dynamic require()
+import { AdapterAmazonS3 } from "@tweedegolf/sab-adapter-amazon-s3";
+import { AdapterLocal } from "@tweedegolf/sab-adapter-local";
 import { storageLogger as logger } from "@/lib/logger";
+
+// Reference adapters to prevent tree-shaking
+const _adapters = { AdapterAmazonS3, AdapterLocal };
+void _adapters;
 
 let storageInstance: Storage | null = null;
 
