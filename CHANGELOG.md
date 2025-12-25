@@ -6,10 +6,12 @@ All notable changes to Auktiva will be documented in this file.
 
 ### 🐛 Bug Fixes
 
+- Skip Vercel builds for changelog commits by @thomsa
 - Use pre-built git-cliff binary instead of Docker action by @thomsa
 
 ### 📚 Documentation
 
+- Update changelog by @github-actions[bot]
 - Update changelog by @github-actions[bot]
 
 ### 🚀 Features
