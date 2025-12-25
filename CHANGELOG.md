@@ -7,9 +7,11 @@ All notable changes to Auktiva will be documented in this file.
 ### 📚 Documentation
 
 - Update changelog [skip ci] by @github-actions[bot]
+- Update changelog [skip ci] by @github-actions[bot]
 
 ### 🚀 Features
 
+- Add automatic PM2 restart to update script by @thomsa
 - Add deployment admin transfer functionality with user validation by @thomsa
 
 ## [1.1.11] - 2025-12-25
