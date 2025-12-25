@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { LanguageSelect } from "@/components/ui/language-select";
+import { createLogger } from "@/lib/logger";
+
+const settingsLogger = createLogger("settings");
 
 interface UserSettings {
   emailOnNewItem: boolean;
@@ -888,10 +891,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   // Fetch version info for deployment admin
   let versionInfo: VersionInfo | null = null;
+  settingsLogger.debug(
+    { isDeploymentAdmin },
+    "Checking deployment admin status"
+  );
   if (isDeploymentAdmin) {
     try {
       const packageJson = await import("../../package.json");
       const currentVersion = packageJson.version;
+      settingsLogger.debug(
+        { currentVersion },
+        "Current version from package.json"
+      );
 
       // Fetch latest version from GitHub
       const response = await fetch(
@@ -904,11 +915,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         }
       );
 
+      settingsLogger.debug({ status: response.status }, "GitHub API response");
+
       if (response.ok) {
         const release = await response.json();
         const latestVersion = release.tag_name?.replace(/^v/, "") || null;
         const updateAvailable =
           latestVersion && latestVersion !== currentVersion;
+
+        settingsLogger.debug(
+          { latestVersion, updateAvailable },
+          "Version check result"
+        );
 
         versionInfo = {
           currentVersion,
@@ -917,6 +935,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           releaseUrl: release.html_url || null,
         };
       } else {
+        settingsLogger.warn({ status: response.status }, "GitHub API failed");
         versionInfo = {
           currentVersion,
           latestVersion: null,
@@ -924,8 +943,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           releaseUrl: null,
         };
       }
-    } catch {
+    } catch (error) {
       // If fetching fails, just show current version
+      settingsLogger.error({ error }, "Error fetching version info");
       const packageJson = await import("../../package.json");
       versionInfo = {
         currentVersion: packageJson.version,
@@ -935,6 +955,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       };
     }
   }
+  settingsLogger.debug({ versionInfo }, "Final version info");
 
   const messages = await getMessages(context.locale as Locale);
 
