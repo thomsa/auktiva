@@ -2,6 +2,16 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [Unreleased]
+
+### 📚 Documentation
+
+- Update changelog [skip ci] by @github-actions[bot]
+
+### 🚀 Features
+
+- Add deployment admin transfer functionality with user validation by @thomsa
+
 ## [1.1.11] - 2025-12-25
 
 ### 📚 Documentation
