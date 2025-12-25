@@ -1,6 +1,7 @@
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { prismaLogger as logger } from "@/lib/logger";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -12,18 +13,19 @@ function createAdapter() {
   const isTursoUrl =
     databaseUrl.startsWith("libsql://") || databaseUrl.startsWith("https://");
 
-  console.log("[Prisma] Creating adapter:", {
-    isTurso: isTursoUrl,
-    urlPrefix: databaseUrl.substring(0, 20) + "...",
-    hasAuthToken: !!process.env.DATABASE_AUTH_TOKEN,
-  });
+  logger.info(
+    {
+      isTurso: isTursoUrl,
+      urlPrefix: databaseUrl.substring(0, 20) + "...",
+      hasAuthToken: !!process.env.DATABASE_AUTH_TOKEN,
+    },
+    "Creating adapter"
+  );
 
   if (isTursoUrl) {
     // Turso/LibSQL
     if (!process.env.DATABASE_AUTH_TOKEN) {
-      console.error(
-        "[Prisma] ERROR: DATABASE_AUTH_TOKEN is not set for Turso connection!"
-      );
+      logger.error("DATABASE_AUTH_TOKEN is not set for Turso connection!");
     }
     return new PrismaLibSql({
       url: databaseUrl,

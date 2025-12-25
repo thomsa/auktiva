@@ -8,6 +8,7 @@ import {
 import type { ApiHandler, Middleware } from "@/lib/api";
 import { prisma } from "@/lib/prisma";
 import { getStorage, getPublicUrl } from "@/lib/storage";
+import { uploadLogger as logger } from "@/lib/logger";
 import formidable from "formidable";
 import fs from "fs";
 import sharp from "sharp";
@@ -25,7 +26,7 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_IMAGES_PER_ITEM = 10;
 
 async function parseForm(
-  req: Parameters<ApiHandler>[0],
+  req: Parameters<ApiHandler>[0]
 ): Promise<{ fields: formidable.Fields; files: formidable.Files }> {
   const form = formidable({
     maxFileSize: MAX_FILE_SIZE,
@@ -94,7 +95,7 @@ const withItemPermission: Middleware = (next) => async (req, res, ctx) => {
 
   if (!isCreator && !isAdmin) {
     throw new ForbiddenError(
-      "You don't have permission to manage images for this item",
+      "You don't have permission to manage images for this item"
     );
   }
 
@@ -120,102 +121,109 @@ const uploadImage: ApiHandler = async (req, res, ctx) => {
   const itemId = ctx.params.itemId;
   const { item } = ctx as typeof ctx & ContextWithItem;
 
-  console.log("[ImageUpload] Starting upload for item:", itemId);
+  logger.info({ itemId, auctionId }, "Starting image upload");
 
   // Check image limit
   if (item._count.images >= MAX_IMAGES_PER_ITEM) {
-    console.log("[ImageUpload] Image limit reached:", item._count.images);
+    logger.warn({ imageCount: item._count.images }, "Image limit reached");
     throw new BadRequestError(
-      `Maximum ${MAX_IMAGES_PER_ITEM} images allowed per item`,
+      `Maximum ${MAX_IMAGES_PER_ITEM} images allowed per item`
     );
   }
 
-  console.log("[ImageUpload] Parsing form data...");
   let files;
   try {
     const formResult = await parseForm(req);
     files = formResult.files;
-    console.log("[ImageUpload] Form parsed, files:", Object.keys(files));
+    logger.debug({ files: Object.keys(files) }, "Form parsed");
   } catch (parseError) {
-    console.error("[ImageUpload] Form parse error:", parseError);
+    logger.error({ err: parseError }, "Form parse error");
     throw new BadRequestError(
-      `Failed to parse upload: ${parseError instanceof Error ? parseError.message : "Unknown error"}`,
+      `Failed to parse upload: ${
+        parseError instanceof Error ? parseError.message : "Unknown error"
+      }`
     );
   }
 
   const fileArray = files.image;
 
   if (!fileArray || (Array.isArray(fileArray) && fileArray.length === 0)) {
-    console.log("[ImageUpload] No image file in request");
+    logger.warn("No image file in request");
     throw new BadRequestError("No image file provided");
   }
 
   const file = Array.isArray(fileArray) ? fileArray[0] : fileArray;
-  console.log("[ImageUpload] File received:", {
-    originalFilename: file.originalFilename,
-    mimetype: file.mimetype,
-    size: file.size,
-    filepath: file.filepath,
-  });
+  logger.debug(
+    {
+      originalFilename: file.originalFilename,
+      mimetype: file.mimetype,
+      size: file.size,
+    },
+    "File received"
+  );
 
   if (!file.mimetype || !ALLOWED_TYPES.includes(file.mimetype)) {
-    console.log("[ImageUpload] Invalid file type:", file.mimetype);
+    logger.warn({ mimetype: file.mimetype }, "Invalid file type");
     throw new BadRequestError(
-      "Invalid file type. Allowed: JPEG, PNG, WebP, GIF",
+      "Invalid file type. Allowed: JPEG, PNG, WebP, GIF"
     );
   }
 
   // Process image
-  console.log("[ImageUpload] Processing image with sharp...");
   let processedBuffer: Buffer;
   try {
     processedBuffer = await processImage(file.filepath);
-    console.log("[ImageUpload] Image processed, buffer size:", processedBuffer.length);
+    logger.debug({ bufferSize: processedBuffer.length }, "Image processed");
   } catch (processError) {
-    console.error("[ImageUpload] Image processing error:", processError);
+    logger.error({ err: processError }, "Image processing error");
     throw new BadRequestError(
-      `Failed to process image: ${processError instanceof Error ? processError.message : "Unknown error"}`,
+      `Failed to process image: ${
+        processError instanceof Error ? processError.message : "Unknown error"
+      }`
     );
   }
 
   // Generate unique filename
   const ext = ".jpg"; // Always save as JPEG after processing
-  const filename = `${auctionId}/${itemId}/${Date.now()}-${Math.random().toString(36).substring(7)}${ext}`;
-  console.log("[ImageUpload] Generated filename:", filename);
+  const filename = `${auctionId}/${itemId}/${Date.now()}-${Math.random()
+    .toString(36)
+    .substring(7)}${ext}`;
+  logger.debug({ filename }, "Generated filename");
 
   // Upload to storage
-  console.log("[ImageUpload] Getting storage instance...");
   let storage;
   try {
     storage = getStorage();
-    console.log("[ImageUpload] Storage instance obtained");
   } catch (storageError) {
-    console.error("[ImageUpload] Failed to get storage:", storageError);
+    logger.error({ err: storageError }, "Failed to get storage");
     throw new BadRequestError(
-      `Storage configuration error: ${storageError instanceof Error ? storageError.message : "Unknown error"}`,
+      `Storage configuration error: ${
+        storageError instanceof Error ? storageError.message : "Unknown error"
+      }`
     );
   }
 
-  console.log("[ImageUpload] Uploading to storage...");
   let result;
   try {
     result = await storage.addFileFromBuffer({
       buffer: processedBuffer,
       targetPath: filename,
     });
-    console.log("[ImageUpload] Storage upload result:", {
-      error: result.error,
-      value: result.value,
-    });
+    logger.debug(
+      { error: result.error, value: result.value },
+      "Storage upload result"
+    );
   } catch (uploadError) {
-    console.error("[ImageUpload] Storage upload exception:", uploadError);
+    logger.error({ err: uploadError }, "Storage upload exception");
     throw new BadRequestError(
-      `Storage upload failed: ${uploadError instanceof Error ? uploadError.message : "Unknown error"}`,
+      `Storage upload failed: ${
+        uploadError instanceof Error ? uploadError.message : "Unknown error"
+      }`
     );
   }
 
   if (result.error) {
-    console.error("[ImageUpload] Storage upload error:", result.error);
+    logger.error({ error: result.error }, "Storage upload error");
     throw new BadRequestError(`Failed to upload image: ${result.error}`);
   }
 
@@ -285,8 +293,8 @@ const reorderImages: ApiHandler = async (req, res, ctx) => {
       prisma.auctionItemImage.updateMany({
         where: { id, auctionItemId: itemId },
         data: { order: index },
-      }),
-    ),
+      })
+    )
   );
 
   res.status(200).json({ message: "Images reordered" });
