@@ -12,11 +12,11 @@ export type HandlerConfig = {
  */
 function composeMiddleware(
   middlewares: Middleware[],
-  handler: ApiHandler
+  handler: ApiHandler,
 ): ApiHandler {
   return middlewares.reduceRight(
     (next, middleware) => middleware(next),
-    handler
+    handler,
   );
 }
 
@@ -41,7 +41,7 @@ function extractParams(query: NextApiRequest["query"]): Record<string, string> {
 function handleError(
   error: unknown,
   res: NextApiResponse,
-  requestInfo: { method: string; path: string; duration: number }
+  requestInfo: { method: string; path: string; duration: number },
 ): void {
   const { method, path, duration } = requestInfo;
 
@@ -58,7 +58,7 @@ function handleError(
         duration,
         ...(error.details && { details: error.details }),
       },
-      `API error: ${error.message}`
+      `API error: ${error.message}`,
     );
 
     const response: Record<string, unknown> = {
@@ -83,7 +83,7 @@ function handleError(
       err: error,
       duration,
     },
-    "Unhandled API error"
+    "Unhandled API error",
   );
 
   res.status(500).json({
@@ -124,7 +124,7 @@ export function createHandler(config: HandlerConfig) {
         query: req.query,
         userAgent: req.headers["user-agent"],
       },
-      "Incoming request"
+      "Incoming request",
     );
 
     const handlerConfig = config[method];
@@ -161,7 +161,7 @@ export function createHandler(config: HandlerConfig) {
           statusCode: res.statusCode,
           duration,
         },
-        "Request completed"
+        "Request completed",
       );
     } catch (error) {
       const duration = Date.now() - startTime;

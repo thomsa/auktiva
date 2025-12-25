@@ -19,7 +19,7 @@ function createAdapter() {
       urlPrefix: databaseUrl.substring(0, 20) + "...",
       hasAuthToken: !!process.env.DATABASE_AUTH_TOKEN,
     },
-    "Creating adapter"
+    "Creating adapter",
   );
 
   if (isTursoUrl) {

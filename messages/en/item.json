@@ -42,7 +42,14 @@
       "basicInfo": "Item Details",
       "pricing": "Pricing",
       "createSuccess": "Item created successfully",
-      "createFailed": "Failed to create item"
+      "createFailed": "Failed to create item",
+      "step1Title": "Details",
+      "step2Title": "Images",
+      "nextStep": "Next: Add Images",
+      "step2Heading": "Add Images",
+      "step2Subtitle": "Upload photos of your item (optional)",
+      "skipImages": "Skip for now",
+      "finishButton": "Done"
     },
     "edit": {
       "title": "Edit Item",

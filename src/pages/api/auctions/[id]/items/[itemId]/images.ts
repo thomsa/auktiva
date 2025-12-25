@@ -26,7 +26,7 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_IMAGES_PER_ITEM = 10;
 
 async function parseForm(
-  req: Parameters<ApiHandler>[0]
+  req: Parameters<ApiHandler>[0],
 ): Promise<{ fields: formidable.Fields; files: formidable.Files }> {
   const form = formidable({
     maxFileSize: MAX_FILE_SIZE,
@@ -115,7 +115,7 @@ const withItemPermission: Middleware = (next) => async (req, res, ctx) => {
 
   if (!isCreator && !isAdmin) {
     throw new ForbiddenError(
-      "You don't have permission to manage images for this item"
+      "You don't have permission to manage images for this item",
     );
   }
 
@@ -147,7 +147,7 @@ const uploadImage: ApiHandler = async (req, res, ctx) => {
   if (item._count.images >= MAX_IMAGES_PER_ITEM) {
     logger.warn({ imageCount: item._count.images }, "Image limit reached");
     throw new BadRequestError(
-      `Maximum ${MAX_IMAGES_PER_ITEM} images allowed per item`
+      `Maximum ${MAX_IMAGES_PER_ITEM} images allowed per item`,
     );
   }
 
@@ -161,7 +161,7 @@ const uploadImage: ApiHandler = async (req, res, ctx) => {
     throw new BadRequestError(
       `Failed to parse upload: ${
         parseError instanceof Error ? parseError.message : "Unknown error"
-      }`
+      }`,
     );
   }
 
@@ -179,13 +179,13 @@ const uploadImage: ApiHandler = async (req, res, ctx) => {
       mimetype: file.mimetype,
       size: file.size,
     },
-    "File received"
+    "File received",
   );
 
   if (!file.mimetype || !ALLOWED_TYPES.includes(file.mimetype)) {
     logger.warn({ mimetype: file.mimetype }, "Invalid file type");
     throw new BadRequestError(
-      "Invalid file type. Allowed: JPEG, PNG, WebP, GIF"
+      "Invalid file type. Allowed: JPEG, PNG, WebP, GIF",
     );
   }
 
@@ -199,7 +199,7 @@ const uploadImage: ApiHandler = async (req, res, ctx) => {
     throw new BadRequestError(
       `Failed to process image: ${
         processError instanceof Error ? processError.message : "Unknown error"
-      }`
+      }`,
     );
   }
 
@@ -219,7 +219,7 @@ const uploadImage: ApiHandler = async (req, res, ctx) => {
     throw new BadRequestError(
       `Storage configuration error: ${
         storageError instanceof Error ? storageError.message : "Unknown error"
-      }`
+      }`,
     );
   }
 
@@ -231,14 +231,14 @@ const uploadImage: ApiHandler = async (req, res, ctx) => {
     });
     logger.debug(
       { error: result.error, value: result.value },
-      "Storage upload result"
+      "Storage upload result",
     );
   } catch (uploadError) {
     logger.error({ err: uploadError }, "Storage upload exception");
     throw new BadRequestError(
       `Storage upload failed: ${
         uploadError instanceof Error ? uploadError.message : "Unknown error"
-      }`
+      }`,
     );
   }
 
@@ -314,8 +314,8 @@ const reorderImages: ApiHandler = async (req, res, ctx) => {
       prisma.auctionItemImage.updateMany({
         where: { id, auctionItemId: itemId },
         data: { order: index },
-      })
-    )
+      }),
+    ),
   );
 
   res.status(200).json({ message: "Images reordered" });

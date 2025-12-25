@@ -25,7 +25,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 async function parseForm(
-  req: Parameters<ApiHandler>[0]
+  req: Parameters<ApiHandler>[0],
 ): Promise<{ fields: formidable.Fields; files: formidable.Files }> {
   const form = formidable({
     maxFileSize: MAX_FILE_SIZE,
@@ -103,7 +103,7 @@ const uploadThumbnail: ApiHandler = async (req, res, ctx) => {
     throw new BadRequestError(
       `Failed to parse upload: ${
         parseError instanceof Error ? parseError.message : "Unknown error"
-      }`
+      }`,
     );
   }
 
@@ -121,13 +121,13 @@ const uploadThumbnail: ApiHandler = async (req, res, ctx) => {
       mimetype: file.mimetype,
       size: file.size,
     },
-    "File received"
+    "File received",
   );
 
   if (!file.mimetype || !ALLOWED_TYPES.includes(file.mimetype)) {
     logger.warn({ mimetype: file.mimetype }, "Invalid file type");
     throw new BadRequestError(
-      "Invalid file type. Allowed: JPEG, PNG, WebP, GIF"
+      "Invalid file type. Allowed: JPEG, PNG, WebP, GIF",
     );
   }
 
@@ -141,7 +141,7 @@ const uploadThumbnail: ApiHandler = async (req, res, ctx) => {
     throw new BadRequestError(
       `Failed to process image: ${
         processError instanceof Error ? processError.message : "Unknown error"
-      }`
+      }`,
     );
   }
 
@@ -153,7 +153,7 @@ const uploadThumbnail: ApiHandler = async (req, res, ctx) => {
   if (auction.thumbnailUrl) {
     logger.debug(
       { oldThumbnail: auction.thumbnailUrl },
-      "Deleting old thumbnail"
+      "Deleting old thumbnail",
     );
     const storage = getStorage();
     try {
@@ -174,7 +174,7 @@ const uploadThumbnail: ApiHandler = async (req, res, ctx) => {
     throw new BadRequestError(
       `Storage configuration error: ${
         storageError instanceof Error ? storageError.message : "Unknown error"
-      }`
+      }`,
     );
   }
 
@@ -186,14 +186,14 @@ const uploadThumbnail: ApiHandler = async (req, res, ctx) => {
     });
     logger.debug(
       { error: result.error, value: result.value },
-      "Storage upload result"
+      "Storage upload result",
     );
   } catch (uploadError) {
     logger.error({ err: uploadError }, "Storage upload exception");
     throw new BadRequestError(
       `Storage upload failed: ${
         uploadError instanceof Error ? uploadError.message : "Unknown error"
-      }`
+      }`,
     );
   }
 

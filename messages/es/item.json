@@ -42,7 +42,14 @@
       "basicInfo": "Detalles del artículo",
       "pricing": "Precio",
       "createSuccess": "Artículo creado con éxito",
-      "createFailed": "Error al crear el artículo"
+      "createFailed": "Error al crear el artículo",
+      "step1Title": "Detalles",
+      "step2Title": "Imágenes",
+      "nextStep": "Siguiente: Añadir imágenes",
+      "step2Heading": "Añadir imágenes",
+      "step2Subtitle": "Sube fotos de tu artículo (opcional)",
+      "skipImages": "Omitir",
+      "finishButton": "Listo"
     },
     "edit": {
       "title": "Editar Artículo",

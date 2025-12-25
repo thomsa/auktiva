@@ -25,7 +25,7 @@ export function logStorageConfig(): void {
       hasSecretKey: !!process.env.S3_SECRET_ACCESS_KEY,
       endpoint: process.env.S3_ENDPOINT || "(AWS default)",
     },
-    "Storage configuration"
+    "Storage configuration",
   );
 }
 
@@ -49,7 +49,7 @@ export function getStorage(): Storage {
     if (missingVars.length > 0) {
       logger.error(
         { missingVars },
-        "Missing required S3 environment variables"
+        "Missing required S3 environment variables",
       );
       throw new Error(`Missing S3 configuration: ${missingVars.join(", ")}`);
     }
@@ -71,7 +71,7 @@ export function getStorage(): Storage {
         hasSecretKey: !!s3Config.secretAccessKey,
         endpoint: s3Config.endpoint || "(AWS default)",
       },
-      "S3 config"
+      "S3 config",
     );
 
     try {
@@ -84,12 +84,12 @@ export function getStorage(): Storage {
           name: err instanceof Error ? err.name : "Unknown",
           message: err instanceof Error ? err.message : String(err),
         },
-        "Failed to create S3 Storage instance"
+        "Failed to create S3 Storage instance",
       );
       throw new Error(
         `S3 initialization failed: ${
           err instanceof Error ? err.message : String(err)
-        }`
+        }`,
       );
     }
   } else {
@@ -109,7 +109,7 @@ export function getStorage(): Storage {
       throw new Error(
         `Local storage initialization failed: ${
           err instanceof Error ? err.message : String(err)
-        }`
+        }`,
       );
     }
   }

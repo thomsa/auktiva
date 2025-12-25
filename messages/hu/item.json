@@ -42,7 +42,14 @@
       "basicInfo": "Tétel részletei",
       "pricing": "Árazás",
       "createSuccess": "Tétel sikeresen létrehozva",
-      "createFailed": "Nem sikerült létrehozni a tételt"
+      "createFailed": "Nem sikerült létrehozni a tételt",
+      "step1Title": "Részletek",
+      "step2Title": "Képek",
+      "nextStep": "Tovább: Képek hozzáadása",
+      "step2Heading": "Képek hozzáadása",
+      "step2Subtitle": "Tölts fel fotókat a tételről (opcionális)",
+      "skipImages": "Kihagyás",
+      "finishButton": "Kész"
     },
     "edit": {
       "title": "Tétel szerkesztése",

@@ -42,7 +42,14 @@
       "basicInfo": "Artikeldetails",
       "pricing": "Preisgestaltung",
       "createSuccess": "Artikel erfolgreich erstellt",
-      "createFailed": "Artikel konnte nicht erstellt werden"
+      "createFailed": "Artikel konnte nicht erstellt werden",
+      "step1Title": "Details",
+      "step2Title": "Bilder",
+      "nextStep": "Weiter: Bilder hinzufügen",
+      "step2Heading": "Bilder hinzufügen",
+      "step2Subtitle": "Lade Fotos deines Artikels hoch (optional)",
+      "skipImages": "Überspringen",
+      "finishButton": "Fertig"
     },
     "edit": {
       "title": "Artikel bearbeiten",

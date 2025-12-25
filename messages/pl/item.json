@@ -42,7 +42,14 @@
       "basicInfo": "Szczegóły przedmiotu",
       "pricing": "Ceny",
       "createSuccess": "Przedmiot utworzony pomyślnie",
-      "createFailed": "Nie udało się utworzyć przedmiotu"
+      "createFailed": "Nie udało się utworzyć przedmiotu",
+      "step1Title": "Szczegóły",
+      "step2Title": "Zdjęcia",
+      "nextStep": "Dalej: Dodaj zdjęcia",
+      "step2Heading": "Dodaj zdjęcia",
+      "step2Subtitle": "Prześlij zdjęcia przedmiotu (opcjonalnie)",
+      "skipImages": "Pomiń",
+      "finishButton": "Gotowe"
     },
     "edit": {
       "title": "Edytuj przedmiot",
