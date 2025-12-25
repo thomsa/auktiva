@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [Unreleased]
+
+### 🚀 Features
+
+- Add version information display and update functionality for deployment admins by @thomsa
+
 ## [1.1.14] - 2025-12-25
 
 ### 🚀 Features
