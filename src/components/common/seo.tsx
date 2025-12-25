@@ -14,6 +14,7 @@ export const SITE_TWITTER = "@auktiva";
 // - "auction fundraiser", "auction charity"
 // - "auction platform charity", "auction platform fundraiser"
 // - "auction platform charity free", "auction platform fundraiser free"
+// - "declutter auction", "garage sale online", "sell unused items"
 export const SITE_KEYWORDS = [
   // Primary high-intent keywords (exact match targets)
   "open source auction platform charity",
@@ -49,6 +50,17 @@ export const SITE_KEYWORDS = [
   "nonprofit auction software",
   "community auction platform",
   "private auction software",
+  // Decluttering & Personal use
+  "declutter auction app",
+  "sell unused items online",
+  "garage sale online platform",
+  "storage clearance auction",
+  "yearly declutter sale",
+  "family auction platform",
+  "friends and family auction",
+  "private sale platform free",
+  "sell stuff to friends",
+  "neighborhood auction app",
   // Features
   "real-time bidding platform",
   "silent auction app free",
@@ -57,10 +69,10 @@ export const SITE_KEYWORDS = [
 ].join(", ");
 
 export const SITE_DESCRIPTION =
-  "Auktiva is a 100% free, open-source auction platform for charity fundraisers, nonprofit events, schools, and churches. Create unlimited auctions with real-time bidding, member management, and multi-currency support. No fees, no limits, no credit card required. Self-host for free or use our cloud service also for free.";
+  "Auktiva is a 100% free, open-source auction platform for charity fundraisers, nonprofit events, schools, churches, and personal use. Perfect for yearly decluttering, garage sales, or clearing out storage with friends and family. Create unlimited auctions with real-time bidding, member management, and multi-currency support. No fees, no limits, no credit card required.";
 
 export const SITE_DESCRIPTION_SHORT =
-  "Free open-source auction platform for charity fundraisers and nonprofit events. Host unlimited auctions with real-time bidding - completely free, no fees ever.";
+  "Free open-source auction platform for charity fundraisers, decluttering sales, and private auctions with friends. Host unlimited auctions with real-time bidding - completely free, no fees ever.";
 
 interface SEOProps {
   title?: string;

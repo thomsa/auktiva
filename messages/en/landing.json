@@ -2,9 +2,9 @@
   "landing": {
     "hero": {
       "badge": "{version} is now live",
-      "title": "Free Auction Platform for",
-      "titleHighlight": "Charity Fundraisers",
-      "description": "100% free, open-source auction platform for charity events, nonprofit fundraisers, schools, and churches. No fees, no limits - just powerful silent auctions with real-time bidding.",
+      "title": "Free Auction Platform",
+      "titleHighlight": "Simple and Social",
+      "description": "100% free, open-source auction platform for charity events, fundraisers, and personal use. Perfect for yearly decluttering, garage sales, or selling items to friends. No fees, no limits.",
       "startAuction": "Start Free Auction",
       "viewOnGithub": "View on GitHub",
       "demoAlt": "Interactive Demo Preview",
@@ -44,10 +44,31 @@
         "description": "Perfect for charity events. We handle the bidding, you handle the item exchange offline."
       }
     },
+    "useCases": {
+      "sectionTitle": "Perfect for",
+      "sectionTitleHighlight": "any occasion",
+      "sectionDescription": "Whether you're raising funds for a cause or clearing out your garage, Auktiva makes it simple.",
+      "charity": {
+        "title": "Charity Fundraisers",
+        "description": "Host silent auctions for nonprofits, schools, churches, and community events."
+      },
+      "declutter": {
+        "title": "Yearly Decluttering",
+        "description": "Clear out unused items from your home or storage and let friends bid on them."
+      },
+      "family": {
+        "title": "Friends & Family",
+        "description": "Private auctions for family gatherings, neighborhood sales, or friend groups."
+      },
+      "office": {
+        "title": "Office Clearouts",
+        "description": "Companies can auction old equipment, furniture, or promotional items to employees."
+      }
+    },
     "howItWorks": {
       "sectionTitle": "From setup to",
-      "sectionTitleHighlight": "successful fundraiser",
-      "sectionDescription": "Four simple steps to run your charity auction. Focus on your cause, we'll handle the bidding.",
+      "sectionTitleHighlight": "successful auction",
+      "sectionDescription": "Four simple steps to run your auction. Focus on what matters, we'll handle the bidding.",
       "step1": {
         "title": "Create Auction",
         "description": "Set up your event in minutes with customizable details and branding."
@@ -80,8 +101,8 @@
       "moreItems": "+{count}"
     },
     "cta": {
-      "title": "Ready to run your charity fundraiser?",
-      "description": "Join thousands of nonprofits using Auktiva for free charity auctions. Open source, completely free forever, and built for fundraising communities.",
+      "title": "Ready to start your auction?",
+      "description": "Whether it's a charity fundraiser or a yearly declutter sale, Auktiva is completely free. Open source, no fees, and built for communities.",
       "getStarted": "Start Free Auction",
       "freeForever": "100% free forever - no fees, no limits",
       "selfHostTitle": "Prefer to self-host?",

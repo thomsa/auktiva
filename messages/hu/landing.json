@@ -4,7 +4,7 @@
       "badge": "{version} már elérhető",
       "title": "Aukciózz",
       "titleHighlight": "egyszerűen, közösségben",
-      "description": "Nyílt forráskódú platform modern adománygyűjtéshez. Szervezz privát aukciókat, hívd meg a közösségedet, és kezelj mindent egy helyen.",
+      "description": "100% ingyenes, nyílt forráskódú aukciós platform jótékonysági eseményekhez és személyes használatra. Tökéletes éves lomtalanításhoz, garázsvásárhoz vagy barátoknak való eladáshoz. Nincsenek díjak, nincsenek korlátok.",
       "startAuction": "Aukció indítása",
       "viewOnGithub": "Megtekintés GitHubon",
       "demoAlt": "Interaktív demó",
@@ -44,10 +44,31 @@
         "description": "Tökéletes jótékonysági eseményekhez. Mi kezeljük a licitálást, te az átadást személyesen."
       }
     },
+    "useCases": {
+      "sectionTitle": "Tökéletes",
+      "sectionTitleHighlight": "minden alkalomra",
+      "sectionDescription": "Akár adománygyűjtésről, akár garázskiürítésről van szó, az Auktiva egyszerűvé teszi.",
+      "charity": {
+        "title": "Jótékonysági aukciók",
+        "description": "Szervezz csendes aukciókat nonprofit szervezeteknek, iskoláknak, egyházaknak és közösségi eseményekhez."
+      },
+      "declutter": {
+        "title": "Éves lomtalanítás",
+        "description": "Szabadulj meg a felesleges dolgoktól otthonodból vagy tárolódból, és hagyd, hogy barátaid licitáljanak rájuk."
+      },
+      "family": {
+        "title": "Barátok és család",
+        "description": "Privát aukciók családi összejövetelekhez, szomszédsági vásárokhoz vagy baráti köröknek."
+      },
+      "office": {
+        "title": "Irodai kiárusítás",
+        "description": "Cégek árverezhetik régi berendezéseiket, bútoraikat vagy promóciós tárgyaikat alkalmazottaiknak."
+      }
+    },
     "howItWorks": {
       "sectionTitle": "A beállítástól a",
-      "sectionTitleHighlight": "sikeres adománygyűjtésig",
-      "sectionDescription": "Négy egyszerű lépés a jótékonysági aukció lebonyolításához. Koncentrálj az ügyedre, mi kezeljük a licitálást.",
+      "sectionTitleHighlight": "sikeres aukcióig",
+      "sectionDescription": "Négy egyszerű lépés az aukció lebonyolításához. Koncentrálj arra, ami fontos, mi kezeljük a licitálást.",
       "step1": {
         "title": "Aukció létrehozása",
         "description": "Állítsd be az eseményt percek alatt testreszabható részletekkel és arculattal."
@@ -80,8 +101,8 @@
       "moreItems": "+{count}"
     },
     "cta": {
-      "title": "Készen állsz a következő adománygyűjtésre?",
-      "description": "Csatlakozz a szervezőkhöz, akik az Auktivát használják jótékonysági aukciókhoz. Nyílt forráskódú, ingyenes, és közösségeknek készült.",
+      "title": "Készen állsz az aukció indítására?",
+      "description": "Legyen szó jótékonysági aukcióról vagy éves lomtalanításról, az Auktiva teljesen ingyenes. Nyílt forráskódú, díjmentes, és közösségeknek készült.",
       "getStarted": "Kezdés",
       "freeForever": "Ingyenes és mindig az is marad",
       "selfHostTitle": "Saját szerveren futtatnád?",
