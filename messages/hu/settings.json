@@ -63,7 +63,14 @@
       "removing": "Eltávolítás...",
       "removedAdmin": "Telepítés adminisztrátor eltávolítva",
       "adminAlreadySet": "Egy másik felhasználó a telepítés adminisztrátor",
-      "contactCurrentAdmin": "Lépj kapcsolatba a jelenlegi adminisztrátorral a jogok átadásához."
+      "contactCurrentAdmin": "Lépj kapcsolatba a jelenlegi adminisztrátorral a jogok átadásához.",
+      "transferTitle": "Adminisztrátori jogok átadása",
+      "transferDescription": "Add át az adminisztrátori jogokat egy másik regisztrált felhasználónak.",
+      "emailPlaceholder": "Add meg a felhasználó email címét",
+      "transfer": "Átadás",
+      "transferring": "Átadás...",
+      "transferred": "Adminisztrátori jogok sikeresen átadva",
+      "enterEmail": "Kérlek adj meg egy email címet"
     },
     "seo": {
       "title": "Beállítások",

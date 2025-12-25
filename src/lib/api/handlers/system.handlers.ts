@@ -1,13 +1,16 @@
 import { z } from "zod";
 import type { ApiHandler } from "@/lib/api/types";
 import * as systemService from "@/lib/services/system.service";
+import { prisma } from "@/lib/prisma";
 
 export const updateSystemSettingsSchema = z.object({
   deploymentAdminEmail: z.string().email().nullable().optional(),
   autoCheckUpdates: z.boolean().optional(),
 });
 
-export type UpdateSystemSettingsBody = z.infer<typeof updateSystemSettingsSchema>;
+export type UpdateSystemSettingsBody = z.infer<
+  typeof updateSystemSettingsSchema
+>;
 
 /**
  * Get system settings
@@ -50,10 +53,26 @@ export const updateSettings: ApiHandler = async (req, res, ctx) => {
   // If no admin is set, allow the first user to claim it
   // Otherwise, only the current admin can update
   if (settings.deploymentAdminEmail && !isAdmin) {
-    return res.status(403).json({ error: "Only deployment admin can update system settings" });
+    return res
+      .status(403)
+      .json({ error: "Only deployment admin can update system settings" });
   }
 
   const body = req.body as UpdateSystemSettingsBody;
+
+  // If transferring admin rights to a new email, verify the user exists
+  if (body.deploymentAdminEmail && body.deploymentAdminEmail !== userEmail) {
+    const targetUser = await prisma.user.findUnique({
+      where: { email: body.deploymentAdminEmail },
+    });
+
+    if (!targetUser) {
+      return res.status(400).json({
+        error: "User not found. The email must belong to a registered user.",
+      });
+    }
+  }
+
   const updated = await systemService.updateSystemSettings(body);
 
   return res.status(200).json(updated);

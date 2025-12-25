@@ -63,7 +63,14 @@
       "removing": "Entferne...",
       "removedAdmin": "Deployment-Admin entfernt",
       "adminAlreadySet": "Ein anderer Benutzer ist der Deployment-Admin",
-      "contactCurrentAdmin": "Kontaktiere den aktuellen Admin, um die Rechte zu übertragen."
+      "contactCurrentAdmin": "Kontaktiere den aktuellen Admin, um die Rechte zu übertragen.",
+      "transferTitle": "Admin-Rechte übertragen",
+      "transferDescription": "Übertrage die Deployment-Admin-Rechte an einen anderen registrierten Benutzer.",
+      "emailPlaceholder": "E-Mail-Adresse eingeben",
+      "transfer": "Übertragen",
+      "transferring": "Übertrage...",
+      "transferred": "Admin-Rechte erfolgreich übertragen",
+      "enterEmail": "Bitte gib eine E-Mail-Adresse ein"
     },
     "seo": {
       "title": "Einstellungen",

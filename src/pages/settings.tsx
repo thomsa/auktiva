@@ -87,6 +87,7 @@ export default function SettingsPage({
   const [deploymentAdminSuccess, setDeploymentAdminSuccess] = useState<
     string | null
   >(null);
+  const [transferEmail, setTransferEmail] = useState("");
 
   const handleEmailSettingChange = async (
     setting: "emailOnNewItem" | "emailOnOutbid",
@@ -226,7 +227,12 @@ export default function SettingsPage({
     }
   };
 
-  const handleRemoveDeploymentAdmin = async () => {
+  const handleTransferDeploymentAdmin = async () => {
+    if (!transferEmail.trim()) {
+      setDeploymentAdminError(t("deploymentAdmin.enterEmail"));
+      return;
+    }
+
     setDeploymentAdminLoading(true);
     setDeploymentAdminError(null);
     setDeploymentAdminSuccess(null);
@@ -235,7 +241,7 @@ export default function SettingsPage({
       const res = await fetch("/api/system/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ deploymentAdminEmail: null }),
+        body: JSON.stringify({ deploymentAdminEmail: transferEmail.trim() }),
       });
 
       const result = await res.json();
@@ -244,8 +250,9 @@ export default function SettingsPage({
         setDeploymentAdminError(result.error || tErrors("generic"));
       } else {
         setIsDeploymentAdmin(false);
-        setHasDeploymentAdmin(false);
-        setDeploymentAdminSuccess(t("deploymentAdmin.removedAdmin"));
+        setHasDeploymentAdmin(true);
+        setTransferEmail("");
+        setDeploymentAdminSuccess(t("deploymentAdmin.transferred"));
         setTimeout(() => setDeploymentAdminSuccess(null), 3000);
       }
     } catch {
@@ -677,6 +684,36 @@ export default function SettingsPage({
                   <p className="text-sm text-base-content/60">
                     {t("deploymentAdmin.adminDescription")}
                   </p>
+                </div>
+              </div>
+
+              {/* Transfer admin rights */}
+              <div className="p-4 rounded-xl bg-base-200/50 border border-base-content/5">
+                <p className="font-medium mb-2">
+                  {t("deploymentAdmin.transferTitle")}
+                </p>
+                <p className="text-sm text-base-content/60 mb-3">
+                  {t("deploymentAdmin.transferDescription")}
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={transferEmail}
+                    onChange={(e) => setTransferEmail(e.target.value)}
+                    placeholder={t("deploymentAdmin.emailPlaceholder")}
+                    className="input input-bordered flex-1 min-w-0"
+                  />
+                  <Button
+                    onClick={handleTransferDeploymentAdmin}
+                    buttonStyle="outline"
+                    isLoading={deploymentAdminLoading}
+                    loadingText={t("deploymentAdmin.transferring")}
+                    icon={
+                      <span className="icon-[tabler--arrow-right] size-5"></span>
+                    }
+                  >
+                    {t("deploymentAdmin.transfer")}
+                  </Button>
                 </div>
               </div>
             </div>

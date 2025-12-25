@@ -214,7 +214,7 @@ export function UpdateBanner() {
                 )}
               </button>
             )}
-            {data.releaseUrl && (
+            {data.isDeploymentAdmin && data.releaseUrl && (
               <a
                 href={data.releaseUrl}
                 target="_blank"

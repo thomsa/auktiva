@@ -63,7 +63,14 @@
       "removing": "Usuwanie...",
       "removedAdmin": "Administrator wdrożenia usunięty",
       "adminAlreadySet": "Inny użytkownik jest administratorem wdrożenia",
-      "contactCurrentAdmin": "Skontaktuj się z obecnym administratorem, aby przenieść uprawnienia."
+      "contactCurrentAdmin": "Skontaktuj się z obecnym administratorem, aby przenieść uprawnienia.",
+      "transferTitle": "Przenieś uprawnienia administratora",
+      "transferDescription": "Przenieś uprawnienia administratora wdrożenia na innego zarejestrowanego użytkownika.",
+      "emailPlaceholder": "Wprowadź email użytkownika",
+      "transfer": "Przenieś",
+      "transferring": "Przenoszenie...",
+      "transferred": "Uprawnienia administratora przeniesione pomyślnie",
+      "enterEmail": "Proszę wprowadzić adres email"
     },
     "seo": {
       "title": "Ustawienia",

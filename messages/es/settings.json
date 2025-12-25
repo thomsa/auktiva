@@ -63,7 +63,14 @@
       "removing": "Eliminando...",
       "removedAdmin": "Administrador del despliegue eliminado",
       "adminAlreadySet": "Otro usuario es el administrador del despliegue",
-      "contactCurrentAdmin": "Contacta al administrador actual para transferir los derechos."
+      "contactCurrentAdmin": "Contacta al administrador actual para transferir los derechos.",
+      "transferTitle": "Transferir derechos de administrador",
+      "transferDescription": "Transfiere los derechos de administrador a otro usuario registrado.",
+      "emailPlaceholder": "Ingresa el correo del usuario",
+      "transfer": "Transferir",
+      "transferring": "Transfiriendo...",
+      "transferred": "Derechos de administrador transferidos exitosamente",
+      "enterEmail": "Por favor ingresa una dirección de correo"
     },
     "seo": {
       "title": "Ajustes",
