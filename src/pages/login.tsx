@@ -53,10 +53,7 @@ export default function LoginPage({ googleOAuthEnabled }: LoginPageProps) {
 
   return (
     <>
-      <SEO
-        title={t("title")}
-        description={t("brandingDescription")}
-      />
+      <SEO title={t("title")} description={t("brandingDescription")} />
       <div className="min-h-screen flex flex-col lg:flex-row bg-base-100">
         {/* Left side - Branding (hidden on mobile) */}
         <div className="hidden lg:flex lg:w-1/2 relative bg-base-200 overflow-hidden items-center justify-center">

@@ -58,7 +58,9 @@ export function ItemListItem({
             <img
               src={item.thumbnailUrl}
               alt={item.name}
-              className={`w-14 h-14 object-cover rounded-lg shadow-sm ${ended ? "grayscale" : ""}`}
+              className={`w-14 h-14 object-cover rounded-lg shadow-sm ${
+                ended ? "grayscale" : ""
+              }`}
             />
           ) : (
             <div
@@ -111,10 +113,10 @@ export function ItemListItem({
                 {bidStatus === "winning"
                   ? t("status.winning")
                   : bidStatus === "won"
-                    ? t("status.won")
-                    : bidStatus === "outbid"
-                      ? t("status.outbid")
-                      : t("status.lost")}
+                  ? t("status.won")
+                  : bidStatus === "outbid"
+                  ? t("status.outbid")
+                  : t("status.lost")}
               </div>
             )}
           </div>
@@ -124,9 +126,25 @@ export function ItemListItem({
             </p>
           )}
         </div>
+        {item.endDate && (
+          <div
+            className={`text-xs shrink-0 w-24 text-center font-medium ${
+              ended ? "text-error" : "text-base-content/60"
+            }`}
+          >
+            {ended ? t("status.ended") : t("status.ends")}{" "}
+            {formatShortDate(item.endDate)}
+          </div>
+        )}
         <div className="text-right shrink-0">
           <div
-            className={`font-bold font-mono ${bidStatus === "winning" || bidStatus === "won" ? "text-success" : bidStatus === "outbid" ? "text-warning" : "text-primary"}`}
+            className={`font-bold font-mono ${
+              bidStatus === "winning" || bidStatus === "won"
+                ? "text-success"
+                : bidStatus === "outbid"
+                ? "text-warning"
+                : "text-primary"
+            }`}
           >
             {item.currentBid !== null
               ? `${item.currentBid} ${item.currencyCode}`
@@ -137,16 +155,6 @@ export function ItemListItem({
             {t("item.card.bidsCount", { count: item._count.bids })}
           </div>
         </div>
-        {item.endDate && (
-          <div
-            className={`text-xs shrink-0 w-24 text-right font-medium ${
-              ended ? "text-error" : "text-base-content/60"
-            }`}
-          >
-            {ended ? t("status.ended") : t("status.ends")}{" "}
-            {formatShortDate(item.endDate)}
-          </div>
-        )}
       </Link>
       {canEditItem && (
         <Link
