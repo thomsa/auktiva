@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [Unreleased]
+
+### 🚀 Features
+
+- Add debug logging for version info fetching in settings page by @thomsa
+
 ## [1.1.15] - 2025-12-25
 
 ### 🚀 Features
