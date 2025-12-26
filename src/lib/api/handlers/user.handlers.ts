@@ -23,9 +23,24 @@ export const updateSettingsSchema = z.object({
   itemSidebarCollapsed: z.boolean().optional(),
 });
 
+export const deleteAccountSchema = z.object({
+  password: z.string().optional(),
+  confirmEmail: z.string().optional(),
+  auctionTransfers: z
+    .array(
+      z.object({
+        auctionId: z.string(),
+        newOwnerEmail: z.string().email(),
+      })
+    )
+    .optional(),
+  deleteAuctions: z.array(z.string()).optional(),
+});
+
 export type UpdateProfileBody = z.infer<typeof updateProfileSchema>;
 export type UpdatePasswordBody = z.infer<typeof updatePasswordSchema>;
 export type UpdateSettingsBody = z.infer<typeof updateSettingsSchema>;
+export type DeleteAccountBody = z.infer<typeof deleteAccountSchema>;
 
 // ============================================================================
 // Handlers
@@ -46,7 +61,7 @@ export const updateProfile: ApiHandler = async (req, res, ctx) => {
   const { validatedBody } = req as ValidatedRequest<UpdateProfileBody>;
   const profile = await userService.updateUserProfile(
     ctx.session!.user.id,
-    validatedBody,
+    validatedBody
   );
   res.status(200).json(profile);
 };
@@ -59,7 +74,7 @@ export const updatePassword: ApiHandler = async (req, res, ctx) => {
 
   const result = await userService.updateUserPassword(
     ctx.session!.user.id,
-    validatedBody,
+    validatedBody
   );
 
   if (!result.success) {
@@ -74,7 +89,7 @@ export const updatePassword: ApiHandler = async (req, res, ctx) => {
  */
 export const getSettings: ApiHandler = async (_req, res, ctx) => {
   const settings = await userService.getUserSettingsWithDefaults(
-    ctx.session!.user.id,
+    ctx.session!.user.id
   );
   res.status(200).json(settings);
 };
@@ -86,7 +101,50 @@ export const updateSettings: ApiHandler = async (req, res, ctx) => {
   const { validatedBody } = req as ValidatedRequest<UpdateSettingsBody>;
   const settings = await userService.updateUserSettings(
     ctx.session!.user.id,
-    validatedBody,
+    validatedBody
   );
   res.status(200).json(settings);
+};
+
+/**
+ * GET /api/user/account - Get account info for deletion (owned auctions, has password, etc.)
+ */
+export const getAccountInfo: ApiHandler = async (_req, res, ctx) => {
+  const userId = ctx.session!.user.id;
+  const userEmail = ctx.session!.user.email;
+
+  const [hasPassword, ownedAuctions] = await Promise.all([
+    userService.userHasPassword(userId),
+    userService.getUserOwnedAuctions(userId),
+  ]);
+
+  res.status(200).json({
+    hasPassword,
+    email: userEmail,
+    ownedAuctions,
+  });
+};
+
+/**
+ * DELETE /api/user/account - Delete user account (GDPR compliant)
+ */
+export const deleteAccount: ApiHandler = async (req, res, ctx) => {
+  const { validatedBody } = req as ValidatedRequest<DeleteAccountBody>;
+
+  const result = await userService.deleteUserAccount(
+    ctx.session!.user.id,
+    ctx.session!.user.email,
+    validatedBody
+  );
+
+  if (!result.success) {
+    res.status(400).json({
+      message: result.error,
+      code: result.errorCode,
+      ownedAuctions: result.ownedAuctions,
+    });
+    return;
+  }
+
+  res.status(200).json({ message: "Account deleted successfully" });
 };

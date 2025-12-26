@@ -81,6 +81,35 @@
     "seo": {
       "title": "Einstellungen",
       "description": "Verwalte deine Kontoeinstellungen"
+    },
+    "deleteAccount": {
+      "title": "Konto löschen",
+      "description": "Lösche dein Konto und alle zugehörigen Daten dauerhaft.",
+      "warning": "Diese Aktion ist unwiderruflich",
+      "warningDescription": "Nach dem Löschen können dein Konto und deine Daten nicht wiederhergestellt werden.",
+      "deleteButton": "Mein Konto löschen",
+      "modalTitle": "Konto löschen",
+      "modalDescription": "Dies löscht dein Konto dauerhaft, einschließlich aller Gebote, erstellten Artikel und Auktionsmitgliedschaften. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "ownedAuctionsTitle": "Du besitzt folgende Auktionen",
+      "ownedAuctionsDescription": "Wähle, was mit jeder Auktion geschehen soll, bevor du dein Konto löschst.",
+      "deleteAuction": "Auktion löschen",
+      "transferOwnership": "Eigentum übertragen",
+      "newOwnerEmail": "E-Mail-Adresse des neuen Eigentümers",
+      "enterTransferEmail": "Bitte gib eine E-Mail-Adresse für {auction} ein",
+      "enterPassword": "Gib dein Passwort zur Bestätigung ein",
+      "enterEmail": "Gib deine E-Mail zur Bestätigung ein",
+      "passwordPlaceholder": "Dein aktuelles Passwort",
+      "passwordHint": "Gib dein Passwort ein, um deine Identität zu verifizieren",
+      "emailHint": "Gib deine E-Mail-Adresse genau wie angezeigt ein, um zu bestätigen",
+      "passwordRequired": "Passwort ist erforderlich",
+      "emailRequired": "E-Mail-Bestätigung ist erforderlich",
+      "incorrectPassword": "Falsches Passwort",
+      "incorrectEmail": "E-Mail-Adresse stimmt nicht überein",
+      "mustTransferAdmin": "Du musst die Deployment-Admin-Rechte übertragen, bevor du dein Konto löschst",
+      "cancel": "Abbrechen",
+      "confirmDelete": "Konto löschen",
+      "deleting": "Lösche...",
+      "accountDeleted": "Dein Konto wurde gelöscht"
     }
   }
 }

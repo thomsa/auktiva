@@ -82,8 +82,10 @@
           "content": "A törvény által megengedett maximális mértékben az Auktiva és annak készítői, közreműködői és karbantartói nem vállalnak felelősséget semmilyen közvetett, véletlen, különleges, következményes vagy büntető kártérítésért, amely a szolgáltatás használatából ered. Ez magában foglalja, de nem kizárólagosan, a profitkiesést, adatvesztést vagy jó hírnév elvesztését, sikertelen vagy vitatott tranzakciókat, fiókhoz való jogosulatlan hozzáférést, valamint szolgáltatáskimaradásokat vagy hibákat."
         },
         "14": {
-          "title": "Megszüntetés",
-          "content": "Fenntartjuk a jogot azon fiókok felfüggesztésére vagy megszüntetésére, amelyek megsértik ezeket a feltételeket. Fiókodat bármikor törölheted a fiókbeállításokban. Megszüntetéskor a szolgáltatáshoz való hozzáférésed visszavonásra kerül, de az általad létrehozott aukciós adatok megmaradhatnak más résztvevők számára."
+          "title": "Fiók megszüntetése",
+          "content1": "Fenntartjuk a jogot azon fiókok felfüggesztésére vagy megszüntetésére, amelyek megsértik ezeket a feltételeket.",
+          "content2": "Fiókodat bármikor törölheted a Beállítások → Fiók törlése menüponton keresztül. A fiók törlése azonnali és végleges. Törlés előtt döntened kell az általad birtokolt aukciókról - átadhatod a tulajdonjogot más regisztrált felhasználónak, vagy választhatod a törlésüket. Ha te vagy a Telepítés Adminisztrátor, először át kell adnod ezeket a jogokat.",
+          "content3": "A fiók törlése után: személyes adataid véglegesen törlődnek, aukciós tagságaid megszűnnek, az általad létrehozott tételek törlődnek, licitálási előzményeid törlődnek, és azonnal kijelentkezel. Ez a művelet nem vonható vissza."
         },
         "15": {
           "title": "Feltételek módosítása",
@@ -159,13 +161,19 @@
           "content": "Az Auktiva 100%-ban nyílt forráskódú szoftver, amely az MIT Licenc alatt került kiadásra. Áttekintheted a teljes kódbázisunkat a <a href=\"https://github.com/thomsa/auktiva\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHubon</a>, hogy pontosan lásd, hogyan gyűjtjük, tároljuk és kezeljük az adataidat. Saját magad is hosztolhatod az Auktivát az információid feletti teljes ellenőrzés érdekében."
         },
         "9": {
-          "title": "Jogaid",
-          "content1": "Jogod van hozzáférni személyes adataidhoz a fiókbeállításokon keresztül, javítani a pontatlan információkat profilod frissítésével, kérni fiókod és a hozzá kapcsolódó adatok törlését, exportálni aukciós adataidat JSON vagy CSV formátumban, és kezelni e-mail értesítési beállításaidat.",
+          "title": "Jogaid (GDPR)",
+          "content1": "A GDPR és hasonló adatvédelmi szabályozások értelmében jogod van: hozzáférni személyes adataidhoz a fiókbeállításokon keresztül, javítani a pontatlan információkat profilod frissítésével, kérni fiókod és az összes kapcsolódó adat törlését (törléshez való jog), és kezelni e-mail értesítési beállításaidat.",
           "content2": "Ezen jogok gyakorlásához látogass el a fiókbeállításokhoz, vagy lépj kapcsolatba velünk az alább felsorolt csatornákon keresztül."
+        },
+        "9b": {
+          "title": "Fiók törlése",
+          "content1": "Fiókodat bármikor véglegesen törölheted a Beállítások → Fiók törlése menüponton keresztül. Ez a folyamat azonnali és visszafordíthatatlan.",
+          "content2": "A fiók törlésekor eltávolítjuk: profilinformációidat (név, e-mail, jelszó hash), felhasználói beállításaidat és preferenciáidat, aukciós tagságaidat, az általad birtokolt aukciókat (vagy átadjuk más felhasználónak), az általad létrehozott tételeket, teljes licitálási előzményeidet, összes értesítésedet és a csatlakoztatott OAuth fiókokat.",
+          "content3": "Ha aukciók tulajdonosa vagy, először át kell adnod a tulajdonjogot egy másik regisztrált felhasználónak, vagy választanod kell a törlésüket, mielőtt törölhetnéd a fiókodat. Ha te vagy a Telepítés Adminisztrátor, először át kell adnod ezeket a jogokat."
         },
         "10": {
           "title": "Adatmegőrzés",
-          "content": "Adataidat addig őrizzük meg, amíg a fiókod aktív. Az aukciós adatok addig kerülnek megőrzésre, amíg az aukció tulajdonosa nem törli az aukciót. Fiókod törlését bármikor kérheted, és mi eltávolítjuk személyes adataidat rendszereinkből."
+          "content": "Adataidat addig őrizzük meg, amíg a fiókod aktív. Az aukciós adatok addig kerülnek megőrzésre, amíg az aukció tulajdonosa nem törli az aukciót. A fiók törlésekor az összes személyes adatod azonnal és véglegesen törlésre kerül rendszereinkből. Nem őrzünk biztonsági másolatokat a törölt felhasználói adatokról."
         },
         "11": {
           "title": "Gyermekek adatvédelme",

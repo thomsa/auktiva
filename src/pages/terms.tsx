@@ -276,13 +276,19 @@ export default function TermsPage() {
               </p>
             </section>
 
-            {/* Termination */}
+            {/* Account Termination */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
                 {tSections("14.title")}
               </h2>
+              <p className="text-base-content/80 leading-relaxed mb-4">
+                {tSections("14.content1")}
+              </p>
+              <p className="text-base-content/80 leading-relaxed mb-4">
+                {tSections("14.content2")}
+              </p>
               <p className="text-base-content/80 leading-relaxed">
-                {tSections("14.content")}
+                {tSections("14.content3")}
               </p>
             </section>
 

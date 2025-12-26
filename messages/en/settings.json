@@ -81,6 +81,35 @@
     "seo": {
       "title": "Settings",
       "description": "Manage your account settings"
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "description": "Permanently delete your account and all associated data.",
+      "warning": "This action is irreversible",
+      "warningDescription": "Once deleted, your account and all data cannot be recovered.",
+      "deleteButton": "Delete My Account",
+      "modalTitle": "Delete Your Account",
+      "modalDescription": "This will permanently delete your account, including all your bids, items you created, and auction memberships. This action cannot be undone.",
+      "ownedAuctionsTitle": "You own the following auctions",
+      "ownedAuctionsDescription": "Choose what to do with each auction before deleting your account.",
+      "deleteAuction": "Delete auction",
+      "transferOwnership": "Transfer ownership",
+      "newOwnerEmail": "New owner's email address",
+      "enterTransferEmail": "Please enter an email address for {auction}",
+      "enterPassword": "Enter your password to confirm",
+      "enterEmail": "Enter your email to confirm",
+      "passwordPlaceholder": "Your current password",
+      "passwordHint": "Enter your password to verify your identity",
+      "emailHint": "Type your email address exactly as shown to confirm",
+      "passwordRequired": "Password is required",
+      "emailRequired": "Email confirmation is required",
+      "incorrectPassword": "Incorrect password",
+      "incorrectEmail": "Email address does not match",
+      "mustTransferAdmin": "You must transfer deployment admin rights before deleting your account",
+      "cancel": "Cancel",
+      "confirmDelete": "Delete Account",
+      "deleting": "Deleting...",
+      "accountDeleted": "Your account has been deleted"
     }
   }
 }

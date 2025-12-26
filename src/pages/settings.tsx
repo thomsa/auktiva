@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
+import { signOut } from "next-auth/react";
 import { authOptions } from "@/lib/auth";
 import * as userService from "@/lib/services/user.service";
 import * as systemService from "@/lib/services/system.service";
@@ -11,6 +12,7 @@ import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { LanguageSelect } from "@/components/ui/language-select";
 import { createLogger } from "@/lib/logger";
+import { useToast } from "@/components/ui/toast";
 
 const settingsLogger = createLogger("settings");
 
@@ -101,6 +103,171 @@ export default function SettingsPage({
   >(null);
   const [transferEmail, setTransferEmail] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+
+  // Delete account state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteConfirmEmail, setDeleteConfirmEmail] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [ownedAuctions, setOwnedAuctions] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const [auctionActions, setAuctionActions] = useState<
+    Record<string, { action: "transfer" | "delete"; email?: string }>
+  >({});
+  const { showToast } = useToast();
+
+  // Fetch owned auctions when modal opens
+  useEffect(() => {
+    if (showDeleteModal) {
+      fetch("/api/user/account")
+        .then((res) => res.json())
+        .then((data) => {
+          setOwnedAuctions(data.ownedAuctions || []);
+          // Initialize auction actions
+          const actions: Record<
+            string,
+            { action: "transfer" | "delete"; email?: string }
+          > = {};
+          (data.ownedAuctions || []).forEach(
+            (auction: { id: string; name: string }) => {
+              actions[auction.id] = { action: "delete" };
+            }
+          );
+          setAuctionActions(actions);
+        })
+        .catch(() => {
+          showToast(tErrors("generic"), "error");
+        });
+    }
+  }, [showDeleteModal, showToast, tErrors]);
+
+  const handleOpenDeleteModal = () => {
+    setDeleteError(null);
+    setDeletePassword("");
+    setDeleteConfirmEmail("");
+    setShowDeleteModal(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setDeleteError(null);
+    setDeletePassword("");
+    setDeleteConfirmEmail("");
+    setOwnedAuctions([]);
+    setAuctionActions({});
+  };
+
+  const handleAuctionActionChange = (
+    auctionId: string,
+    action: "transfer" | "delete"
+  ) => {
+    setAuctionActions((prev) => ({
+      ...prev,
+      [auctionId]: { action, email: action === "transfer" ? "" : undefined },
+    }));
+  };
+
+  const handleAuctionTransferEmailChange = (
+    auctionId: string,
+    email: string
+  ) => {
+    setAuctionActions((prev) => ({
+      ...prev,
+      [auctionId]: { ...prev[auctionId], email },
+    }));
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteError(null);
+    setDeleteLoading(true);
+
+    // Validate auction transfers have emails
+    for (const auction of ownedAuctions) {
+      const action = auctionActions[auction.id];
+      if (action?.action === "transfer" && !action.email?.trim()) {
+        setDeleteError(
+          t("deleteAccount.enterTransferEmail", { auction: auction.name })
+        );
+        setDeleteLoading(false);
+        return;
+      }
+    }
+
+    // Build request body
+    const body: {
+      password?: string;
+      confirmEmail?: string;
+      auctionTransfers?: { auctionId: string; newOwnerEmail: string }[];
+      deleteAuctions?: string[];
+    } = {};
+
+    if (hasPassword) {
+      if (!deletePassword) {
+        setDeleteError(t("deleteAccount.passwordRequired"));
+        setDeleteLoading(false);
+        return;
+      }
+      body.password = deletePassword;
+    } else {
+      if (!deleteConfirmEmail) {
+        setDeleteError(t("deleteAccount.emailRequired"));
+        setDeleteLoading(false);
+        return;
+      }
+      body.confirmEmail = deleteConfirmEmail;
+    }
+
+    // Add auction actions
+    body.auctionTransfers = [];
+    body.deleteAuctions = [];
+
+    for (const auction of ownedAuctions) {
+      const action = auctionActions[auction.id];
+      if (action?.action === "transfer" && action.email) {
+        body.auctionTransfers.push({
+          auctionId: auction.id,
+          newOwnerEmail: action.email,
+        });
+      } else {
+        body.deleteAuctions.push(auction.id);
+      }
+    }
+
+    try {
+      const res = await fetch("/api/user/account", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        if (result.code === "IS_DEPLOYMENT_ADMIN") {
+          setDeleteError(t("deleteAccount.mustTransferAdmin"));
+        } else if (result.code === "TRANSFER_EMAIL_NOT_FOUND") {
+          setDeleteError(result.message);
+        } else if (result.code === "INVALID_PASSWORD") {
+          setDeleteError(t("deleteAccount.incorrectPassword"));
+        } else if (result.code === "INVALID_EMAIL") {
+          setDeleteError(t("deleteAccount.incorrectEmail"));
+        } else {
+          setDeleteError(result.message || tErrors("generic"));
+        }
+        setDeleteLoading(false);
+        return;
+      }
+
+      // Success - sign out and redirect
+      showToast(t("deleteAccount.accountDeleted"), "success");
+      await signOut({ callbackUrl: "/" });
+    } catch {
+      setDeleteError(tErrors("generic"));
+      setDeleteLoading(false);
+    }
+  };
 
   const handleEmailSettingChange = async (
     setting: "emailOnNewItem" | "emailOnOutbid",
@@ -841,6 +1008,197 @@ export default function SettingsPage({
           )}
         </div>
       </div>
+
+      {/* Delete Account Section */}
+      <div className="card bg-base-100/50 backdrop-blur-sm border border-error/20 shadow-xl mt-8">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-error/10 flex items-center justify-center text-error">
+              <span className="icon-[tabler--trash] size-6"></span>
+            </div>
+            {t("deleteAccount.title")}
+          </h2>
+
+          <p className="text-sm text-base-content/60 mb-4">
+            {t("deleteAccount.description")}
+          </p>
+
+          <div className="flex items-center gap-3 p-4 rounded-xl bg-error/5 border border-error/10">
+            <span className="icon-[tabler--alert-triangle] size-6 text-error"></span>
+            <div>
+              <p className="font-medium text-error">
+                {t("deleteAccount.warning")}
+              </p>
+              <p className="text-sm text-base-content/60">
+                {t("deleteAccount.warningDescription")}
+              </p>
+            </div>
+          </div>
+
+          <div className="pt-4">
+            <Button
+              onClick={handleOpenDeleteModal}
+              variant="error"
+              buttonStyle="outline"
+              icon={<span className="icon-[tabler--trash] size-5"></span>}
+            >
+              {t("deleteAccount.deleteButton")}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Delete Account Modal */}
+      {showDeleteModal && (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-lg">
+            <h3 className="font-bold text-lg flex items-center gap-2 text-error">
+              <span className="icon-[tabler--alert-triangle] size-6"></span>
+              {t("deleteAccount.modalTitle")}
+            </h3>
+
+            <div className="py-4 space-y-4">
+              {deleteError && (
+                <div className="alert alert-error py-2 text-sm">
+                  <span className="icon-[tabler--alert-circle] size-5"></span>
+                  <span>{deleteError}</span>
+                </div>
+              )}
+
+              <p className="text-base-content/70">
+                {t("deleteAccount.modalDescription")}
+              </p>
+
+              {/* Owned Auctions Section */}
+              {ownedAuctions.length > 0 && (
+                <div className="space-y-3">
+                  <p className="font-medium">
+                    {t("deleteAccount.ownedAuctionsTitle")}
+                  </p>
+                  <p className="text-sm text-base-content/60">
+                    {t("deleteAccount.ownedAuctionsDescription")}
+                  </p>
+
+                  {ownedAuctions.map((auction) => (
+                    <div
+                      key={auction.id}
+                      className="p-3 rounded-lg bg-base-200/50 border border-base-content/10 space-y-2"
+                    >
+                      <p className="font-medium">{auction.name}</p>
+                      <div className="flex gap-2">
+                        <label className="label cursor-pointer gap-2">
+                          <input
+                            type="radio"
+                            name={`auction-${auction.id}`}
+                            className="radio radio-sm radio-error"
+                            checked={
+                              auctionActions[auction.id]?.action === "delete"
+                            }
+                            onChange={() =>
+                              handleAuctionActionChange(auction.id, "delete")
+                            }
+                          />
+                          <span className="label-text">
+                            {t("deleteAccount.deleteAuction")}
+                          </span>
+                        </label>
+                        <label className="label cursor-pointer gap-2">
+                          <input
+                            type="radio"
+                            name={`auction-${auction.id}`}
+                            className="radio radio-sm radio-primary"
+                            checked={
+                              auctionActions[auction.id]?.action === "transfer"
+                            }
+                            onChange={() =>
+                              handleAuctionActionChange(auction.id, "transfer")
+                            }
+                          />
+                          <span className="label-text">
+                            {t("deleteAccount.transferOwnership")}
+                          </span>
+                        </label>
+                      </div>
+                      {auctionActions[auction.id]?.action === "transfer" && (
+                        <input
+                          type="email"
+                          placeholder={t("deleteAccount.newOwnerEmail")}
+                          className="input input-bordered input-sm w-full"
+                          value={auctionActions[auction.id]?.email || ""}
+                          onChange={(e) =>
+                            handleAuctionTransferEmailChange(
+                              auction.id,
+                              e.target.value
+                            )
+                          }
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Identity Confirmation */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">
+                    {hasPassword
+                      ? t("deleteAccount.enterPassword")
+                      : t("deleteAccount.enterEmail")}
+                  </span>
+                </label>
+                {hasPassword ? (
+                  <input
+                    type="password"
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    placeholder={t("deleteAccount.passwordPlaceholder")}
+                    className="input input-bordered w-full"
+                  />
+                ) : (
+                  <input
+                    type="email"
+                    value={deleteConfirmEmail}
+                    onChange={(e) => setDeleteConfirmEmail(e.target.value)}
+                    placeholder={user.email}
+                    className="input input-bordered w-full"
+                  />
+                )}
+                <label className="label">
+                  <span className="label-text-alt text-base-content/50">
+                    {hasPassword
+                      ? t("deleteAccount.passwordHint")
+                      : t("deleteAccount.emailHint")}
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <div className="modal-action">
+              <Button
+                onClick={handleCloseDeleteModal}
+                buttonStyle="ghost"
+                disabled={deleteLoading}
+              >
+                {t("deleteAccount.cancel")}
+              </Button>
+              <Button
+                onClick={handleDeleteAccount}
+                variant="error"
+                isLoading={deleteLoading}
+                loadingText={t("deleteAccount.deleting")}
+                icon={<span className="icon-[tabler--trash] size-5"></span>}
+              >
+                {t("deleteAccount.confirmDelete")}
+              </Button>
+            </div>
+          </div>
+          <div
+            className="modal-backdrop bg-black/50"
+            onClick={handleCloseDeleteModal}
+          ></div>
+        </div>
+      )}
     </PageLayout>
   );
 }

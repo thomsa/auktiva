@@ -35,9 +35,11 @@ export {
   updateProfileSchema,
   updatePasswordSchema,
   updateSettingsSchema,
+  deleteAccountSchema,
   type UpdateProfileBody,
   type UpdatePasswordBody,
   type UpdateSettingsBody,
+  type DeleteAccountBody,
 } from "./user.handlers";
 
 export {

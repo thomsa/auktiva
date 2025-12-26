@@ -208,7 +208,7 @@ export default function PrivacyPage() {
               />
             </section>
 
-            {/* Your Rights */}
+            {/* Your Rights (GDPR) */}
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-base-content">
                 {tSections("9.title")}
@@ -218,6 +218,22 @@ export default function PrivacyPage() {
               </p>
               <p className="text-base-content/80 leading-relaxed">
                 {tSections("9.content2")}
+              </p>
+            </section>
+
+            {/* Account Deletion */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-4 text-base-content">
+                {tSections("9b.title")}
+              </h2>
+              <p className="text-base-content/80 leading-relaxed mb-4">
+                {tSections("9b.content1")}
+              </p>
+              <p className="text-base-content/80 leading-relaxed mb-4">
+                {tSections("9b.content2")}
+              </p>
+              <p className="text-base-content/80 leading-relaxed">
+                {tSections("9b.content3")}
               </p>
             </section>
 

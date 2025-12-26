@@ -81,6 +81,35 @@
     "seo": {
       "title": "Ustawienia",
       "description": "Zarządzaj ustawieniami konta"
+    },
+    "deleteAccount": {
+      "title": "Usuń konto",
+      "description": "Trwale usuń swoje konto i wszystkie powiązane dane.",
+      "warning": "Ta czynność jest nieodwracalna",
+      "warningDescription": "Po usunięciu konta i danych nie można ich odzyskać.",
+      "deleteButton": "Usuń moje konto",
+      "modalTitle": "Usuń swoje konto",
+      "modalDescription": "Spowoduje to trwałe usunięcie Twojego konta, w tym wszystkich licytacji, utworzonych przedmiotów i członkostw w aukcjach. Tej czynności nie można cofnąć.",
+      "ownedAuctionsTitle": "Jesteś właścicielem następujących aukcji",
+      "ownedAuctionsDescription": "Wybierz, co zrobić z każdą aukcją przed usunięciem konta.",
+      "deleteAuction": "Usuń aukcję",
+      "transferOwnership": "Przenieś własność",
+      "newOwnerEmail": "Adres e-mail nowego właściciela",
+      "enterTransferEmail": "Wprowadź adres e-mail dla {auction}",
+      "enterPassword": "Wprowadź hasło, aby potwierdzić",
+      "enterEmail": "Wprowadź swój e-mail, aby potwierdzić",
+      "passwordPlaceholder": "Twoje aktualne hasło",
+      "passwordHint": "Wprowadź hasło, aby zweryfikować swoją tożsamość",
+      "emailHint": "Wpisz dokładnie swój adres e-mail, aby potwierdzić",
+      "passwordRequired": "Hasło jest wymagane",
+      "emailRequired": "Potwierdzenie e-mailem jest wymagane",
+      "incorrectPassword": "Nieprawidłowe hasło",
+      "incorrectEmail": "Adres e-mail nie pasuje",
+      "mustTransferAdmin": "Musisz przenieść uprawnienia administratora wdrożenia przed usunięciem konta",
+      "cancel": "Anuluj",
+      "confirmDelete": "Usuń konto",
+      "deleting": "Usuwanie...",
+      "accountDeleted": "Twoje konto zostało usunięte"
     }
   }
 }
