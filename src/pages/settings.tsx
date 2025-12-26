@@ -45,6 +45,7 @@ interface SettingsPageProps {
   isDeploymentAdmin: boolean;
   hasDeploymentAdmin: boolean;
   versionInfo: VersionInfo | null;
+  isHostedDeployment: boolean;
 }
 
 export default function SettingsPage({
@@ -56,6 +57,7 @@ export default function SettingsPage({
   isDeploymentAdmin: initialIsDeploymentAdmin,
   hasDeploymentAdmin: initialHasDeploymentAdmin,
   versionInfo,
+  isHostedDeployment,
 }: SettingsPageProps) {
   const { theme, setTheme } = useTheme();
   const t = useTranslations("settings");
@@ -835,179 +837,181 @@ export default function SettingsPage({
         </div>
       </div>
 
-      {/* Deployment Admin Section */}
-      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center text-warning">
-              <span className="icon-[tabler--server] size-6"></span>
-            </div>
-            {t("deploymentAdmin.title")}
-          </h2>
-
-          {deploymentAdminError && (
-            <div className="alert alert-error py-2 text-sm shadow-sm mb-2">
-              <span className="icon-[tabler--alert-circle] size-5"></span>
-              <span>{deploymentAdminError}</span>
-            </div>
-          )}
-
-          {deploymentAdminSuccess && (
-            <div className="alert alert-success py-2 text-sm shadow-sm mb-2">
-              <span className="icon-[tabler--check] size-5"></span>
-              <span>{deploymentAdminSuccess}</span>
-            </div>
-          )}
-
-          <p className="text-sm text-base-content/60 mb-4">
-            {t("deploymentAdmin.description")}
-          </p>
-
-          {isDeploymentAdmin ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-success/10 border border-success/20">
-                <span className="icon-[tabler--shield-check] size-6 text-success"></span>
-                <div>
-                  <p className="font-medium text-success">
-                    {t("deploymentAdmin.youAreAdmin")}
-                  </p>
-                  <p className="text-sm text-base-content/60">
-                    {t("deploymentAdmin.adminDescription")}
-                  </p>
-                </div>
+      {/* Deployment Admin Section - Hidden on hosted deployments */}
+      {!isHostedDeployment && (
+        <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center text-warning">
+                <span className="icon-[tabler--server] size-6"></span>
               </div>
+              {t("deploymentAdmin.title")}
+            </h2>
 
-              {/* Version info */}
-              {versionInfo && (
-                <div className="p-4 rounded-xl bg-base-200/50 border border-base-content/5">
-                  <p className="font-medium mb-3">
-                    {t("deploymentAdmin.versionTitle")}
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-base-content/60">
-                        {t("deploymentAdmin.currentVersion")}
-                      </span>
-                      <span className="font-mono text-sm">
-                        v{versionInfo.currentVersion}
-                      </span>
-                    </div>
-                    {versionInfo.latestVersion && (
+            {deploymentAdminError && (
+              <div className="alert alert-error py-2 text-sm shadow-sm mb-2">
+                <span className="icon-[tabler--alert-circle] size-5"></span>
+                <span>{deploymentAdminError}</span>
+              </div>
+            )}
+
+            {deploymentAdminSuccess && (
+              <div className="alert alert-success py-2 text-sm shadow-sm mb-2">
+                <span className="icon-[tabler--check] size-5"></span>
+                <span>{deploymentAdminSuccess}</span>
+              </div>
+            )}
+
+            <p className="text-sm text-base-content/60 mb-4">
+              {t("deploymentAdmin.description")}
+            </p>
+
+            {isDeploymentAdmin ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-success/10 border border-success/20">
+                  <span className="icon-[tabler--shield-check] size-6 text-success"></span>
+                  <div>
+                    <p className="font-medium text-success">
+                      {t("deploymentAdmin.youAreAdmin")}
+                    </p>
+                    <p className="text-sm text-base-content/60">
+                      {t("deploymentAdmin.adminDescription")}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Version info */}
+                {versionInfo && (
+                  <div className="p-4 rounded-xl bg-base-200/50 border border-base-content/5">
+                    <p className="font-medium mb-3">
+                      {t("deploymentAdmin.versionTitle")}
+                    </p>
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-base-content/60">
-                          {t("deploymentAdmin.latestVersion")}
+                          {t("deploymentAdmin.currentVersion")}
                         </span>
-                        <span
-                          className={`font-mono text-sm ${
-                            versionInfo.updateAvailable
-                              ? "text-warning font-medium"
-                              : "text-success"
-                          }`}
-                        >
-                          v{versionInfo.latestVersion}
+                        <span className="font-mono text-sm">
+                          v{versionInfo.currentVersion}
                         </span>
                       </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 mt-4">
-                    <a
-                      href="https://github.com/thomsa/auktiva/blob/main/CHANGELOG.md"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-ghost btn-sm"
-                    >
-                      <span className="icon-[tabler--file-text] size-4" />
-                      {t("deploymentAdmin.viewChangelog")}
-                    </a>
-                    {versionInfo.updateAvailable && (
-                      <Button
-                        onClick={handleUpdate}
-                        variant="primary"
-                        size="sm"
-                        isLoading={isUpdating}
-                        loadingText={t("deploymentAdmin.updating")}
-                        icon={
-                          <span className="icon-[tabler--download] size-4" />
-                        }
+                      {versionInfo.latestVersion && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-base-content/60">
+                            {t("deploymentAdmin.latestVersion")}
+                          </span>
+                          <span
+                            className={`font-mono text-sm ${
+                              versionInfo.updateAvailable
+                                ? "text-warning font-medium"
+                                : "text-success"
+                            }`}
+                          >
+                            v{versionInfo.latestVersion}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 mt-4">
+                      <a
+                        href="https://github.com/thomsa/auktiva/blob/main/CHANGELOG.md"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-ghost btn-sm"
                       >
-                        {t("deploymentAdmin.updateNow")}
-                      </Button>
-                    )}
+                        <span className="icon-[tabler--file-text] size-4" />
+                        {t("deploymentAdmin.viewChangelog")}
+                      </a>
+                      {versionInfo.updateAvailable && (
+                        <Button
+                          onClick={handleUpdate}
+                          variant="primary"
+                          size="sm"
+                          isLoading={isUpdating}
+                          loadingText={t("deploymentAdmin.updating")}
+                          icon={
+                            <span className="icon-[tabler--download] size-4" />
+                          }
+                        >
+                          {t("deploymentAdmin.updateNow")}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Transfer admin rights */}
+                <div className="p-4 rounded-xl bg-base-200/50 border border-base-content/5">
+                  <p className="font-medium mb-2">
+                    {t("deploymentAdmin.transferTitle")}
+                  </p>
+                  <p className="text-sm text-base-content/60 mb-3">
+                    {t("deploymentAdmin.transferDescription")}
+                  </p>
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      value={transferEmail}
+                      onChange={(e) => setTransferEmail(e.target.value)}
+                      placeholder={t("deploymentAdmin.emailPlaceholder")}
+                      className="input input-bordered flex-1 min-w-0"
+                    />
+                    <Button
+                      onClick={handleTransferDeploymentAdmin}
+                      buttonStyle="outline"
+                      isLoading={deploymentAdminLoading}
+                      loadingText={t("deploymentAdmin.transferring")}
+                      icon={
+                        <span className="icon-[tabler--arrow-right] size-5"></span>
+                      }
+                    >
+                      {t("deploymentAdmin.transfer")}
+                    </Button>
                   </div>
                 </div>
-              )}
-
-              {/* Transfer admin rights */}
-              <div className="p-4 rounded-xl bg-base-200/50 border border-base-content/5">
-                <p className="font-medium mb-2">
-                  {t("deploymentAdmin.transferTitle")}
-                </p>
-                <p className="text-sm text-base-content/60 mb-3">
-                  {t("deploymentAdmin.transferDescription")}
-                </p>
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    value={transferEmail}
-                    onChange={(e) => setTransferEmail(e.target.value)}
-                    placeholder={t("deploymentAdmin.emailPlaceholder")}
-                    className="input input-bordered flex-1 min-w-0"
-                  />
-                  <Button
-                    onClick={handleTransferDeploymentAdmin}
-                    buttonStyle="outline"
-                    isLoading={deploymentAdminLoading}
-                    loadingText={t("deploymentAdmin.transferring")}
-                    icon={
-                      <span className="icon-[tabler--arrow-right] size-5"></span>
-                    }
-                  >
-                    {t("deploymentAdmin.transfer")}
-                  </Button>
-                </div>
               </div>
-            </div>
-          ) : hasDeploymentAdmin ? (
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-base-200/50 border border-base-content/5">
-              <span className="icon-[tabler--shield-lock] size-6 text-base-content/50"></span>
-              <div>
-                <p className="font-medium">
-                  {t("deploymentAdmin.adminAlreadySet")}
-                </p>
-                <p className="text-sm text-base-content/60">
-                  {t("deploymentAdmin.contactCurrentAdmin")}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-warning/10 border border-warning/20">
-                <span className="icon-[tabler--alert-triangle] size-6 text-warning"></span>
+            ) : hasDeploymentAdmin ? (
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-base-200/50 border border-base-content/5">
+                <span className="icon-[tabler--shield-lock] size-6 text-base-content/50"></span>
                 <div>
-                  <p className="font-medium text-warning">
-                    {t("deploymentAdmin.noAdminSet")}
+                  <p className="font-medium">
+                    {t("deploymentAdmin.adminAlreadySet")}
                   </p>
                   <p className="text-sm text-base-content/60">
-                    {t("deploymentAdmin.claimAdminDescription")}
+                    {t("deploymentAdmin.contactCurrentAdmin")}
                   </p>
                 </div>
               </div>
-              <Button
-                onClick={handleBecomeDeploymentAdmin}
-                variant="primary"
-                isLoading={deploymentAdminLoading}
-                loadingText={t("deploymentAdmin.claiming")}
-                icon={
-                  <span className="icon-[tabler--shield-plus] size-5"></span>
-                }
-                className="shadow-lg shadow-primary/20"
-              >
-                {t("deploymentAdmin.becomeAdmin")}
-              </Button>
-            </div>
-          )}
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-warning/10 border border-warning/20">
+                  <span className="icon-[tabler--alert-triangle] size-6 text-warning"></span>
+                  <div>
+                    <p className="font-medium text-warning">
+                      {t("deploymentAdmin.noAdminSet")}
+                    </p>
+                    <p className="text-sm text-base-content/60">
+                      {t("deploymentAdmin.claimAdminDescription")}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={handleBecomeDeploymentAdmin}
+                  variant="primary"
+                  isLoading={deploymentAdminLoading}
+                  loadingText={t("deploymentAdmin.claiming")}
+                  icon={
+                    <span className="icon-[tabler--shield-plus] size-5"></span>
+                  }
+                  className="shadow-lg shadow-primary/20"
+                >
+                  {t("deploymentAdmin.becomeAdmin")}
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Delete Account Section */}
       <div className="card bg-base-100/50 backdrop-blur-sm border border-error/20 shadow-xl mt-8">
@@ -1336,6 +1340,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       isDeploymentAdmin,
       hasDeploymentAdmin,
       versionInfo,
+      isHostedDeployment: !!process.env.VERCEL || process.env.HOSTED === "true",
       messages,
     },
   };
