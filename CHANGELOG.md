@@ -2,7 +2,14 @@
 
 All notable changes to Auktiva will be documented in this file.
 
-## [Unreleased]
+## [1.2.0] - 2025-12-26
+
+### ⚙️ Miscellaneous
+
+- Change changelog workflow to create PR on tag push instead of direct commit by @thomsa
+- Remove tag trigger from changelog workflow by @thomsa
+
+## [1.1.16] - 2025-12-26
 
 ### 🚀 Features
 
