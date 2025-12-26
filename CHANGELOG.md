@@ -2,6 +2,16 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.3.1] - 2025-12-26
+
+### ⚙️ Miscellaneous
+
+- Explicitly specify changelog file path in PR creation workflow by @thomsa
+
+### 🚀 Features
+
+- Disable deployment admin features on hosted deployments by @thomsa
+
 ## [1.3.0] - 2025-12-26
 
 ### ⚙️ Miscellaneous
