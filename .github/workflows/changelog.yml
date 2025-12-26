@@ -43,3 +43,4 @@ jobs:
           branch: changelog/${{ github.ref_name }}
           base: main
           delete-branch: true
+          add-paths: CHANGELOG.md
