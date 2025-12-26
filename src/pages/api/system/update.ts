@@ -26,6 +26,13 @@ export default async function handler(
     return res.status(405).json({ success: false });
   }
 
+  // Disable on hosted deployments
+  const isHosted = !!process.env.VERCEL || process.env.HOSTED === "true";
+  if (isHosted) {
+    updateLogger.warn("Update attempted on hosted deployment");
+    return res.status(403).json({ success: false });
+  }
+
   // Check authentication
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.email) {

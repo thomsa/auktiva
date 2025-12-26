@@ -15,8 +15,20 @@ export type UpdateSystemSettingsBody = z.infer<
 /**
  * Get system settings
  * Only deployment admin can see full settings
+ * Disabled on hosted deployments (Vercel/HOSTED=true)
  */
 export const getSettings: ApiHandler = async (req, res, ctx) => {
+  // Disable on hosted deployments
+  const isHosted = !!process.env.VERCEL || process.env.HOSTED === "true";
+  if (isHosted) {
+    return res
+      .status(403)
+      .json({
+        error:
+          "Deployment administration is not available on hosted deployments",
+      });
+  }
+
   const userEmail = ctx.session?.user?.email;
   if (!userEmail) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -40,8 +52,20 @@ export const getSettings: ApiHandler = async (req, res, ctx) => {
 /**
  * Update system settings
  * Only deployment admin can update (or first user to set admin)
+ * Disabled on hosted deployments (Vercel/HOSTED=true)
  */
 export const updateSettings: ApiHandler = async (req, res, ctx) => {
+  // Disable on hosted deployments
+  const isHosted = !!process.env.VERCEL || process.env.HOSTED === "true";
+  if (isHosted) {
+    return res
+      .status(403)
+      .json({
+        error:
+          "Deployment administration is not available on hosted deployments",
+      });
+  }
+
   const userEmail = ctx.session?.user?.email;
   if (!userEmail) {
     return res.status(401).json({ error: "Unauthorized" });
