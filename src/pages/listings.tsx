@@ -2,8 +2,9 @@ import { useMemo, useState } from "react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import useSWR from "swr";
 import { authOptions } from "@/lib/auth";
-import * as itemService from "@/lib/services/item.service";
+import { fetcher } from "@/lib/fetcher";
 import { PageLayout, EmptyState } from "@/components/common";
 import {
   SortDropdown,
@@ -11,6 +12,7 @@ import {
   sortListings,
 } from "@/components/ui/sort-dropdown";
 import { SlidingSwitch } from "@/components/ui/sliding-switch";
+import { SkeletonListingsPage } from "@/components/ui/skeleton";
 import { useSortFilter } from "@/hooks/ui";
 import { isItemEnded } from "@/utils/auction-helpers";
 import { getMessages, Locale } from "@/i18n";
@@ -41,10 +43,9 @@ interface ListingsPageProps {
     name: string | null;
     email: string;
   };
-  items: UserItem[];
 }
 
-export default function ListingsPage({ user, items }: ListingsPageProps) {
+export default function ListingsPage({ user }: ListingsPageProps) {
   const t = useTranslations("nav");
   const tListings = useTranslations("listings");
   const tStatus = useTranslations("status");
@@ -53,6 +54,12 @@ export default function ListingsPage({ user, items }: ListingsPageProps) {
   const [viewMode, setViewMode] = useState<"active" | "ended">("active");
   const { currentSort: activeSort } = useSortFilter("activeSort", "date-desc");
   const { currentSort: endedSort } = useSortFilter("endedSort", "date-desc");
+
+  // Client-side data fetching
+  const { data: items = [], isLoading } = useSWR<UserItem[]>(
+    "/api/user/listings",
+    fetcher,
+  );
 
   // Calculate date 3 days ago for "Just Ended" section
   const threeDaysAgo = useMemo(() => {
@@ -94,6 +101,25 @@ export default function ListingsPage({ user, items }: ListingsPageProps) {
   const currentItems = viewMode === "active" ? activeItems : endedItems;
   const currentSort = viewMode === "active" ? activeSort : endedSort;
   const currentSortParam = viewMode === "active" ? "activeSort" : "endedSort";
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return (
+      <PageLayout user={user}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-linear-to-r from-base-content to-base-content/60 bg-clip-text text-transparent mb-2">
+              {t("myListings")}
+            </h1>
+            <p className="text-base-content/60 text-lg">
+              {tListings("subtitle")}
+            </p>
+          </div>
+        </div>
+        <SkeletonListingsPage />
+      </PageLayout>
+    );
+  }
 
   return (
     <PageLayout user={user}>
@@ -343,8 +369,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const items = await itemService.getUserCreatedItems(session.user.id);
-
   return {
     props: {
       user: {
@@ -352,7 +376,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         name: session.user.name || null,
         email: session.user.email || "",
       },
-      items,
       messages: await getMessages(context.locale as Locale),
     },
   };

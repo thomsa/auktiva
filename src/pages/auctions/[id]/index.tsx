@@ -3,13 +3,15 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import useSWR from "swr";
 import { authOptions } from "@/lib/auth";
 import { getMessages, Locale } from "@/i18n";
+import { fetcher } from "@/lib/fetcher";
 import * as auctionService from "@/lib/services/auction.service";
-import * as itemService from "@/lib/services/item.service";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { AuctionSidebar } from "@/components/auction";
 import { ItemCard, ItemListItem } from "@/components/item";
+import { SkeletonAuctionPage } from "@/components/ui/skeleton";
 import {
   SortDropdown,
   itemSortOptions,
@@ -19,61 +21,68 @@ import { useSortFilter } from "@/hooks/ui";
 import { isUserAdmin, canUserCreateItems } from "@/utils/auction-helpers";
 import { useTranslations } from "next-intl";
 
+interface Auction {
+  id: string;
+  name: string;
+  description: string | null;
+  joinMode: string;
+  memberCanInvite: boolean;
+  bidderVisibility: string;
+  endDate: string | null;
+  itemEndMode: string;
+  inviteToken: string | null;
+  createdAt: string;
+  thumbnailUrl: string | null;
+  creator: {
+    id: string;
+    name: string | null;
+    email: string;
+  };
+  _count: {
+    items: number;
+    members: number;
+  };
+}
+
+interface Item {
+  id: string;
+  name: string;
+  description: string | null;
+  currencyCode: string;
+  startingBid: number;
+  currentBid: number | null;
+  endDate: string | null;
+  createdAt: string;
+  creatorId: string;
+  thumbnailUrl: string | null;
+  highestBidderId: string | null;
+  userHasBid: boolean;
+  _count: {
+    bids: number;
+  };
+}
+
+interface AuctionDetailsData {
+  auction: Auction;
+  items: Item[];
+}
+
 interface AuctionDetailProps {
   user: {
     id: string;
     name: string | null;
     email: string;
   };
-  auction: {
-    id: string;
-    name: string;
-    description: string | null;
-    joinMode: string;
-    memberCanInvite: boolean;
-    bidderVisibility: string;
-    endDate: string | null;
-    itemEndMode: string;
-    inviteToken: string | null;
-    createdAt: string;
-    thumbnailUrl: string | null;
-    creator: {
-      id: string;
-      name: string | null;
-      email: string;
-    };
-    _count: {
-      items: number;
-      members: number;
-    };
-  };
+  auctionId: string;
   membership: {
     role: string;
   };
-  items: Array<{
-    id: string;
-    name: string;
-    description: string | null;
-    currencyCode: string;
-    startingBid: number;
-    currentBid: number | null;
-    endDate: string | null;
-    createdAt: string;
-    creatorId: string;
-    thumbnailUrl: string | null;
-    highestBidderId: string | null;
-    userHasBid: boolean;
-    _count: {
-      bids: number;
-    };
-  }>;
 }
 
 export default function AuctionDetailPage({
   user,
-  auction,
+  auctionId,
   membership,
-  items,
 }: AuctionDetailProps) {
   const router = useRouter();
   const t = useTranslations("auction");
@@ -81,6 +90,15 @@ export default function AuctionDetailPage({
   const tItem = useTranslations("item");
   const { currentSort } = useSortFilter("sort", "date-desc");
   const viewMode = (router.query.view as "grid" | "list") || "grid";
+
+  // Client-side data fetching
+  const { data, isLoading } = useSWR<AuctionDetailsData>(
+    `/api/auctions/${auctionId}/details`,
+    fetcher,
+  );
+
+  const auction = data?.auction;
+  const items = useMemo(() => data?.items ?? [], [data?.items]);
 
   const sortedItems = useMemo(
     () => sortItems(items, currentSort),
@@ -97,6 +115,16 @@ export default function AuctionDetailPage({
 
   const isAdmin = isUserAdmin(membership.role);
   const canCreate = canUserCreateItems(membership.role);
+
+  // Show skeleton while loading
+  if (isLoading || !auction) {
+    return (
+      <PageLayout user={user}>
+        <BackLink href="/dashboard" label={t("create.backToDashboard")} />
+        <SkeletonAuctionPage />
+      </PageLayout>
+    );
+  }
 
   return (
     <PageLayout user={user}>
@@ -284,12 +312,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
-  // Get items for list page
-  const items = await itemService.getAuctionItemsForListPage(
-    auctionId,
-    session.user.id,
-  );
-
   return {
     props: {
       user: {
@@ -297,11 +319,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         name: session.user.name || null,
         email: session.user.email || "",
       },
-      auction,
+      auctionId,
       membership: {
         role: membership.role,
       },
-      items,
       messages: await getMessages(context.locale as Locale),
     },
   };

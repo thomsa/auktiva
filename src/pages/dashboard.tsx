@@ -2,14 +2,14 @@ import { useMemo } from "react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import useSWR from "swr";
 import { authOptions } from "@/lib/auth";
 import { getMessages, Locale } from "@/i18n";
-import * as auctionService from "@/lib/services/auction.service";
-import * as bidService from "@/lib/services/bid.service";
-import * as itemService from "@/lib/services/item.service";
+import { fetcher } from "@/lib/fetcher";
 import { PageLayout, EmptyState, SEO } from "@/components/common";
 import { AuctionCard } from "@/components/auction";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
+import { SkeletonDashboard } from "@/components/ui/skeleton";
 import {
   SortDropdown,
   auctionSortOptions,
@@ -77,16 +77,19 @@ interface UserItem {
   bidCount: number;
 }
 
+interface DashboardData {
+  auctions: Auction[];
+  bidItems: BidItem[];
+  bidStats: BidStats;
+  userItems: UserItem[];
+}
+
 interface DashboardProps {
   user: {
     id: string;
     name: string | null;
     email: string;
   };
-  auctions: Auction[];
-  bidItems: BidItem[];
-  bidStats: BidStats;
-  userItems: UserItem[];
 }
 
 function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
@@ -211,13 +214,7 @@ function UserItemCard({ item }: { item: UserItem }) {
   );
 }
 
-export default function DashboardPage({
-  user,
-  auctions,
-  bidItems,
-  bidStats,
-  userItems,
-}: DashboardProps) {
+export default function DashboardPage({ user }: DashboardProps) {
   const t = useTranslations("dashboard");
   const tStats = useTranslations("dashboard.stats");
   const tEmpty = useTranslations("dashboard.empty");
@@ -226,6 +223,22 @@ export default function DashboardPage({
     "date-desc",
   );
   const { currentSort: bidSort } = useSortFilter("bidSort", "date-desc");
+
+  // Client-side data fetching
+  const { data, isLoading } = useSWR<DashboardData>(
+    "/api/user/dashboard",
+    fetcher,
+  );
+
+  const auctions = useMemo(() => data?.auctions ?? [], [data?.auctions]);
+  const bidItems = useMemo(() => data?.bidItems ?? [], [data?.bidItems]);
+  const bidStats = data?.bidStats ?? {
+    totalBids: 0,
+    currencyTotals: [],
+    itemsBidOn: 0,
+    currentlyWinning: 0,
+  };
+  const userItems = data?.userItems ?? [];
 
   const sortedAuctions = useMemo(
     () => sortAuctions(auctions, auctionSort),
@@ -236,6 +249,35 @@ export default function DashboardPage({
     () => sortItems(bidItems, bidSort),
     [bidItems, bidSort],
   );
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return (
+      <>
+        <SEO title={t("seo.title")} description={t("seo.description")} />
+        <PageLayout user={user}>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-base-content">
+                {t("title")}
+              </h1>
+              <p className="text-base-content/60 mt-1 text-sm sm:text-base">
+                {t("welcome", { name: user.name || user.email })}
+              </p>
+            </div>
+            <Link
+              href="/auctions/create"
+              className="btn btn-primary w-full sm:w-auto"
+            >
+              <span className="icon-[tabler--plus] size-5"></span>
+              {t("createAuction")}
+            </Link>
+          </div>
+          <SkeletonDashboard />
+        </PageLayout>
+      </>
+    );
+  }
 
   return (
     <>
@@ -394,17 +436,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  // Use services for data fetching
-  const [memberAuctions, openAuctions, bidStats, bidItems, userItems] =
-    await Promise.all([
-      auctionService.getUserAuctions(session.user.id),
-      auctionService.getOpenAuctionsForUser(session.user.id),
-      bidService.getUserBidStats(session.user.id),
-      bidService.getUserBidItems(session.user.id),
-      itemService.getUserCreatedItems(session.user.id),
-    ]);
-
-  const auctions = [...memberAuctions, ...openAuctions];
   const messages = await getMessages(context.locale as Locale);
 
   return {
@@ -414,10 +445,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         name: session.user.name || null,
         email: session.user.email || "",
       },
-      auctions,
-      bidItems,
-      bidStats,
-      userItems,
       messages,
     },
   };

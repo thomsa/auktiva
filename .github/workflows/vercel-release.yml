@@ -1,0 +1,34 @@
+# .github/workflows/vercel-release.yml
+name: Vercel Production Deploy on Tag
+
+on:
+  push:
+    tags:
+      - "v*" # e.g. v1.0.0, v1.0.1, etc.
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # So we can check what commit the tag points to
+          fetch-depth: 0
+
+      - name: Ensure tag is on main
+        run: |
+          TAG_COMMIT=$(git rev-list -n 1 $GITHUB_REF)
+          MAIN_COMMIT=$(git rev-parse origin/main)
+
+          if ! git branch --contains "$TAG_COMMIT" | grep -q "main"; then
+            echo "Tag is not on main. Skipping deploy."
+            exit 0
+          fi
+
+      - name: Trigger Vercel Deploy Hook
+        run: |
+          curl -X POST "$VERCEL_DEPLOY_HOOK_URL"
+        env:
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
