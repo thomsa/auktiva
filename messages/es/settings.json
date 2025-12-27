@@ -110,6 +110,12 @@
       "confirmDelete": "Eliminar cuenta",
       "deleting": "Eliminando...",
       "accountDeleted": "Tu cuenta ha sido eliminada"
+    },
+    "quickLinks": {
+      "title": "Enlaces Rápidos",
+      "documentation": "Documentación",
+      "feedback": "Enviar Comentarios",
+      "signOut": "Cerrar Sesión"
     }
   }
 }

@@ -79,10 +79,10 @@ export default function SettingsPage({
 
   // Email notification settings
   const [emailOnNewItem, setEmailOnNewItem] = useState(
-    initialSettings.emailOnNewItem,
+    initialSettings.emailOnNewItem
   );
   const [emailOnOutbid, setEmailOnOutbid] = useState(
-    initialSettings.emailOnOutbid,
+    initialSettings.emailOnOutbid
   );
   const [emailSettingsLoading, setEmailSettingsLoading] = useState(false);
   const [emailSettingsSuccess, setEmailSettingsSuccess] = useState<
@@ -91,10 +91,10 @@ export default function SettingsPage({
 
   // Deployment admin state
   const [isDeploymentAdmin, setIsDeploymentAdmin] = useState(
-    initialIsDeploymentAdmin,
+    initialIsDeploymentAdmin
   );
   const [hasDeploymentAdmin, setHasDeploymentAdmin] = useState(
-    initialHasDeploymentAdmin,
+    initialHasDeploymentAdmin
   );
   const [deploymentAdminLoading, setDeploymentAdminLoading] = useState(false);
   const [deploymentAdminError, setDeploymentAdminError] = useState<
@@ -135,7 +135,7 @@ export default function SettingsPage({
           (data.ownedAuctions || []).forEach(
             (auction: { id: string; name: string }) => {
               actions[auction.id] = { action: "delete" };
-            },
+            }
           );
           setAuctionActions(actions);
         })
@@ -163,7 +163,7 @@ export default function SettingsPage({
 
   const handleAuctionActionChange = (
     auctionId: string,
-    action: "transfer" | "delete",
+    action: "transfer" | "delete"
   ) => {
     setAuctionActions((prev) => ({
       ...prev,
@@ -173,7 +173,7 @@ export default function SettingsPage({
 
   const handleAuctionTransferEmailChange = (
     auctionId: string,
-    email: string,
+    email: string
   ) => {
     setAuctionActions((prev) => ({
       ...prev,
@@ -190,7 +190,7 @@ export default function SettingsPage({
       const action = auctionActions[auction.id];
       if (action?.action === "transfer" && !action.email?.trim()) {
         setDeleteError(
-          t("deleteAccount.enterTransferEmail", { auction: auction.name }),
+          t("deleteAccount.enterTransferEmail", { auction: auction.name })
         );
         setDeleteLoading(false);
         return;
@@ -273,7 +273,7 @@ export default function SettingsPage({
 
   const handleEmailSettingChange = async (
     setting: "emailOnNewItem" | "emailOnOutbid",
-    value: boolean,
+    value: boolean
   ) => {
     if (setting === "emailOnNewItem") {
       setEmailOnNewItem(value);
@@ -364,7 +364,7 @@ export default function SettingsPage({
 
       if (!res.ok) {
         setPasswordError(
-          result.message || tErrors("profile.passwordChangeFailed"),
+          result.message || tErrors("profile.passwordChangeFailed")
         );
       } else {
         setPasswordSuccess(t("password.passwordChanged"));
@@ -581,7 +581,7 @@ export default function SettingsPage({
                     <p className="font-medium">Google</p>
                     <p className="text-sm text-base-content/60 truncate">
                       {connectedAccounts.some(
-                        (acc) => acc.provider === "google",
+                        (acc) => acc.provider === "google"
                       )
                         ? t("connectedAccounts.connected")
                         : t("connectedAccounts.notConnected")}
@@ -1015,6 +1015,54 @@ export default function SettingsPage({
         </div>
       )}
 
+      {/* Mobile-only: Quick Links & Logout Section */}
+      <div className="md:hidden card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mt-8">
+        <div className="card-body">
+          <h2 className="card-title flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+              <span className="icon-[tabler--link] size-6"></span>
+            </div>
+            {t("quickLinks.title")}
+          </h2>
+
+          <div className="space-y-2">
+            <a
+              href="https://docs.auktiva.org/users"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-xl bg-base-200/50 hover:bg-base-200 transition-colors"
+            >
+              <span className="icon-[tabler--book] size-5 text-primary"></span>
+              <span className="font-medium">
+                {t("quickLinks.documentation")}
+              </span>
+              <span className="icon-[tabler--external-link] size-4 ml-auto text-base-content/40"></span>
+            </a>
+
+            <a
+              href="https://github.com/thomsa/auktiva/issues/new/choose"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-xl bg-base-200/50 hover:bg-base-200 transition-colors"
+            >
+              <span className="icon-[tabler--message-report] size-5 text-secondary"></span>
+              <span className="font-medium">{t("quickLinks.feedback")}</span>
+              <span className="icon-[tabler--external-link] size-4 ml-auto text-base-content/40"></span>
+            </a>
+          </div>
+
+          <div className="divider my-4"></div>
+
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="btn btn-error btn-outline w-full gap-2"
+          >
+            <span className="icon-[tabler--logout] size-5"></span>
+            {t("quickLinks.signOut")}
+          </button>
+        </div>
+      </div>
+
       {/* Delete Account Section */}
       <div className="card bg-base-100/50 backdrop-blur-sm border border-error/20 shadow-xl mt-8">
         <div className="card-body">
@@ -1135,7 +1183,7 @@ export default function SettingsPage({
                           onChange={(e) =>
                             handleAuctionTransferEmailChange(
                               auction.id,
-                              e.target.value,
+                              e.target.value
                             )
                           }
                         />
@@ -1240,7 +1288,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   // Get connected OAuth accounts
   const connectedAccounts = await userService.getUserConnectedAccounts(
-    session.user.id,
+    session.user.id
   );
 
   // Check if user has a password (for OAuth-only users)
@@ -1260,7 +1308,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let versionInfo: VersionInfo | null = null;
   settingsLogger.debug(
     { isDeploymentAdmin },
-    "Checking deployment admin status",
+    "Checking deployment admin status"
   );
   if (isDeploymentAdmin) {
     try {
@@ -1268,7 +1316,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       const currentVersion = packageJson.version;
       settingsLogger.debug(
         { currentVersion },
-        "Current version from package.json",
+        "Current version from package.json"
       );
 
       // Fetch latest version from GitHub
@@ -1279,7 +1327,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             Accept: "application/vnd.github.v3+json",
             "User-Agent": "Auktiva",
           },
-        },
+        }
       );
 
       settingsLogger.debug({ status: response.status }, "GitHub API response");
@@ -1292,7 +1340,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
         settingsLogger.debug(
           { latestVersion, updateAvailable },
-          "Version check result",
+          "Version check result"
         );
 
         versionInfo = {

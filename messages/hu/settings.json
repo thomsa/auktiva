@@ -110,6 +110,12 @@
       "confirmDelete": "Fiók törlése",
       "deleting": "Törlés...",
       "accountDeleted": "A fiókod törölve lett"
+    },
+    "quickLinks": {
+      "title": "Gyorslinkek",
+      "documentation": "Dokumentáció",
+      "feedback": "Visszajelzés küldése",
+      "signOut": "Kijelentkezés"
     }
   }
 }

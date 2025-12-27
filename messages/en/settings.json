@@ -110,6 +110,12 @@
       "confirmDelete": "Delete Account",
       "deleting": "Deleting...",
       "accountDeleted": "Your account has been deleted"
+    },
+    "quickLinks": {
+      "title": "Quick Links",
+      "documentation": "Documentation",
+      "feedback": "Send Feedback",
+      "signOut": "Sign Out"
     }
   }
 }
