@@ -244,6 +244,9 @@ model AuctionItem {
   // Timing
   endDate         DateTime? // null = follows auction end or no end
   
+  // Notification tracking
+  winnerNotified  Boolean   @default(false) // Track if winner notification sent
+  
   // Metadata
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt

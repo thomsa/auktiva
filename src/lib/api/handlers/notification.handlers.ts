@@ -1,6 +1,7 @@
 import type { ApiHandler } from "@/lib/api/types";
 import { NotFoundError, ForbiddenError } from "@/lib/api/errors";
 import * as notificationService from "@/lib/services/notification.service";
+import * as auctionEndService from "@/lib/services/auction-end.service";
 
 // ============================================================================
 // Handlers
@@ -8,12 +9,19 @@ import * as notificationService from "@/lib/services/notification.service";
 
 /**
  * GET /api/notifications - List user notifications
+ * Also processes ended items in the background (fire-and-forget)
  */
 export const listNotifications: ApiHandler = async (req, res, ctx) => {
   const unreadOnly = req.query.unread === "true";
   const limit = req.query.limit
     ? parseInt(req.query.limit as string, 10)
     : undefined;
+
+  // Process ended items in background (don't await, fire-and-forget)
+  // This runs every time notifications are fetched (every 5-30s with smart polling)
+  auctionEndService.processEndedItems().catch((err) => {
+    console.error("Background auction-end processing failed:", err);
+  });
 
   const notifications = await notificationService.getUserNotifications(
     ctx.session!.user.id,
