@@ -74,8 +74,15 @@
       "endNowSuccess": "Item bidding ended successfully",
       "updateFailed": "Failed to update item",
       "deleteFailed": "Failed to delete item",
-      "endFailed": "Failed to end item"
+      "endFailed": "Failed to end item",
+      "cannotChangeCurrency": "Cannot change currency after bids have been placed",
+      "cannotChangeStartingBid": "Cannot change starting bid after bids have been placed",
+      "itemsEndWithAuction": "Items end when the auction ends",
+      "itemsNoEndDate": "Items have no end date",
+      "auctionSetting": "(auction setting)"
     },
+    "yourListing": "Your Listing",
+    "listedBy": "Listed by",
     "gallery": {
       "imageOf": "Image {current} of {total}",
       "previousImage": "Previous image",

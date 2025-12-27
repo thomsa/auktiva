@@ -822,3 +822,72 @@ export function isItemEnded(endDate: Date | string | null): boolean {
   const date = typeof endDate === "string" ? new Date(endDate) : endDate;
   return date < new Date();
 }
+
+/**
+ * Get items created by a user across all auctions they're a member of
+ */
+export async function getUserCreatedItems(userId: string) {
+  const items = await prisma.auctionItem.findMany({
+    where: {
+      creatorId: userId,
+      auction: {
+        members: {
+          some: { userId },
+        },
+      },
+    },
+    include: {
+      auction: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      currency: {
+        select: {
+          symbol: true,
+        },
+      },
+      images: {
+        orderBy: { order: "asc" },
+        take: 1,
+      },
+      bids: {
+        orderBy: { amount: "desc" },
+        take: 1,
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
+      _count: {
+        select: { bids: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    auctionId: item.auction.id,
+    auctionName: item.auction.name,
+    currencySymbol: item.currency.symbol,
+    startingBid: item.startingBid,
+    currentBid: item.bids[0]?.amount ?? null,
+    endDate: item.endDate?.toISOString() ?? null,
+    createdAt: item.createdAt.toISOString(),
+    thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
+    bidCount: item._count.bids,
+    winner: item.bids[0]?.user
+      ? {
+          name: item.bids[0].user.name,
+          email: item.bids[0].user.email,
+        }
+      : null,
+  }));
+}

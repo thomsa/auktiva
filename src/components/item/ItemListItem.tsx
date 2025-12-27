@@ -35,6 +35,7 @@ export function ItemListItem({
   const { formatShortDate } = useFormatters();
   const ended = isItemEnded(item.endDate);
   const canEditItem = item.creatorId === userId || isAdmin;
+  const isOwnItem = item.creatorId === userId;
 
   // Bid status logic
   const isHighestBidder = item.highestBidderId === userId;
@@ -44,8 +45,12 @@ export function ItemListItem({
 
   return (
     <div
-      className={`flex items-center gap-4 p-3 bg-base-100/50 hover:bg-base-100 border border-base-content/5 hover:border-primary/20 rounded-xl transition-all duration-200 group ${
+      className={`flex items-center gap-4 p-3 bg-base-100/50 hover:bg-base-100 border rounded-xl transition-all duration-200 group ${
         ended ? "opacity-75" : ""
+      } ${
+        isOwnItem
+          ? "border-secondary/30 hover:border-secondary/50 bg-secondary/5"
+          : "border-base-content/5 hover:border-primary/20"
       }`}
     >
       <Link
@@ -102,6 +107,11 @@ export function ItemListItem({
             <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
               {item.name}
             </h3>
+            {isOwnItem && (
+              <span className="badge badge-secondary badge-xs font-bold">
+                {t("item.yourListing")}
+              </span>
+            )}
             {bidStatus && (
               <div
                 className={`badge badge-xs font-bold ${

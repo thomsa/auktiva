@@ -12,6 +12,11 @@
     "activeBids": {
       "title": "Your Active Bids"
     },
+    "yourItems": {
+      "title": "Your Items",
+      "subtitle": "Items you have listed",
+      "bids": "{count, plural, =0 {No bids} =1 {1 bid} other {# bids}}"
+    },
     "auctions": {
       "title": "Auctions you have joined"
     },

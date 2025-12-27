@@ -1,0 +1,18 @@
+{
+  "listings": {
+    "subtitle": "Gestiona los artículos que has listado para subasta",
+    "active": "Activos",
+    "ended": "Finalizados",
+    "bids": "{count, plural, =0 {Sin pujas} =1 {1 puja} other {# pujas}}",
+    "noActive": "Sin artículos activos",
+    "noEnded": "Sin artículos finalizados",
+    "empty": {
+      "title": "Sin artículos aún",
+      "description": "No has listado ningún artículo para subasta todavía. ¡Ve a una subasta y añade tu primer artículo!"
+    },
+    "justEnded": {
+      "title": "Recién finalizados",
+      "description": "Estos artículos finalizaron en los últimos 3 días y necesitan tu atención. Contacta a los ganadores para coordinar la entrega."
+    }
+  }
+}

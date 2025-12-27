@@ -19,6 +19,7 @@
       "bidderVisibility": "Licitálók láthatósága",
       "alwaysVisible": "Mindig látható - A licitálók nevei nyilvánosak",
       "alwaysAnonymous": "Mindig anonim - A licitálók nevei rejtettek",
+      "hideBidderNamesDescription": "Licitálók neveinek elrejtése ennél a tételnél",
       "perBid": "Licitenként - A licitáló döntheti el",
       "timing": "Időzítés",
       "endDate": "Aukció záró dátuma (opcionális)",
@@ -138,7 +139,8 @@
       "winningBid": "Nyertes licit",
       "noItemsSold": "Nincs eladott tétel",
       "you": "Te",
-      "anonymous": "Anonim"
+      "anonymous": "Anonim",
+      "yourListing": "Saját tétel"
     },
     "acceptInvite": {
       "title": "Csatlakozás aukcióhoz",

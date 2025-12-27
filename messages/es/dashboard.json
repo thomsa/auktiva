@@ -12,6 +12,11 @@
     "activeBids": {
       "title": "Tus Pujas Activas"
     },
+    "yourItems": {
+      "title": "Tus Artículos",
+      "subtitle": "Artículos que has listado",
+      "bids": "{count, plural, =0 {Sin pujas} =1 {1 puja} other {# pujas}}"
+    },
     "auctions": {
       "title": "Subastas a las que te has unido"
     },

@@ -234,7 +234,7 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
                               href={`/auctions/${bid.auction.id}`}
                               className="text-base-content/70 hover:text-primary transition-colors flex items-center gap-1.5"
                             >
-                              <span className="icon-[tabler--gavel] size-3 opacity-50"></span>
+                              <span className="icon-[tabler--gavel] size-5 opacity-50  shrink-0"></span>
                               {bid.auction.name}
                             </Link>
                           </td>

@@ -74,8 +74,15 @@
       "endNowSuccess": "Artikelgebote erfolgreich beendet",
       "updateFailed": "Artikel konnte nicht aktualisiert werden",
       "deleteFailed": "Artikel konnte nicht gelöscht werden",
-      "endFailed": "Artikel konnte nicht beendet werden"
+      "endFailed": "Artikel konnte nicht beendet werden",
+      "cannotChangeCurrency": "Währung kann nach Gebotsabgabe nicht geändert werden",
+      "cannotChangeStartingBid": "Startgebot kann nach Gebotsabgabe nicht geändert werden",
+      "itemsEndWithAuction": "Artikel enden mit der Auktion",
+      "itemsNoEndDate": "Artikel haben kein Enddatum",
+      "auctionSetting": "(Auktionseinstellung)"
     },
+    "yourListing": "Dein Artikel",
+    "listedBy": "Eingestellt von",
     "gallery": {
       "imageOf": "Bild {current} von {total}",
       "previousImage": "Vorheriges Bild",

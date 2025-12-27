@@ -15,6 +15,9 @@ export function MobileBottomNav() {
         currentPath === "/dashboard" || currentPath.startsWith("/auctions")
       );
     }
+    if (path === "/listings") {
+      return currentPath === "/listings";
+    }
     if (path === "/history") {
       return currentPath === "/history";
     }
@@ -41,6 +44,22 @@ export function MobileBottomNav() {
             }`}
           />
           <span className="text-xs font-medium">{t("dashboard")}</span>
+        </Link>
+
+        <Link
+          href="/listings"
+          className={`flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors ${
+            isActive("/listings")
+              ? "text-primary"
+              : "text-base-content/60 hover:text-base-content"
+          }`}
+        >
+          <span
+            className={`icon-[tabler--tag] size-6 ${
+              isActive("/listings") ? "text-primary" : ""
+            }`}
+          />
+          <span className="text-xs font-medium">{t("myListings")}</span>
         </Link>
 
         <Link

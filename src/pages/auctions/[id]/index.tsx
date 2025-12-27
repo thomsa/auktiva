@@ -108,7 +108,7 @@ export default function AuctionDetailPage({
           shortLabel={tCommon("back")}
         />
         <div className="flex items-center gap-3 mt-4">
-          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary to-secondary flex items-center justify-center text-primary-content shadow-lg shadow-primary/20">
+          <div className="w-12 h-12 shrink-0 rounded-xl bg-linear-to-br from-primary to-secondary flex items-center justify-center text-primary-content shadow-lg shadow-primary/20">
             <span className="icon-[tabler--gavel] size-7"></span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
@@ -131,7 +131,7 @@ export default function AuctionDetailPage({
                     {items.length}
                   </span>
                 </h2>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 justify-between">
                   <SortDropdown
                     options={itemSortOptions}
                     currentSort={currentSort}
@@ -163,13 +163,13 @@ export default function AuctionDetailPage({
                   {canCreate && (
                     <Link
                       href={`/auctions/${auction.id}/items/create`}
-                      className="btn btn-primary btn-sm shadow-md shadow-primary/20"
+                      className="btn btn-primary btn-sm shadow-md shadow-primary/20 w-full sm:w-auto"
                     >
                       <span className="icon-[tabler--plus] size-4"></span>
-                      <span className="hidden sm:inline">
+                      <span className="hidden sm:inline ">
                         {t("sidebar.addItem")}
                       </span>
-                      <span className="sm:hidden">{tCommon("create")}</span>
+                      <span className="sm:hidden ">{tCommon("create")}</span>
                     </Link>
                   )}
                 </div>

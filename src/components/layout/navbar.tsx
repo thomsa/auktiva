@@ -77,20 +77,23 @@ export function Navbar({ user }: NavbarProps) {
           <div className="hidden md:flex items-center gap-1">
             <Link
               href="/dashboard"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10"
+              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
             >
+              <span className="icon-[tabler--layout-dashboard] size-4"></span>
               {t("dashboard")}
             </Link>
             <Link
-              href="/auctions/create"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10"
+              href="/listings"
+              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
             >
-              {t("createAuction")}
+              <span className="icon-[tabler--tag] size-4"></span>
+              {t("myListings")}
             </Link>
             <Link
               href="/history"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10"
+              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
             >
+              <span className="icon-[tabler--gavel] size-4"></span>
               {t("myBids")}
             </Link>
           </div>

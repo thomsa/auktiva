@@ -74,8 +74,15 @@
       "endNowSuccess": "Licytacja przedmiotu zakończona pomyślnie",
       "updateFailed": "Nie udało się zaktualizować przedmiotu",
       "deleteFailed": "Nie udało się usunąć przedmiotu",
-      "endFailed": "Nie udało się zakończyć przedmiotu"
+      "endFailed": "Nie udało się zakończyć przedmiotu",
+      "cannotChangeCurrency": "Nie można zmienić waluty po złożeniu ofert",
+      "cannotChangeStartingBid": "Nie można zmienić ceny wywoławczej po złożeniu ofert",
+      "itemsEndWithAuction": "Przedmioty kończą się wraz z aukcją",
+      "itemsNoEndDate": "Przedmioty nie mają daty zakończenia",
+      "auctionSetting": "(ustawienie aukcji)"
     },
+    "yourListing": "Twój przedmiot",
+    "listedBy": "Wystawione przez",
     "gallery": {
       "imageOf": "Zdjęcie {current} z {total}",
       "previousImage": "Poprzednie zdjęcie",

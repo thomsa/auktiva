@@ -74,8 +74,15 @@
       "endNowSuccess": "Ofertas del artículo finalizadas con éxito",
       "updateFailed": "Error al actualizar el artículo",
       "deleteFailed": "Error al eliminar el artículo",
-      "endFailed": "Error al finalizar el artículo"
+      "endFailed": "Error al finalizar el artículo",
+      "cannotChangeCurrency": "No se puede cambiar la moneda después de recibir ofertas",
+      "cannotChangeStartingBid": "No se puede cambiar la puja inicial después de recibir ofertas",
+      "itemsEndWithAuction": "Los artículos terminan cuando termina la subasta",
+      "itemsNoEndDate": "Los artículos no tienen fecha de finalización",
+      "auctionSetting": "(configuración de subasta)"
     },
+    "yourListing": "Tu artículo",
+    "listedBy": "Listado por",
     "gallery": {
       "imageOf": "Imagen {current} de {total}",
       "previousImage": "Imagen anterior",

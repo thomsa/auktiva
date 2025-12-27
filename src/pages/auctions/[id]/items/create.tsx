@@ -305,7 +305,7 @@ export default function CreateItemPage({
                               {tAuction("create.alwaysAnonymous")}
                             </span>
                             <p className="text-xs text-base-content/60">
-                              Hide bidder names for this item
+                              {tAuction("create.hideBidderNamesDescription")}
                             </p>
                           </div>
                         </label>

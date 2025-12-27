@@ -713,12 +713,12 @@ export default function SettingsPage({
 
           <div className="space-y-2 mt-2 divide-y divide-base-content/5">
             <div className="form-control py-3">
-              <label className="label cursor-pointer justify-between gap-4 p-0">
-                <div className="flex-1 min-w-0 break-words">
+              <label className="label cursor-pointer p-0 flex items-start gap-4">
+                <div className="flex-1 min-w-0">
                   <span className="label-text font-bold text-base block mb-1">
                     {t("emailNotifications.newItemNotifications")}
                   </span>
-                  <p className="text-sm text-base-content/60 leading-tight">
+                  <p className="text-sm text-base-content/60 leading-tight text-wrap">
                     {t("emailNotifications.newItemDescription")}
                   </p>
                 </div>
@@ -735,12 +735,12 @@ export default function SettingsPage({
             </div>
 
             <div className="form-control py-3 pt-5">
-              <label className="label cursor-pointer justify-between gap-4 p-0">
-                <div className="flex-1 min-w-0 break-words">
+              <label className="label cursor-pointer p-0 flex items-start gap-4">
+                <div className="flex-1 min-w-0">
                   <span className="label-text font-bold text-base block mb-1">
                     {t("emailNotifications.outbidNotifications")}
                   </span>
-                  <p className="text-sm text-base-content/60 leading-tight">
+                  <p className="text-sm text-base-content/60 leading-tight text-wrap">
                     {t("emailNotifications.outbidDescription")}
                   </p>
                 </div>
@@ -795,7 +795,7 @@ export default function SettingsPage({
 
           <div className="form-control mt-2">
             <label className="label">
-              <span className="label-text font-medium">
+              <span className="label-text font-medium mb-2 bold">
                 {t("appearance.themePreference")}
               </span>
             </label>
