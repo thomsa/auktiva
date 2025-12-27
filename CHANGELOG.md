@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.4.1] - 2025-12-27
+
+### ⚙️ Miscellaneous
+
+- Replace git deployment config with ignore command for version tags by @thomsa
+
 ## [1.4.0] - 2025-12-27
 
 ### 🚀 Features
