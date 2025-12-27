@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.6.0] - 2025-12-27
+
+### 🚀 Features
+
+- Add skeleton loading states for all major pages by @thomsa
+
 ## [1.5.0] - 2025-12-27
 
 ### ⚙️ Miscellaneous
