@@ -31,7 +31,7 @@ export const deleteAccountSchema = z.object({
       z.object({
         auctionId: z.string(),
         newOwnerEmail: z.string().email(),
-      })
+      }),
     )
     .optional(),
   deleteAuctions: z.array(z.string()).optional(),
@@ -61,7 +61,7 @@ export const updateProfile: ApiHandler = async (req, res, ctx) => {
   const { validatedBody } = req as ValidatedRequest<UpdateProfileBody>;
   const profile = await userService.updateUserProfile(
     ctx.session!.user.id,
-    validatedBody
+    validatedBody,
   );
   res.status(200).json(profile);
 };
@@ -74,7 +74,7 @@ export const updatePassword: ApiHandler = async (req, res, ctx) => {
 
   const result = await userService.updateUserPassword(
     ctx.session!.user.id,
-    validatedBody
+    validatedBody,
   );
 
   if (!result.success) {
@@ -89,7 +89,7 @@ export const updatePassword: ApiHandler = async (req, res, ctx) => {
  */
 export const getSettings: ApiHandler = async (_req, res, ctx) => {
   const settings = await userService.getUserSettingsWithDefaults(
-    ctx.session!.user.id
+    ctx.session!.user.id,
   );
   res.status(200).json(settings);
 };
@@ -101,7 +101,7 @@ export const updateSettings: ApiHandler = async (req, res, ctx) => {
   const { validatedBody } = req as ValidatedRequest<UpdateSettingsBody>;
   const settings = await userService.updateUserSettings(
     ctx.session!.user.id,
-    validatedBody
+    validatedBody,
   );
   res.status(200).json(settings);
 };
@@ -134,7 +134,7 @@ export const deleteAccount: ApiHandler = async (req, res, ctx) => {
   const result = await userService.deleteUserAccount(
     ctx.session!.user.id,
     ctx.session!.user.email,
-    validatedBody
+    validatedBody,
   );
 
   if (!result.success) {

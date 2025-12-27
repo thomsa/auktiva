@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Navbar } from "@/components/layout/navbar";
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 
 interface User {
   id: string;
@@ -12,6 +13,7 @@ interface PageLayoutProps {
   children: ReactNode;
   className?: string;
   maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "4xl" | "full";
+  hideBottomNav?: boolean;
 }
 
 const maxWidthClasses = {
@@ -29,6 +31,7 @@ export function PageLayout({
   children,
   className = "",
   maxWidth = "full",
+  hideBottomNav = false,
 }: PageLayoutProps) {
   return (
     <div className="min-h-screen bg-base-100 flex flex-col relative overflow-x-hidden selection:bg-primary/20">
@@ -41,10 +44,13 @@ export function PageLayout({
       <Navbar user={user} />
 
       <main
-        className={`relative z-10 container mx-auto px-4 py-8 pb-12 flex-1 ${maxWidthClasses[maxWidth]} ${className}`}
+        className={`relative z-10 container mx-auto px-4 py-8 pb-24 md:pb-12 flex-1 ${maxWidthClasses[maxWidth]} ${className}`}
       >
         {children}
       </main>
+
+      {/* Mobile Bottom Navigation */}
+      {!hideBottomNav && <MobileBottomNav />}
     </div>
   );
 }

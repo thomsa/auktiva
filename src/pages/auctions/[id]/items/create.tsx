@@ -348,17 +348,17 @@ export default function CreateItemPage({
 
                 {/* Submit */}
                 <div className="divider opacity-50"></div>
-                <div className="flex gap-4 pt-4">
+                <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
                   <Link
                     href={`/auctions/${auction.id}`}
-                    className="btn btn-ghost flex-1"
+                    className="btn btn-ghost w-full sm:flex-1"
                   >
                     {tCommon("cancel")}
                   </Link>
                   <Button
                     type="submit"
                     variant="primary"
-                    className="flex-1 shadow-lg shadow-primary/20"
+                    className="w-full sm:flex-1 shadow-lg shadow-primary/20"
                     isLoading={isLoading}
                     loadingText={t("submitting")}
                     icon={
@@ -394,10 +394,10 @@ export default function CreateItemPage({
               />
 
               <div className="divider opacity-50 mt-8"></div>
-              <div className="flex gap-4 pt-4">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
                 <button
                   type="button"
-                  className="btn btn-ghost flex-1"
+                  className="btn btn-ghost w-full sm:flex-1"
                   onClick={handleSkipImages}
                 >
                   {t("skipImages")}
@@ -405,7 +405,7 @@ export default function CreateItemPage({
                 <Button
                   type="button"
                   variant="primary"
-                  className="flex-1 shadow-lg shadow-primary/20"
+                  className="w-full sm:flex-1 shadow-lg shadow-primary/20"
                   onClick={handleFinish}
                   icon={<span className="icon-[tabler--check] size-5"></span>}
                 >

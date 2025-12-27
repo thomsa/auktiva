@@ -113,10 +113,10 @@ export function ItemListItem({
                 {bidStatus === "winning"
                   ? t("status.winning")
                   : bidStatus === "won"
-                  ? t("status.won")
-                  : bidStatus === "outbid"
-                  ? t("status.outbid")
-                  : t("status.lost")}
+                    ? t("status.won")
+                    : bidStatus === "outbid"
+                      ? t("status.outbid")
+                      : t("status.lost")}
               </div>
             )}
           </div>
@@ -142,8 +142,8 @@ export function ItemListItem({
               bidStatus === "winning" || bidStatus === "won"
                 ? "text-success"
                 : bidStatus === "outbid"
-                ? "text-warning"
-                : "text-primary"
+                  ? "text-warning"
+                  : "text-primary"
             }`}
           >
             {item.currentBid !== null

@@ -16,7 +16,7 @@ interface UpdateResponse {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<UpdateResponse>
+  res: NextApiResponse<UpdateResponse>,
 ) {
   updateLogger.info({ method: req.method }, "Update request received");
 
@@ -47,14 +47,14 @@ export default async function handler(
   if (!isAdmin) {
     updateLogger.warn(
       { email: session.user.email },
-      "Non-admin user attempted update"
+      "Non-admin user attempted update",
     );
     return res.status(403).json({ success: false });
   }
 
   updateLogger.info(
     { email: session.user.email },
-    "User verified as deployment admin"
+    "User verified as deployment admin",
   );
 
   // Look for update script
@@ -63,7 +63,7 @@ export default async function handler(
 
   updateLogger.info(
     { projectRoot, updateScriptPath },
-    "Looking for update script"
+    "Looking for update script",
   );
 
   // Check if update script exists
@@ -83,7 +83,7 @@ export default async function handler(
     // The script should handle: git pull, npm install, build, and restart
     updateLogger.info(
       { script: updateScriptPath, timeout: "5 minutes" },
-      "Starting update script execution"
+      "Starting update script execution",
     );
 
     const { stdout, stderr } = await execAsync(`bash ${updateScriptPath}`, {
@@ -114,7 +114,7 @@ export default async function handler(
         stdout: execError.stdout,
         stderr: execError.stderr,
       },
-      "Update script failed"
+      "Update script failed",
     );
   }
 }

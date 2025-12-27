@@ -29,7 +29,7 @@ export async function getSystemSettings(): Promise<SystemSettings> {
  * Update system settings
  */
 export async function updateSystemSettings(
-  data: Partial<SystemSettings>
+  data: Partial<SystemSettings>,
 ): Promise<SystemSettings> {
   const settings = await prisma.systemSettings.upsert({
     where: { id: "system" },

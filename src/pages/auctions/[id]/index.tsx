@@ -84,14 +84,14 @@ export default function AuctionDetailPage({
 
   const sortedItems = useMemo(
     () => sortItems(items, currentSort),
-    [items, currentSort]
+    [items, currentSort],
   );
 
   const setViewMode = (mode: "grid" | "list") => {
     router.push(
       { pathname: router.pathname, query: { ...router.query, view: mode } },
       undefined,
-      { shallow: true }
+      { shallow: true },
     );
   };
 
@@ -262,7 +262,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // Get membership check
   let membership = await auctionService.getUserMembership(
     auctionId,
-    session.user.id
+    session.user.id,
   );
 
   // If not a member, check if this is an OPEN or LINK auction
@@ -271,7 +271,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       // Auto-join the user to the open/link auction
       membership = await auctionService.autoJoinAuction(
         auctionId,
-        session.user.id
+        session.user.id,
       );
     } else {
       // Not a member and not an open/link auction - redirect
@@ -287,7 +287,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // Get items for list page
   const items = await itemService.getAuctionItemsForListPage(
     auctionId,
-    session.user.id
+    session.user.id,
   );
 
   return {

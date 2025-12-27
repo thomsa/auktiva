@@ -79,10 +79,10 @@ export default function SettingsPage({
 
   // Email notification settings
   const [emailOnNewItem, setEmailOnNewItem] = useState(
-    initialSettings.emailOnNewItem
+    initialSettings.emailOnNewItem,
   );
   const [emailOnOutbid, setEmailOnOutbid] = useState(
-    initialSettings.emailOnOutbid
+    initialSettings.emailOnOutbid,
   );
   const [emailSettingsLoading, setEmailSettingsLoading] = useState(false);
   const [emailSettingsSuccess, setEmailSettingsSuccess] = useState<
@@ -91,10 +91,10 @@ export default function SettingsPage({
 
   // Deployment admin state
   const [isDeploymentAdmin, setIsDeploymentAdmin] = useState(
-    initialIsDeploymentAdmin
+    initialIsDeploymentAdmin,
   );
   const [hasDeploymentAdmin, setHasDeploymentAdmin] = useState(
-    initialHasDeploymentAdmin
+    initialHasDeploymentAdmin,
   );
   const [deploymentAdminLoading, setDeploymentAdminLoading] = useState(false);
   const [deploymentAdminError, setDeploymentAdminError] = useState<
@@ -135,7 +135,7 @@ export default function SettingsPage({
           (data.ownedAuctions || []).forEach(
             (auction: { id: string; name: string }) => {
               actions[auction.id] = { action: "delete" };
-            }
+            },
           );
           setAuctionActions(actions);
         })
@@ -163,7 +163,7 @@ export default function SettingsPage({
 
   const handleAuctionActionChange = (
     auctionId: string,
-    action: "transfer" | "delete"
+    action: "transfer" | "delete",
   ) => {
     setAuctionActions((prev) => ({
       ...prev,
@@ -173,7 +173,7 @@ export default function SettingsPage({
 
   const handleAuctionTransferEmailChange = (
     auctionId: string,
-    email: string
+    email: string,
   ) => {
     setAuctionActions((prev) => ({
       ...prev,
@@ -190,7 +190,7 @@ export default function SettingsPage({
       const action = auctionActions[auction.id];
       if (action?.action === "transfer" && !action.email?.trim()) {
         setDeleteError(
-          t("deleteAccount.enterTransferEmail", { auction: auction.name })
+          t("deleteAccount.enterTransferEmail", { auction: auction.name }),
         );
         setDeleteLoading(false);
         return;
@@ -273,7 +273,7 @@ export default function SettingsPage({
 
   const handleEmailSettingChange = async (
     setting: "emailOnNewItem" | "emailOnOutbid",
-    value: boolean
+    value: boolean,
   ) => {
     if (setting === "emailOnNewItem") {
       setEmailOnNewItem(value);
@@ -364,7 +364,7 @@ export default function SettingsPage({
 
       if (!res.ok) {
         setPasswordError(
-          result.message || tErrors("profile.passwordChangeFailed")
+          result.message || tErrors("profile.passwordChangeFailed"),
         );
       } else {
         setPasswordSuccess(t("password.passwordChanged"));
@@ -533,7 +533,7 @@ export default function SettingsPage({
                 icon={
                   <span className="icon-[tabler--device-floppy] size-5"></span>
                 }
-                className="shadow-lg shadow-primary/20"
+                className="w-full sm:w-auto shadow-lg shadow-primary/20"
               >
                 {t("profile.saveProfile")}
               </Button>
@@ -555,9 +555,9 @@ export default function SettingsPage({
 
             <div className="space-y-3 mt-2">
               {/* Google Account */}
-              <div className="flex items-center justify-between p-4 rounded-xl bg-base-200/50 border border-base-content/5">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-sm">
+              <div className="flex items-center justify-between gap-3 p-4 rounded-xl bg-base-200/50 border border-base-content/5">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0">
                     <svg className="size-5" viewBox="0 0 24 24">
                       <path
                         fill="#4285F4"
@@ -577,11 +577,11 @@ export default function SettingsPage({
                       />
                     </svg>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="font-medium">Google</p>
-                    <p className="text-sm text-base-content/60">
+                    <p className="text-sm text-base-content/60 truncate">
                       {connectedAccounts.some(
-                        (acc) => acc.provider === "google"
+                        (acc) => acc.provider === "google",
                       )
                         ? t("connectedAccounts.connected")
                         : t("connectedAccounts.notConnected")}
@@ -589,12 +589,12 @@ export default function SettingsPage({
                   </div>
                 </div>
                 {connectedAccounts.some((acc) => acc.provider === "google") ? (
-                  <span className="badge badge-success gap-1">
+                  <span className="badge badge-success gap-1 shrink-0">
                     <span className="icon-[tabler--check] size-3"></span>
                     {t("connectedAccounts.connected")}
                   </span>
                 ) : (
-                  <span className="badge badge-ghost">
+                  <span className="badge badge-ghost shrink-0">
                     {t("connectedAccounts.notConnected")}
                   </span>
                 )}
@@ -681,6 +681,7 @@ export default function SettingsPage({
                 <Button
                   type="submit"
                   buttonStyle="outline"
+                  className="w-full sm:w-auto"
                   isLoading={passwordLoading}
                   loadingText={t("password.changing")}
                   icon={<span className="icon-[tabler--key] size-5"></span>}
@@ -713,7 +714,7 @@ export default function SettingsPage({
           <div className="space-y-2 mt-2 divide-y divide-base-content/5">
             <div className="form-control py-3">
               <label className="label cursor-pointer justify-between gap-4 p-0">
-                <div className="flex-1">
+                <div className="flex-1 min-w-0 break-words">
                   <span className="label-text font-bold text-base block mb-1">
                     {t("emailNotifications.newItemNotifications")}
                   </span>
@@ -727,7 +728,7 @@ export default function SettingsPage({
                   onChange={(e) =>
                     handleEmailSettingChange("emailOnNewItem", e.target.checked)
                   }
-                  className="toggle toggle-primary toggle-lg"
+                  className="toggle toggle-primary toggle-lg shrink-0"
                   disabled={emailSettingsLoading}
                 />
               </label>
@@ -735,7 +736,7 @@ export default function SettingsPage({
 
             <div className="form-control py-3 pt-5">
               <label className="label cursor-pointer justify-between gap-4 p-0">
-                <div className="flex-1">
+                <div className="flex-1 min-w-0 break-words">
                   <span className="label-text font-bold text-base block mb-1">
                     {t("emailNotifications.outbidNotifications")}
                   </span>
@@ -749,7 +750,7 @@ export default function SettingsPage({
                   onChange={(e) =>
                     handleEmailSettingChange("emailOnOutbid", e.target.checked)
                   }
-                  className="toggle toggle-primary toggle-lg"
+                  className="toggle toggle-primary toggle-lg shrink-0"
                   disabled={emailSettingsLoading}
                 />
               </label>
@@ -869,8 +870,8 @@ export default function SettingsPage({
             {isDeploymentAdmin ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3 p-4 rounded-xl bg-success/10 border border-success/20">
-                  <span className="icon-[tabler--shield-check] size-6 text-success"></span>
-                  <div>
+                  <span className="icon-[tabler--shield-check] size-6 text-success shrink-0"></span>
+                  <div className="min-w-0">
                     <p className="font-medium text-success">
                       {t("deploymentAdmin.youAreAdmin")}
                     </p>
@@ -948,17 +949,18 @@ export default function SettingsPage({
                   <p className="text-sm text-base-content/60 mb-3">
                     {t("deploymentAdmin.transferDescription")}
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="email"
                       value={transferEmail}
                       onChange={(e) => setTransferEmail(e.target.value)}
                       placeholder={t("deploymentAdmin.emailPlaceholder")}
-                      className="input input-bordered flex-1 min-w-0"
+                      className="input input-bordered w-full sm:flex-1 sm:min-w-0"
                     />
                     <Button
                       onClick={handleTransferDeploymentAdmin}
                       buttonStyle="outline"
+                      className="w-full sm:w-auto"
                       isLoading={deploymentAdminLoading}
                       loadingText={t("deploymentAdmin.transferring")}
                       icon={
@@ -972,8 +974,8 @@ export default function SettingsPage({
               </div>
             ) : hasDeploymentAdmin ? (
               <div className="flex items-center gap-3 p-4 rounded-xl bg-base-200/50 border border-base-content/5">
-                <span className="icon-[tabler--shield-lock] size-6 text-base-content/50"></span>
-                <div>
+                <span className="icon-[tabler--shield-lock] size-6 text-base-content/50 shrink-0"></span>
+                <div className="min-w-0">
                   <p className="font-medium">
                     {t("deploymentAdmin.adminAlreadySet")}
                   </p>
@@ -985,8 +987,8 @@ export default function SettingsPage({
             ) : (
               <div className="space-y-4">
                 <div className="flex items-center gap-3 p-4 rounded-xl bg-warning/10 border border-warning/20">
-                  <span className="icon-[tabler--alert-triangle] size-6 text-warning"></span>
-                  <div>
+                  <span className="icon-[tabler--alert-triangle] size-6 text-warning shrink-0"></span>
+                  <div className="min-w-0">
                     <p className="font-medium text-warning">
                       {t("deploymentAdmin.noAdminSet")}
                     </p>
@@ -1003,7 +1005,7 @@ export default function SettingsPage({
                   icon={
                     <span className="icon-[tabler--shield-plus] size-5"></span>
                   }
-                  className="shadow-lg shadow-primary/20"
+                  className="w-full sm:w-auto shadow-lg shadow-primary/20"
                 >
                   {t("deploymentAdmin.becomeAdmin")}
                 </Button>
@@ -1028,8 +1030,8 @@ export default function SettingsPage({
           </p>
 
           <div className="flex items-center gap-3 p-4 rounded-xl bg-error/5 border border-error/10">
-            <span className="icon-[tabler--alert-triangle] size-6 text-error"></span>
-            <div>
+            <span className="icon-[tabler--alert-triangle] size-6 text-error shrink-0"></span>
+            <div className="min-w-0">
               <p className="font-medium text-error">
                 {t("deleteAccount.warning")}
               </p>
@@ -1044,6 +1046,7 @@ export default function SettingsPage({
               onClick={handleOpenDeleteModal}
               variant="error"
               buttonStyle="outline"
+              className="w-full sm:w-auto"
               icon={<span className="icon-[tabler--trash] size-5"></span>}
             >
               {t("deleteAccount.deleteButton")}
@@ -1132,7 +1135,7 @@ export default function SettingsPage({
                           onChange={(e) =>
                             handleAuctionTransferEmailChange(
                               auction.id,
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -1178,10 +1181,11 @@ export default function SettingsPage({
               </div>
             </div>
 
-            <div className="modal-action">
+            <div className="modal-action flex-col-reverse sm:flex-row gap-2">
               <Button
                 onClick={handleCloseDeleteModal}
                 buttonStyle="ghost"
+                className="w-full sm:w-auto"
                 disabled={deleteLoading}
               >
                 {t("deleteAccount.cancel")}
@@ -1189,6 +1193,7 @@ export default function SettingsPage({
               <Button
                 onClick={handleDeleteAccount}
                 variant="error"
+                className="w-full sm:w-auto"
                 isLoading={deleteLoading}
                 loadingText={t("deleteAccount.deleting")}
                 icon={<span className="icon-[tabler--trash] size-5"></span>}
@@ -1235,7 +1240,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   // Get connected OAuth accounts
   const connectedAccounts = await userService.getUserConnectedAccounts(
-    session.user.id
+    session.user.id,
   );
 
   // Check if user has a password (for OAuth-only users)
@@ -1255,7 +1260,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let versionInfo: VersionInfo | null = null;
   settingsLogger.debug(
     { isDeploymentAdmin },
-    "Checking deployment admin status"
+    "Checking deployment admin status",
   );
   if (isDeploymentAdmin) {
     try {
@@ -1263,7 +1268,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       const currentVersion = packageJson.version;
       settingsLogger.debug(
         { currentVersion },
-        "Current version from package.json"
+        "Current version from package.json",
       );
 
       // Fetch latest version from GitHub
@@ -1274,7 +1279,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             Accept: "application/vnd.github.v3+json",
             "User-Agent": "Auktiva",
           },
-        }
+        },
       );
 
       settingsLogger.debug({ status: response.status }, "GitHub API response");
@@ -1287,7 +1292,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
         settingsLogger.debug(
           { latestVersion, updateAvailable },
-          "Version check result"
+          "Version check result",
         );
 
         versionInfo = {

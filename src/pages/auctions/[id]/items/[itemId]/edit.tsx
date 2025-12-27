@@ -7,12 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import * as auctionService from "@/lib/services/auction.service";
 import * as itemService from "@/lib/services/item.service";
-import {
-  PageLayout,
-  BackLink,
-  AlertMessage,
-  ConfirmDialog,
-} from "@/components/common";
+import { PageLayout, BackLink, ConfirmDialog } from "@/components/common";
 import { ImageUpload } from "@/components/upload/image-upload";
 import { Button } from "@/components/ui/button";
 import { useConfirmDialog } from "@/hooks/ui";
@@ -441,17 +436,17 @@ export default function EditItemPage({
 
             {/* Submit */}
             <div className="divider opacity-50"></div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
               <Link
                 href={`/auctions/${auction.id}/items/${item.id}`}
-                className="btn btn-ghost flex-1"
+                className="btn btn-ghost w-full sm:flex-1"
               >
                 {tCommon("cancel")}
               </Link>
               <Button
                 type="submit"
                 variant="primary"
-                className="flex-1 shadow-lg shadow-primary/20"
+                className="w-full sm:flex-1 shadow-lg shadow-primary/20"
                 isLoading={isLoading}
                 loadingText={t("saving")}
                 icon={

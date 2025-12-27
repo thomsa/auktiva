@@ -21,12 +21,9 @@ export const getSettings: ApiHandler = async (req, res, ctx) => {
   // Disable on hosted deployments
   const isHosted = !!process.env.VERCEL || process.env.HOSTED === "true";
   if (isHosted) {
-    return res
-      .status(403)
-      .json({
-        error:
-          "Deployment administration is not available on hosted deployments",
-      });
+    return res.status(403).json({
+      error: "Deployment administration is not available on hosted deployments",
+    });
   }
 
   const userEmail = ctx.session?.user?.email;
@@ -58,12 +55,9 @@ export const updateSettings: ApiHandler = async (req, res, ctx) => {
   // Disable on hosted deployments
   const isHosted = !!process.env.VERCEL || process.env.HOSTED === "true";
   if (isHosted) {
-    return res
-      .status(403)
-      .json({
-        error:
-          "Deployment administration is not available on hosted deployments",
-      });
+    return res.status(403).json({
+      error: "Deployment administration is not available on hosted deployments",
+    });
   }
 
   const userEmail = ctx.session?.user?.email;

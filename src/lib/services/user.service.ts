@@ -65,7 +65,7 @@ export async function getUserById(userId: string): Promise<User | null> {
  * Get user's connected OAuth accounts
  */
 export async function getUserConnectedAccounts(
-  userId: string
+  userId: string,
 ): Promise<{ provider: string; providerAccountId: string }[]> {
   const accounts = await prisma.account.findMany({
     where: { userId },
@@ -91,7 +91,7 @@ export async function userHasPassword(userId: string): Promise<boolean> {
  * Get user profile
  */
 export async function getUserProfile(
-  userId: string
+  userId: string,
 ): Promise<UserProfile | null> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -105,7 +105,7 @@ export async function getUserProfile(
  * Get user settings
  */
 export async function getUserSettings(
-  userId: string
+  userId: string,
 ): Promise<UserSettings | null> {
   return prisma.userSettings.findUnique({
     where: { userId },
@@ -135,7 +135,7 @@ export async function getUserSettingsWithDefaults(userId: string): Promise<{
  * Get or create user settings
  */
 export async function getOrCreateUserSettings(
-  userId: string
+  userId: string,
 ): Promise<UserSettings> {
   let settings = await prisma.userSettings.findUnique({
     where: { userId },
@@ -159,7 +159,7 @@ export async function getOrCreateUserSettings(
  */
 export async function updateUserProfile(
   userId: string,
-  input: UpdateProfileInput
+  input: UpdateProfileInput,
 ): Promise<UserProfile> {
   const user = await prisma.user.update({
     where: { id: userId },
@@ -177,7 +177,7 @@ export async function updateUserProfile(
  */
 export async function updateUserPassword(
   userId: string,
-  input: UpdatePasswordInput
+  input: UpdatePasswordInput,
 ): Promise<{ success: boolean; error?: string }> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -192,7 +192,7 @@ export async function updateUserPassword(
 
   const isValid = await bcrypt.compare(
     input.currentPassword,
-    user.passwordHash
+    user.passwordHash,
   );
   if (!isValid) {
     return { success: false, error: "Current password is incorrect" };
@@ -213,7 +213,7 @@ export async function updateUserPassword(
  */
 export async function updateUserSettings(
   userId: string,
-  input: UpdateSettingsInput
+  input: UpdateSettingsInput,
 ): Promise<UserSettings> {
   return prisma.userSettings.upsert({
     where: { userId },
@@ -245,7 +245,7 @@ export async function updateUserSettings(
  * Get auctions where user is the OWNER
  */
 export async function getUserOwnedAuctions(
-  userId: string
+  userId: string,
 ): Promise<{ id: string; name: string }[]> {
   const memberships = await prisma.auctionMember.findMany({
     where: {
@@ -275,7 +275,7 @@ export async function getUserOwnedAuctions(
 export async function deleteUserAccount(
   userId: string,
   userEmail: string,
-  input: DeleteAccountInput
+  input: DeleteAccountInput,
 ): Promise<DeleteAccountResult> {
   // 1. Check if user is deployment admin - must transfer first
   const isAdmin = await systemService.isDeploymentAdmin(userEmail);
@@ -335,13 +335,13 @@ export async function deleteUserAccount(
 
   if (ownedAuctions.length > 0) {
     const transferIds = new Set(
-      input.auctionTransfers?.map((t) => t.auctionId) || []
+      input.auctionTransfers?.map((t) => t.auctionId) || [],
     );
     const deleteIds = new Set(input.deleteAuctions || []);
 
     // Check all owned auctions are accounted for
     const unhandledAuctions = ownedAuctions.filter(
-      (a) => !transferIds.has(a.id) && !deleteIds.has(a.id)
+      (a) => !transferIds.has(a.id) && !deleteIds.has(a.id),
     );
 
     if (unhandledAuctions.length > 0) {

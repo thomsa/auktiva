@@ -41,7 +41,7 @@ async function getLatestRelease(): Promise<GitHubRelease | null> {
           Accept: "application/vnd.github.v3+json",
           "User-Agent": "Auktiva-Version-Check",
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -79,7 +79,7 @@ function compareVersions(current: string, latest: string): boolean {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<VersionResponse>
+  res: NextApiResponse<VersionResponse>,
 ) {
   if (req.method !== "GET") {
     res.setHeader("Allow", ["GET"]);
