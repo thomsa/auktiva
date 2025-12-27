@@ -35,7 +35,8 @@ yarn-error.log*
 !.env.example
 
 # vercel
-.vercel
+.vercel/*
+!.vercel/scripts
 
 # typescript
 *.tsbuildinfo
