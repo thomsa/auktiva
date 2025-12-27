@@ -6,8 +6,7 @@ import { MobileNotificationSheet } from "@/components/notifications/mobile-notif
 import packageJson from "../../../package.json";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher";
+import { useNotifications } from "@/contexts/NotificationContext";
 
 interface NavbarProps {
   user: {
@@ -15,11 +14,6 @@ interface NavbarProps {
     name?: string | null;
     email?: string | null;
   };
-}
-
-interface NotificationsResponse {
-  notifications: unknown[];
-  unreadCount: number;
 }
 
 export function Navbar({ user }: NavbarProps) {
@@ -30,13 +24,7 @@ export function Navbar({ user }: NavbarProps) {
   const [mounted, setMounted] = useState(false);
   const [mobileNotificationsOpen, setMobileNotificationsOpen] = useState(false);
 
-  // Fetch unread count for mobile bell
-  const { data: notificationData } = useSWR<NotificationsResponse>(
-    "/api/notifications?limit=1",
-    fetcher,
-    { refreshInterval: 30000 },
-  );
-  const unreadCount = notificationData?.unreadCount ?? 0;
+  const { unreadCount } = useNotifications();
 
   useEffect(() => {
     // This is an intentional hydration pattern to prevent SSR mismatch

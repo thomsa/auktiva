@@ -1,25 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import useSWR from "swr";
 import { useTranslations } from "next-intl";
-import { fetcher } from "@/lib/fetcher";
-
-interface Notification {
-  id: string;
-  type: string;
-  title: string;
-  message: string;
-  imageUrl: string | null;
-  auctionId: string | null;
-  itemId: string | null;
-  read: boolean;
-  createdAt: string;
-}
-
-interface NotificationsResponse {
-  notifications: Notification[];
-  unreadCount: number;
-}
+import { useNotifications, type Notification } from "@/contexts/NotificationContext";
 
 export function NotificationBell() {
   const t = useTranslations("notifications");
@@ -29,15 +11,7 @@ export function NotificationBell() {
   const [activeTab, setActiveTab] = useState<"new" | "read">("new");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch notifications with SWR (auto-refresh every 30 seconds)
-  const { data, mutate } = useSWR<NotificationsResponse>(
-    "/api/notifications?limit=20",
-    fetcher,
-    { refreshInterval: 30000 },
-  );
-
-  const notifications = data?.notifications ?? [];
-  const unreadCount = data?.unreadCount ?? 0;
+  const { notifications, unreadCount, markAsRead: contextMarkAsRead, markAllAsRead: contextMarkAllAsRead } = useNotifications();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -60,53 +34,18 @@ export function NotificationBell() {
   }, [isOpen]);
 
   const markAsRead = async (id: string) => {
-    // Optimistic update
-    mutate(
-      (current) =>
-        current
-          ? {
-              ...current,
-              notifications: current.notifications.map((n) =>
-                n.id === id ? { ...n, read: true } : n,
-              ),
-              unreadCount: Math.max(0, current.unreadCount - 1),
-            }
-          : current,
-      false,
-    );
-
     try {
-      await fetch(`/api/notifications/${id}`, { method: "PATCH" });
-      mutate(); // Revalidate
+      await contextMarkAsRead(id);
     } catch (err) {
       console.error(tErrors("generic"), err);
-      mutate(); // Revert on error
     }
   };
 
   const markAllAsRead = async () => {
-    // Optimistic update
-    mutate(
-      (current) =>
-        current
-          ? {
-              ...current,
-              notifications: current.notifications.map((n) => ({
-                ...n,
-                read: true,
-              })),
-              unreadCount: 0,
-            }
-          : current,
-      false,
-    );
-
     try {
-      await fetch("/api/notifications/read-all", { method: "POST" });
-      mutate(); // Revalidate
+      await contextMarkAllAsRead();
     } catch (err) {
       console.error(tErrors("generic"), err);
-      mutate(); // Revert on error
     }
   };
 

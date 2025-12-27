@@ -2,26 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import useSWR from "swr";
 import { useTranslations } from "next-intl";
-import { fetcher } from "@/lib/fetcher";
-
-interface Notification {
-  id: string;
-  type: string;
-  title: string;
-  message: string;
-  imageUrl: string | null;
-  auctionId: string | null;
-  itemId: string | null;
-  read: boolean;
-  createdAt: string;
-}
-
-interface NotificationsResponse {
-  notifications: Notification[];
-  unreadCount: number;
-}
+import { useNotifications, type Notification } from "@/contexts/NotificationContext";
 
 interface MobileNotificationSheetProps {
   isOpen: boolean;
@@ -37,14 +19,7 @@ export function MobileNotificationSheet({
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"new" | "read">("new");
 
-  const { data, mutate } = useSWR<NotificationsResponse>(
-    "/api/notifications?limit=20",
-    fetcher,
-    { refreshInterval: 30000 },
-  );
-
-  const notifications = data?.notifications ?? [];
-  const unreadCount = data?.unreadCount ?? 0;
+  const { notifications, unreadCount, markAsRead: contextMarkAsRead, markAllAsRead: contextMarkAllAsRead } = useNotifications();
 
   // Prevent body scroll when sheet is open
   useEffect(() => {
@@ -59,51 +34,18 @@ export function MobileNotificationSheet({
   }, [isOpen]);
 
   const markAsRead = async (id: string) => {
-    mutate(
-      (current) =>
-        current
-          ? {
-              ...current,
-              notifications: current.notifications.map((n) =>
-                n.id === id ? { ...n, read: true } : n,
-              ),
-              unreadCount: Math.max(0, current.unreadCount - 1),
-            }
-          : current,
-      false,
-    );
-
     try {
-      await fetch(`/api/notifications/${id}`, { method: "PATCH" });
-      mutate();
+      await contextMarkAsRead(id);
     } catch (err) {
       console.error(tErrors("generic"), err);
-      mutate();
     }
   };
 
   const markAllAsRead = async () => {
-    mutate(
-      (current) =>
-        current
-          ? {
-              ...current,
-              notifications: current.notifications.map((n) => ({
-                ...n,
-                read: true,
-              })),
-              unreadCount: 0,
-            }
-          : current,
-      false,
-    );
-
     try {
-      await fetch("/api/notifications/read-all", { method: "POST" });
-      mutate();
+      await contextMarkAllAsRead();
     } catch (err) {
       console.error(tErrors("generic"), err);
-      mutate();
     }
   };
 
