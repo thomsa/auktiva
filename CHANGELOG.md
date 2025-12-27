@@ -2,6 +2,16 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.6.1] - 2025-12-27
+
+### Scripts
+
+- Add vercel ignore-build script by @thomsa
+
+### 🚀 Features
+
+- Add quick links section to mobile settings page by @thomsa
+
 ## [1.6.0] - 2025-12-27
 
 ### 🚀 Features
