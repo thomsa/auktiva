@@ -2,6 +2,14 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.6.2] - 2025-12-28
+
+### 🚀 Features
+
+- Add item won email notifications and improve email logging by @thomsa
+- Add winner notification tracking and background auction processing by @thomsa
+- Refactor notifications to use centralized NotificationContext by @thomsa
+
 ## [1.6.1] - 2025-12-27
 
 ### Scripts
