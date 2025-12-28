@@ -2,6 +2,38 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.6.6] - 2025-12-28
+
+### 🔧 Refactoring
+
+- Consolidate email queue functions into email service module by @thomsa
+
+## [1.6.5] - 2025-12-28
+
+### 🐛 Bug Fixes
+
+- Convert email border-radius values from rem to px for MJML compatibility by @thomsa
+
+## [1.6.4] - 2025-12-28
+
+### 🐛 Bug Fixes
+
+- Remove unused email handlers import from auth handlers by @thomsa
+
+## [1.6.3] - 2025-12-28
+
+### ⚙️ Miscellaneous
+
+- Reduce email processing cron frequency from every minute to daily by @thomsa
+
+## [1.6.2] - 2025-12-28
+
+### 🚀 Features
+
+- Add item won email notifications and improve email logging by @thomsa
+- Add winner notification tracking and background auction processing by @thomsa
+- Refactor notifications to use centralized NotificationContext by @thomsa
+
 ## [1.6.1] - 2025-12-27
 
 ### Scripts
