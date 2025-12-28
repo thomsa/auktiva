@@ -6,4 +6,4 @@ export {
   queueNewItemEmails,
   queueOutbidEmail,
   queueItemWonEmail,
-} from "./queue";
+} from "./service";

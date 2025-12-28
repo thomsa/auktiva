@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { randomBytes, createHash } from "crypto";
 import { hash } from "bcryptjs";
 import { sendEmail } from "@/lib/email/brevo";
-import { queueWelcomeEmail } from "@/lib/email/queue";
+import { queueWelcomeEmail } from "@/lib/email/service";
 import { getPasswordResetTemplateData } from "@/lib/email/templates";
 
 // ============================================================================
@@ -101,12 +101,12 @@ export async function registerUser(input: RegisterInput) {
     },
   });
 
-  // Queue welcome email
-  queueWelcomeEmail({
+  // Queue welcome email (await to ensure it completes on serverless)
+  await queueWelcomeEmail({
     userId: user.id,
     email: user.email,
     name: user.name || "",
-  }).catch(() => {}); // Fire and forget
+  });
 
   return { success: true, user };
 }

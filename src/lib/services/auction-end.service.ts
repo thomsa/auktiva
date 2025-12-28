@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import * as notificationService from "./notification.service";
-import { queueItemWonEmail } from "@/lib/email/queue";
+import { queueItemWonEmail } from "@/lib/email/service";
 import { createLogger } from "@/lib/logger";
 
 const auctionEndLogger = createLogger("auction-end");

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getPublicUrl } from "@/lib/storage";
-import { queueNewItemEmails } from "@/lib/email/queue";
+import { queueNewItemEmails } from "@/lib/email/service";
 import * as notificationService from "./notification.service";
 import type { AuctionItem, AuctionMember } from "@/generated/prisma/client";
 
@@ -674,8 +674,8 @@ export async function createItem(
         : `${appUrl}${item.images[0].url}`
       : null;
 
-  // Queue new item notification emails
-  queueNewItemEmails({
+  // Queue new item notification emails (await to ensure it completes on serverless)
+  await queueNewItemEmails({
     itemId: item.id,
     itemName: item.name,
     itemDescription: item.description,
@@ -683,10 +683,10 @@ export async function createItem(
     auctionId,
     auctionName: auction?.name || "Auction",
     creatorId,
-  }).catch(() => {}); // Fire and forget
+  });
 
   // Send in-app notifications to all auction members (except creator)
-  sendNewItemNotifications(
+  await sendNewItemNotifications(
     auctionId,
     creatorId,
     item.name,

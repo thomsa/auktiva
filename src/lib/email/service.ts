@@ -1,14 +1,15 @@
 /**
- * Email Queue Functions
+ * Email Service Functions
  *
- * These functions queue emails for sending. They create EmailLog entries
- * which are then processed either:
- * - Immediately (fire-and-forget) on non-Vercel environments
- * - By a cron job on Vercel (serverless can't do background processing)
+ * These functions send emails via Brevo. They create EmailLog entries
+ * in the database before sending, which enables:
+ * - Tracking of all sent emails
+ * - Automatic retry of failed emails via cron job
+ * - Audit trail for debugging
  *
  * The sendEmail function in brevo.ts creates the EmailLog entry and attempts
- * to send immediately. On Vercel, if the function times out, the cron job
- * will pick up PENDING/FAILED emails and retry them.
+ * to send immediately. Failed emails are marked as FAILED and can be retried
+ * by the cron job.
  */
 
 import { sendEmail } from "./brevo";
@@ -22,7 +23,7 @@ import {
 } from "./templates";
 import { createLogger } from "@/lib/logger";
 
-const emailQueueLogger = createLogger("email-queue");
+const emailServiceLogger = createLogger("email-service");
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.auktiva.org";
 
 /**
@@ -50,7 +51,7 @@ export async function queueWelcomeEmail(params: {
 }): Promise<boolean> {
   const { userId, email, name } = params;
 
-  emailQueueLogger.info({ email, userId }, "Queueing welcome email");
+  emailServiceLogger.info({ email, userId }, "Queueing welcome email");
 
   try {
     const templateData = getWelcomeTemplateData({
@@ -58,7 +59,7 @@ export async function queueWelcomeEmail(params: {
       appUrl: APP_URL,
     });
 
-    return await sendEmail({
+    const result = await sendEmail({
       to: email,
       toName: name,
       subject: "Welcome to Auktiva! 🎉",
@@ -67,8 +68,13 @@ export async function queueWelcomeEmail(params: {
       type: "WELCOME",
       metadata: { userId },
     });
+    emailServiceLogger.debug(
+      { email, userId, result },
+      "Welcome email queue result",
+    );
+    return result;
   } catch (err) {
-    emailQueueLogger.error(
+    emailServiceLogger.error(
       { err, email, userId },
       "Failed to queue welcome email",
     );
@@ -91,7 +97,7 @@ export async function queueInviteEmail(params: {
   const { inviteId, email, auctionId, auctionName, senderName, token, role } =
     params;
 
-  emailQueueLogger.info(
+  emailServiceLogger.info(
     { email, auctionId, inviteId, role },
     "Queueing invite email",
   );
@@ -105,7 +111,7 @@ export async function queueInviteEmail(params: {
       appUrl: APP_URL,
     });
 
-    return await sendEmail({
+    const result = await sendEmail({
       to: email,
       subject: `You're invited to "${auctionName}" on Auktiva`,
       mjmlTemplate: templateData.template,
@@ -113,8 +119,13 @@ export async function queueInviteEmail(params: {
       type: "INVITE",
       metadata: { inviteId, auctionId },
     });
+    emailServiceLogger.debug(
+      { email, auctionId, inviteId, result },
+      "Invite email queue result",
+    );
+    return result;
   } catch (err) {
-    emailQueueLogger.error(
+    emailServiceLogger.error(
       { err, email, auctionId, inviteId },
       "Failed to queue invite email",
     );
@@ -144,7 +155,7 @@ export async function queueNewItemEmails(params: {
     creatorId,
   } = params;
 
-  emailQueueLogger.info(
+  emailServiceLogger.info(
     { itemId, itemName, auctionId, creatorId },
     "Queueing new item emails",
   );
@@ -175,7 +186,7 @@ export async function queueNewItemEmails(params: {
       (m) => m.user.settings?.emailOnNewItem !== false,
     );
 
-    emailQueueLogger.debug(
+    emailServiceLogger.debug(
       {
         itemId,
         totalMembers: members.length,
@@ -212,21 +223,21 @@ export async function queueNewItemEmails(params: {
         else failed++;
       } catch (memberErr) {
         failed++;
-        emailQueueLogger.error(
+        emailServiceLogger.error(
           { err: memberErr, itemId, memberEmail: member.user.email },
           "Failed to queue new item email to member",
         );
       }
     }
 
-    emailQueueLogger.info(
+    emailServiceLogger.info(
       { itemId, auctionId, sent, failed },
       "Completed queueing new item notifications",
     );
 
     return { sent, failed };
   } catch (err) {
-    emailQueueLogger.error(
+    emailServiceLogger.error(
       { err, itemId, auctionId },
       "Failed to queue new item emails",
     );
@@ -260,7 +271,7 @@ export async function queueOutbidEmail(params: {
     currencySymbol,
   } = params;
 
-  emailQueueLogger.info(
+  emailServiceLogger.info(
     { itemId, auctionId, previousBidderId, newAmount },
     "Queueing outbid email",
   );
@@ -274,7 +285,7 @@ export async function queueOutbidEmail(params: {
 
     // Default is true if no settings exist
     if (userSettings?.emailOnOutbid === false) {
-      emailQueueLogger.debug(
+      emailServiceLogger.debug(
         { itemId, previousBidderId },
         "User has disabled outbid notifications, skipping",
       );
@@ -291,7 +302,7 @@ export async function queueOutbidEmail(params: {
       appUrl: APP_URL,
     });
 
-    return await sendEmail({
+    const result = await sendEmail({
       to: previousBidderEmail,
       toName: previousBidderName,
       subject: `You've been outbid on "${itemName}"`,
@@ -300,8 +311,13 @@ export async function queueOutbidEmail(params: {
       type: "OUTBID",
       metadata: { itemId, auctionId, userId: previousBidderId, newAmount },
     });
+    emailServiceLogger.debug(
+      { itemId, auctionId, previousBidderId, result },
+      "Outbid email queue result",
+    );
+    return result;
   } catch (err) {
-    emailQueueLogger.error(
+    emailServiceLogger.error(
       { err, itemId, auctionId, previousBidderId },
       "Failed to queue outbid email",
     );
@@ -335,7 +351,7 @@ export async function queueItemWonEmail(params: {
     currencySymbol,
   } = params;
 
-  emailQueueLogger.info(
+  emailServiceLogger.info(
     { itemId, auctionId, winnerId, winningAmount },
     "Queueing item won email",
   );
@@ -349,7 +365,7 @@ export async function queueItemWonEmail(params: {
 
     // Default is false for this notification type
     if (userSettings?.emailOnItemWon !== true) {
-      emailQueueLogger.debug(
+      emailServiceLogger.debug(
         { itemId, winnerId },
         "User has not enabled item won notifications, skipping",
       );
@@ -366,7 +382,7 @@ export async function queueItemWonEmail(params: {
       appUrl: APP_URL,
     });
 
-    return await sendEmail({
+    const result = await sendEmail({
       to: winnerEmail,
       toName: winnerName || undefined,
       subject: `Congratulations! You won "${itemName}"`,
@@ -375,8 +391,13 @@ export async function queueItemWonEmail(params: {
       type: "ITEM_WON",
       metadata: { itemId, auctionId, userId: winnerId, winningAmount },
     });
+    emailServiceLogger.debug(
+      { itemId, auctionId, winnerId, result },
+      "Item won email queue result",
+    );
+    return result;
   } catch (err) {
-    emailQueueLogger.error(
+    emailServiceLogger.error(
       { err, itemId, auctionId, winnerId },
       "Failed to queue item won email",
     );

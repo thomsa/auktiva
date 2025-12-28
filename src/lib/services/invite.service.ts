@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { queueInviteEmail } from "@/lib/email/queue";
+import { queueInviteEmail } from "@/lib/email/service";
 import type { AuctionInvite } from "@/generated/prisma/client";
 
 // ============================================================================
@@ -189,8 +189,8 @@ export async function createInvite(
     },
   });
 
-  // Queue invite email
-  queueInviteEmail({
+  // Queue invite email (await to ensure it completes on serverless)
+  await queueInviteEmail({
     inviteId: invite.id,
     email: invite.email,
     auctionId: invite.auctionId,
@@ -198,7 +198,7 @@ export async function createInvite(
     senderName: invite.sender.name || invite.sender.email,
     token: invite.token,
     role: invite.role,
-  }).catch(() => {}); // Fire and forget
+  });
 
   return invite;
 }
