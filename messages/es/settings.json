@@ -30,7 +30,9 @@
       "newItemNotifications": "Notificaciones de nuevos artículos",
       "newItemDescription": "Recibe un correo cuando se añada un nuevo artículo a una subasta de la que eres miembro",
       "outbidNotifications": "Notificaciones de superación de puja",
-      "outbidDescription": "Recibe un correo cuando alguien supere tu puja en un artículo"
+      "outbidDescription": "Recibe un correo cuando alguien supere tu puja en un artículo",
+      "itemWonNotifications": "Notificaciones de artículo ganado",
+      "itemWonDescription": "Recibe un correo cuando ganes un artículo en una subasta"
     },
     "appearance": {
       "title": "Apariencia",

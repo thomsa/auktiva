@@ -30,7 +30,9 @@
       "newItemNotifications": "New item notifications",
       "newItemDescription": "Receive an email when a new item is added to an auction you're a member of",
       "outbidNotifications": "Outbid notifications",
-      "outbidDescription": "Receive an email when someone outbids you on an item"
+      "outbidDescription": "Receive an email when someone outbids you on an item",
+      "itemWonNotifications": "Item won notifications",
+      "itemWonDescription": "Receive an email when you win an item in an auction"
     },
     "appearance": {
       "title": "Appearance",

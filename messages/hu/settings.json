@@ -30,7 +30,9 @@
       "newItemNotifications": "Új tétel értesítések",
       "newItemDescription": "Értesítés e-mailben, ha új tétel kerül egy általad követett aukcióba",
       "outbidNotifications": "Túllicitálás értesítések",
-      "outbidDescription": "Értesítés e-mailben, ha valaki túllicitál egy tételen"
+      "outbidDescription": "Értesítés e-mailben, ha valaki túllicitál egy tételen",
+      "itemWonNotifications": "Nyert tétel értesítések",
+      "itemWonDescription": "Értesítés e-mailben, ha megnyersz egy tételt egy aukción"
     },
     "appearance": {
       "title": "Megjelenés",

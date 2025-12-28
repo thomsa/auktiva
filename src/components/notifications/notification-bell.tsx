@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
-import { useNotifications, type Notification } from "@/contexts/NotificationContext";
+import {
+  useNotifications,
+  type Notification,
+} from "@/contexts/NotificationContext";
 
 export function NotificationBell() {
   const t = useTranslations("notifications");
@@ -11,7 +14,12 @@ export function NotificationBell() {
   const [activeTab, setActiveTab] = useState<"new" | "read">("new");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { notifications, unreadCount, markAsRead: contextMarkAsRead, markAllAsRead: contextMarkAllAsRead } = useNotifications();
+  const {
+    notifications,
+    unreadCount,
+    markAsRead: contextMarkAsRead,
+    markAllAsRead: contextMarkAllAsRead,
+  } = useNotifications();
 
   // Close dropdown when clicking outside
   useEffect(() => {

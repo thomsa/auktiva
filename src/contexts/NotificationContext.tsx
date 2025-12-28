@@ -45,7 +45,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   const refreshInterval = useMemo(() => {
     // Check if user is on an auction page
     const isAuctionPage = router.pathname.startsWith("/auctions/");
-    
+
     // 5 seconds on auction pages, 30 seconds elsewhere
     return isAuctionPage ? 5000 : 30000;
   }, [router.pathname]);

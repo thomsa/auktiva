@@ -430,72 +430,72 @@ export function SkeletonAuctionPage() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
-      {/* Main Content - Items */}
-      <div className="flex-1 min-w-0">
-        <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
-          <div className="card-body p-6">
-            {/* Items Header */}
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 pb-4 border-b border-base-content/5">
-              <div className="flex items-center gap-2">
-                <div className="skeleton h-5 w-5 rounded" />
-                <div className="skeleton h-6 w-16" />
-                <div className="skeleton h-5 w-8 rounded-full" />
+        {/* Main Content - Items */}
+        <div className="flex-1 min-w-0">
+          <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
+            <div className="card-body p-6">
+              {/* Items Header */}
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 pb-4 border-b border-base-content/5">
+                <div className="flex items-center gap-2">
+                  <div className="skeleton h-5 w-5 rounded" />
+                  <div className="skeleton h-6 w-16" />
+                  <div className="skeleton h-5 w-8 rounded-full" />
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="skeleton h-10 w-32 rounded-lg" />
+                  <div className="skeleton h-10 w-20 rounded-lg" />
+                  <div className="skeleton h-10 w-28 rounded-lg" />
+                </div>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="skeleton h-10 w-32 rounded-lg" />
-                <div className="skeleton h-10 w-20 rounded-lg" />
-                <div className="skeleton h-10 w-28 rounded-lg" />
-              </div>
-            </div>
 
-            {/* Items Grid - matches: grid-cols-1 md:grid-cols-2 xl:grid-cols-3 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              <SkeletonItemCard />
-              <SkeletonItemCard />
-              <SkeletonItemCard />
-              <SkeletonItemCard />
-              <SkeletonItemCard />
-              <SkeletonItemCard />
+              {/* Items Grid - matches: grid-cols-1 md:grid-cols-2 xl:grid-cols-3 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <SkeletonItemCard />
+                <SkeletonItemCard />
+                <SkeletonItemCard />
+                <SkeletonItemCard />
+                <SkeletonItemCard />
+                <SkeletonItemCard />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Sidebar - hidden on mobile, shown on lg+ */}
-      <div className="hidden lg:block w-80 shrink-0">
-        <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl sticky top-24">
-          <div className="card-body p-5">
-            {/* Auction Info */}
-            <div className="space-y-4">
-              <div className="skeleton h-5 w-24" />
-              <div className="skeleton h-4 w-full" />
-              <div className="skeleton h-4 w-3/4" />
-            </div>
-            <div className="divider my-4"></div>
-            {/* Stats */}
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <div className="skeleton h-4 w-20" />
-                <div className="skeleton h-4 w-12" />
+        {/* Sidebar - hidden on mobile, shown on lg+ */}
+        <div className="hidden lg:block w-80 shrink-0">
+          <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl sticky top-24">
+            <div className="card-body p-5">
+              {/* Auction Info */}
+              <div className="space-y-4">
+                <div className="skeleton h-5 w-24" />
+                <div className="skeleton h-4 w-full" />
+                <div className="skeleton h-4 w-3/4" />
               </div>
-              <div className="flex justify-between">
-                <div className="skeleton h-4 w-20" />
-                <div className="skeleton h-4 w-12" />
+              <div className="divider my-4"></div>
+              {/* Stats */}
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <div className="skeleton h-4 w-20" />
+                  <div className="skeleton h-4 w-12" />
+                </div>
+                <div className="flex justify-between">
+                  <div className="skeleton h-4 w-20" />
+                  <div className="skeleton h-4 w-12" />
+                </div>
+                <div className="flex justify-between">
+                  <div className="skeleton h-4 w-20" />
+                  <div className="skeleton h-4 w-24" />
+                </div>
               </div>
-              <div className="flex justify-between">
-                <div className="skeleton h-4 w-20" />
-                <div className="skeleton h-4 w-24" />
+              <div className="divider my-4"></div>
+              {/* Actions */}
+              <div className="space-y-2">
+                <div className="skeleton h-10 w-full rounded-lg" />
+                <div className="skeleton h-10 w-full rounded-lg" />
               </div>
-            </div>
-            <div className="divider my-4"></div>
-            {/* Actions */}
-            <div className="space-y-2">
-              <div className="skeleton h-10 w-full rounded-lg" />
-              <div className="skeleton h-10 w-full rounded-lg" />
             </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   );

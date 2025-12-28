@@ -25,6 +25,7 @@ export interface UpdatePasswordInput {
 export interface UpdateSettingsInput {
   emailOnNewItem?: boolean;
   emailOnOutbid?: boolean;
+  emailOnItemWon?: boolean;
   itemSidebarCollapsed?: boolean;
 }
 
@@ -118,6 +119,7 @@ export async function getUserSettings(
 export async function getUserSettingsWithDefaults(userId: string): Promise<{
   emailOnNewItem: boolean;
   emailOnOutbid: boolean;
+  emailOnItemWon: boolean;
   itemSidebarCollapsed: boolean;
 }> {
   const settings = await prisma.userSettings.findUnique({
@@ -127,6 +129,7 @@ export async function getUserSettingsWithDefaults(userId: string): Promise<{
   return {
     emailOnNewItem: settings?.emailOnNewItem ?? false,
     emailOnOutbid: settings?.emailOnOutbid ?? false,
+    emailOnItemWon: settings?.emailOnItemWon ?? false,
     itemSidebarCollapsed: settings?.itemSidebarCollapsed ?? false,
   };
 }
@@ -221,6 +224,7 @@ export async function updateUserSettings(
       userId,
       emailOnNewItem: input.emailOnNewItem ?? false,
       emailOnOutbid: input.emailOnOutbid ?? false,
+      emailOnItemWon: input.emailOnItemWon ?? false,
       itemSidebarCollapsed: input.itemSidebarCollapsed ?? false,
     },
     update: {
@@ -229,6 +233,9 @@ export async function updateUserSettings(
       }),
       ...(input.emailOnOutbid !== undefined && {
         emailOnOutbid: input.emailOnOutbid,
+      }),
+      ...(input.emailOnItemWon !== undefined && {
+        emailOnItemWon: input.emailOnItemWon,
       }),
       ...(input.itemSidebarCollapsed !== undefined && {
         itemSidebarCollapsed: input.itemSidebarCollapsed,

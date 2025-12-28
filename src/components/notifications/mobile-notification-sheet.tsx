@@ -3,7 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
-import { useNotifications, type Notification } from "@/contexts/NotificationContext";
+import {
+  useNotifications,
+  type Notification,
+} from "@/contexts/NotificationContext";
 
 interface MobileNotificationSheetProps {
   isOpen: boolean;
@@ -19,7 +22,12 @@ export function MobileNotificationSheet({
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"new" | "read">("new");
 
-  const { notifications, unreadCount, markAsRead: contextMarkAsRead, markAllAsRead: contextMarkAllAsRead } = useNotifications();
+  const {
+    notifications,
+    unreadCount,
+    markAsRead: contextMarkAsRead,
+    markAllAsRead: contextMarkAllAsRead,
+  } = useNotifications();
 
   // Prevent body scroll when sheet is open
   useEffect(() => {

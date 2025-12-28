@@ -77,6 +77,7 @@ model UserSettings {
   // Email Notification Preferences
   emailOnNewItem        Boolean  @default(false)  // Notify when new item added to auction
   emailOnOutbid         Boolean  @default(false)  // Notify when outbid
+  emailOnItemWon        Boolean  @default(false)  // Notify when user wins an item
   
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -357,6 +358,7 @@ enum EmailType {
   NEW_ITEM        // New item added to auction
   OUTBID          // User was outbid
   PASSWORD_RESET  // Password reset request
+  ITEM_WON        // User won an item
 }
 
 model EmailLog {

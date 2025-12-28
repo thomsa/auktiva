@@ -1,3 +1,9 @@
 // Re-export email functionality
 export { sendEmail, retryFailedEmails, processPendingEmails } from "./brevo";
-export { registerEmailHandlers } from "./handlers";
+export {
+  queueWelcomeEmail,
+  queueInviteEmail,
+  queueNewItemEmails,
+  queueOutbidEmail,
+  queueItemWonEmail,
+} from "./queue";

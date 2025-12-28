@@ -30,7 +30,9 @@
       "newItemNotifications": "Powiadomienia o nowych przedmiotach",
       "newItemDescription": "Otrzymuj e-mail, gdy nowy przedmiot zostanie dodany do aukcji, w której jesteś członkiem",
       "outbidNotifications": "Powiadomienia o przebiciu",
-      "outbidDescription": "Otrzymuj e-mail, gdy ktoś przebije Twoją ofertę"
+      "outbidDescription": "Otrzymuj e-mail, gdy ktoś przebije Twoją ofertę",
+      "itemWonNotifications": "Powiadomienia o wygranym przedmiocie",
+      "itemWonDescription": "Otrzymuj e-mail, gdy wygrasz przedmiot na aukcji"
     },
     "appearance": {
       "title": "Wygląd",

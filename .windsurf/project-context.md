@@ -21,6 +21,7 @@
 - Database file: `./dev.db` (project root)
 - Generated client: `src/generated/prisma`
 - Config: `prisma.config.ts` (Prisma 7 style)
+- IMPORTANT: Whenever you change schema you need to generate a migration file
 
 ### Authentication
 
@@ -81,86 +82,6 @@ auktiva/
 └── tsconfig.json
 ```
 
-## Database Schema (Prisma)
-
-### Models
-
-```prisma
-model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  memberships  AuctionMember[]
-  bids         Bid[]
-}
-
-model Auction {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  currencyId  String
-  currency    Currency @relation(fields: [currencyId], references: [id])
-  startDate   DateTime?
-  endDate     DateTime?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  members     AuctionMember[]
-  items       AuctionItem[]
-}
-
-model AuctionMember {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  auctionId String
-  auction   Auction  @relation(fields: [auctionId], references: [id])
-  role      MemberRole @default(BIDDER)
-  joinedAt  DateTime @default(now())
-  @@unique([userId, auctionId])
-}
-
-model AuctionItem {
-  id          String   @id @default(cuid())
-  auctionId   String
-  auction     Auction  @relation(fields: [auctionId], references: [id])
-  name        String
-  description String?
-  imageUrl    String?
-  startingBid Decimal  @default(0)
-  currentBid  Decimal?
-  winnerId    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  bids        Bid[]
-}
-
-model Bid {
-  id        String   @id @default(cuid())
-  itemId    String
-  item      AuctionItem @relation(fields: [itemId], references: [id])
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  amount    Decimal
-  createdAt DateTime @default(now())
-}
-
-model Currency {
-  id       String    @id
-  name     String
-  symbol   String
-  auctions Auction[]
-}
-
-enum MemberRole {
-  OWNER
-  ADMIN
-  BIDDER
-}
-```
 
 ## Authentication Flow
 

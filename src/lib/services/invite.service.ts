@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { eventBus } from "@/lib/events/event-bus";
+import { queueInviteEmail } from "@/lib/email/queue";
 import type { AuctionInvite } from "@/generated/prisma/client";
 
 // ============================================================================
@@ -189,8 +189,8 @@ export async function createInvite(
     },
   });
 
-  // Emit event for invite email
-  eventBus.emit("invite.created", {
+  // Queue invite email
+  queueInviteEmail({
     inviteId: invite.id,
     email: invite.email,
     auctionId: invite.auctionId,
@@ -198,7 +198,7 @@ export async function createInvite(
     senderName: invite.sender.name || invite.sender.email,
     token: invite.token,
     role: invite.role,
-  });
+  }).catch(() => {}); // Fire and forget
 
   return invite;
 }

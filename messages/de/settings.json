@@ -30,7 +30,9 @@
       "newItemNotifications": "Benachrichtigungen über neue Artikel",
       "newItemDescription": "Erhalte eine E-Mail, wenn ein neuer Artikel zu einer Auktion hinzugefügt wird, in der du Mitglied bist",
       "outbidNotifications": "Benachrichtigungen beim Überbotenwerden",
-      "outbidDescription": "Erhalte eine E-Mail, wenn dich jemand bei einem Artikel überbietet"
+      "outbidDescription": "Erhalte eine E-Mail, wenn dich jemand bei einem Artikel überbietet",
+      "itemWonNotifications": "Benachrichtigungen bei Gewinn",
+      "itemWonDescription": "Erhalte eine E-Mail, wenn du einen Artikel in einer Auktion gewinnst"
     },
     "appearance": {
       "title": "Erscheinungsbild",

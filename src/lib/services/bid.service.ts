@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { eventBus } from "@/lib/events/event-bus";
+import { queueOutbidEmail } from "@/lib/email/queue";
 import * as notificationService from "./notification.service";
 import type { Bid } from "@/generated/prisma/client";
 
@@ -372,8 +372,8 @@ async function notifyOutbidUser(
     });
 
     if (previousBidder) {
-      // Emit event for outbid email
-      eventBus.emit("bid.outbid", {
+      // Queue outbid email
+      queueOutbidEmail({
         previousBidderId,
         previousBidderEmail: previousBidder.email,
         previousBidderName: previousBidder.name || "",
@@ -383,7 +383,7 @@ async function notifyOutbidUser(
         auctionName,
         newAmount,
         currencySymbol,
-      });
+      }).catch(() => {}); // Fire and forget
     }
   } catch (err) {
     console.error("Failed to notify outbid user:", err);

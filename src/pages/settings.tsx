@@ -19,6 +19,7 @@ const settingsLogger = createLogger("settings");
 interface UserSettings {
   emailOnNewItem: boolean;
   emailOnOutbid: boolean;
+  emailOnItemWon: boolean;
 }
 
 interface ConnectedAccount {
@@ -79,10 +80,13 @@ export default function SettingsPage({
 
   // Email notification settings
   const [emailOnNewItem, setEmailOnNewItem] = useState(
-    initialSettings.emailOnNewItem
+    initialSettings.emailOnNewItem,
   );
   const [emailOnOutbid, setEmailOnOutbid] = useState(
-    initialSettings.emailOnOutbid
+    initialSettings.emailOnOutbid,
+  );
+  const [emailOnItemWon, setEmailOnItemWon] = useState(
+    initialSettings.emailOnItemWon,
   );
   const [emailSettingsLoading, setEmailSettingsLoading] = useState(false);
   const [emailSettingsSuccess, setEmailSettingsSuccess] = useState<
@@ -91,10 +95,10 @@ export default function SettingsPage({
 
   // Deployment admin state
   const [isDeploymentAdmin, setIsDeploymentAdmin] = useState(
-    initialIsDeploymentAdmin
+    initialIsDeploymentAdmin,
   );
   const [hasDeploymentAdmin, setHasDeploymentAdmin] = useState(
-    initialHasDeploymentAdmin
+    initialHasDeploymentAdmin,
   );
   const [deploymentAdminLoading, setDeploymentAdminLoading] = useState(false);
   const [deploymentAdminError, setDeploymentAdminError] = useState<
@@ -135,7 +139,7 @@ export default function SettingsPage({
           (data.ownedAuctions || []).forEach(
             (auction: { id: string; name: string }) => {
               actions[auction.id] = { action: "delete" };
-            }
+            },
           );
           setAuctionActions(actions);
         })
@@ -163,7 +167,7 @@ export default function SettingsPage({
 
   const handleAuctionActionChange = (
     auctionId: string,
-    action: "transfer" | "delete"
+    action: "transfer" | "delete",
   ) => {
     setAuctionActions((prev) => ({
       ...prev,
@@ -173,7 +177,7 @@ export default function SettingsPage({
 
   const handleAuctionTransferEmailChange = (
     auctionId: string,
-    email: string
+    email: string,
   ) => {
     setAuctionActions((prev) => ({
       ...prev,
@@ -190,7 +194,7 @@ export default function SettingsPage({
       const action = auctionActions[auction.id];
       if (action?.action === "transfer" && !action.email?.trim()) {
         setDeleteError(
-          t("deleteAccount.enterTransferEmail", { auction: auction.name })
+          t("deleteAccount.enterTransferEmail", { auction: auction.name }),
         );
         setDeleteLoading(false);
         return;
@@ -272,13 +276,15 @@ export default function SettingsPage({
   };
 
   const handleEmailSettingChange = async (
-    setting: "emailOnNewItem" | "emailOnOutbid",
-    value: boolean
+    setting: "emailOnNewItem" | "emailOnOutbid" | "emailOnItemWon",
+    value: boolean,
   ) => {
     if (setting === "emailOnNewItem") {
       setEmailOnNewItem(value);
-    } else {
+    } else if (setting === "emailOnOutbid") {
       setEmailOnOutbid(value);
+    } else {
+      setEmailOnItemWon(value);
     }
 
     setEmailSettingsLoading(true);
@@ -300,8 +306,10 @@ export default function SettingsPage({
       // Revert on error
       if (setting === "emailOnNewItem") {
         setEmailOnNewItem(!value);
-      } else {
+      } else if (setting === "emailOnOutbid") {
         setEmailOnOutbid(!value);
+      } else {
+        setEmailOnItemWon(!value);
       }
     } finally {
       setEmailSettingsLoading(false);
@@ -364,7 +372,7 @@ export default function SettingsPage({
 
       if (!res.ok) {
         setPasswordError(
-          result.message || tErrors("profile.passwordChangeFailed")
+          result.message || tErrors("profile.passwordChangeFailed"),
         );
       } else {
         setPasswordSuccess(t("password.passwordChanged"));
@@ -581,7 +589,7 @@ export default function SettingsPage({
                     <p className="font-medium">Google</p>
                     <p className="text-sm text-base-content/60 truncate">
                       {connectedAccounts.some(
-                        (acc) => acc.provider === "google"
+                        (acc) => acc.provider === "google",
                       )
                         ? t("connectedAccounts.connected")
                         : t("connectedAccounts.notConnected")}
@@ -749,6 +757,28 @@ export default function SettingsPage({
                   checked={emailOnOutbid}
                   onChange={(e) =>
                     handleEmailSettingChange("emailOnOutbid", e.target.checked)
+                  }
+                  className="toggle toggle-primary toggle-lg shrink-0"
+                  disabled={emailSettingsLoading}
+                />
+              </label>
+            </div>
+
+            <div className="form-control py-3 pt-5">
+              <label className="label cursor-pointer p-0 flex items-start gap-4">
+                <div className="flex-1 min-w-0">
+                  <span className="label-text font-bold text-base block mb-1">
+                    {t("emailNotifications.itemWonNotifications")}
+                  </span>
+                  <p className="text-sm text-base-content/60 leading-tight text-wrap">
+                    {t("emailNotifications.itemWonDescription")}
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={emailOnItemWon}
+                  onChange={(e) =>
+                    handleEmailSettingChange("emailOnItemWon", e.target.checked)
                   }
                   className="toggle toggle-primary toggle-lg shrink-0"
                   disabled={emailSettingsLoading}
@@ -1183,7 +1213,7 @@ export default function SettingsPage({
                           onChange={(e) =>
                             handleAuctionTransferEmailChange(
                               auction.id,
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -1288,7 +1318,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   // Get connected OAuth accounts
   const connectedAccounts = await userService.getUserConnectedAccounts(
-    session.user.id
+    session.user.id,
   );
 
   // Check if user has a password (for OAuth-only users)
@@ -1308,7 +1338,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let versionInfo: VersionInfo | null = null;
   settingsLogger.debug(
     { isDeploymentAdmin },
-    "Checking deployment admin status"
+    "Checking deployment admin status",
   );
   if (isDeploymentAdmin) {
     try {
@@ -1316,7 +1346,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       const currentVersion = packageJson.version;
       settingsLogger.debug(
         { currentVersion },
-        "Current version from package.json"
+        "Current version from package.json",
       );
 
       // Fetch latest version from GitHub
@@ -1327,7 +1357,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             Accept: "application/vnd.github.v3+json",
             "User-Agent": "Auktiva",
           },
-        }
+        },
       );
 
       settingsLogger.debug({ status: response.status }, "GitHub API response");
@@ -1340,7 +1370,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
         settingsLogger.debug(
           { latestVersion, updateAvailable },
-          "Version check result"
+          "Version check result",
         );
 
         versionInfo = {
@@ -1384,6 +1414,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       initialSettings: {
         emailOnNewItem: settings.emailOnNewItem,
         emailOnOutbid: settings.emailOnOutbid,
+        emailOnItemWon: settings.emailOnItemWon,
       },
       connectedAccounts: connectedAccounts.map((acc) => ({
         provider: acc.provider,
