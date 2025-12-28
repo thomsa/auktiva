@@ -2,7 +2,6 @@ import { z } from "zod";
 import { ApiHandler } from "../types";
 import { BadRequestError, ValidationError } from "../errors";
 import * as authService from "@/lib/services/auth.service";
-import "@/lib/email/handlers";
 
 // ============================================================================
 // Schemas
