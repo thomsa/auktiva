@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.6.8] - 2025-12-29
+
+### Scripts
+
+- Add Node.js 20+ requirement and version validation by @thomsa
+
 ## [1.6.7] - 2025-12-28
 
 ### 🚀 Features
