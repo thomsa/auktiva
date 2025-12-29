@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
     locales: ["en", "pl", "hu", "de", "es"],
     defaultLocale: "en",
   },
+  turbopack: {
+    root: process.cwd(),
+  },
   experimental: {
     // Optimize package imports to reduce bundle size
     optimizePackageImports: [

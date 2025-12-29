@@ -259,7 +259,7 @@ export default function ResultsPage({
               {winners.length === 0 ? (
                 <div className="p-12">
                   <EmptyState
-                    icon="icon-[tabler--gavel-off]"
+                    icon="icon-[tabler--hammer-off]"
                     title={t("noItemsSold")}
                     description="No items received bids in this auction."
                   />

@@ -2,6 +2,30 @@
 
 There are two ways to install Auktiva: using the automated installer or manual installation.
 
+## Requirements
+
+Before installing Auktiva, ensure you have:
+
+- **Node.js 20.x or higher** (LTS recommended)
+- **npm 10+** (comes with Node.js 20+)
+- **Git** for cloning the repository
+
+Check your Node.js version:
+
+```bash
+node --version
+```
+
+If you need to upgrade Node.js, download from [nodejs.org](https://nodejs.org/) or use a version manager:
+
+```bash
+# Using nvm (Node Version Manager)
+nvm install 20
+nvm use 20
+```
+
+The setup wizard will validate your Node.js version and provide instructions if it doesn't meet the requirements.
+
 ## Automated Installation (Recommended)
 
 The easiest way to get started is using our one-line installer:
@@ -12,7 +36,7 @@ curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install
 
 This script will:
 
-1. Check for Node.js (18+) and Git
+1. Check for Node.js (20+) and Git
 2. Clone the repository to your current directory
 3. Install dependencies
 4. Launch an interactive setup wizard
@@ -104,6 +128,56 @@ After installation, open your browser to:
 - Production: Your configured `AUTH_URL`
 
 You should see the Auktiva landing page. Click "Get Started" to create your first account.
+
+## Installation Scripts Architecture
+
+Auktiva uses a two-stage installation process with two scripts that work together:
+
+### Stage 1: `scripts/install.sh` (Bootstrap)
+
+This is the entry point for fresh installations, run via `curl | bash`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install.sh | bash
+```
+
+**Responsibilities:**
+- Validates prerequisites (Node.js 20+, npm, git)
+- Clones the repository
+- Installs npm dependencies
+- Launches the setup wizard (Stage 2)
+
+### Stage 2: `cli/setup.ts` (Configuration)
+
+The interactive setup wizard that configures your Auktiva instance:
+
+```bash
+npm run setup
+```
+
+**Responsibilities:**
+- Validates Node.js version (redundant check for direct invocation)
+- Guides through configuration (database, storage, auth, email)
+- Writes the `.env` file
+- Runs database migrations and seeds
+- Builds the application
+- Optionally sets up PM2 for process management
+
+### Installation Flows
+
+**Fresh install (new server):**
+```
+curl ... | bash → install.sh → npm install → setup.ts
+```
+
+**Reconfigure existing installation:**
+```
+npm run setup → setup.ts (directly)
+```
+
+Both scripts validate Node.js 20+ independently:
+- `install.sh` catches version issues early, before cloning/installing
+- `setup.ts` catches issues when someone runs `npm run setup` directly on an existing clone
 
 ## Next Steps
 

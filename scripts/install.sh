@@ -72,7 +72,7 @@ main() {
   if ! command_exists node; then
     print_error "Node.js is not installed!"
     echo ""
-    echo "  Please install Node.js 18 or later:"
+    echo "  Please install Node.js 20 or later:"
     echo ""
     echo -e "  ${DIM}# Using nvm (recommended):${NC}"
     echo "  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash"
@@ -84,11 +84,21 @@ main() {
   fi
 
   NODE_VERSION=$(get_node_version)
-  if [ "$NODE_VERSION" -lt 18 ]; then
+  if [ "$NODE_VERSION" -lt 20 ]; then
     print_error "Node.js version $NODE_VERSION is too old!"
     echo ""
-    echo "  Please install Node.js 18 or later."
+    echo "  Auktiva requires Node.js 20.0.0 or higher."
     echo "  Current version: $(node -v)"
+    echo ""
+    echo "  Please upgrade Node.js:"
+    echo ""
+    echo -e "  ${DIM}# Using nvm:${NC}"
+    echo "  nvm install 20"
+    echo "  nvm use 20"
+    echo ""
+    echo -e "  ${DIM}# Or download from: https://nodejs.org${NC}"
+    echo ""
+    echo "  After upgrading, run this installer again."
     echo ""
     exit 1
   fi

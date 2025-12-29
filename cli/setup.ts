@@ -9,6 +9,52 @@ import ora from "ora";
 import chalk from "chalk";
 
 // =============================================================================
+// NODE.JS VERSION CHECK
+// =============================================================================
+
+const MIN_NODE_VERSION = 20;
+
+function checkNodeVersion(): void {
+  const currentVersion = process.versions.node;
+  const majorVersion = parseInt(currentVersion.split(".")[0], 10);
+
+  if (majorVersion < MIN_NODE_VERSION) {
+    console.log();
+    console.log(chalk.red("━".repeat(60)));
+    console.log();
+    console.log(chalk.red.bold("  ✗ Node.js version requirement not met"));
+    console.log();
+    console.log(
+      `  ${chalk.dim("Current version:")}  ${chalk.red(`v${currentVersion}`)}`,
+    );
+    console.log(
+      `  ${chalk.dim("Required version:")} ${chalk.green(
+        `v${MIN_NODE_VERSION}.x or higher`,
+      )}`,
+    );
+    console.log();
+    console.log(chalk.yellow("  Please upgrade Node.js to continue."));
+    console.log();
+    console.log(chalk.dim("  Download the latest LTS version from:"));
+    console.log(chalk.cyan("    https://nodejs.org/"));
+    console.log();
+    console.log(chalk.dim("  Or use a version manager like nvm:"));
+    console.log(chalk.cyan("    nvm install 20"));
+    console.log(chalk.cyan("    nvm use 20"));
+    console.log();
+    console.log(chalk.dim("  After upgrading, run setup again:"));
+    console.log(chalk.cyan("    npm run setup"));
+    console.log();
+    console.log(chalk.red("━".repeat(60)));
+    console.log();
+    process.exit(1);
+  }
+}
+
+// Run version check immediately
+checkNodeVersion();
+
+// =============================================================================
 // BRANDING
 // =============================================================================
 
@@ -61,7 +107,7 @@ function printHeader(title: string, step?: { current: number; total: number }) {
     console.log(
       chalk.blue(`━━━ Step ${step.current}/${step.total}: `) +
         chalk.bold(title) +
-        chalk.blue(" " + "━".repeat(Math.max(0, 50 - title.length)))
+        chalk.blue(" " + "━".repeat(Math.max(0, 50 - title.length))),
     );
   } else {
     console.log(chalk.blue("━".repeat(60)));
@@ -207,7 +253,7 @@ async function setupDatabase(): Promise<Partial<EnvConfig>> {
     chalk.dim("Get these from: ") +
       chalk.cyan("turso db show <dbname> --url") +
       chalk.dim(" and ") +
-      chalk.cyan("turso db tokens create <dbname>")
+      chalk.cyan("turso db tokens create <dbname>"),
   );
   console.log();
 
@@ -286,7 +332,9 @@ async function setupFeatures(): Promise<Partial<EnvConfig>> {
 
 async function setupDeploymentAdmin(): Promise<Partial<EnvConfig>> {
   console.log(
-    chalk.dim("The deployment admin can install updates directly from the app.")
+    chalk.dim(
+      "The deployment admin can install updates directly from the app.",
+    ),
   );
   console.log();
 
@@ -301,7 +349,7 @@ async function setupDeploymentAdmin(): Promise<Partial<EnvConfig>> {
 
   if (!adminEmail) {
     printInfo(
-      "No deployment admin set. Any user can claim this role later in Settings."
+      "No deployment admin set. Any user can claim this role later in Settings.",
     );
     return {};
   }
@@ -323,17 +371,17 @@ async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
 
   console.log();
   console.log(
-    chalk.dim("Auktiva uses Brevo (formerly Sendinblue) for sending emails.")
+    chalk.dim("Auktiva uses Brevo (formerly Sendinblue) for sending emails."),
   );
   console.log(chalk.dim("Brevo offers a free tier with 300 emails/day."));
   console.log();
   console.log(
     chalk.cyan("1. Create a free account at: ") +
-      chalk.bold("https://www.brevo.com/")
+      chalk.bold("https://www.brevo.com/"),
   );
   console.log(
     chalk.cyan("2. Get your API key from: ") +
-      chalk.bold("https://app.brevo.com/settings/keys/api")
+      chalk.bold("https://app.brevo.com/settings/keys/api"),
   );
   console.log();
 
@@ -469,13 +517,13 @@ async function runPostSetupTasks(config: EnvConfig): Promise<void> {
   if (config.DATABASE_URL?.startsWith("file:")) {
     const dbPath = config.DATABASE_URL.replace("file:", "").replace(
       /^\.\//,
-      ""
+      "",
     );
     const dbDir = path.dirname(path.join(process.cwd(), dbPath));
     if (!fs.existsSync(dbDir)) {
       fs.mkdirSync(dbDir, { recursive: true });
       printSuccess(
-        `Created database directory: ${path.relative(process.cwd(), dbDir)}`
+        `Created database directory: ${path.relative(process.cwd(), dbDir)}`,
       );
     }
   }
@@ -502,10 +550,10 @@ async function runPostSetupTasks(config: EnvConfig): Promise<void> {
         {
           stdio: "pipe",
           env: childEnv,
-        }
+        },
       );
       spinner.succeed(
-        `Deployment admin set to ${config.DEPLOYMENT_ADMIN_EMAIL}`
+        `Deployment admin set to ${config.DEPLOYMENT_ADMIN_EMAIL}`,
       );
     }
   } catch (error) {
@@ -577,7 +625,7 @@ async function main() {
   console.log(chalk.dim(`  ${TAGLINE}`));
   console.log();
   console.log(
-    chalk.dim("  This wizard will guide you through configuring your")
+    chalk.dim("  This wizard will guide you through configuring your"),
   );
   console.log(chalk.dim("  self-hosted Auktiva instance."));
   console.log();
@@ -621,7 +669,7 @@ async function main() {
   printHeader("Email Notifications", { current: 6, total: 6 });
   Object.assign(
     config,
-    await setupEmail(config.AUTH_URL || "http://localhost:3000")
+    await setupEmail(config.AUTH_URL || "http://localhost:3000"),
   );
 
   // Summary
@@ -635,38 +683,38 @@ async function main() {
       config.DATABASE_URL?.startsWith("libsql")
         ? chalk.cyan("Turso")
         : chalk.green("SQLite")
-    }`
+    }`,
   );
   console.log(
     `  ${chalk.dim("Storage:")}       ${
       config.STORAGE_PROVIDER === "s3"
         ? chalk.cyan(`S3 (${config.S3_BUCKET})`)
         : chalk.green("Local")
-    }`
+    }`,
   );
   console.log(
-    `  ${chalk.dim("URL:")}           ${chalk.magenta(config.AUTH_URL)}`
+    `  ${chalk.dim("URL:")}           ${chalk.magenta(config.AUTH_URL)}`,
   );
   console.log(
     `  ${chalk.dim("Open Auctions:")} ${
       config.ALLOW_OPEN_AUCTIONS === "true"
         ? chalk.green("Enabled")
         : chalk.yellow("Disabled")
-    }`
+    }`,
   );
   console.log(
     `  ${chalk.dim("Email:")}         ${
       config.BREVO_API_KEY
         ? chalk.green("Enabled (Brevo)")
         : chalk.yellow("Disabled")
-    }`
+    }`,
   );
   console.log(
     `  ${chalk.dim("Deploy Admin:")} ${
       config.DEPLOYMENT_ADMIN_EMAIL
         ? chalk.green(config.DEPLOYMENT_ADMIN_EMAIL)
         : chalk.yellow("Not set")
-    }`
+    }`,
   );
   console.log();
 
@@ -678,7 +726,7 @@ async function main() {
   if (!confirmSave) {
     console.log();
     console.log(
-      chalk.dim("Configuration not saved. Run `npm run setup` to reconfigure.")
+      chalk.dim("Configuration not saved. Run `npm run setup` to reconfigure."),
     );
     console.log();
     process.exit(0);

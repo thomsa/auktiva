@@ -608,7 +608,7 @@ export default function ItemDetailPage({
                       ) : isEnded ? (
                         <div className="space-y-4">
                           <div className="text-center py-6 bg-base-200/30 rounded-xl border border-base-content/5">
-                            <span className="icon-[tabler--gavel-off] size-8 text-base-content/20 mb-2"></span>
+                            <span className="icon-[tabler--hammer-off] size-8 text-base-content/20 mb-2"></span>
                             <div className="text-base-content/60 font-medium">
                               {t("bid.biddingEnded")}
                             </div>

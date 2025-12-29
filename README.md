@@ -58,6 +58,23 @@ A free, open-source auction platform for hosting private and public auctions. Pe
 - **Personal win tracking** - see what you've won across all auctions
 - **Export to JSON or CSV** for record keeping
 
+## Requirements
+
+- **Node.js 20.0.0 or higher** (LTS recommended)
+- npm 10+ (comes with Node.js 20+)
+
+Check your Node.js version:
+```bash
+node --version
+```
+
+If you need to upgrade, download from [nodejs.org](https://nodejs.org/) or use a version manager:
+```bash
+# Using nvm
+nvm install 20
+nvm use 20
+```
+
 ## Installation
 
 ### One-Line Install
@@ -66,7 +83,7 @@ A free, open-source auction platform for hosting private and public auctions. Pe
 curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install.sh | bash
 ```
 
-This will check prerequisites, clone the repo, install dependencies, and launch the interactive setup wizard.
+This will check prerequisites (including Node.js version), clone the repo, install dependencies, and launch the interactive setup wizard.
 
 ### Manual Install
 
