@@ -1,6 +1,6 @@
 {
   "name": "auktiva",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "description": "A comprehensive auction platform for hosting private and public auctions with real-time bidding, multi-currency support, and role-based member management.",
   "author": "thomsa",
   "license": "MIT",
