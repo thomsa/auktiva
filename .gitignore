@@ -51,3 +51,10 @@ next-env.d.ts
 # Uploaded files (keep .gitkeep)
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# PM2 logs (keep .gitkeep)
+/logs/*
+!/logs/.gitkeep
+
+# Database backups
+/backups/*

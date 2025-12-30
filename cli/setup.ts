@@ -695,6 +695,13 @@ async function runPostSetupTasks(config: EnvConfig): Promise<void> {
     DATABASE_AUTH_TOKEN: config.DATABASE_AUTH_TOKEN || "",
   };
 
+  // Create logs directory for PM2
+  const logsDir = path.join(process.cwd(), "logs");
+  if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir, { recursive: true });
+    printSuccess("Created logs directory");
+  }
+
   // Create storage directory if local
   if (config.STORAGE_PROVIDER === "local") {
     const uploadDir = path.join(process.cwd(), "public/uploads/images");
