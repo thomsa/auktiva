@@ -46,16 +46,42 @@ echo "=== Step 3: Installing dependencies ==="
 npm install --production=false
 
 echo ""
-echo "=== Step 4: Running database migrations ==="
+echo "=== Step 4: Backing up database ==="
+
+# Check if using SQLite (file-based database)
+if [ -f ".env" ]; then
+  DB_URL=$(grep "^DATABASE_URL=" .env | cut -d'=' -f2 | tr -d '"')
+  if [[ "$DB_URL" == file:* ]]; then
+    DB_PATH="${DB_URL#file:}"
+    DB_PATH="${DB_PATH#./}"
+    if [ -f "$DB_PATH" ]; then
+      BACKUP_DIR="backups"
+      TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+      BACKUP_FILE="${BACKUP_DIR}/backup_${TIMESTAMP}.db"
+      mkdir -p "$BACKUP_DIR"
+      cp "$DB_PATH" "$BACKUP_FILE"
+      echo "Database backed up to: $BACKUP_FILE"
+    else
+      echo "Database file not found at $DB_PATH, skipping backup"
+    fi
+  else
+    echo "Using remote database (Turso), skipping local backup"
+  fi
+else
+  echo "No .env file found, skipping database backup"
+fi
+
+echo ""
+echo "=== Step 5: Running database migrations ==="
 npx prisma generate
 npx prisma db push --accept-data-loss
 
 echo ""
-echo "=== Step 5: Building application ==="
+echo "=== Step 6: Building application ==="
 npm run build
 
 echo ""
-echo "=== Step 6: Restarting application ==="
+echo "=== Step 7: Restarting application ==="
 
 # Check if PM2 is available and auktiva process exists
 if command -v pm2 &> /dev/null; then

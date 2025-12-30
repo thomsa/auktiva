@@ -10,6 +10,7 @@ void [AdapterAmazonS3, AdapterLocal];
 let storageInstance: Storage | null = null;
 
 const LOCAL_STORAGE_DIR = "./public/uploads";
+const LOCAL_BUCKET_NAME = "images";
 
 export function logStorageConfig(): void {
   const provider = process.env.STORAGE_PROVIDER || "local";
@@ -94,9 +95,9 @@ function initializeS3Storage(): Storage {
 }
 
 function initializeLocalStorage(): Storage {
-  const bucketPath = path.join(LOCAL_STORAGE_DIR);
+  const bucketPath = path.join(LOCAL_STORAGE_DIR, LOCAL_BUCKET_NAME);
 
-  logger.info({ directory: LOCAL_STORAGE_DIR }, "Local storage config");
+  logger.info({ directory: LOCAL_STORAGE_DIR, bucket: LOCAL_BUCKET_NAME }, "Local storage config");
 
   if (!fs.existsSync(bucketPath)) {
     logger.info({ bucketPath }, "Creating local storage directory");
@@ -107,6 +108,7 @@ function initializeLocalStorage(): Storage {
     const storage = new Storage({
       provider: "local",
       directory: LOCAL_STORAGE_DIR,
+      bucketName: LOCAL_BUCKET_NAME,
       mode: 0o755,
     });
     logger.info("Local Storage initialized");
@@ -145,7 +147,7 @@ function buildS3Url(filePath: string): string {
 }
 
 function buildLocalUrl(filePath: string): string {
-  return `/uploads/${filePath}`;
+  return `/uploads/${LOCAL_BUCKET_NAME}/${filePath}`;
 }
 
 export function getStorageProvider(): string {
