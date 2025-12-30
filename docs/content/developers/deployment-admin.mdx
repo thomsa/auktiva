@@ -117,6 +117,22 @@ Returns version information for the deployment.
 }
 ```
 
+## Release Strategy
+
+Auktiva follows a **rolling release** model:
+
+- **Only the latest version is supported** - We do not maintain older versions or backport fixes
+- **Bugs are fixed in the next release** - If v1.6.4 has a bug, it will be fixed in v1.6.5 or v1.7.0, not patched in v1.6.4
+- **Always update to latest** - Running older versions may have known issues that have been resolved
+
+<Callout type="warning">
+  We strongly recommend keeping your Auktiva instance up to date. Older versions
+  are not maintained and may contain bugs or security issues that have been fixed
+  in newer releases.
+</Callout>
+
+This approach keeps development simple and ensures all users benefit from the latest improvements. If you encounter a bug, check if updating to the latest version resolves it before reporting.
+
 ## Update Process
 
 When you click "Install Update" in the Settings page, the system runs `scripts/update.sh` which performs the following steps:

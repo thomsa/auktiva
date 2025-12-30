@@ -27,16 +27,24 @@ let providerInstance: EmailProvider | null = null;
 export function getEmailProviderType(): EmailProviderType | null {
   const provider = process.env.EMAIL_PROVIDER as EmailProviderType | undefined;
 
-  if (!provider) {
-    return null;
+  if (provider) {
+    if (provider !== "brevo" && provider !== "smtp") {
+      logger.warn({ provider }, "Unknown EMAIL_PROVIDER value, email disabled");
+      return null;
+    }
+    return provider;
   }
 
-  if (provider !== "brevo" && provider !== "smtp") {
-    logger.warn({ provider }, "Unknown EMAIL_PROVIDER value, email disabled");
-    return null;
+  // Backward compatibility: if BREVO_API_KEY is set but EMAIL_PROVIDER is not,
+  // default to brevo (this was the only option before the SMTP feature)
+  if (process.env.BREVO_API_KEY) {
+    logger.debug(
+      "EMAIL_PROVIDER not set, defaulting to brevo (BREVO_API_KEY found)",
+    );
+    return "brevo";
   }
 
-  return provider;
+  return null;
 }
 
 /**

@@ -58,6 +58,16 @@ A free, open-source auction platform for hosting private and public auctions. Pe
 - **Personal win tracking** - see what you've won across all auctions
 - **Export to JSON or CSV** for record keeping
 
+## Release Strategy
+
+Auktiva follows a **rolling release** model:
+
+- **Only the latest version is supported** - We do not maintain older versions or backport fixes
+- **Always update to latest** - Running older versions may have known issues that have been resolved
+- **Bugs are fixed forward** - If you encounter a bug, update first before reporting
+
+> ⚠️ **Keep your instance up to date.** Older versions are not maintained and may contain bugs or security issues fixed in newer releases.
+
 ## Requirements
 
 - **Node.js 20.0.0 or higher** (LTS recommended)
