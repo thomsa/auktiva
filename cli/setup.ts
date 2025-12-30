@@ -1059,7 +1059,11 @@ async function main() {
   if (config.GOOGLE_CLIENT_ID) oauthProviders.push("Google");
   if (config.MICROSOFT_CLIENT_ID) oauthProviders.push("Microsoft");
   console.log(
-    `  ${chalk.dim("OAuth:")}         ${oauthProviders.length > 0 ? chalk.green(oauthProviders.join(", ")) : chalk.yellow("Disabled")}`,
+    `  ${chalk.dim("OAuth:")}         ${
+      oauthProviders.length > 0
+        ? chalk.green(oauthProviders.join(", "))
+        : chalk.yellow("Disabled")
+    }`,
   );
   console.log();
 
