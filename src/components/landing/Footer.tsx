@@ -55,6 +55,14 @@ export function Footer() {
                   {t("footer.github")}
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/changelog"
+                  className="hover:text-primary transition-colors"
+                >
+                  {t("footer.changelog")}
+                </Link>
+              </li>
             </ul>
           </div>
 

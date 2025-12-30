@@ -105,7 +105,8 @@
     "designedBy": "Entworfen & entwickelt von",
     "description": "Eine kostenlose, Open-Source-Auktionsplattform für Spendenaktionen, Wohltätigkeitsorganisationen und Gemeinschaften. Mit moderner Technologie für moderne Events.",
     "reportIssue": "Problem melden",
-    "github": "GitHub"
+    "github": "GitHub",
+    "changelog": "Änderungsprotokoll"
   },
   "member": {
     "noName": "Kein Name",
@@ -162,5 +163,18 @@
     "updateStarted": "Update gestartet!",
     "appRestarting": "Die Anwendung wird in Kürze neu gestartet.",
     "updateTimeout": "Update-Zeitüberschreitung. Die Anwendung muss möglicherweise manuell neu gestartet werden."
+  },
+  "changelog": {
+    "title": "Änderungsprotokoll & Versionen",
+    "description": "Sieh dir die Neuigkeiten in Auktiva an und verfolge unseren Entwicklungsfortschritt",
+    "currentVersion": "Aktuelle Version",
+    "latest": "Neueste",
+    "installed": "Installiert",
+    "releasedOn": "Veröffentlicht am",
+    "viewOnGitHub": "Auf GitHub ansehen",
+    "previousReleases": "Frühere Versionen",
+    "noReleases": "Keine Versionen gefunden",
+    "noReleaseNotes": "Keine Versionshinweise verfügbar",
+    "backToHome": "Zurück zur Startseite"
   }
 }

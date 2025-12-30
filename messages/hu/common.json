@@ -105,7 +105,8 @@
     "designedBy": "Tervezte és fejlesztette",
     "description": "Ingyenes, nyílt forráskódú aukciós platform adománygyűjtésekhez, jótékonysági szervezeteknek és közösségeknek. Modern technológiával, modern eseményekhez.",
     "reportIssue": "Hiba bejelentése",
-    "github": "GitHub"
+    "github": "GitHub",
+    "changelog": "Változásnapló"
   },
   "member": {
     "noName": "Nincs név",
@@ -162,5 +163,18 @@
     "updateStarted": "Frissítés elindítva!",
     "appRestarting": "Az alkalmazás hamarosan újraindul.",
     "updateTimeout": "A frissítés időtúllépés miatt megszakadt. Az alkalmazást manuálisan kell újraindítani."
+  },
+  "changelog": {
+    "title": "Változásnapló és kiadások",
+    "description": "Nézd meg az Auktiva újdonságait és kövesd a fejlesztés menetét",
+    "currentVersion": "Jelenlegi verzió",
+    "latest": "Legújabb",
+    "installed": "Telepítve",
+    "releasedOn": "Kiadva",
+    "viewOnGitHub": "Megtekintés GitHubon",
+    "previousReleases": "Korábbi kiadások",
+    "noReleases": "Nem található kiadás",
+    "noReleaseNotes": "Nincsenek kiadási megjegyzések",
+    "backToHome": "Vissza a kezdőlapra"
   }
 }

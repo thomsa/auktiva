@@ -105,7 +105,8 @@
     "designedBy": "Diseñado y construido por",
     "description": "Una plataforma de subastas gratuita y de código abierto para recaudación de fondos, organizaciones benéficas y comunidades. Construida con tecnología moderna para eventos modernos.",
     "reportIssue": "Reportar problema",
-    "github": "GitHub"
+    "github": "GitHub",
+    "changelog": "Registro de cambios"
   },
   "member": {
     "noName": "Sin nombre",
@@ -162,5 +163,18 @@
     "updateStarted": "¡Actualización iniciada!",
     "appRestarting": "La aplicación se reiniciará en breve.",
     "updateTimeout": "Tiempo de actualización agotado. La aplicación puede necesitar reinicio manual."
+  },
+  "changelog": {
+    "title": "Registro de cambios y versiones",
+    "description": "Descubre las novedades de Auktiva y sigue nuestro progreso de desarrollo",
+    "currentVersion": "Versión actual",
+    "latest": "Última",
+    "installed": "Instalada",
+    "releasedOn": "Publicado el",
+    "viewOnGitHub": "Ver en GitHub",
+    "previousReleases": "Versiones anteriores",
+    "noReleases": "No se encontraron versiones",
+    "noReleaseNotes": "No hay notas de versión disponibles",
+    "backToHome": "Volver al inicio"
   }
 }

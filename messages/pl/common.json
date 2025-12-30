@@ -105,7 +105,8 @@
     "designedBy": "Zaprojektowane i zbudowane przez",
     "description": "Darmowa platforma aukcyjna open-source zaprojektowana dla zbiórek, organizacji charytatywnych i społeczności. Zbudowana z nowoczesną technologią dla nowoczesnych wydarzeń.",
     "reportIssue": "Zgłoś problem",
-    "github": "GitHub"
+    "github": "GitHub",
+    "changelog": "Historia zmian"
   },
   "member": {
     "noName": "Brak nazwy",
@@ -162,5 +163,18 @@
     "updateStarted": "Aktualizacja rozpoczęta!",
     "appRestarting": "Aplikacja zostanie wkrótce uruchomiona ponownie.",
     "updateTimeout": "Przekroczono limit czasu aktualizacji. Aplikacja może wymagać ręcznego restartu."
+  },
+  "changelog": {
+    "title": "Historia zmian i wydania",
+    "description": "Zobacz co nowego w Auktiva i śledź postęp rozwoju",
+    "currentVersion": "Aktualna wersja",
+    "latest": "Najnowsza",
+    "installed": "Zainstalowana",
+    "releasedOn": "Wydano",
+    "viewOnGitHub": "Zobacz na GitHub",
+    "previousReleases": "Poprzednie wydania",
+    "noReleases": "Nie znaleziono wydań",
+    "noReleaseNotes": "Brak informacji o wydaniu",
+    "backToHome": "Powrót do strony głównej"
   }
 }

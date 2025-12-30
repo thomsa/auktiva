@@ -105,7 +105,8 @@
     "designedBy": "Designed & Built by",
     "description": "A free, open-source auction platform designed for fundraisers, charities, and communities. Built with modern tech for modern events.",
     "reportIssue": "Report Issue",
-    "github": "GitHub"
+    "github": "GitHub",
+    "changelog": "Changelog"
   },
   "member": {
     "noName": "No name",
@@ -162,5 +163,18 @@
     "updateStarted": "Update started!",
     "appRestarting": "The application will restart shortly.",
     "updateTimeout": "Update timed out. The application may need manual restart."
+  },
+  "changelog": {
+    "title": "Changelog & Releases",
+    "description": "See what's new in Auktiva and track our development progress",
+    "currentVersion": "Current Version",
+    "latest": "Latest",
+    "installed": "Installed",
+    "releasedOn": "Released on",
+    "viewOnGitHub": "View on GitHub",
+    "previousReleases": "Previous Releases",
+    "noReleases": "No releases found",
+    "noReleaseNotes": "No release notes available",
+    "backToHome": "Back to Home"
   }
 }
