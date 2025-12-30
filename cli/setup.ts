@@ -774,7 +774,7 @@ async function runPostSetupTasks(config: EnvConfig): Promise<void> {
 
   spinner = ora("Starting with PM2...").start();
   try {
-    execSync('pm2 start npm --name "auktiva" -- start', { stdio: "pipe" });
+    execSync("pm2 startOrRestart ecosystem.config.js", { stdio: "pipe" });
     execSync("pm2 save", { stdio: "pipe" });
     spinner.succeed("Application started with PM2");
   } catch (error) {

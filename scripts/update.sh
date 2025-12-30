@@ -83,9 +83,14 @@ npm run build
 echo ""
 echo "=== Step 7: Restarting application ==="
 
-# Check if PM2 is available and auktiva process exists
+# Use ecosystem.config.js if available, otherwise fall back to direct restart
 if command -v pm2 &> /dev/null; then
-  if pm2 list | grep -q "auktiva"; then
+  if [ -f "ecosystem.config.js" ]; then
+    echo "Using ecosystem.config.js..."
+    pm2 startOrRestart ecosystem.config.js
+    pm2 save
+    echo "PM2 process started/restarted successfully"
+  elif pm2 list | grep -q "auktiva"; then
     echo "Restarting PM2 process 'auktiva'..."
     pm2 restart auktiva
     echo "PM2 process restarted successfully"
