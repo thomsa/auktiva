@@ -90,7 +90,7 @@ pm2 save
 echo ""
 echo -e "${GREEN}✅ Deployment complete!${NC}"
 echo ""
-echo "Auktiva is now running on port 3030"
+echo "Auktiva is now running on port 3000"
 echo ""
 echo "Useful commands:"
 echo "  pm2 status        - Check process status"

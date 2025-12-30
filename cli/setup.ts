@@ -85,6 +85,7 @@ interface EnvConfig {
   S3_SECRET_ACCESS_KEY?: string;
   S3_ENDPOINT?: string;
   ALLOW_OPEN_AUCTIONS: string;
+  PORT: string;
   // Email configuration
   EMAIL_PROVIDER?: "brevo" | "smtp";
   BREVO_API_KEY?: string;
@@ -319,8 +320,21 @@ async function setupFeatures(): Promise<Partial<EnvConfig>> {
     default: false,
   });
 
+  const port = await input({
+    message: "Application port:",
+    default: "3000",
+    validate: (value) => {
+      const num = parseInt(value, 10);
+      if (isNaN(num) || num < 1 || num > 65535) {
+        return "Please enter a valid port number (1-65535)";
+      }
+      return true;
+    },
+  });
+
   return {
     ALLOW_OPEN_AUCTIONS: allowOpen ? "true" : "false",
+    PORT: port,
   };
 }
 
@@ -631,6 +645,7 @@ STORAGE_PROVIDER="${config.STORAGE_PROVIDER}"
 # FEATURES
 # =============================================================================
 ALLOW_OPEN_AUCTIONS="${config.ALLOW_OPEN_AUCTIONS}"
+PORT="${config.PORT}"
 `;
 
   // Email configuration (optional)
@@ -875,6 +890,7 @@ async function main() {
         : chalk.yellow("Disabled")
     }`,
   );
+  console.log(`  ${chalk.dim("Port:")}          ${chalk.cyan(config.PORT)}`);
   console.log(
     `  ${chalk.dim("Email:")}         ${
       config.EMAIL_PROVIDER === "brevo"
