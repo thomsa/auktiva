@@ -9,20 +9,29 @@ void [AdapterAmazonS3, AdapterLocal];
 
 let storageInstance: Storage | null = null;
 
+const LOCAL_STORAGE_DIR = "./public/uploads";
+
 export function logStorageConfig(): void {
   const provider = process.env.STORAGE_PROVIDER || "local";
 
-  logger.info(
-    {
-      provider,
-      bucket: process.env.S3_BUCKET || "(not set)",
-      region: process.env.S3_REGION || "us-east-1",
-      hasAccessKey: !!process.env.S3_ACCESS_KEY_ID,
-      hasSecretKey: !!process.env.S3_SECRET_ACCESS_KEY,
-      endpoint: process.env.S3_ENDPOINT || "(AWS default)",
-    },
-    "Storage configuration",
-  );
+  if (provider === "s3") {
+    logger.info(
+      {
+        provider,
+        bucket: process.env.S3_BUCKET || "(not set)",
+        region: process.env.S3_REGION || "us-east-1",
+        hasAccessKey: !!process.env.S3_ACCESS_KEY_ID,
+        hasSecretKey: !!process.env.S3_SECRET_ACCESS_KEY,
+        endpoint: process.env.S3_ENDPOINT || "(AWS default)",
+      },
+      "Storage configuration",
+    );
+  } else {
+    logger.info(
+      { provider, directory: LOCAL_STORAGE_DIR },
+      "Storage configuration",
+    );
+  }
 }
 
 export function getStorage(): Storage {
@@ -41,7 +50,11 @@ export function getStorage(): Storage {
 }
 
 function initializeS3Storage(): Storage {
-  const requiredVars = ["S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"];
+  const requiredVars = [
+    "S3_BUCKET",
+    "S3_ACCESS_KEY_ID",
+    "S3_SECRET_ACCESS_KEY",
+  ];
   const missingVars = requiredVars.filter((v) => !process.env[v]);
 
   if (missingVars.length > 0) {
@@ -81,11 +94,9 @@ function initializeS3Storage(): Storage {
 }
 
 function initializeLocalStorage(): Storage {
-  const directory = process.env.STORAGE_LOCAL_PATH || "./public/uploads";
-  const bucketName = "images";
-  const bucketPath = path.join(directory, bucketName);
+  const bucketPath = path.join(LOCAL_STORAGE_DIR);
 
-  logger.info({ directory, bucketName }, "Local storage config");
+  logger.info({ directory: LOCAL_STORAGE_DIR }, "Local storage config");
 
   if (!fs.existsSync(bucketPath)) {
     logger.info({ bucketPath }, "Creating local storage directory");
@@ -95,8 +106,7 @@ function initializeLocalStorage(): Storage {
   try {
     const storage = new Storage({
       provider: "local",
-      directory,
-      bucketName,
+      directory: LOCAL_STORAGE_DIR,
       mode: 0o755,
     });
     logger.info("Local Storage initialized");
@@ -135,8 +145,7 @@ function buildS3Url(filePath: string): string {
 }
 
 function buildLocalUrl(filePath: string): string {
-  const urlPrefix = process.env.STORAGE_LOCAL_URL_PREFIX || "/uploads";
-  return `${urlPrefix}/images/${filePath}`;
+  return `/uploads/${filePath}`;
 }
 
 export function getStorageProvider(): string {

@@ -207,11 +207,7 @@ AUTH_URL="http://localhost:3000"
 # =============================================================================
 # STORAGE
 # =============================================================================
-STORAGE_PROVIDER="local"  # or "s3"
-
-# Local storage
-STORAGE_LOCAL_PATH="./public/uploads"
-STORAGE_LOCAL_URL_PREFIX="/uploads"
+STORAGE_PROVIDER="local"  # or "s3" (local uses ./public/uploads)
 
 # S3 storage (when STORAGE_PROVIDER="s3")
 # S3_BUCKET="your-bucket-name"

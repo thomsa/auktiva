@@ -79,8 +79,6 @@ interface EnvConfig {
   AUTH_SECRET: string;
   AUTH_URL: string;
   STORAGE_PROVIDER: "local" | "s3";
-  STORAGE_LOCAL_PATH?: string;
-  STORAGE_LOCAL_URL_PREFIX?: string;
   S3_BUCKET?: string;
   S3_REGION?: string;
   S3_ACCESS_KEY_ID?: string;
@@ -168,21 +166,11 @@ async function setupStorage(): Promise<Partial<EnvConfig>> {
   });
 
   if (provider === "local") {
-    const storagePath = await input({
-      message: "Storage path:",
-      default: "./public/uploads",
-    });
-
-    const urlPrefix = await input({
-      message: "URL prefix for images:",
-      default: "/uploads",
-    });
-
-    return {
-      STORAGE_PROVIDER: "local",
-      STORAGE_LOCAL_PATH: storagePath,
-      STORAGE_LOCAL_URL_PREFIX: urlPrefix,
-    };
+    console.log();
+    console.log(
+      chalk.dim("Images will be stored in ./public/uploads (served at /uploads)"),
+    );
+    return { STORAGE_PROVIDER: "local" };
   }
 
   // S3 configuration
@@ -628,10 +616,7 @@ AUTH_URL="${config.AUTH_URL}"
 STORAGE_PROVIDER="${config.STORAGE_PROVIDER}"
 `;
 
-  if (config.STORAGE_PROVIDER === "local") {
-    env += `STORAGE_LOCAL_PATH="${config.STORAGE_LOCAL_PATH}"\n`;
-    env += `STORAGE_LOCAL_URL_PREFIX="${config.STORAGE_LOCAL_URL_PREFIX}"\n`;
-  } else {
+  if (config.STORAGE_PROVIDER === "s3") {
     env += `S3_BUCKET="${config.S3_BUCKET}"\n`;
     env += `S3_REGION="${config.S3_REGION}"\n`;
     env += `S3_ACCESS_KEY_ID="${config.S3_ACCESS_KEY_ID}"\n`;
@@ -693,12 +678,11 @@ async function runPostSetupTasks(config: EnvConfig): Promise<void> {
   };
 
   // Create storage directory if local
-  if (config.STORAGE_PROVIDER === "local" && config.STORAGE_LOCAL_PATH) {
-    const storagePath = config.STORAGE_LOCAL_PATH.replace(/^\.\//, "");
-    const fullPath = path.join(process.cwd(), storagePath);
-    if (!fs.existsSync(fullPath)) {
-      fs.mkdirSync(fullPath, { recursive: true });
-      printSuccess(`Created storage directory: ${storagePath}`);
+  if (config.STORAGE_PROVIDER === "local") {
+    const uploadDir = path.join(process.cwd(), "public/uploads/images");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+      printSuccess("Created storage directory: public/uploads/images");
     }
   }
 
