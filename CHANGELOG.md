@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.8.3] - 2025-12-30
+
+### 🚀 Features
+
+- Add changelog page with translations and markdown support by @thomsa
+
 ## [1.8.2] - 2025-12-30
 
 ### ⚙️ Miscellaneous
