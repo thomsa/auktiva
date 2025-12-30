@@ -548,3 +548,65 @@ export function canCreateItems(membership: AuctionMember | null): boolean {
 export function canAutoJoin(auction: Auction): boolean {
   return auction.joinMode === "FREE" || auction.joinMode === "LINK";
 }
+
+// ============================================================================
+// Public Access Functions (for OG tags / social sharing)
+// ============================================================================
+
+export interface PublicAuctionData {
+  id: string;
+  name: string;
+  description: string | null;
+  thumbnailUrl: string | null;
+  endDate: string | null;
+  joinMode: string;
+  creatorName: string | null;
+  _count: {
+    items: number;
+    members: number;
+  };
+}
+
+/**
+ * Get public auction data for OG tags and social sharing.
+ * Only returns data for auctions that are publicly accessible (FREE or LINK join mode).
+ */
+export async function getPublicAuctionData(
+  auctionId: string,
+): Promise<PublicAuctionData | null> {
+  const auction = await prisma.auction.findUnique({
+    where: { id: auctionId },
+    include: {
+      creator: {
+        select: { name: true },
+      },
+      _count: {
+        select: {
+          items: true,
+          members: true,
+        },
+      },
+    },
+  });
+
+  // Only return data for publicly accessible auctions
+  if (
+    !auction ||
+    (auction.joinMode !== "FREE" && auction.joinMode !== "LINK")
+  ) {
+    return null;
+  }
+
+  return {
+    id: auction.id,
+    name: auction.name,
+    description: auction.description,
+    thumbnailUrl: auction.thumbnailUrl
+      ? getPublicUrl(auction.thumbnailUrl)
+      : null,
+    endDate: auction.endDate?.toISOString() || null,
+    joinMode: auction.joinMode,
+    creatorName: auction.creator.name,
+    _count: auction._count,
+  };
+}

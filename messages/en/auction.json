@@ -60,6 +60,8 @@
       "results": "View Results",
       "addItem": "Add Item",
       "invitePeople": "Invite People",
+      "shareAuction": "Share Auction",
+      "linkCopied": "Link Copied!",
       "hostedBy": "Hosted by",
       "quickActions": "Quick Actions",
       "manage": "Manage",
@@ -161,6 +163,18 @@
       "invalid": "Invalid Invite",
       "joining": "Joining Auction...",
       "success": "Invite accepted!"
+    },
+    "public": {
+      "defaultDescription": "Join this auction and start bidding on items",
+      "hostedBy": "Hosted by {name}",
+      "items": "Items",
+      "members": "Members",
+      "endsOn": "Ends {date}",
+      "viewAuction": "View Auction",
+      "joinAuction": "Join Auction",
+      "or": "or",
+      "createAccount": "Create Account",
+      "poweredBy": "Powered by {appName}"
     }
   }
 }

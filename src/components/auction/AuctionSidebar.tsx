@@ -1,8 +1,10 @@
+import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { isAuctionEnded } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
+import { useToast } from "@/components/ui/toast";
 
 interface AuctionSidebarProps {
   auction: {
@@ -29,6 +31,8 @@ interface AuctionSidebarProps {
 }
 
 export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
+  const [copied, setCopied] = useState(false);
+  const { showToast } = useToast();
   const t = useTranslations("auction");
   const tRoles = useTranslations("auction.roles");
   const tJoinModes = useTranslations("auction.joinModes");
@@ -39,6 +43,29 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
   const isAdmin = membership.role === "ADMIN" || isOwner;
   const canCreateItems = isAdmin || membership.role === "CREATOR";
   const canInvite = isAdmin || auction.memberCanInvite;
+  const isShareable =
+    auction.joinMode === "FREE" || auction.joinMode === "LINK";
+
+  const handleCopyShareLink = async () => {
+    const shareUrl = `${window.location.origin}/a/${auction.id}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      showToast(t("sidebar.linkCopied"), "success");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setCopied(true);
+      showToast(t("sidebar.linkCopied"), "success");
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const roleKey = membership.role.toLowerCase();
   const roleLabel = ["admin", "creator", "bidder", "owner"].includes(roleKey)
@@ -185,6 +212,19 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                 <span className="icon-[tabler--user-plus] size-4"></span>
                 {t("sidebar.invitePeople")}
               </Link>
+            )}
+            {isShareable && (
+              <button
+                onClick={handleCopyShareLink}
+                className="btn btn-outline btn-sm btn-block justify-start border-base-content/10 hover:bg-base-200 hover:border-base-content/20 text-base-content"
+              >
+                <span
+                  className={`size-4 ${
+                    copied ? "icon-[tabler--check]" : "icon-[tabler--share]"
+                  }`}
+                ></span>
+                {copied ? t("sidebar.linkCopied") : t("sidebar.shareAuction")}
+              </button>
             )}
             <Link
               href={`/auctions/${auction.id}/results`}

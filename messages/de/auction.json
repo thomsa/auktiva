@@ -60,6 +60,8 @@
       "results": "Ergebnisse ansehen",
       "addItem": "Artikel hinzufügen",
       "invitePeople": "Leute einladen",
+      "shareAuction": "Auktion teilen",
+      "linkCopied": "Link kopiert!",
       "hostedBy": "Veranstaltet von",
       "quickActions": "Schnellzugriff",
       "manage": "Verwalten",
@@ -161,6 +163,18 @@
       "invalid": "Ungültige Einladung",
       "joining": "Trete Auktion bei...",
       "success": "Einladung akzeptiert!"
+    },
+    "public": {
+      "defaultDescription": "Tritt dieser Auktion bei und beginne zu bieten",
+      "hostedBy": "Veranstaltet von {name}",
+      "items": "Artikel",
+      "members": "Mitglieder",
+      "endsOn": "Endet am {date}",
+      "viewAuction": "Auktion ansehen",
+      "joinAuction": "Auktion beitreten",
+      "or": "oder",
+      "createAccount": "Konto erstellen",
+      "poweredBy": "Powered by {appName}"
     }
   }
 }

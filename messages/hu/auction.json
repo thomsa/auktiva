@@ -60,6 +60,8 @@
       "results": "Eredmények",
       "addItem": "Tétel hozzáadása",
       "invitePeople": "Meghívás",
+      "shareAuction": "Aukció megosztása",
+      "linkCopied": "Link másolva!",
       "hostedBy": "Szervező",
       "quickActions": "Gyors műveletek",
       "manage": "Kezelés",
@@ -161,6 +163,18 @@
       "invalid": "Érvénytelen meghívó",
       "joining": "Csatlakozás...",
       "success": "Meghívó elfogadva!"
+    },
+    "public": {
+      "defaultDescription": "Csatlakozz ehhez az aukcióhoz és kezdj el licitálni",
+      "hostedBy": "Szervező: {name}",
+      "items": "Tételek",
+      "members": "Tagok",
+      "endsOn": "Vége: {date}",
+      "viewAuction": "Aukció megtekintése",
+      "joinAuction": "Csatlakozás az aukcióhoz",
+      "or": "vagy",
+      "createAccount": "Fiók létrehozása",
+      "poweredBy": "Üzemelteti: {appName}"
     }
   }
 }

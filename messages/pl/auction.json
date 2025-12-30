@@ -60,6 +60,8 @@
       "results": "Zobacz wyniki",
       "addItem": "Dodaj przedmiot",
       "invitePeople": "Zaproś osoby",
+      "shareAuction": "Udostępnij aukcję",
+      "linkCopied": "Link skopiowany!",
       "hostedBy": "Prowadzona przez",
       "quickActions": "Szybkie akcje",
       "manage": "Zarządzaj",
@@ -161,6 +163,18 @@
       "invalid": "Nieprawidłowe zaproszenie",
       "joining": "Dołączanie...",
       "success": "Zaproszenie zaakceptowane!"
+    },
+    "public": {
+      "defaultDescription": "Dołącz do tej aukcji i zacznij licytować",
+      "hostedBy": "Organizator: {name}",
+      "items": "Przedmioty",
+      "members": "Członkowie",
+      "endsOn": "Kończy się {date}",
+      "viewAuction": "Zobacz aukcję",
+      "joinAuction": "Dołącz do aukcji",
+      "or": "lub",
+      "createAccount": "Utwórz konto",
+      "poweredBy": "Powered by {appName}"
     }
   }
 }

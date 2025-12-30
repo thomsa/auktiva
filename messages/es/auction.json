@@ -60,6 +60,8 @@
       "results": "Ver Resultados",
       "addItem": "Añadir Artículo",
       "invitePeople": "Invitar Personas",
+      "shareAuction": "Compartir Subasta",
+      "linkCopied": "¡Enlace copiado!",
       "hostedBy": "Organizado por",
       "quickActions": "Acciones Rápidas",
       "manage": "Gestionar",
@@ -161,6 +163,18 @@
       "invalid": "Invitación Inválida",
       "joining": "Uniéndose a la Subasta...",
       "success": "¡Invitación aceptada!"
+    },
+    "public": {
+      "defaultDescription": "Únete a esta subasta y comienza a pujar",
+      "hostedBy": "Organizado por {name}",
+      "items": "Artículos",
+      "members": "Miembros",
+      "endsOn": "Termina el {date}",
+      "viewAuction": "Ver Subasta",
+      "joinAuction": "Unirse a la Subasta",
+      "or": "o",
+      "createAccount": "Crear Cuenta",
+      "poweredBy": "Powered by {appName}"
     }
   }
 }
