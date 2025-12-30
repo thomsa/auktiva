@@ -45,6 +45,15 @@ get_latest_release_tag() {
     grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
 }
 
+USE_LATEST_COMMIT=false
+for arg in "$@"; do
+  case $arg in
+    --latest)
+      USE_LATEST_COMMIT=true
+      ;;
+  esac
+done
+
 # Check if command exists
 command_exists() {
   command -v "$1" >/dev/null 2>&1
@@ -68,12 +77,20 @@ main() {
   echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
   echo ""
 
-  LATEST_TAG=$(get_latest_release_tag)
-  if [ -z "$LATEST_TAG" ]; then
-    print_error "Could not fetch latest release. Check your internet connection."
-    exit 1
+  if [ "$USE_LATEST_COMMIT" = true ]; then
+    VERSION="main (latest commit)"
+    GIT_REF="main"
+    echo -e "  ${YELLOW}Installing from ${BOLD}main branch${NC} ${DIM}(--latest flag)${NC}"
+  else
+    LATEST_TAG=$(get_latest_release_tag)
+    if [ -z "$LATEST_TAG" ]; then
+      print_error "Could not fetch latest release. Check your internet connection."
+      exit 1
+    fi
+    VERSION="$LATEST_TAG"
+    GIT_REF="$LATEST_TAG"
+    echo -e "  ${GREEN}Installing version ${BOLD}${LATEST_TAG}${NC}"
   fi
-  echo -e "  ${GREEN}Installing version ${BOLD}${LATEST_TAG}${NC}"
   echo ""
 
   # ==========================================================================
@@ -146,17 +163,17 @@ main() {
     else
       cd "$INSTALL_DIR"
       if [ -d ".git" ]; then
-        print_info "Updating to ${LATEST_TAG}..."
-        git fetch --tags --quiet
-        git checkout "$LATEST_TAG" --quiet 2>/dev/null || true
+        print_info "Updating to ${VERSION}..."
+        git fetch --tags --quiet 2>/dev/null
+        git -c advice.detachedHead=false checkout "$GIT_REF" --quiet 2>/dev/null || true
       fi
     fi
   fi
 
   if [ ! -d "$INSTALL_DIR" ]; then
-    print_info "Downloading Auktiva ${LATEST_TAG}..."
-    git clone --branch "$LATEST_TAG" --depth 1 --quiet https://github.com/thomsa/auktiva.git "$INSTALL_DIR"
-    print_success "Downloaded ${LATEST_TAG} to $INSTALL_DIR"
+    print_info "Downloading Auktiva ${VERSION}..."
+    git clone -c advice.detachedHead=false --branch "$GIT_REF" --depth 1 --quiet https://github.com/thomsa/auktiva.git "$INSTALL_DIR" 2>/dev/null
+    print_success "Downloaded ${VERSION} to $INSTALL_DIR"
   fi
 
   cd "$INSTALL_DIR"
