@@ -43,6 +43,7 @@ interface SettingsPageProps {
   connectedAccounts: ConnectedAccount[];
   hasPassword: boolean;
   googleOAuthEnabled: boolean;
+  microsoftOAuthEnabled: boolean;
   isDeploymentAdmin: boolean;
   hasDeploymentAdmin: boolean;
   versionInfo: VersionInfo | null;
@@ -55,6 +56,7 @@ export default function SettingsPage({
   connectedAccounts,
   hasPassword,
   googleOAuthEnabled,
+  microsoftOAuthEnabled,
   isDeploymentAdmin: initialIsDeploymentAdmin,
   hasDeploymentAdmin: initialHasDeploymentAdmin,
   versionInfo,
@@ -551,7 +553,7 @@ export default function SettingsPage({
       </div>
 
       {/* Connected Accounts Section */}
-      {googleOAuthEnabled && (
+      {(googleOAuthEnabled || microsoftOAuthEnabled) && (
         <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
           <div className="card-body">
             <h2 className="card-title flex items-center gap-3 mb-4">
@@ -563,6 +565,7 @@ export default function SettingsPage({
 
             <div className="space-y-3 mt-2">
               {/* Google Account */}
+              {googleOAuthEnabled && (
               <div className="flex items-center justify-between gap-3 p-4 rounded-xl bg-base-200/50 border border-base-content/5">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0">
@@ -607,6 +610,43 @@ export default function SettingsPage({
                   </span>
                 )}
               </div>
+              )}
+
+              {/* Microsoft Account */}
+              {microsoftOAuthEnabled && (
+              <div className="flex items-center justify-between gap-3 p-4 rounded-xl bg-base-200/50 border border-base-content/5">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-sm shrink-0">
+                    <svg className="size-5" viewBox="0 0 23 23">
+                      <path fill="#f35325" d="M1 1h10v10H1z" />
+                      <path fill="#81bc06" d="M12 1h10v10H12z" />
+                      <path fill="#05a6f0" d="M1 12h10v10H1z" />
+                      <path fill="#ffba08" d="M12 12h10v10H12z" />
+                    </svg>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-medium">Microsoft</p>
+                    <p className="text-sm text-base-content/60 truncate">
+                      {connectedAccounts.some(
+                        (acc) => acc.provider === "azure-ad",
+                      )
+                        ? t("connectedAccounts.connected")
+                        : t("connectedAccounts.notConnected")}
+                    </p>
+                  </div>
+                </div>
+                {connectedAccounts.some((acc) => acc.provider === "azure-ad") ? (
+                  <span className="badge badge-success gap-1 shrink-0">
+                    <span className="icon-[tabler--check] size-3"></span>
+                    {t("connectedAccounts.connected")}
+                  </span>
+                ) : (
+                  <span className="badge badge-ghost shrink-0">
+                    {t("connectedAccounts.notConnected")}
+                  </span>
+                )}
+              </div>
+              )}
             </div>
           </div>
         </div>
@@ -1329,6 +1369,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
   );
 
+  // Check if Microsoft OAuth is enabled
+  const microsoftOAuthEnabled = !!(
+    process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET
+  );
+
   // Check deployment admin status
   const systemSettings = await systemService.getSystemSettings();
   const isDeploymentAdmin = systemSettings.deploymentAdminEmail === user.email;
@@ -1421,6 +1466,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       })),
       hasPassword,
       googleOAuthEnabled,
+      microsoftOAuthEnabled,
       isDeploymentAdmin,
       hasDeploymentAdmin,
       versionInfo,
