@@ -147,7 +147,7 @@ function buildS3Url(filePath: string): string {
 }
 
 function buildLocalUrl(filePath: string): string {
-  return `/uploads/${LOCAL_BUCKET_NAME}/${filePath}`;
+  return `/api/uploads/${LOCAL_BUCKET_NAME}/${filePath}`;
 }
 
 export function getStorageProvider(): string {

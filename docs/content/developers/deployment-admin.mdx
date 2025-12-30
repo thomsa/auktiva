@@ -100,7 +100,7 @@ Triggers an update. Only accessible by the Deployment Admin.
 **What it does:**
 
 1. Runs `scripts/update.sh` in the background
-2. The script handles git pull, npm install, build, and restart
+2. The script fetches the latest release tag, backs up the database, and rebuilds
 
 ### GET /api/version
 
@@ -117,34 +117,75 @@ Returns version information for the deployment.
 }
 ```
 
-## Update Script
+## Update Process
 
-The update process is handled by `scripts/update.sh`. You can customize this script for your deployment environment:
+When you click "Install Update" in the Settings page, the system runs `scripts/update.sh` which performs the following steps:
+
+### 1. Fetch Latest Release
+
+The script queries the GitHub API for the latest release tag and checks out that specific version:
 
 ```bash
-#!/bin/bash
-# scripts/update.sh
+LATEST_TAG=$(curl -fsSL "https://api.github.com/repos/thomsa/auktiva/releases/latest" | \
+  grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
-# Pull latest changes
-git pull origin main
+git fetch --tags origin
+git checkout "$LATEST_TAG"
+```
 
-# Install dependencies
-npm install
+<Callout type="info">
+  Updates always install official release tags, not the latest commit from main.
+  This ensures you get stable, tested versions.
+</Callout>
 
-# Run database migrations
-npx prisma migrate deploy
+### 2. Skip if Already Current
 
-# Build the application
-npm run build
+If you're already on the latest release, the script exits early without making changes:
 
-# Restart the application (customize for your environment)
-# pm2 restart auktiva
-# systemctl restart auktiva
+```
+Already on latest version (v1.6.8). Nothing to do.
+```
+
+### 3. Database Backup (SQLite only)
+
+For SQLite databases, the script creates a timestamped backup before running migrations:
+
+```bash
+# Backup location: backups/backup_YYYYMMDD_HHMMSS.db
+cp "$DB_PATH" "backups/backup_$(date +%Y%m%d_%H%M%S).db"
 ```
 
 <Callout type="warning">
-  The default update script is a template. You must customize it for your
-  specific deployment environment (PM2, systemd, Docker, etc.).
+  Turso (remote) databases are not backed up by this script. Use Turso's built-in
+  backup features for production deployments.
+</Callout>
+
+### 4. Install Dependencies & Migrate
+
+```bash
+npm install --production=false
+npx prisma generate
+npx prisma db push --accept-data-loss
+```
+
+### 5. Build & Restart
+
+```bash
+npm run build
+pm2 restart auktiva  # If PM2 is configured
+```
+
+## Customizing the Update Script
+
+You can modify `scripts/update.sh` for your deployment environment. Common customizations:
+
+- **Docker**: Replace PM2 restart with container rebuild
+- **systemd**: Use `systemctl restart auktiva`
+- **Custom backup**: Add additional backup steps for uploads or other data
+
+<Callout type="warning">
+  The restart section at the end of the script is a template. Customize it for
+  your specific deployment environment (PM2, systemd, Docker, etc.).
 </Callout>
 
 ## Security Considerations
