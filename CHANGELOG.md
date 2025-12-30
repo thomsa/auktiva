@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [Unreleased]
+
+### 🚀 Features
+
+- Add Microsoft OAuth provider display in settings connected accounts section by @thomsa
+
 ## [1.7.1] - 2025-12-30
 
 ### 📚 Documentation
