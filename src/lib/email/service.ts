@@ -1,18 +1,18 @@
 /**
  * Email Service Functions
  *
- * These functions send emails via Brevo. They create EmailLog entries
- * in the database before sending, which enables:
+ * These functions send emails via the configured provider (Brevo or SMTP).
+ * They create EmailLog entries in the database before sending, which enables:
  * - Tracking of all sent emails
  * - Automatic retry of failed emails via cron job
  * - Audit trail for debugging
  *
- * The sendEmail function in brevo.ts creates the EmailLog entry and attempts
+ * The sendEmail function in sender.ts creates the EmailLog entry and attempts
  * to send immediately. Failed emails are marked as FAILED and can be retried
  * by the cron job.
  */
 
-import { sendEmail } from "./brevo";
+import { sendEmail } from "./sender";
 import { prisma } from "@/lib/prisma";
 import {
   getWelcomeTemplateData,

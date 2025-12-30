@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { processPendingEmails, retryFailedEmails } from "@/lib/email/brevo";
+import { processPendingEmails, retryFailedEmails } from "@/lib/email";
 import { createLogger } from "@/lib/logger";
 
 const cronLogger = createLogger("cron-emails");

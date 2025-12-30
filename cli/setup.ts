@@ -88,7 +88,13 @@ interface EnvConfig {
   S3_ENDPOINT?: string;
   ALLOW_OPEN_AUCTIONS: string;
   // Email configuration
+  EMAIL_PROVIDER?: "brevo" | "smtp";
   BREVO_API_KEY?: string;
+  SMTP_HOST?: string;
+  SMTP_PORT?: string;
+  SMTP_SECURE?: string;
+  SMTP_USER?: string;
+  SMTP_PASSWORD?: string;
   MAIL_FROM?: string;
   MAIL_FROM_NAME?: string;
   NEXT_PUBLIC_APP_URL?: string;
@@ -359,6 +365,143 @@ async function setupDeploymentAdmin(): Promise<Partial<EnvConfig>> {
   };
 }
 
+async function testSmtpConnection(config: {
+  host: string;
+  port: number;
+  secure: boolean;
+  user?: string;
+  password?: string;
+}): Promise<{ success: boolean; error?: string }> {
+  // Dynamic import to avoid loading nodemailer during setup if not needed
+  const nodemailer = await import("nodemailer");
+
+  const auth = config.user ? { user: config.user, pass: config.password || "" } : undefined;
+
+  const transporter = nodemailer.default.createTransport({
+    host: config.host,
+    port: config.port,
+    secure: config.secure,
+    auth,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+  });
+
+  try {
+    await transporter.verify();
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    return { success: false, error: errorMessage };
+  } finally {
+    transporter.close();
+  }
+}
+
+async function setupSmtpConfig(): Promise<Partial<EnvConfig> | null> {
+  console.log();
+  console.log(chalk.dim("Configure your SMTP server settings:"));
+  console.log();
+
+  const smtpHost = await input({
+    message: "SMTP Host:",
+    required: true,
+    validate: (value) => {
+      if (!value.trim()) return "SMTP host is required";
+      return true;
+    },
+  });
+
+  const smtpPort = await input({
+    message: "SMTP Port:",
+    default: "587",
+    validate: (value) => {
+      const port = parseInt(value, 10);
+      if (isNaN(port) || port < 1 || port > 65535) {
+        return "Please enter a valid port number (1-65535)";
+      }
+      return true;
+    },
+  });
+
+  const portNum = parseInt(smtpPort, 10);
+  const defaultSecure = portNum === 465;
+
+  const smtpSecure = await confirm({
+    message: "Use implicit TLS (secure connection)?",
+    default: defaultSecure,
+  });
+
+  console.log();
+  console.log(
+    chalk.dim("SMTP authentication (leave empty for no authentication):"),
+  );
+
+  const smtpUser = await input({
+    message: "SMTP Username (optional):",
+  });
+
+  let smtpPassword = "";
+  if (smtpUser) {
+    smtpPassword = await password({
+      message: "SMTP Password:",
+    });
+  }
+
+  // Test the connection
+  console.log();
+  const spinner = ora("Testing SMTP connection...").start();
+
+  const testResult = await testSmtpConnection({
+    host: smtpHost,
+    port: portNum,
+    secure: smtpSecure,
+    user: smtpUser || undefined,
+    password: smtpPassword || undefined,
+  });
+
+  if (testResult.success) {
+    spinner.succeed("SMTP connection successful!");
+    return {
+      EMAIL_PROVIDER: "smtp",
+      SMTP_HOST: smtpHost,
+      SMTP_PORT: smtpPort,
+      SMTP_SECURE: smtpSecure ? "true" : "false",
+      ...(smtpUser && { SMTP_USER: smtpUser }),
+      ...(smtpPassword && { SMTP_PASSWORD: smtpPassword }),
+    };
+  } else {
+    spinner.fail(`SMTP connection failed: ${testResult.error}`);
+    console.log();
+
+    const retry = await confirm({
+      message: "Would you like to re-enter SMTP settings?",
+      default: true,
+    });
+
+    if (retry) {
+      return setupSmtpConfig();
+    }
+
+    const saveAnyway = await confirm({
+      message: "Save these settings anyway? (You can fix them later in .env)",
+      default: false,
+    });
+
+    if (saveAnyway) {
+      return {
+        EMAIL_PROVIDER: "smtp",
+        SMTP_HOST: smtpHost,
+        SMTP_PORT: smtpPort,
+        SMTP_SECURE: smtpSecure ? "true" : "false",
+        ...(smtpUser && { SMTP_USER: smtpUser }),
+        ...(smtpPassword && { SMTP_PASSWORD: smtpPassword }),
+      };
+    }
+
+    return null;
+  }
+}
+
 async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
   const wantEmail = await confirm({
     message: "Do you want to enable email notifications?",
@@ -369,31 +512,63 @@ async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
     return {};
   }
 
-  console.log();
-  console.log(
-    chalk.dim("Auktiva uses Brevo (formerly Sendinblue) for sending emails."),
-  );
-  console.log(chalk.dim("Brevo offers a free tier with 300 emails/day."));
-  console.log();
-  console.log(
-    chalk.cyan("1. Create a free account at: ") +
-      chalk.bold("https://www.brevo.com/"),
-  );
-  console.log(
-    chalk.cyan("2. Get your API key from: ") +
-      chalk.bold("https://app.brevo.com/settings/keys/api"),
-  );
-  console.log();
-
-  const brevoKey = await password({
-    message: "Brevo API Key:",
+  const emailProvider = await select({
+    message: "Which email provider would you like to use?",
+    choices: [
+      {
+        value: "brevo",
+        name: "Brevo (formerly Sendinblue)",
+        description: "Cloud email service with free tier (300 emails/day)",
+      },
+      {
+        value: "smtp",
+        name: "SMTP Server",
+        description: "Use your own SMTP server (Gmail, Mailgun, self-hosted, etc.)",
+      },
+    ],
   });
 
-  if (!brevoKey) {
-    printInfo("Skipping email configuration. You can add it later to .env");
-    return {};
+  let providerConfig: Partial<EnvConfig> = {};
+
+  if (emailProvider === "brevo") {
+    console.log();
+    console.log(
+      chalk.dim("Brevo offers a free tier with 300 emails/day."),
+    );
+    console.log();
+    console.log(
+      chalk.cyan("1. Create a free account at: ") +
+        chalk.bold("https://www.brevo.com/"),
+    );
+    console.log(
+      chalk.cyan("2. Get your API key from: ") +
+        chalk.bold("https://app.brevo.com/settings/keys/api"),
+    );
+    console.log();
+
+    const brevoKey = await password({
+      message: "Brevo API Key:",
+    });
+
+    if (!brevoKey) {
+      printInfo("Skipping email configuration. You can add it later to .env");
+      return {};
+    }
+
+    providerConfig = {
+      EMAIL_PROVIDER: "brevo",
+      BREVO_API_KEY: brevoKey,
+    };
+  } else {
+    const smtpConfig = await setupSmtpConfig();
+    if (!smtpConfig) {
+      printInfo("Skipping email configuration. You can add it later to .env");
+      return {};
+    }
+    providerConfig = smtpConfig;
   }
 
+  // Common email settings
   const mailFrom = await input({
     message: "Sender email address:",
     default: "noreply@auktiva.org",
@@ -412,7 +587,7 @@ async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
   const cronSecret = crypto.randomBytes(32).toString("base64");
 
   return {
-    BREVO_API_KEY: brevoKey,
+    ...providerConfig,
     MAIL_FROM: mailFrom,
     MAIL_FROM_NAME: mailFromName,
     NEXT_PUBLIC_APP_URL: authUrl,
@@ -474,17 +649,31 @@ ALLOW_OPEN_AUCTIONS="${config.ALLOW_OPEN_AUCTIONS}"
 `;
 
   // Email configuration (optional)
-  if (config.BREVO_API_KEY) {
+  if (config.EMAIL_PROVIDER) {
     env += `
 # =============================================================================
-# EMAIL (Brevo)
+# EMAIL
 # =============================================================================
-BREVO_API_KEY="${config.BREVO_API_KEY}"
+EMAIL_PROVIDER="${config.EMAIL_PROVIDER}"
 MAIL_FROM="${config.MAIL_FROM}"
 MAIL_FROM_NAME="${config.MAIL_FROM_NAME}"
 NEXT_PUBLIC_APP_URL="${config.NEXT_PUBLIC_APP_URL}"
 CRON_SECRET="${config.CRON_SECRET}"
 `;
+
+    if (config.EMAIL_PROVIDER === "brevo") {
+      env += `BREVO_API_KEY="${config.BREVO_API_KEY}"\n`;
+    } else if (config.EMAIL_PROVIDER === "smtp") {
+      env += `SMTP_HOST="${config.SMTP_HOST}"\n`;
+      env += `SMTP_PORT="${config.SMTP_PORT}"\n`;
+      env += `SMTP_SECURE="${config.SMTP_SECURE}"\n`;
+      if (config.SMTP_USER) {
+        env += `SMTP_USER="${config.SMTP_USER}"\n`;
+      }
+      if (config.SMTP_PASSWORD) {
+        env += `SMTP_PASSWORD="${config.SMTP_PASSWORD}"\n`;
+      }
+    }
   }
 
   return env;
@@ -704,9 +893,11 @@ async function main() {
   );
   console.log(
     `  ${chalk.dim("Email:")}         ${
-      config.BREVO_API_KEY
+      config.EMAIL_PROVIDER === "brevo"
         ? chalk.green("Enabled (Brevo)")
-        : chalk.yellow("Disabled")
+        : config.EMAIL_PROVIDER === "smtp"
+          ? chalk.green(`Enabled (SMTP: ${config.SMTP_HOST})`)
+          : chalk.yellow("Disabled")
     }`,
   );
   console.log(

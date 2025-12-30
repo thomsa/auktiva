@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { randomBytes, createHash } from "crypto";
 import { hash } from "bcryptjs";
-import { sendEmail } from "@/lib/email/brevo";
+import { sendEmail } from "@/lib/email";
 import { queueWelcomeEmail } from "@/lib/email/service";
 import { getPasswordResetTemplateData } from "@/lib/email/templates";
 

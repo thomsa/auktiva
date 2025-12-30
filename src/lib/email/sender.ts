@@ -1,19 +1,18 @@
-import * as brevo from "@getbrevo/brevo";
+/**
+ * Email Sender
+ *
+ * Handles email sending with database logging, retries, and provider abstraction.
+ * Supports multiple providers (Brevo, SMTP) based on EMAIL_PROVIDER env var.
+ */
+
 import mjml2html from "mjml";
 import { prisma } from "@/lib/prisma";
 import { EmailType, EmailStatus } from "@/generated/prisma/client";
 import { createLogger } from "@/lib/logger";
+import { getEmailProvider, isEmailEnabled } from "./providers";
 
 const emailLogger = createLogger("email");
 
-const api = new brevo.TransactionalEmailsApi();
-api.setApiKey(
-  brevo.TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY!,
-);
-
-const MAIL_FROM = process.env.MAIL_FROM || "noreply@auktiva.org";
-const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || "Auktiva.org";
 const MAX_RETRIES = 5;
 
 interface SendEmailParams {
@@ -49,6 +48,12 @@ function renderTemplate(
 export async function sendEmail(params: SendEmailParams): Promise<boolean> {
   const { to, toName, subject, mjmlTemplate, replacements, type, metadata } =
     params;
+
+  // Check if email is enabled
+  if (!isEmailEnabled()) {
+    emailLogger.debug({ to, type }, "Email not configured, skipping send");
+    return false;
+  }
 
   emailLogger.info({ to, type, subject, metadata }, "Preparing to send email");
 
@@ -125,66 +130,90 @@ export async function sendEmailFromLog(emailLogId: string): Promise<boolean> {
     return false;
   }
 
+  // Get the email provider
+  const provider = getEmailProvider();
+  if (!provider) {
+    emailLogger.error({ emailLogId }, "No email provider available");
+    return false;
+  }
+
   try {
     emailLogger.debug(
       {
         emailLogId,
         to: emailLog.toEmail,
         subject: emailLog.subject,
-        sender: MAIL_FROM,
+        provider: provider.getName(),
       },
-      "Calling Brevo API to send email",
+      "Calling email provider to send",
     );
 
-    const response = await api.sendTransacEmail({
-      sender: { email: MAIL_FROM, name: MAIL_FROM_NAME },
-      to: [{ email: emailLog.toEmail, name: emailLog.toName || undefined }],
+    const result = await provider.send({
+      to: emailLog.toEmail,
+      toName: emailLog.toName || undefined,
       subject: emailLog.subject,
       htmlContent: emailLog.htmlContent,
     });
 
-    emailLogger.debug(
-      { emailLogId, response: JSON.stringify(response) },
-      "Brevo API response received",
-    );
+    if (result.success) {
+      // Mark as sent
+      await prisma.emailLog.update({
+        where: { id: emailLogId },
+        data: {
+          status: "SENT",
+          sentAt: new Date(),
+          lastError: null,
+        },
+      });
 
-    // Mark as sent
-    await prisma.emailLog.update({
-      where: { id: emailLogId },
-      data: {
-        status: "SENT",
-        sentAt: new Date(),
-        lastError: null,
-      },
-    });
+      emailLogger.info(
+        {
+          emailLogId,
+          to: emailLog.toEmail,
+          type: emailLog.type,
+          subject: emailLog.subject,
+          messageId: result.messageId,
+        },
+        "Email sent successfully",
+      );
+      return true;
+    } else {
+      // Handle failure
+      const newRetryCount = emailLog.retryCount + 1;
+      const newStatus: EmailStatus =
+        newRetryCount >= MAX_RETRIES ? "ABANDONED" : "FAILED";
 
-    emailLogger.info(
-      {
-        emailLogId,
-        to: emailLog.toEmail,
-        type: emailLog.type,
-        subject: emailLog.subject,
-      },
-      "Email sent successfully",
-    );
-    return true;
+      await prisma.emailLog.update({
+        where: { id: emailLogId },
+        data: {
+          status: newStatus,
+          retryCount: newRetryCount,
+          lastError: result.error || "Unknown error",
+        },
+      });
+
+      emailLogger.error(
+        {
+          emailLogId,
+          to: emailLog.toEmail,
+          type: emailLog.type,
+          subject: emailLog.subject,
+          attempt: newRetryCount,
+          maxRetries: MAX_RETRIES,
+          newStatus,
+          error: result.error,
+        },
+        `Failed to send email (attempt ${newRetryCount}/${MAX_RETRIES})`,
+      );
+
+      return false;
+    }
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
     const errorStack = err instanceof Error ? err.stack : undefined;
     const newRetryCount = emailLog.retryCount + 1;
     const newStatus: EmailStatus =
       newRetryCount >= MAX_RETRIES ? "ABANDONED" : "FAILED";
-
-    // Try to extract more error details from Brevo API errors
-    let errorDetails: Record<string, unknown> = {};
-    if (err && typeof err === "object") {
-      const apiError = err as { response?: { body?: unknown }; body?: unknown };
-      if (apiError.response?.body) {
-        errorDetails = { apiResponseBody: apiError.response.body };
-      } else if (apiError.body) {
-        errorDetails = { apiBody: apiError.body };
-      }
-    }
 
     await prisma.emailLog.update({
       where: { id: emailLogId },
@@ -206,7 +235,6 @@ export async function sendEmailFromLog(emailLogId: string): Promise<boolean> {
         newStatus,
         error: errorMessage,
         errorStack,
-        ...errorDetails,
       },
       `Failed to send email (attempt ${newRetryCount}/${MAX_RETRIES})`,
     );
@@ -221,6 +249,12 @@ export async function retryFailedEmails(): Promise<{
   failed: number;
 }> {
   emailLogger.info("Starting retry of failed emails");
+
+  // Check if email is enabled
+  if (!isEmailEnabled()) {
+    emailLogger.debug("Email not configured, skipping retry");
+    return { processed: 0, succeeded: 0, failed: 0 };
+  }
 
   const failedEmails = await prisma.emailLog.findMany({
     where: {
@@ -274,6 +308,12 @@ export async function processPendingEmails(): Promise<{
   failed: number;
 }> {
   emailLogger.info("Starting processing of pending emails");
+
+  // Check if email is enabled
+  if (!isEmailEnabled()) {
+    emailLogger.debug("Email not configured, skipping pending processing");
+    return { processed: 0, succeeded: 0, failed: 0 };
+  }
 
   const pendingEmails = await prisma.emailLog.findMany({
     where: { status: "PENDING" },

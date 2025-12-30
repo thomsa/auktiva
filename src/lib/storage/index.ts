@@ -1,21 +1,17 @@
 import { Storage } from "@tweedegolf/storage-abstraction";
-// Force static imports of adapters to ensure bundler includes them for Vercel serverless
-// These imports are used by Storage internally via dynamic require()
 import { AdapterAmazonS3 } from "@tweedegolf/sab-adapter-amazon-s3";
 import { AdapterLocal } from "@tweedegolf/sab-adapter-local";
 import { storageLogger as logger } from "@/lib/logger";
+import fs from "fs";
+import path from "path";
 
-// Reference adapters to prevent tree-shaking
-const _adapters = { AdapterAmazonS3, AdapterLocal };
-void _adapters;
+void [AdapterAmazonS3, AdapterLocal];
 
 let storageInstance: Storage | null = null;
 
-/**
- * Log storage configuration (without sensitive data)
- */
 export function logStorageConfig(): void {
   const provider = process.env.STORAGE_PROVIDER || "local";
+
   logger.info(
     {
       provider,
@@ -30,117 +26,117 @@ export function logStorageConfig(): void {
 }
 
 export function getStorage(): Storage {
-  if (storageInstance) {
-    return storageInstance;
-  }
+  if (storageInstance) return storageInstance;
 
   const provider = process.env.STORAGE_PROVIDER || "local";
-
   logger.info({ provider }, "Initializing storage provider");
 
   if (provider === "s3" || provider === "aws") {
-    // Validate required S3 environment variables
-    const missingVars: string[] = [];
-    if (!process.env.S3_BUCKET) missingVars.push("S3_BUCKET");
-    if (!process.env.S3_ACCESS_KEY_ID) missingVars.push("S3_ACCESS_KEY_ID");
-    if (!process.env.S3_SECRET_ACCESS_KEY)
-      missingVars.push("S3_SECRET_ACCESS_KEY");
-
-    if (missingVars.length > 0) {
-      logger.error(
-        { missingVars },
-        "Missing required S3 environment variables",
-      );
-      throw new Error(`Missing S3 configuration: ${missingVars.join(", ")}`);
-    }
-
-    const s3Config = {
-      provider: "aws" as const,
-      region: process.env.S3_REGION || "us-east-1",
-      bucketName: process.env.S3_BUCKET,
-      accessKeyId: process.env.S3_ACCESS_KEY_ID,
-      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-      ...(process.env.S3_ENDPOINT && { endpoint: process.env.S3_ENDPOINT }),
-    };
-
-    logger.info(
-      {
-        region: s3Config.region,
-        bucketName: s3Config.bucketName,
-        hasAccessKey: !!s3Config.accessKeyId,
-        hasSecretKey: !!s3Config.secretAccessKey,
-        endpoint: s3Config.endpoint || "(AWS default)",
-      },
-      "S3 config",
-    );
-
-    try {
-      storageInstance = new Storage(s3Config);
-      logger.info("S3 Storage instance created successfully");
-    } catch (err) {
-      logger.error(
-        {
-          err,
-          name: err instanceof Error ? err.name : "Unknown",
-          message: err instanceof Error ? err.message : String(err),
-        },
-        "Failed to create S3 Storage instance",
-      );
-      throw new Error(
-        `S3 initialization failed: ${
-          err instanceof Error ? err.message : String(err)
-        }`,
-      );
-    }
+    storageInstance = initializeS3Storage();
   } else {
-    // Local filesystem configuration
-    const directory = process.env.STORAGE_LOCAL_PATH || "./public/uploads";
-    logger.info({ directory }, "Local config");
-    try {
-      storageInstance = new Storage({
-        provider: "local",
-        directory,
-        bucketName: "images", // Required subdirectory for local storage
-        mode: 0o755,
-      });
-      logger.info("Local Storage instance created successfully");
-    } catch (err) {
-      logger.error({ err }, "Failed to create local Storage instance");
-      throw new Error(
-        `Local storage initialization failed: ${
-          err instanceof Error ? err.message : String(err)
-        }`,
-      );
-    }
+    storageInstance = initializeLocalStorage();
   }
 
   return storageInstance;
 }
 
-export function getPublicUrl(path: string): string {
-  // If path is already an absolute URL, return as-is
-  if (path.startsWith("http://") || path.startsWith("https://")) {
-    return path;
+function initializeS3Storage(): Storage {
+  const requiredVars = ["S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"];
+  const missingVars = requiredVars.filter((v) => !process.env[v]);
+
+  if (missingVars.length > 0) {
+    logger.error({ missingVars }, "Missing required S3 environment variables");
+    throw new Error(`Missing S3 configuration: ${missingVars.join(", ")}`);
+  }
+
+  const config = {
+    provider: "aws" as const,
+    region: process.env.S3_REGION || "us-east-1",
+    bucketName: process.env.S3_BUCKET,
+    accessKeyId: process.env.S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+    ...(process.env.S3_ENDPOINT && { endpoint: process.env.S3_ENDPOINT }),
+  };
+
+  logger.info(
+    {
+      region: config.region,
+      bucketName: config.bucketName,
+      hasAccessKey: !!config.accessKeyId,
+      hasSecretKey: !!config.secretAccessKey,
+      endpoint: config.endpoint || "(AWS default)",
+    },
+    "S3 config",
+  );
+
+  try {
+    const storage = new Storage(config);
+    logger.info("S3 Storage initialized");
+    return storage;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    logger.error({ err, message }, "Failed to initialize S3 Storage");
+    throw new Error(`S3 initialization failed: ${message}`);
+  }
+}
+
+function initializeLocalStorage(): Storage {
+  const directory = process.env.STORAGE_LOCAL_PATH || "./public/uploads";
+  const bucketName = "images";
+  const bucketPath = path.join(directory, bucketName);
+
+  logger.info({ directory, bucketName }, "Local storage config");
+
+  if (!fs.existsSync(bucketPath)) {
+    logger.info({ bucketPath }, "Creating local storage directory");
+    fs.mkdirSync(bucketPath, { recursive: true, mode: 0o755 });
+  }
+
+  try {
+    const storage = new Storage({
+      provider: "local",
+      directory,
+      bucketName,
+      mode: 0o755,
+    });
+    logger.info("Local Storage initialized");
+    return storage;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    logger.error({ err }, "Failed to initialize Local Storage");
+    throw new Error(`Local storage initialization failed: ${message}`);
+  }
+}
+
+export function getPublicUrl(filePath: string): string {
+  if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
+    return filePath;
   }
 
   const provider = process.env.STORAGE_PROVIDER || "local";
 
   if (provider === "s3") {
-    const bucket = process.env.S3_BUCKET;
-    const region = process.env.S3_REGION || "us-east-1";
-    const endpoint = process.env.S3_ENDPOINT;
-
-    if (endpoint) {
-      // Custom S3 endpoint (MinIO, etc.)
-      return `${endpoint}/${bucket}/${path}`;
-    }
-    // AWS S3
-    return `https://${bucket}.s3.${region}.amazonaws.com/${path}`;
+    return buildS3Url(filePath);
   }
 
-  // Local storage - serve from public folder
+  return buildLocalUrl(filePath);
+}
+
+function buildS3Url(filePath: string): string {
+  const bucket = process.env.S3_BUCKET;
+  const region = process.env.S3_REGION || "us-east-1";
+  const endpoint = process.env.S3_ENDPOINT;
+
+  if (endpoint) {
+    return `${endpoint}/${bucket}/${filePath}`;
+  }
+
+  return `https://${bucket}.s3.${region}.amazonaws.com/${filePath}`;
+}
+
+function buildLocalUrl(filePath: string): string {
   const urlPrefix = process.env.STORAGE_LOCAL_URL_PREFIX || "/uploads";
-  return `${urlPrefix}/images/${path}`;
+  return `${urlPrefix}/images/${filePath}`;
 }
 
 export function getStorageProvider(): string {
