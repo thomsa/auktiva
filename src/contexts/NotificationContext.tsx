@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useCallback, useMemo } from "react";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 
@@ -40,6 +41,8 @@ interface NotificationProviderProps {
 
 export function NotificationProvider({ children }: NotificationProviderProps) {
   const router = useRouter();
+  const { status } = useSession();
+  const isAuthenticated = status === "authenticated";
 
   // Determine polling interval based on current route
   const refreshInterval = useMemo(() => {
@@ -51,11 +54,12 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   }, [router.pathname]);
 
   // Single shared SWR instance with smart polling configuration
+  // Only fetch if user is authenticated (pass null key to disable)
   const { data, error, isLoading, mutate } = useSWR<NotificationsResponse>(
-    "/api/notifications?limit=20",
+    isAuthenticated ? "/api/notifications?limit=20" : null,
     fetcher,
     {
-      refreshInterval,
+      refreshInterval: isAuthenticated ? refreshInterval : 0,
       // Revalidate on focus (when user returns to tab)
       revalidateOnFocus: true,
       // Don't revalidate on mount if data exists (avoid duplicate requests)
