@@ -2,6 +2,29 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.7.0] - 2025-12-30
+
+### ⚙️ Miscellaneous
+
+- Add conditional docs deployment to release workflow by @thomsa
+
+### 🐛 Bug Fixes
+
+- Remove deprecated deploy.sh script in favor of install.sh and update.sh by @thomsa
+- Update PM2 commands to use ecosystem.config.js for process management by @thomsa
+- Local storage URL building to use /api/uploads prefix instead of public url by @thomsa
+- Add automatic database backup to update script and fix local storage bucket configuration by @thomsa
+- Simplify local storage configuration by removing customizable path settings by @thomsa
+
+### 🚀 Features
+
+- Add logs and backups directories to gitignore and create logs directory during setup by @thomsa
+- Improve setup wizard with clearer service port and public URL configuration by @thomsa
+- Add configurable PORT setting to setup wizard by @thomsa
+- Add --latest flag to install script for installing from main branch by @thomsa
+- Update install and update scripts to use latest release tag instead of main branch by @thomsa
+- Add SMTP email provider support alongside Brevo by @thomsa
+
 ## [1.6.8] - 2025-12-29
 
 ### Scripts
