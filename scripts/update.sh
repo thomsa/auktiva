@@ -15,12 +15,31 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_ROOT"
 
 echo ""
-echo "=== Step 1: Fetching latest changes ==="
-git fetch origin
+echo "=== Step 1: Fetching latest release ==="
+git fetch --tags origin
 
+LATEST_TAG=$(curl -fsSL "https://api.github.com/repos/thomsa/auktiva/releases/latest" 2>/dev/null | \
+  grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
+if [ -z "$LATEST_TAG" ]; then
+  echo "Error: Could not fetch latest release tag"
+  exit 1
+fi
+
+echo "Latest release: $LATEST_TAG"
+
+CURRENT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+
+if [ "$CURRENT_TAG" = "$LATEST_TAG" ]; then
+  echo ""
+  echo "Already on latest version ($LATEST_TAG). Nothing to do."
+  exit 0
+fi
+
+echo "Current version: ${CURRENT_TAG:-unknown}"
 echo ""
-echo "=== Step 2: Pulling updates ==="
-git pull origin main
+echo "=== Step 2: Checking out $LATEST_TAG ==="
+git checkout "$LATEST_TAG"
 
 echo ""
 echo "=== Step 3: Installing dependencies ==="

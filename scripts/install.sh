@@ -40,6 +40,11 @@ print_info() {
   echo -e "${BLUE}ℹ${NC} $1"
 }
 
+get_latest_release_tag() {
+  curl -fsSL "https://api.github.com/repos/thomsa/auktiva/releases/latest" 2>/dev/null | \
+    grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
+}
+
 # Check if command exists
 command_exists() {
   command -v "$1" >/dev/null 2>&1
@@ -61,6 +66,14 @@ main() {
   echo -e "${BOLD}  Auktiva Installer${NC}"
   echo -e "${DIM}  A comprehensive auction platform${NC}"
   echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo ""
+
+  LATEST_TAG=$(get_latest_release_tag)
+  if [ -z "$LATEST_TAG" ]; then
+    print_error "Could not fetch latest release. Check your internet connection."
+    exit 1
+  fi
+  echo -e "  ${GREEN}Installing version ${BOLD}${LATEST_TAG}${NC}"
   echo ""
 
   # ==========================================================================
@@ -133,16 +146,17 @@ main() {
     else
       cd "$INSTALL_DIR"
       if [ -d ".git" ]; then
-        print_info "Pulling latest changes..."
-        git pull origin main 2>/dev/null || true
+        print_info "Updating to ${LATEST_TAG}..."
+        git fetch --tags --quiet
+        git checkout "$LATEST_TAG" --quiet 2>/dev/null || true
       fi
     fi
   fi
 
   if [ ! -d "$INSTALL_DIR" ]; then
-    print_info "Downloading Auktiva..."
-    git clone --depth 1 --quiet https://github.com/thomsa/auktiva.git "$INSTALL_DIR"
-    print_success "Downloaded to $INSTALL_DIR"
+    print_info "Downloading Auktiva ${LATEST_TAG}..."
+    git clone --branch "$LATEST_TAG" --depth 1 --quiet https://github.com/thomsa/auktiva.git "$INSTALL_DIR"
+    print_success "Downloaded ${LATEST_TAG} to $INSTALL_DIR"
   fi
 
   cd "$INSTALL_DIR"
