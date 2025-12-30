@@ -74,11 +74,13 @@ Auktiva follows a **rolling release** model:
 - npm 10+ (comes with Node.js 20+)
 
 Check your Node.js version:
+
 ```bash
 node --version
 ```
 
 If you need to upgrade, download from [nodejs.org](https://nodejs.org/) or use a version manager:
+
 ```bash
 # Using nvm
 nvm install 20
@@ -302,13 +304,13 @@ CRON_SECRET="generate-with-openssl-rand-base64-32"
 
 **Common SMTP configurations:**
 
-| Provider | Host | Port | Secure |
-|----------|------|------|--------|
-| Gmail | smtp.gmail.com | 587 | false |
-| Mailgun | smtp.mailgun.org | 587 | false |
-| Amazon SES | email-smtp.{region}.amazonaws.com | 587 | false |
-| SendGrid | smtp.sendgrid.net | 587 | false |
-| Local (Mailpit) | localhost | 1025 | false |
+| Provider        | Host                              | Port | Secure |
+| --------------- | --------------------------------- | ---- | ------ |
+| Gmail           | smtp.gmail.com                    | 587  | false  |
+| Mailgun         | smtp.mailgun.org                  | 587  | false  |
+| Amazon SES      | email-smtp.{region}.amazonaws.com | 587  | false  |
+| SendGrid        | smtp.sendgrid.net                 | 587  | false  |
+| Local (Mailpit) | localhost                         | 1025 | false  |
 
 #### Email Retry System
 
@@ -328,7 +330,6 @@ Email notifications are disabled by default to conserve email quota. Users can e
 Protect registration from bots with Google reCAPTCHA v2 checkbox. If not configured, reCAPTCHA is completely disabled (useful for local development and self-hosting).
 
 1. **Get reCAPTCHA keys** at [google.com/recaptcha/admin](https://www.google.com/recaptcha/admin)
-
    - Choose reCAPTCHA v2 → "I'm not a robot" Checkbox
    - Add your domain(s)
 

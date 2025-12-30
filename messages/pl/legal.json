@@ -42,9 +42,9 @@
           "content2": "Właściciele aukcji mogą konfigurować ustawienia prywatności, w tym anonimowe licytowanie w celu ukrycia tożsamości licytujących, ograniczenia dostępu tylko na zaproszenie oraz uprawnienia oparte na rolach, aby kontrolować, co każdy członek może zobaczyć i zrobić."
         },
         "5b": {
-          "title": "Uwierzytelnianie przez stronę trzecią (Google OAuth)",
-          "content1": "Jeśli zdecydujesz się zalogować za pomocą Google, używamy usługi Google OAuth 2.0 do uwierzytelnienia Twojej tożsamości. Gdy logujesz się za pomocą Google, otrzymujemy podstawowe informacje o profilu (imię i nazwisko, adres e-mail i zdjęcie profilowe) od Google.",
-          "content2": "Nie otrzymujemy ani nie przechowujemy Twojego hasła Google. Wykorzystanie Twoich informacji przez Google podlega Polityce prywatności Google. Możesz w każdej chwili cofnąć dostęp Auktiva do swojego konta Google za pośrednictwem ustawień konta Google na myaccount.google.com."
+          "title": "Uwierzytelnianie przez stronę trzecią (OAuth)",
+          "content1": "Jeśli zdecydujesz się zalogować za pomocą Google lub Microsoft, używamy ich usług OAuth 2.0 do uwierzytelnienia Twojej tożsamości. Gdy logujesz się za pomocą tych dostawców, otrzymujemy podstawowe informacje o profilu (imię i nazwisko, adres e-mail i zdjęcie profilowe) od nich.",
+          "content2": "Nie otrzymujemy ani nie przechowujemy Twojego hasła Google ani Microsoft. Wykorzystanie Twoich informacji przez każdego dostawcę podlega ich odpowiednim politykom prywatności. Możesz w każdej chwili cofnąć dostęp Auktiva za pośrednictwem ustawień konta Google (myaccount.google.com) lub Microsoft (account.microsoft.com)."
         },
         "6": {
           "title": "Komunikacja e-mail",
@@ -106,13 +106,13 @@
         },
         "3": {
           "title": "Konta użytkowników",
-          "content1": "Aby korzystać z Auktiva, musisz utworzyć konto z dokładnymi informacjami, w tym imieniem i nazwiskiem, adresem e-mail i bezpiecznym hasłem. Alternatywnie możesz zalogować się za pomocą Google OAuth, co pozwala na użycie istniejących danych logowania do konta Google. Jesteś odpowiedzialny za utrzymanie bezpieczeństwa danych logowania do konta i nie powinieneś udostępniać swojego konta innym.",
+          "content1": "Aby korzystać z Auktiva, musisz utworzyć konto z dokładnymi informacjami, w tym imieniem i nazwiskiem, adresem e-mail i bezpiecznym hasłem. Alternatywnie możesz zalogować się za pomocą Google lub Microsoft OAuth, co pozwala na użycie istniejących danych logowania do konta. Jesteś odpowiedzialny za utrzymanie bezpieczeństwa danych logowania do konta i nie powinieneś udostępniać swojego konta innym.",
           "content2": "Musisz mieć co najmniej 18 lat lub zgodę rodziców, aby korzystać z Auktiva. Aktualizuj informacje o koncie, aby otrzymywać ważne powiadomienia o swoich aukcjach."
         },
         "3b": {
           "title": "Uwierzytelnianie przez stronę trzecią",
-          "content1": "Auktiva oferuje logowanie przez Google OAuth dla wygody. Gdy korzystasz z logowania Google, upoważniasz Google do udostępnienia nam podstawowych informacji o profilu (imię i nazwisko, e-mail, zdjęcie profilowe). Używamy tych informacji wyłącznie do utworzenia i zarządzania Twoim kontem Auktiva.",
-          "content2": "Twoje korzystanie z logowania Google podlega również Warunkom korzystania z usług i Polityce prywatności Google. Możesz w każdej chwili odłączyć swoje konto Google od Auktiva, chociaż może być konieczne ustawienie hasła, aby kontynuować dostęp do konta."
+          "content1": "Auktiva oferuje logowanie przez Google i Microsoft OAuth dla wygody. Gdy korzystasz z tych opcji logowania, upoważniasz odpowiedniego dostawcę do udostępnienia nam podstawowych informacji o profilu (imię i nazwisko, e-mail, zdjęcie profilowe). Używamy tych informacji wyłącznie do utworzenia i zarządzania Twoim kontem Auktiva.",
+          "content2": "Twoje korzystanie z logowania przez stronę trzecią podlega również Warunkom korzystania z usług i Polityce prywatności każdego dostawcy. Możesz w każdej chwili odłączyć swoje konto Google lub Microsoft od Auktiva, chociaż może być konieczne ustawienie hasła, aby kontynuować dostęp do konta."
         },
         "4": {
           "title": "Role i uprawnienia",

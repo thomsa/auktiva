@@ -18,13 +18,13 @@
         },
         "3": {
           "title": "Felhasználói fiókok",
-          "content1": "Az Auktiva használatához létre kell hoznod egy fiókot pontos információkkal, beleértve a nevedet, e-mail címedet és egy biztonságos jelszót. Alternatívaként bejelentkezhetsz Google OAuth használatával, amely lehetővé teszi a meglévő Google fiókod hitelesítő adatainak használatát. Felelős vagy fiókod hitelesítő adatainak biztonságáért, és nem oszthatod meg fiókodat másokkal.",
+          "content1": "Az Auktiva használatához létre kell hoznod egy fiókot pontos információkkal, beleértve a nevedet, e-mail címedet és egy biztonságos jelszót. Alternatívaként bejelentkezhetsz Google vagy Microsoft OAuth használatával, amely lehetővé teszi a meglévő fiókod hitelesítő adatainak használatát. Felelős vagy fiókod hitelesítő adatainak biztonságáért, és nem oszthatod meg fiókodat másokkal.",
           "content2": "Legalább 18 évesnek kell lenned, vagy szülői beleegyezéssel kell rendelkezned az Auktiva használatához. Tartsd naprakészen a fiókinformációidat, hogy megkapd a fontos értesítéseket az aukcióidról."
         },
         "3b": {
           "title": "Harmadik féltől származó hitelesítés",
-          "content1": "Az Auktiva kényelmi okokból Google OAuth bejelentkezést kínál. Amikor Google bejelentkezést használsz, felhatalmazod a Google-t, hogy megossza veled az alapvető profilinformációidat (név, e-mail, profilkép). Ezeket az információkat kizárólag az Auktiva fiókod létrehozására és kezelésére használjuk.",
-          "content2": "A Google bejelentkezés használata a Google Felhasználási Feltételeinek és Adatvédelmi Irányelveinek is alá van vetve. Bármikor leválaszthatod Google fiókodat az Auktivától, bár lehet, hogy jelszót kell beállítanod a fiókodhoz való hozzáférés folytatásához."
+          "content1": "Az Auktiva kényelmi okokból Google és Microsoft OAuth bejelentkezést kínál. Amikor ezeket a bejelentkezési lehetőségeket használod, felhatalmazod az adott szolgáltatót, hogy megossza veled az alapvető profilinformációidat (név, e-mail, profilkép). Ezeket az információkat kizárólag az Auktiva fiókod létrehozására és kezelésére használjuk.",
+          "content2": "A harmadik féltől származó bejelentkezés használata az adott szolgáltató Felhasználási Feltételeinek és Adatvédelmi Irányelveinek is alá van vetve. Bármikor leválaszthatod Google vagy Microsoft fiókodat az Auktivától, bár lehet, hogy jelszót kell beállítanod a fiókodhoz való hozzáférés folytatásához."
         },
         "4": {
           "title": "Szerepkörök és jogosultságok",
@@ -143,9 +143,9 @@
           "content2": "Az aukciók tulajdonosai konfigurálhatnak adatvédelmi beállításokat, beleértve az anonim licitálást a licitálók kilétének elrejtésére, a csak meghívásos hozzáférési korlátozásokat és a szerepkör-alapú jogosultságokat annak szabályozására, hogy az egyes tagok mit láthatnak és mit tehetnek."
         },
         "5b": {
-          "title": "Harmadik féltől származó hitelesítés (Google OAuth)",
-          "content1": "Ha úgy döntesz, hogy Google-lal jelentkezel be, a Google OAuth 2.0 szolgáltatását használjuk a személyazonosságod hitelesítésére. Amikor Google-lal jelentkezel be, megkapjuk az alapvető profilinformációidat (név, e-mail cím és profilkép) a Google-tól.",
-          "content2": "Nem kapjuk meg és nem tároljuk a Google jelszavadat. A Google által az információid felhasználását a Google Adatvédelmi Irányelve szabályozza. Bármikor visszavonhatod az Auktiva hozzáférését a Google fiókodhoz a Google Fiók beállításain keresztül a myaccount.google.com címen."
+          "title": "Harmadik féltől származó hitelesítés (OAuth)",
+          "content1": "Ha úgy döntesz, hogy Google-lal vagy Microsofttal jelentkezel be, az OAuth 2.0 szolgáltatásaikat használjuk a személyazonosságod hitelesítésére. Amikor ezekkel a szolgáltatókkal jelentkezel be, megkapjuk az alapvető profilinformációidat (név, e-mail cím és profilkép) tőlük.",
+          "content2": "Nem kapjuk meg és nem tároljuk a Google vagy Microsoft jelszavadat. Az egyes szolgáltatók adatfelhasználását a saját adatvédelmi irányelveik szabályozzák. Bármikor visszavonhatod az Auktiva hozzáférését a Google Fiók beállításain (myaccount.google.com) vagy a Microsoft Fiók beállításain (account.microsoft.com) keresztül."
         },
         "6": {
           "title": "E-mail kommunikáció",

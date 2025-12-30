@@ -1043,8 +1043,8 @@ async function main() {
       config.EMAIL_PROVIDER === "brevo"
         ? chalk.green("Enabled (Brevo)")
         : config.EMAIL_PROVIDER === "smtp"
-        ? chalk.green(`Enabled (SMTP: ${config.SMTP_HOST})`)
-        : chalk.yellow("Disabled")
+          ? chalk.green(`Enabled (SMTP: ${config.SMTP_HOST})`)
+          : chalk.yellow("Disabled")
     }`,
   );
   console.log(

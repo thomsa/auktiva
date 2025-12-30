@@ -127,8 +127,8 @@ Auktiva follows a **rolling release** model:
 
 <Callout type="warning">
   We strongly recommend keeping your Auktiva instance up to date. Older versions
-  are not maintained and may contain bugs or security issues that have been fixed
-  in newer releases.
+  are not maintained and may contain bugs or security issues that have been
+  fixed in newer releases.
 </Callout>
 
 This approach keeps development simple and ensures all users benefit from the latest improvements. If you encounter a bug, check if updating to the latest version resolves it before reporting.
@@ -172,8 +172,8 @@ cp "$DB_PATH" "backups/backup_$(date +%Y%m%d_%H%M%S).db"
 ```
 
 <Callout type="warning">
-  Turso (remote) databases are not backed up by this script. Use Turso's built-in
-  backup features for production deployments.
+  Turso (remote) databases are not backed up by this script. Use Turso's
+  built-in backup features for production deployments.
 </Callout>
 
 ### 4. Install Dependencies & Migrate
@@ -243,7 +243,7 @@ export async function getSystemSettings(): Promise<SystemSettings>;
 
 // Update system settings (claim/transfer admin)
 export async function updateSystemSettings(
-  data: Partial<SystemSettings>
+  data: Partial<SystemSettings>,
 ): Promise<SystemSettings>;
 ```
 

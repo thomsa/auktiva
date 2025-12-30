@@ -43,7 +43,8 @@ curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install
 ```
 
 <Callout type="warning">
-  The `--latest` flag installs unreleased code from the main branch which may be unstable or contain breaking changes. Use only for development or testing.
+  The `--latest` flag installs unreleased code from the main branch which may be
+  unstable or contain breaking changes. Use only for development or testing.
 </Callout>
 
 This script will:
@@ -154,6 +155,7 @@ curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install
 ```
 
 **Responsibilities:**
+
 - Validates prerequisites (Node.js 20+, npm, git)
 - Clones the repository
 - Installs npm dependencies
@@ -168,6 +170,7 @@ npm run setup
 ```
 
 **Responsibilities:**
+
 - Validates Node.js version (redundant check for direct invocation)
 - Guides through configuration (database, storage, auth, email)
 - Writes the `.env` file
@@ -178,16 +181,19 @@ npm run setup
 ### Installation Flows
 
 **Fresh install (new server):**
+
 ```
 curl ... | bash → install.sh → npm install → setup.ts
 ```
 
 **Reconfigure existing installation:**
+
 ```
 npm run setup → setup.ts (directly)
 ```
 
 Both scripts validate Node.js 20+ independently:
+
 - `install.sh` catches version issues early, before cloning/installing
 - `setup.ts` catches issues when someone runs `npm run setup` directly on an existing clone
 

@@ -41,19 +41,19 @@ jobs:
           # Get the previous tag
           CURRENT_TAG="${GITHUB_REF#refs/tags/}"
           PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -A1 "^${CURRENT_TAG}$" | tail -1)
-          
+
           if [ -z "$PREVIOUS_TAG" ] || [ "$PREVIOUS_TAG" = "$CURRENT_TAG" ]; then
             # No previous tag found, check against first commit
             echo "No previous tag found, assuming docs changed"
             echo "docs_changed=true" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           echo "Comparing $PREVIOUS_TAG to $CURRENT_TAG"
-          
+
           # Check if any files in /docs have changed between tags
           DOCS_CHANGES=$(git diff --name-only "$PREVIOUS_TAG" "$CURRENT_TAG" -- docs/ | wc -l)
-          
+
           if [ "$DOCS_CHANGES" -gt 0 ]; then
             echo "Found $DOCS_CHANGES changed files in docs/"
             echo "docs_changed=true" >> $GITHUB_OUTPUT

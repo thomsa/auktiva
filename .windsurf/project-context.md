@@ -82,7 +82,6 @@ auktiva/
 └── tsconfig.json
 ```
 
-
 ## Authentication Flow
 
 ### NextAuth v4 Configuration (`src/lib/auth.ts`)

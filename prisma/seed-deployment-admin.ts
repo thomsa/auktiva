@@ -31,10 +31,10 @@ async function main() {
       errorMessage.includes("P2021")
     ) {
       console.log(
-        "SystemSettings table not found. This will be created on first app start."
+        "SystemSettings table not found. This will be created on first app start.",
       );
       console.log(
-        `Deployment admin email (${email}) should be set via Settings page after first login.`
+        `Deployment admin email (${email}) should be set via Settings page after first login.`,
       );
       process.exit(0);
     }

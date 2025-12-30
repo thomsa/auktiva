@@ -206,6 +206,16 @@ export default function LoginPage({
                   {googleOAuthEnabled && <GoogleSignInButton />}
                   {microsoftOAuthEnabled && <MicrosoftSignInButton />}
                 </div>
+                <p className="text-xs text-base-content/50 text-center mt-4">
+                  {t("oauthTermsAgreement")}{" "}
+                  <Link href="/terms" className="link link-primary">
+                    {t("termsOfService")}
+                  </Link>{" "}
+                  {t("and")}{" "}
+                  <Link href="/privacy" className="link link-primary">
+                    {t("privacyPolicy")}
+                  </Link>
+                </p>
               </>
             )}
 

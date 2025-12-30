@@ -42,9 +42,9 @@
           "content2": "Auktionsbesitzer können Datenschutzeinstellungen konfigurieren, einschließlich anonymem Bieten zum Verbergen von Bieteridentitäten, Zugangsbeschränkungen nur für Eingeladene und rollenbasierten Berechtigungen, um zu steuern, was jedes Mitglied sehen und tun kann."
         },
         "5b": {
-          "title": "Drittanbieter-Authentifizierung (Google OAuth)",
-          "content1": "Wenn du dich für die Anmeldung mit Google entscheidest, verwenden wir den OAuth 2.0-Dienst von Google, um deine Identität zu authentifizieren. Wenn du dich mit Google anmeldest, erhalten wir deine grundlegenden Profilinformationen (Name, E-Mail-Adresse und Profilbild) von Google.",
-          "content2": "Wir erhalten oder speichern dein Google-Passwort nicht. Die Verwendung deiner Informationen durch Google unterliegt der Datenschutzrichtlinie von Google. Du kannst den Zugriff von Auktiva auf dein Google-Konto jederzeit über deine Google-Kontoeinstellungen unter myaccount.google.com widerrufen."
+          "title": "Drittanbieter-Authentifizierung (OAuth)",
+          "content1": "Wenn du dich für die Anmeldung mit Google oder Microsoft entscheidest, verwenden wir deren OAuth 2.0-Dienste, um deine Identität zu authentifizieren. Wenn du dich mit diesen Anbietern anmeldest, erhalten wir deine grundlegenden Profilinformationen (Name, E-Mail-Adresse und Profilbild) von ihnen.",
+          "content2": "Wir erhalten oder speichern dein Google- oder Microsoft-Passwort nicht. Die Verwendung deiner Informationen durch jeden Anbieter unterliegt deren jeweiligen Datenschutzrichtlinien. Du kannst den Zugriff von Auktiva jederzeit über deine Google-Kontoeinstellungen (myaccount.google.com) oder Microsoft-Kontoeinstellungen (account.microsoft.com) widerrufen."
         },
         "6": {
           "title": "E-Mail-Kommunikation",
@@ -106,13 +106,13 @@
         },
         "3": {
           "title": "Benutzerkonten",
-          "content1": "Um Auktiva zu nutzen, musst du ein Konto mit genauen Informationen erstellen, einschließlich deines Namens, deiner E-Mail-Adresse und eines sicheren Passworts. Alternativ kannst du dich mit Google OAuth anmelden, wodurch du deine bestehenden Google-Kontodaten verwenden kannst. Du bist verantwortlich für die Sicherheit deiner Kontodaten und solltest dein Konto nicht mit anderen teilen.",
+          "content1": "Um Auktiva zu nutzen, musst du ein Konto mit genauen Informationen erstellen, einschließlich deines Namens, deiner E-Mail-Adresse und eines sicheren Passworts. Alternativ kannst du dich mit Google oder Microsoft OAuth anmelden, wodurch du deine bestehenden Kontodaten verwenden kannst. Du bist verantwortlich für die Sicherheit deiner Kontodaten und solltest dein Konto nicht mit anderen teilen.",
           "content2": "Du musst mindestens 18 Jahre alt sein oder die Zustimmung deiner Eltern haben, um Auktiva zu nutzen. Halte deine Kontoinformationen auf dem neuesten Stand, um wichtige Benachrichtigungen über deine Auktionen zu erhalten."
         },
         "3b": {
           "title": "Drittanbieter-Authentifizierung",
-          "content1": "Auktiva bietet die Anmeldung über Google OAuth als Komfortfunktion an. Wenn du die Google-Anmeldung verwendest, autorisierst du Google, deine grundlegenden Profilinformationen (Name, E-Mail, Profilbild) mit uns zu teilen. Wir verwenden diese Informationen ausschließlich zum Erstellen und Verwalten deines Auktiva-Kontos.",
-          "content2": "Deine Nutzung der Google-Anmeldung unterliegt auch den Nutzungsbedingungen und der Datenschutzrichtlinie von Google. Du kannst dein Google-Konto jederzeit von Auktiva trennen, musst jedoch möglicherweise ein Passwort festlegen, um weiterhin auf dein Konto zugreifen zu können."
+          "content1": "Auktiva bietet die Anmeldung über Google und Microsoft OAuth als Komfortfunktion an. Wenn du diese Anmeldeoptionen verwendest, autorisierst du den jeweiligen Anbieter, deine grundlegenden Profilinformationen (Name, E-Mail, Profilbild) mit uns zu teilen. Wir verwenden diese Informationen ausschließlich zum Erstellen und Verwalten deines Auktiva-Kontos.",
+          "content2": "Deine Nutzung der Drittanbieter-Anmeldung unterliegt auch den Nutzungsbedingungen und der Datenschutzrichtlinie des jeweiligen Anbieters. Du kannst dein Google- oder Microsoft-Konto jederzeit von Auktiva trennen, musst jedoch möglicherweise ein Passwort festlegen, um weiterhin auf dein Konto zugreifen zu können."
         },
         "4": {
           "title": "Rollen und Berechtigungen",

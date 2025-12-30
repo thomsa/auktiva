@@ -97,7 +97,10 @@ function initializeS3Storage(): Storage {
 function initializeLocalStorage(): Storage {
   const bucketPath = path.join(LOCAL_STORAGE_DIR, LOCAL_BUCKET_NAME);
 
-  logger.info({ directory: LOCAL_STORAGE_DIR, bucket: LOCAL_BUCKET_NAME }, "Local storage config");
+  logger.info(
+    { directory: LOCAL_STORAGE_DIR, bucket: LOCAL_BUCKET_NAME },
+    "Local storage config",
+  );
 
   if (!fs.existsSync(bucketPath)) {
     logger.info({ bucketPath }, "Creating local storage directory");
