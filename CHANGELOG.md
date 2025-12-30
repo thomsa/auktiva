@@ -2,6 +2,14 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.7.1] - 2025-12-30
+
+### 📚 Documentation
+
+- Add release strategy documentation and improve email provider backward compatibility by @thomsa
+- Add Callout component import to installation documentation by @thomsa
+- Update Amazon SES SMTP host example to use specific region by @thomsa
+
 ## [1.7.0] - 2025-12-30
 
 ### ⚙️ Miscellaneous
