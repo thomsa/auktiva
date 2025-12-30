@@ -19,6 +19,7 @@
       "bidderVisibility": "Bidder Visibility",
       "alwaysVisible": "Always Visible - Show bidder names",
       "alwaysAnonymous": "Always Anonymous - Hide bidder names",
+      "hideBidderNamesDescription": "Hide bidder names for this item",
       "perBid": "Per Bid - Let each bidder decide",
       "timing": "Timing",
       "endDate": "Auction End Date (optional)",
@@ -138,7 +139,8 @@
       "winningBid": "Winning Bid",
       "noItemsSold": "No items sold",
       "you": "You",
-      "anonymous": "Anonymous"
+      "anonymous": "Anonymous",
+      "yourListing": "Your Listing"
     },
     "acceptInvite": {
       "title": "Join Auction",

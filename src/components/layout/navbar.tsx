@@ -2,9 +2,11 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { useTheme } from "@/components/providers/theme-provider";
 import { NotificationBell } from "@/components/notifications/notification-bell";
+import { MobileNotificationSheet } from "@/components/notifications/mobile-notification-sheet";
 import packageJson from "../../../package.json";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useNotifications } from "@/contexts/NotificationContext";
 
 interface NavbarProps {
   user: {
@@ -20,7 +22,9 @@ export function Navbar({ user }: NavbarProps) {
   const { setTheme, resolvedTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileNotificationsOpen, setMobileNotificationsOpen] = useState(false);
+
+  const { unreadCount } = useNotifications();
 
   useEffect(() => {
     // This is an intentional hydration pattern to prevent SSR mismatch
@@ -61,36 +65,42 @@ export function Navbar({ user }: NavbarProps) {
           <div className="hidden md:flex items-center gap-1">
             <Link
               href="/dashboard"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10"
+              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
             >
+              <span className="icon-[tabler--layout-dashboard] size-4"></span>
               {t("dashboard")}
             </Link>
             <Link
-              href="/auctions/create"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10"
+              href="/listings"
+              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
             >
-              {t("createAuction")}
+              <span className="icon-[tabler--tag] size-4"></span>
+              {t("myListings")}
             </Link>
             <Link
               href="/history"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10"
+              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
             >
+              <span className="icon-[tabler--gavel] size-4"></span>
               {t("myBids")}
             </Link>
           </div>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Notification Bell */}
         <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          onClick={() => setMobileNotificationsOpen(true)}
           className="md:hidden btn btn-ghost btn-sm btn-circle"
-          aria-label="Toggle menu"
+          aria-label={t("notifications")}
         >
-          {mobileMenuOpen ? (
-            <span className="icon-[tabler--x] size-6"></span>
-          ) : (
-            <span className="icon-[tabler--menu-2] size-6"></span>
-          )}
+          <div className="indicator">
+            <span className="icon-[tabler--bell] size-6"></span>
+            {unreadCount > 0 && (
+              <span className="indicator-item badge badge-primary badge-xs">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </div>
         </button>
 
         <div className="hidden md:flex items-center gap-3">
@@ -226,71 +236,11 @@ export function Navbar({ user }: NavbarProps) {
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-base-100/95 backdrop-blur-lg border-b border-base-content/10 shadow-lg z-40">
-          <div className="container mx-auto px-4 py-4 flex flex-col gap-2">
-            <Link
-              href="/dashboard"
-              onClick={() => setMobileMenuOpen(false)}
-              className="btn btn-ghost justify-start"
-            >
-              <span className="icon-[tabler--layout-dashboard] size-5"></span>
-              {t("dashboard")}
-            </Link>
-            <Link
-              href="/auctions/create"
-              onClick={() => setMobileMenuOpen(false)}
-              className="btn btn-ghost justify-start"
-            >
-              <span className="icon-[tabler--plus] size-5"></span>
-              {t("createAuction")}
-            </Link>
-            <Link
-              href="/history"
-              onClick={() => setMobileMenuOpen(false)}
-              className="btn btn-ghost justify-start"
-            >
-              <span className="icon-[tabler--history] size-5"></span>
-              {t("myBids")}
-            </Link>
-            <Link
-              href="/settings"
-              onClick={() => setMobileMenuOpen(false)}
-              className="btn btn-ghost justify-start"
-            >
-              <span className="icon-[tabler--settings] size-5"></span>
-              {t("settings")}
-            </Link>
-            <div className="divider my-1"></div>
-            <div className="flex items-center justify-end px-4 py-2">
-              {mounted && (
-                <button
-                  onClick={() =>
-                    setTheme(resolvedTheme === "light" ? "dark" : "light")
-                  }
-                  className="btn btn-ghost btn-sm btn-circle"
-                  aria-label="Toggle theme"
-                >
-                  {resolvedTheme === "light" ? (
-                    <span className="icon-[tabler--moon] size-5"></span>
-                  ) : (
-                    <span className="icon-[tabler--sun] size-5"></span>
-                  )}
-                </button>
-              )}
-            </div>
-            <div className="divider my-1"></div>
-            <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              className="btn btn-ghost justify-start text-error"
-            >
-              <span className="icon-[tabler--logout] size-5"></span>
-              {t("signOut")}
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Mobile Notification Sheet */}
+      <MobileNotificationSheet
+        isOpen={mobileNotificationsOpen}
+        onClose={() => setMobileNotificationsOpen(false)}
+      />
     </nav>
   );
 }

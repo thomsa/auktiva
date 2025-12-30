@@ -1,0 +1,18 @@
+{
+  "listings": {
+    "subtitle": "Zarządzaj przedmiotami wystawionymi na aukcję",
+    "active": "Aktywne",
+    "ended": "Zakończone",
+    "bids": "{count, plural, =0 {Brak ofert} =1 {1 oferta} other {# ofert}}",
+    "noActive": "Brak aktywnych przedmiotów",
+    "noEnded": "Brak zakończonych przedmiotów",
+    "empty": {
+      "title": "Brak przedmiotów",
+      "description": "Nie wystawiłeś jeszcze żadnych przedmiotów na aukcję. Przejdź do aukcji i dodaj swój pierwszy przedmiot!"
+    },
+    "justEnded": {
+      "title": "Właśnie zakończone",
+      "description": "Te przedmioty zakończyły się w ciągu ostatnich 3 dni i wymagają Twojej uwagi. Skontaktuj się ze zwycięzcami w sprawie dostawy."
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "listings": {
+    "subtitle": "Manage items you have listed for auction",
+    "active": "Active",
+    "ended": "Ended",
+    "bids": "{count, plural, =0 {No bids} =1 {1 bid} other {# bids}}",
+    "noActive": "No active listings",
+    "noEnded": "No ended listings",
+    "empty": {
+      "title": "No listings yet",
+      "description": "You haven't listed any items for auction yet. Go to an auction and add your first item!"
+    },
+    "justEnded": {
+      "title": "Just Ended",
+      "description": "These items ended in the last 3 days and need your attention. Contact the winners to arrange delivery."
+    }
+  }
+}

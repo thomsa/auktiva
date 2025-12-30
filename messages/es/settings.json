@@ -30,7 +30,9 @@
       "newItemNotifications": "Notificaciones de nuevos artículos",
       "newItemDescription": "Recibe un correo cuando se añada un nuevo artículo a una subasta de la que eres miembro",
       "outbidNotifications": "Notificaciones de superación de puja",
-      "outbidDescription": "Recibe un correo cuando alguien supere tu puja en un artículo"
+      "outbidDescription": "Recibe un correo cuando alguien supere tu puja en un artículo",
+      "itemWonNotifications": "Notificaciones de artículo ganado",
+      "itemWonDescription": "Recibe un correo cuando ganes un artículo en una subasta"
     },
     "appearance": {
       "title": "Apariencia",
@@ -49,9 +51,73 @@
       "connected": "Conectada",
       "notConnected": "No conectada"
     },
+    "deploymentAdmin": {
+      "title": "Administración del despliegue",
+      "description": "Gestiona quién puede instalar actualizaciones y administrar este despliegue.",
+      "youAreAdmin": "Eres el administrador del despliegue",
+      "adminDescription": "Puedes instalar actualizaciones directamente desde el banner de actualización.",
+      "noAdminSet": "No hay administrador de despliegue configurado",
+      "claimAdminDescription": "Sé el primero en reclamar los derechos de administrador para esta instancia.",
+      "becomeAdmin": "Convertirse en administrador del despliegue",
+      "claiming": "Reclamando...",
+      "becameAdmin": "Ahora eres el administrador del despliegue",
+      "removeAdmin": "Eliminar derechos de administrador",
+      "removing": "Eliminando...",
+      "removedAdmin": "Administrador del despliegue eliminado",
+      "adminAlreadySet": "Otro usuario es el administrador del despliegue",
+      "contactCurrentAdmin": "Contacta al administrador actual para transferir los derechos.",
+      "transferTitle": "Transferir derechos de administrador",
+      "transferDescription": "Transfiere los derechos de administrador a otro usuario registrado.",
+      "emailPlaceholder": "Ingresa el correo del usuario",
+      "transfer": "Transferir",
+      "transferring": "Transfiriendo...",
+      "transferred": "Derechos de administrador transferidos exitosamente",
+      "enterEmail": "Por favor ingresa una dirección de correo",
+      "versionTitle": "Información de versión",
+      "currentVersion": "Versión actual",
+      "latestVersion": "Última versión",
+      "viewChangelog": "Registro de cambios",
+      "updateNow": "Actualizar ahora",
+      "updating": "Actualizando..."
+    },
     "seo": {
       "title": "Ajustes",
       "description": "Gestiona los ajustes de tu cuenta"
+    },
+    "deleteAccount": {
+      "title": "Eliminar cuenta",
+      "description": "Elimina permanentemente tu cuenta y todos los datos asociados.",
+      "warning": "Esta acción es irreversible",
+      "warningDescription": "Una vez eliminada, tu cuenta y todos los datos no se pueden recuperar.",
+      "deleteButton": "Eliminar mi cuenta",
+      "modalTitle": "Eliminar tu cuenta",
+      "modalDescription": "Esto eliminará permanentemente tu cuenta, incluyendo todas tus pujas, artículos creados y membresías de subastas. Esta acción no se puede deshacer.",
+      "ownedAuctionsTitle": "Eres propietario de las siguientes subastas",
+      "ownedAuctionsDescription": "Elige qué hacer con cada subasta antes de eliminar tu cuenta.",
+      "deleteAuction": "Eliminar subasta",
+      "transferOwnership": "Transferir propiedad",
+      "newOwnerEmail": "Correo electrónico del nuevo propietario",
+      "enterTransferEmail": "Por favor ingresa un correo electrónico para {auction}",
+      "enterPassword": "Ingresa tu contraseña para confirmar",
+      "enterEmail": "Ingresa tu correo para confirmar",
+      "passwordPlaceholder": "Tu contraseña actual",
+      "passwordHint": "Ingresa tu contraseña para verificar tu identidad",
+      "emailHint": "Escribe tu dirección de correo exactamente como se muestra para confirmar",
+      "passwordRequired": "La contraseña es requerida",
+      "emailRequired": "Se requiere confirmación por correo",
+      "incorrectPassword": "Contraseña incorrecta",
+      "incorrectEmail": "La dirección de correo no coincide",
+      "mustTransferAdmin": "Debes transferir los derechos de administrador del despliegue antes de eliminar tu cuenta",
+      "cancel": "Cancelar",
+      "confirmDelete": "Eliminar cuenta",
+      "deleting": "Eliminando...",
+      "accountDeleted": "Tu cuenta ha sido eliminada"
+    },
+    "quickLinks": {
+      "title": "Enlaces Rápidos",
+      "documentation": "Documentación",
+      "feedback": "Enviar Comentarios",
+      "signOut": "Cerrar Sesión"
     }
   }
 }

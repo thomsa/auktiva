@@ -42,7 +42,14 @@
       "basicInfo": "Tétel részletei",
       "pricing": "Árazás",
       "createSuccess": "Tétel sikeresen létrehozva",
-      "createFailed": "Nem sikerült létrehozni a tételt"
+      "createFailed": "Nem sikerült létrehozni a tételt",
+      "step1Title": "Részletek",
+      "step2Title": "Képek",
+      "nextStep": "Tovább: Képek hozzáadása",
+      "step2Heading": "Képek hozzáadása",
+      "step2Subtitle": "Tölts fel fotókat a tételről (opcionális)",
+      "skipImages": "Kihagyás",
+      "finishButton": "Kész"
     },
     "edit": {
       "title": "Tétel szerkesztése",
@@ -67,8 +74,15 @@
       "endNowSuccess": "Tétel licitálása sikeresen lezárva",
       "updateFailed": "Nem sikerült frissíteni a tételt",
       "deleteFailed": "Nem sikerült törölni a tételt",
-      "endFailed": "Nem sikerült lezárni a tételt"
+      "endFailed": "Nem sikerült lezárni a tételt",
+      "cannotChangeCurrency": "A pénznem nem módosítható, miután liciteket adtak le",
+      "cannotChangeStartingBid": "A kezdő licit nem módosítható, miután liciteket adtak le",
+      "itemsEndWithAuction": "A tételek az aukció végével zárulnak",
+      "itemsNoEndDate": "A tételeknek nincs záró dátumuk",
+      "auctionSetting": "(aukció beállítás)"
     },
+    "yourListing": "Saját tétel",
+    "listedBy": "Listázta",
     "gallery": {
       "imageOf": "{current}. kép a {total}-ból",
       "previousImage": "Előző kép",

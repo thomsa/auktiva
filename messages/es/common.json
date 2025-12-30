@@ -38,8 +38,11 @@
     "dashboard": "Panel",
     "createAuction": "Crear Subasta",
     "myBids": "Mis Pujas",
+    "myListings": "Mis Artículos",
     "bidHistory": "Historial de Pujas",
     "settings": "Ajustes",
+    "profile": "Perfil",
+    "notifications": "Notificaciones",
     "documentation": "Documentación",
     "feedback": "Comentarios",
     "signOut": "Cerrar sesión",
@@ -127,7 +130,9 @@
     "change": "Cambiar",
     "upload": "Subir",
     "remove": "Eliminar",
-    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Máx 5MB • Se recomienda cuadrado"
+    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Máx 5MB • Se recomienda cuadrado",
+    "uploadSuccess": "Subida exitosa",
+    "deleteSuccess": "Eliminado exitosamente"
   },
   "notifications": {
     "title": "Notificaciones",
@@ -144,5 +149,18 @@
   "stats": {
     "more": "+{count} más",
     "allCurrencies": "Todas las monedas"
+  },
+  "update": {
+    "newVersion": "¡La versión {version} está disponible!",
+    "contactAdmin": "Contacte a su administrador para actualizar.",
+    "clickToUpdate": "Haga clic para instalar la actualización.",
+    "viewRelease": "Ver notas de la versión",
+    "dismiss": "Cerrar",
+    "installUpdate": "Instalar actualización",
+    "updating": "Actualizando...",
+    "updateFailed": "La actualización falló. Revise los logs del servidor.",
+    "updateStarted": "¡Actualización iniciada!",
+    "appRestarting": "La aplicación se reiniciará en breve.",
+    "updateTimeout": "Tiempo de actualización agotado. La aplicación puede necesitar reinicio manual."
   }
 }

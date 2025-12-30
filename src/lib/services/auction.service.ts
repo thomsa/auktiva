@@ -434,8 +434,13 @@ export async function autoJoinAuction(
 
 /**
  * Get auction results data for results page
+ * @param isAdmin - If true, show winner info even for anonymous bids (for auction owners)
  */
-export async function getAuctionResultsData(auctionId: string, userId: string) {
+export async function getAuctionResultsData(
+  auctionId: string,
+  userId: string,
+  isAdmin: boolean = false,
+) {
   const auction = await prisma.auction.findUnique({
     where: { id: auctionId },
   });
@@ -446,6 +451,9 @@ export async function getAuctionResultsData(auctionId: string, userId: string) {
     where: { auctionId },
     include: {
       currency: true,
+      creator: {
+        select: { id: true, name: true, email: true },
+      },
       images: {
         orderBy: { order: "asc" },
         take: 1,
@@ -469,18 +477,24 @@ export async function getAuctionResultsData(auctionId: string, userId: string) {
 
   const winners = items
     .filter((item) => item.bids.length > 0)
-    .map((item) => ({
-      itemId: item.id,
-      itemName: item.name,
-      thumbnailUrl: item.images[0]?.url
-        ? getPublicUrl(item.images[0].url)
-        : null,
-      winningBid: item.bids[0].amount,
-      currencyCode: item.currencyCode,
-      currencySymbol: item.currency.symbol,
-      winner: item.bidderAnonymous ? null : item.bids[0].user,
-      isCurrentUser: item.bids[0].userId === userId,
-    }));
+    .map((item) => {
+      const isItemCreator = item.creatorId === userId;
+      // Show winner info if: admin, or item creator (so they can contact winner)
+      const canSeeWinner = isAdmin || isItemCreator || !item.bidderAnonymous;
+      return {
+        itemId: item.id,
+        itemName: item.name,
+        thumbnailUrl: item.images[0]?.url
+          ? getPublicUrl(item.images[0].url)
+          : null,
+        winningBid: item.bids[0].amount,
+        currencyCode: item.currencyCode,
+        currencySymbol: item.currency.symbol,
+        winner: canSeeWinner ? item.bids[0].user : null,
+        isCurrentUser: item.bids[0].userId === userId,
+        isItemCreator,
+      };
+    });
 
   const userWins = winners.filter((w) => w.isCurrentUser);
 

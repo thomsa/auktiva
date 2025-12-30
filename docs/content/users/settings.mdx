@@ -65,6 +65,16 @@ Choose your preferred color scheme:
 - **Dark** - Dark background
 - **System** - Match device settings
 
+### Language
+
+Select your preferred language for the interface. Auktiva supports:
+
+- English (default)
+- Polish (Polski)
+- Hungarian (Magyar)
+- German (Deutsch)
+- Spanish (Español)
+
 ## Account Actions
 
 ### Logging Out
@@ -75,16 +85,66 @@ Choose your preferred color scheme:
 ### Deleting Your Account
 
 <Callout type="error">
-  Account deletion is permanent and cannot be undone.
+  Account deletion is permanent and cannot be undone. This action complies with
+  GDPR data deletion requirements.
 </Callout>
 
-1. Go to Settings
-2. Scroll to "Danger Zone"
-3. Click **"Delete Account"**
-4. Confirm with your password
+#### Step-by-Step Guide
 
-**What happens:**
+1. Go to **Settings**
+2. Scroll to the bottom to find **"Delete Account"** section
+3. Click **"Delete My Account"** button
+4. A confirmation modal will appear
 
-- Account is permanently deleted
-- Your bids remain (shown as "Deleted User")
-- You cannot recover this account
+#### If You Own Auctions
+
+If you are the owner of any auctions, you must decide what to do with each one before deleting your account:
+
+**Option 1: Transfer Ownership**
+
+- Select "Transfer ownership" for the auction
+- Enter the email address of the new owner
+- The new owner must be a registered Auktiva user
+- They will become the new owner with full control
+
+**Option 2: Delete Auction**
+
+- Select "Delete auction"
+- The auction and all its items, bids, and data will be permanently deleted
+
+<Callout type="warning">
+  You cannot delete your account while you are the Deployment Admin. You must
+  first transfer deployment admin rights to another user in the Deployment
+  Administration section.
+</Callout>
+
+#### Identity Verification
+
+To confirm deletion, you must verify your identity:
+
+- **Password accounts**: Enter your current password
+- **Google OAuth accounts**: Type your email address exactly as shown
+
+#### What Gets Deleted
+
+When you delete your account, the following data is permanently removed:
+
+- Your profile information (name, email, password)
+- Your user settings and preferences
+- Your auction memberships
+- Auctions you own (if you chose to delete them)
+- Items you created
+- Your bid history
+- Your notifications
+- Connected OAuth accounts (Google)
+
+<Callout type="info">
+  If you transferred auction ownership instead of deleting, those auctions and
+  their data will remain for the new owner and other participants.
+</Callout>
+
+#### After Deletion
+
+- You will be immediately signed out
+- You cannot recover your account
+- You can create a new account with the same email if desired

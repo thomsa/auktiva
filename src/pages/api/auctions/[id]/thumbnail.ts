@@ -8,6 +8,7 @@ import {
 import type { ApiHandler, Middleware } from "@/lib/api";
 import { prisma } from "@/lib/prisma";
 import { getStorage, getPublicUrl } from "@/lib/storage";
+import { uploadLogger as logger } from "@/lib/logger";
 import formidable from "formidable";
 import fs from "fs";
 import sharp from "sharp";
@@ -90,47 +91,115 @@ const uploadThumbnail: ApiHandler = async (req, res, ctx) => {
   const { auction } = ctx as typeof ctx & ContextWithAuction;
   const auctionId = ctx.params.id;
 
-  const { files } = await parseForm(req);
+  logger.info({ auctionId }, "Starting thumbnail upload");
+
+  let files;
+  try {
+    const formResult = await parseForm(req);
+    files = formResult.files;
+    logger.debug({ files: Object.keys(files) }, "Form parsed");
+  } catch (parseError) {
+    logger.error({ err: parseError }, "Form parse error");
+    throw new BadRequestError(
+      `Failed to parse upload: ${
+        parseError instanceof Error ? parseError.message : "Unknown error"
+      }`,
+    );
+  }
+
   const fileArray = files.thumbnail;
 
   if (!fileArray || (Array.isArray(fileArray) && fileArray.length === 0)) {
+    logger.warn("No thumbnail file in request");
     throw new BadRequestError("No image file provided");
   }
 
   const file = Array.isArray(fileArray) ? fileArray[0] : fileArray;
+  logger.debug(
+    {
+      originalFilename: file.originalFilename,
+      mimetype: file.mimetype,
+      size: file.size,
+    },
+    "File received",
+  );
 
   if (!file.mimetype || !ALLOWED_TYPES.includes(file.mimetype)) {
+    logger.warn({ mimetype: file.mimetype }, "Invalid file type");
     throw new BadRequestError(
       "Invalid file type. Allowed: JPEG, PNG, WebP, GIF",
     );
   }
 
   // Process image
-  const processedBuffer = await processImage(file.filepath);
+  let processedBuffer: Buffer;
+  try {
+    processedBuffer = await processImage(file.filepath);
+    logger.debug({ bufferSize: processedBuffer.length }, "Image processed");
+  } catch (processError) {
+    logger.error({ err: processError }, "Image processing error");
+    throw new BadRequestError(
+      `Failed to process image: ${
+        processError instanceof Error ? processError.message : "Unknown error"
+      }`,
+    );
+  }
 
   // Generate filename
   const filename = `auctions/${auctionId}/thumbnail-${Date.now()}.jpg`;
+  logger.debug({ filename }, "Generated filename");
 
   // Delete old thumbnail if exists
   if (auction.thumbnailUrl) {
+    logger.debug(
+      { oldThumbnail: auction.thumbnailUrl },
+      "Deleting old thumbnail",
+    );
     const storage = getStorage();
     try {
       await storage.removeFile(auction.thumbnailUrl);
-    } catch {
+      logger.debug("Old thumbnail deleted");
+    } catch (deleteError) {
+      logger.warn({ err: deleteError }, "Failed to delete old thumbnail");
       // Ignore errors when deleting old file
     }
   }
 
   // Upload to storage
-  const storage = getStorage();
-  const result = await storage.addFileFromBuffer({
-    buffer: processedBuffer,
-    targetPath: filename,
-  });
+  let storage;
+  try {
+    storage = getStorage();
+  } catch (storageError) {
+    logger.error({ err: storageError }, "Failed to get storage");
+    throw new BadRequestError(
+      `Storage configuration error: ${
+        storageError instanceof Error ? storageError.message : "Unknown error"
+      }`,
+    );
+  }
+
+  let result;
+  try {
+    result = await storage.addFileFromBuffer({
+      buffer: processedBuffer,
+      targetPath: filename,
+    });
+    logger.debug(
+      { error: result.error, value: result.value },
+      "Storage upload result",
+    );
+  } catch (uploadError) {
+    logger.error({ err: uploadError }, "Storage upload exception");
+    throw new BadRequestError(
+      `Storage upload failed: ${
+        uploadError instanceof Error ? uploadError.message : "Unknown error"
+      }`,
+    );
+  }
 
   if (result.error) {
-    console.error("Storage upload error:", result.error);
-    throw new BadRequestError("Failed to upload image");
+    logger.error({ error: result.error }, "Storage upload error");
+    throw new BadRequestError(`Failed to upload image: ${result.error}`);
   }
 
   // Update auction

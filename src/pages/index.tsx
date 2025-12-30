@@ -28,6 +28,11 @@ const HowItWorks = dynamic(
   { ssr: true },
 );
 
+const UseCases = dynamic(
+  () => import("@/components/landing/UseCases").then((mod) => mod.UseCases),
+  { ssr: true },
+);
+
 const CallToAction = dynamic(
   () =>
     import("@/components/landing/CallToAction").then((mod) => mod.CallToAction),
@@ -48,15 +53,23 @@ export default function LandingPage() {
   const homepageStructuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Auktiva",
+    name: "Auktiva - Free Auction Platform for Charity Fundraisers",
+    alternateName: [
+      "Auktiva Charity Auction Platform",
+      "Auktiva Fundraiser Platform",
+      "Free Open Source Auction Software",
+    ],
     applicationCategory: "BusinessApplication",
-    applicationSubCategory: "Auction Software",
+    applicationSubCategory: "Charity Auction Software",
     operatingSystem: "Web Browser",
     offers: {
       "@type": "Offer",
       price: "0",
       priceCurrency: "USD",
       availability: "https://schema.org/InStock",
+      priceValidUntil: "2030-12-31",
+      description:
+        "Completely free - no fees, no limits, no credit card required",
     },
     description: SITE_DESCRIPTION,
     url: SITE_URL,
@@ -82,16 +95,62 @@ export default function LandingPage() {
       worstRating: "1",
     },
     featureList: [
-      "Real-time bidding",
+      "Free charity auction platform",
+      "Free fundraiser auction software",
+      "Real-time bidding for nonprofits",
+      "Silent auction mode for galas",
       "Private auctions with invite-only access",
       "Member management with role-based permissions",
-      "Multi-currency support",
+      "Multi-currency support for international fundraisers",
       "Image uploads with S3 or local storage",
       "Email notifications for outbids and auction endings",
       "Mobile responsive design",
       "Self-hosting option with Docker",
-      "Silent auction mode",
-      "Bidder privacy controls",
+      "Open source MIT license",
+      "No payment processing fees",
+      "Unlimited auctions and items",
+    ],
+    keywords:
+      "auction platform free, charity auction, fundraiser auction, open source auction platform charity, nonprofit auction software",
+  };
+
+  // FAQ structured data for common questions
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Is Auktiva really free?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, Auktiva is 100% free and open source. There are no fees, no limits on auctions or items, and no credit card required. You can self-host it for free or use our cloud service.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can I use Auktiva for charity fundraisers?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Absolutely! Auktiva is specifically designed for charity fundraisers, nonprofit events, school auctions, church fundraisers, and gala events. It supports silent auctions with real-time bidding.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is Auktiva open source?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, Auktiva is fully open source under the MIT license. You can view the source code on GitHub, contribute to development, or self-host your own instance.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do I need technical skills to use Auktiva?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "No technical skills required to use our cloud service. Simply create an account and start your auction. For self-hosting, basic Docker knowledge is helpful but our documentation guides you through the process.",
+        },
+      },
     ],
   };
 
@@ -103,6 +162,13 @@ export default function LandingPage() {
         canonical={SITE_URL}
         structuredData={homepageStructuredData}
       />
+      {/* FAQ structured data for search engines */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqStructuredData),
+        }}
+      />
 
       <div className="min-h-screen bg-base-100 text-base-content selection:bg-primary/20">
         <Navbar />
@@ -110,6 +176,7 @@ export default function LandingPage() {
         <main>
           <Hero />
           <FeatureGrid />
+          <UseCases />
           <HowItWorks />
           <ImpactVisualization />
           <CallToAction />

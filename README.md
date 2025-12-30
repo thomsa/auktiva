@@ -1,11 +1,17 @@
 # Auktiva
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthomsa%2Fauktiva&env=AUTH_SECRET,AUTH_URL,DATABASE_URL&envDescription=Required%20environment%20variables%20for%20Auktiva&envLink=https%3A%2F%2Fdocs.auktiva.org%2Fdevelopers%2Fdeployment&project-name=auktiva&repository-name=auktiva)
+[![GitHub release](https://img.shields.io/github/v/release/thomsa/auktiva?include_prereleases)](https://github.com/thomsa/auktiva/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/thomsa/auktiva)](https://github.com/thomsa/auktiva/stargazers)
+
 A free, open-source auction platform for hosting private and public auctions. Perfect for charity events, fundraisers, schools, churches, company events, and community organizations.
 
 **No payment processing** - all transactions are settled offline between participants.
 
 🌐 **Live Demo**: [auktiva.org](https://auktiva.org)  
-📚 **Documentation**: [docs.auktiva.org](https://docs.auktiva.org)
+📚 **Documentation**: [docs.auktiva.org](https://docs.auktiva.org)  
+📝 **Changelog**: [CHANGELOG.md](./CHANGELOG.md)
 
 ## Features
 
@@ -52,6 +58,33 @@ A free, open-source auction platform for hosting private and public auctions. Pe
 - **Personal win tracking** - see what you've won across all auctions
 - **Export to JSON or CSV** for record keeping
 
+## Release Strategy
+
+Auktiva follows a **rolling release** model:
+
+- **Only the latest version is supported** - We do not maintain older versions or backport fixes
+- **Always update to latest** - Running older versions may have known issues that have been resolved
+- **Bugs are fixed forward** - If you encounter a bug, update first before reporting
+
+> ⚠️ **Keep your instance up to date.** Older versions are not maintained and may contain bugs or security issues fixed in newer releases.
+
+## Requirements
+
+- **Node.js 20.0.0 or higher** (LTS recommended)
+- npm 10+ (comes with Node.js 20+)
+
+Check your Node.js version:
+```bash
+node --version
+```
+
+If you need to upgrade, download from [nodejs.org](https://nodejs.org/) or use a version manager:
+```bash
+# Using nvm
+nvm install 20
+nvm use 20
+```
+
 ## Installation
 
 ### One-Line Install
@@ -60,7 +93,7 @@ A free, open-source auction platform for hosting private and public auctions. Pe
 curl -fsSL https://raw.githubusercontent.com/thomsa/auktiva/main/scripts/install.sh | bash
 ```
 
-This will check prerequisites, clone the repo, install dependencies, and launch the interactive setup wizard.
+This will check prerequisites (including Node.js version), clone the repo, install dependencies, and launch the interactive setup wizard.
 
 ### Manual Install
 
@@ -184,11 +217,7 @@ AUTH_URL="http://localhost:3000"
 # =============================================================================
 # STORAGE
 # =============================================================================
-STORAGE_PROVIDER="local"  # or "s3"
-
-# Local storage
-STORAGE_LOCAL_PATH="./public/uploads"
-STORAGE_LOCAL_URL_PREFIX="/uploads"
+STORAGE_PROVIDER="local"  # or "s3" (local uses ./public/uploads)
 
 # S3 storage (when STORAGE_PROVIDER="s3")
 # S3_BUCKET="your-bucket-name"
@@ -200,11 +229,21 @@ STORAGE_LOCAL_URL_PREFIX="/uploads"
 # =============================================================================
 # EMAIL (Optional)
 # =============================================================================
-# BREVO_API_KEY="your-brevo-api-key"
+# EMAIL_PROVIDER="brevo"  # or "smtp"
 # MAIL_FROM="noreply@yourdomain.com"
 # MAIL_FROM_NAME="Your App Name"
 # NEXT_PUBLIC_APP_URL="https://yourdomain.com"
 # CRON_SECRET="your-cron-secret"  # For securing the retry-emails endpoint
+
+# Brevo (when EMAIL_PROVIDER="brevo")
+# BREVO_API_KEY="your-brevo-api-key"
+
+# SMTP (when EMAIL_PROVIDER="smtp")
+# SMTP_HOST="smtp.example.com"
+# SMTP_PORT="587"
+# SMTP_SECURE="false"
+# SMTP_USER="your-username"
+# SMTP_PASSWORD="your-password"
 
 # =============================================================================
 # FEATURES
@@ -221,19 +260,20 @@ Auktiva can send email notifications for:
 - **New item notifications** when items are added to auctions you're a member of
 - **Outbid notifications** when someone outbids you
 
-#### Setting up Email with Brevo
+Auktiva supports two email providers: **Brevo** (cloud service) and **SMTP** (any SMTP server).
+
+#### Option 1: Brevo (Cloud Service)
 
 [Brevo](https://www.brevo.com/) (formerly Sendinblue) offers a free tier with **300 emails/day** - perfect for small to medium deployments.
 
 1. **Create a Brevo account** at [brevo.com](https://www.brevo.com/)
 
-2. **Get your API key**
-   - Go to [Settings → API Keys](https://app.brevo.com/settings/keys/api)
-   - Create a new API key
+2. **Get your API key** from [Settings → API Keys](https://app.brevo.com/settings/keys/api)
 
 3. **Configure environment variables**
 
    ```env
+   EMAIL_PROVIDER="brevo"
    BREVO_API_KEY="your-brevo-api-key"
    MAIL_FROM="noreply@yourdomain.com"
    MAIL_FROM_NAME="Auktiva"
@@ -241,9 +281,34 @@ Auktiva can send email notifications for:
    CRON_SECRET="generate-with-openssl-rand-base64-32"
    ```
 
-4. **Verify your sender domain** (recommended)
-   - In Brevo, go to Settings → Senders & IP
-   - Add and verify your domain for better deliverability
+4. **Verify your sender domain** (recommended) in Brevo Settings → Senders & IP
+
+#### Option 2: SMTP Server
+
+Use any SMTP server (Gmail, Mailgun, Amazon SES, self-hosted, etc.).
+
+```env
+EMAIL_PROVIDER="smtp"
+SMTP_HOST="smtp.example.com"
+SMTP_PORT="587"
+SMTP_SECURE="false"  # true for port 465, false for STARTTLS (port 587)
+SMTP_USER="your-username"  # Optional, omit for no authentication
+SMTP_PASSWORD="your-password"  # Optional
+MAIL_FROM="noreply@yourdomain.com"
+MAIL_FROM_NAME="Auktiva"
+NEXT_PUBLIC_APP_URL="https://yourdomain.com"
+CRON_SECRET="generate-with-openssl-rand-base64-32"
+```
+
+**Common SMTP configurations:**
+
+| Provider | Host | Port | Secure |
+|----------|------|------|--------|
+| Gmail | smtp.gmail.com | 587 | false |
+| Mailgun | smtp.mailgun.org | 587 | false |
+| Amazon SES | email-smtp.{region}.amazonaws.com | 587 | false |
+| SendGrid | smtp.sendgrid.net | 587 | false |
+| Local (Mailpit) | localhost | 1025 | false |
 
 #### Email Retry System
 
@@ -263,6 +328,7 @@ Email notifications are disabled by default to conserve email quota. Users can e
 Protect registration from bots with Google reCAPTCHA v2 checkbox. If not configured, reCAPTCHA is completely disabled (useful for local development and self-hosting).
 
 1. **Get reCAPTCHA keys** at [google.com/recaptcha/admin](https://www.google.com/recaptcha/admin)
+
    - Choose reCAPTCHA v2 → "I'm not a robot" Checkbox
    - Add your domain(s)
 

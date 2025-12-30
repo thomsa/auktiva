@@ -38,8 +38,11 @@
     "dashboard": "Dashboard",
     "createAuction": "Auktion erstellen",
     "myBids": "Meine Gebote",
+    "myListings": "Meine Artikel",
     "bidHistory": "Gebotshistorie",
     "settings": "Einstellungen",
+    "profile": "Profil",
+    "notifications": "Benachrichtigungen",
     "documentation": "Dokumentation",
     "feedback": "Feedback",
     "signOut": "Abmelden",
@@ -127,7 +130,9 @@
     "change": "Ändern",
     "upload": "Hochladen",
     "remove": "Entfernen",
-    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Max. 5MB • Quadratisch empfohlen"
+    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Max. 5MB • Quadratisch empfohlen",
+    "uploadSuccess": "Upload erfolgreich",
+    "deleteSuccess": "Erfolgreich gelöscht"
   },
   "notifications": {
     "title": "Benachrichtigungen",
@@ -144,5 +149,18 @@
   "stats": {
     "more": "+{count} mehr",
     "allCurrencies": "Alle Währungen"
+  },
+  "update": {
+    "newVersion": "Version {version} ist verfügbar!",
+    "contactAdmin": "Kontaktieren Sie Ihren Administrator für das Update.",
+    "clickToUpdate": "Klicken Sie, um das Update zu installieren.",
+    "viewRelease": "Versionshinweise anzeigen",
+    "dismiss": "Schließen",
+    "installUpdate": "Update installieren",
+    "updating": "Aktualisierung...",
+    "updateFailed": "Update fehlgeschlagen. Überprüfen Sie die Server-Logs.",
+    "updateStarted": "Update gestartet!",
+    "appRestarting": "Die Anwendung wird in Kürze neu gestartet.",
+    "updateTimeout": "Update-Zeitüberschreitung. Die Anwendung muss möglicherweise manuell neu gestartet werden."
   }
 }

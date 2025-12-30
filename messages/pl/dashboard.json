@@ -12,6 +12,11 @@
     "activeBids": {
       "title": "Twoje aktywne oferty"
     },
+    "yourItems": {
+      "title": "Twoje przedmioty",
+      "subtitle": "Przedmioty, które wystawiono",
+      "bids": "{count, plural, =0 {Brak ofert} =1 {1 oferta} other {# ofert}}"
+    },
     "auctions": {
       "title": "Aukcje, do których dołączyłeś"
     },

@@ -38,8 +38,11 @@
     "dashboard": "Irányítópult",
     "createAuction": "Aukció létrehozása",
     "myBids": "Licitjeim",
+    "myListings": "Tételeim",
     "bidHistory": "Licit előzmények",
     "settings": "Beállítások",
+    "profile": "Profil",
+    "notifications": "Értesítések",
     "documentation": "Dokumentáció",
     "feedback": "Visszajelzés",
     "signOut": "Kijelentkezés",
@@ -127,7 +130,9 @@
     "change": "Módosítás",
     "upload": "Feltöltés",
     "remove": "Eltávolítás",
-    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Max 5MB • Négyzet ajánlott"
+    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Max 5MB • Négyzet ajánlott",
+    "uploadSuccess": "Sikeres feltöltés",
+    "deleteSuccess": "Sikeresen törölve"
   },
   "notifications": {
     "title": "Értesítések",
@@ -144,5 +149,18 @@
   "stats": {
     "more": "+{count} további",
     "allCurrencies": "Összes pénznem"
+  },
+  "update": {
+    "newVersion": "Elérhető a {version} verzió!",
+    "contactAdmin": "Lépjen kapcsolatba a rendszergazdával a frissítéshez.",
+    "clickToUpdate": "Kattintson a frissítés telepítéséhez.",
+    "viewRelease": "Kiadási megjegyzések megtekintése",
+    "dismiss": "Bezárás",
+    "installUpdate": "Frissítés telepítése",
+    "updating": "Frissítés...",
+    "updateFailed": "A frissítés sikertelen. Ellenőrizze a szerver naplókat.",
+    "updateStarted": "Frissítés elindítva!",
+    "appRestarting": "Az alkalmazás hamarosan újraindul.",
+    "updateTimeout": "A frissítés időtúllépés miatt megszakadt. Az alkalmazást manuálisan kell újraindítani."
   }
 }

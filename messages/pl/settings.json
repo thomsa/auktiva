@@ -30,7 +30,9 @@
       "newItemNotifications": "Powiadomienia o nowych przedmiotach",
       "newItemDescription": "Otrzymuj e-mail, gdy nowy przedmiot zostanie dodany do aukcji, w której jesteś członkiem",
       "outbidNotifications": "Powiadomienia o przebiciu",
-      "outbidDescription": "Otrzymuj e-mail, gdy ktoś przebije Twoją ofertę"
+      "outbidDescription": "Otrzymuj e-mail, gdy ktoś przebije Twoją ofertę",
+      "itemWonNotifications": "Powiadomienia o wygranym przedmiocie",
+      "itemWonDescription": "Otrzymuj e-mail, gdy wygrasz przedmiot na aukcji"
     },
     "appearance": {
       "title": "Wygląd",
@@ -49,9 +51,73 @@
       "connected": "Połączono",
       "notConnected": "Nie połączono"
     },
+    "deploymentAdmin": {
+      "title": "Administracja wdrożenia",
+      "description": "Zarządzaj uprawnieniami do instalacji aktualizacji.",
+      "youAreAdmin": "Jesteś administratorem wdrożenia",
+      "adminDescription": "Możesz instalować aktualizacje bezpośrednio z banera aktualizacji.",
+      "noAdminSet": "Brak administratora wdrożenia",
+      "claimAdminDescription": "Bądź pierwszym, który przejmie prawa administratora dla tej instancji.",
+      "becomeAdmin": "Zostań administratorem wdrożenia",
+      "claiming": "Przejmowanie...",
+      "becameAdmin": "Jesteś teraz administratorem wdrożenia",
+      "removeAdmin": "Usuń prawa administratora",
+      "removing": "Usuwanie...",
+      "removedAdmin": "Administrator wdrożenia usunięty",
+      "adminAlreadySet": "Inny użytkownik jest administratorem wdrożenia",
+      "contactCurrentAdmin": "Skontaktuj się z obecnym administratorem, aby przenieść uprawnienia.",
+      "transferTitle": "Przenieś uprawnienia administratora",
+      "transferDescription": "Przenieś uprawnienia administratora wdrożenia na innego zarejestrowanego użytkownika.",
+      "emailPlaceholder": "Wprowadź email użytkownika",
+      "transfer": "Przenieś",
+      "transferring": "Przenoszenie...",
+      "transferred": "Uprawnienia administratora przeniesione pomyślnie",
+      "enterEmail": "Proszę wprowadzić adres email",
+      "versionTitle": "Informacje o wersji",
+      "currentVersion": "Aktualna wersja",
+      "latestVersion": "Najnowsza wersja",
+      "viewChangelog": "Historia zmian",
+      "updateNow": "Aktualizuj teraz",
+      "updating": "Aktualizowanie..."
+    },
     "seo": {
       "title": "Ustawienia",
       "description": "Zarządzaj ustawieniami konta"
+    },
+    "deleteAccount": {
+      "title": "Usuń konto",
+      "description": "Trwale usuń swoje konto i wszystkie powiązane dane.",
+      "warning": "Ta czynność jest nieodwracalna",
+      "warningDescription": "Po usunięciu konta i danych nie można ich odzyskać.",
+      "deleteButton": "Usuń moje konto",
+      "modalTitle": "Usuń swoje konto",
+      "modalDescription": "Spowoduje to trwałe usunięcie Twojego konta, w tym wszystkich licytacji, utworzonych przedmiotów i członkostw w aukcjach. Tej czynności nie można cofnąć.",
+      "ownedAuctionsTitle": "Jesteś właścicielem następujących aukcji",
+      "ownedAuctionsDescription": "Wybierz, co zrobić z każdą aukcją przed usunięciem konta.",
+      "deleteAuction": "Usuń aukcję",
+      "transferOwnership": "Przenieś własność",
+      "newOwnerEmail": "Adres e-mail nowego właściciela",
+      "enterTransferEmail": "Wprowadź adres e-mail dla {auction}",
+      "enterPassword": "Wprowadź hasło, aby potwierdzić",
+      "enterEmail": "Wprowadź swój e-mail, aby potwierdzić",
+      "passwordPlaceholder": "Twoje aktualne hasło",
+      "passwordHint": "Wprowadź hasło, aby zweryfikować swoją tożsamość",
+      "emailHint": "Wpisz dokładnie swój adres e-mail, aby potwierdzić",
+      "passwordRequired": "Hasło jest wymagane",
+      "emailRequired": "Potwierdzenie e-mailem jest wymagane",
+      "incorrectPassword": "Nieprawidłowe hasło",
+      "incorrectEmail": "Adres e-mail nie pasuje",
+      "mustTransferAdmin": "Musisz przenieść uprawnienia administratora wdrożenia przed usunięciem konta",
+      "cancel": "Anuluj",
+      "confirmDelete": "Usuń konto",
+      "deleting": "Usuwanie...",
+      "accountDeleted": "Twoje konto zostało usunięte"
+    },
+    "quickLinks": {
+      "title": "Szybkie Linki",
+      "documentation": "Dokumentacja",
+      "feedback": "Wyślij Opinię",
+      "signOut": "Wyloguj się"
     }
   }
 }

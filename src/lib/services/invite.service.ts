@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { eventBus } from "@/lib/events/event-bus";
+import { queueInviteEmail } from "@/lib/email/service";
 import type { AuctionInvite } from "@/generated/prisma/client";
 
 // ============================================================================
@@ -189,8 +189,8 @@ export async function createInvite(
     },
   });
 
-  // Emit event for invite email
-  eventBus.emit("invite.created", {
+  // Queue invite email (await to ensure it completes on serverless)
+  await queueInviteEmail({
     inviteId: invite.id,
     email: invite.email,
     auctionId: invite.auctionId,

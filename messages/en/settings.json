@@ -30,7 +30,9 @@
       "newItemNotifications": "New item notifications",
       "newItemDescription": "Receive an email when a new item is added to an auction you're a member of",
       "outbidNotifications": "Outbid notifications",
-      "outbidDescription": "Receive an email when someone outbids you on an item"
+      "outbidDescription": "Receive an email when someone outbids you on an item",
+      "itemWonNotifications": "Item won notifications",
+      "itemWonDescription": "Receive an email when you win an item in an auction"
     },
     "appearance": {
       "title": "Appearance",
@@ -49,9 +51,73 @@
       "connected": "Connected",
       "notConnected": "Not connected"
     },
+    "deploymentAdmin": {
+      "title": "Deployment Administration",
+      "description": "Manage who can install updates and administer this deployment.",
+      "youAreAdmin": "You are the Deployment Admin",
+      "adminDescription": "You can install updates directly from the update banner.",
+      "noAdminSet": "No Deployment Admin Set",
+      "claimAdminDescription": "Be the first to claim deployment admin rights for this instance.",
+      "becomeAdmin": "Become Deployment Admin",
+      "claiming": "Claiming...",
+      "becameAdmin": "You are now the deployment admin",
+      "removeAdmin": "Remove Admin Rights",
+      "removing": "Removing...",
+      "removedAdmin": "Deployment admin removed",
+      "adminAlreadySet": "Another user is the Deployment Admin",
+      "contactCurrentAdmin": "Contact the current admin to transfer rights.",
+      "transferTitle": "Transfer Admin Rights",
+      "transferDescription": "Transfer deployment admin rights to another registered user.",
+      "emailPlaceholder": "Enter user email",
+      "transfer": "Transfer",
+      "transferring": "Transferring...",
+      "transferred": "Admin rights transferred successfully",
+      "enterEmail": "Please enter an email address",
+      "versionTitle": "Version Information",
+      "currentVersion": "Current Version",
+      "latestVersion": "Latest Version",
+      "viewChangelog": "Changelog",
+      "updateNow": "Update Now",
+      "updating": "Updating..."
+    },
     "seo": {
       "title": "Settings",
       "description": "Manage your account settings"
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "description": "Permanently delete your account and all associated data.",
+      "warning": "This action is irreversible",
+      "warningDescription": "Once deleted, your account and all data cannot be recovered.",
+      "deleteButton": "Delete My Account",
+      "modalTitle": "Delete Your Account",
+      "modalDescription": "This will permanently delete your account, including all your bids, items you created, and auction memberships. This action cannot be undone.",
+      "ownedAuctionsTitle": "You own the following auctions",
+      "ownedAuctionsDescription": "Choose what to do with each auction before deleting your account.",
+      "deleteAuction": "Delete auction",
+      "transferOwnership": "Transfer ownership",
+      "newOwnerEmail": "New owner's email address",
+      "enterTransferEmail": "Please enter an email address for {auction}",
+      "enterPassword": "Enter your password to confirm",
+      "enterEmail": "Enter your email to confirm",
+      "passwordPlaceholder": "Your current password",
+      "passwordHint": "Enter your password to verify your identity",
+      "emailHint": "Type your email address exactly as shown to confirm",
+      "passwordRequired": "Password is required",
+      "emailRequired": "Email confirmation is required",
+      "incorrectPassword": "Incorrect password",
+      "incorrectEmail": "Email address does not match",
+      "mustTransferAdmin": "You must transfer deployment admin rights before deleting your account",
+      "cancel": "Cancel",
+      "confirmDelete": "Delete Account",
+      "deleting": "Deleting...",
+      "accountDeleted": "Your account has been deleted"
+    },
+    "quickLinks": {
+      "title": "Quick Links",
+      "documentation": "Documentation",
+      "feedback": "Send Feedback",
+      "signOut": "Sign Out"
     }
   }
 }

@@ -1,10 +1,12 @@
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import useSWR from "swr";
 import { authOptions } from "@/lib/auth";
-import * as bidService from "@/lib/services/bid.service";
+import { fetcher } from "@/lib/fetcher";
 import { PageLayout, EmptyState } from "@/components/common";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
+import { SkeletonHistoryPage } from "@/components/ui/skeleton";
 import { formatDate } from "@/utils/formatters";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
@@ -35,12 +37,7 @@ interface CurrencyTotal {
   total: number;
 }
 
-interface HistoryPageProps {
-  user: {
-    id: string;
-    name: string | null;
-    email: string;
-  };
+interface HistoryData {
   bids: BidHistory[];
   stats: {
     totalBids: number;
@@ -49,12 +46,30 @@ interface HistoryPageProps {
   };
 }
 
-export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
+interface HistoryPageProps {
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+  };
+}
+
+export default function HistoryPage({ user }: HistoryPageProps) {
   const t = useTranslations("nav");
   const tStats = useTranslations("dashboard.stats");
   const tHistory = useTranslations("item.history");
   const tStatus = useTranslations("status");
   const tItem = useTranslations("item");
+
+  // Client-side data fetching
+  const { data, isLoading } = useSWR<HistoryData>("/api/user/history", fetcher);
+
+  const bids = data?.bids ?? [];
+  const stats = data?.stats ?? {
+    totalBids: 0,
+    winningBids: 0,
+    winningTotals: [],
+  };
 
   const formatBidDate = (dateStr: string) => {
     return formatDate(dateStr, {
@@ -65,6 +80,25 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
       minute: "2-digit",
     });
   };
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return (
+      <PageLayout user={user}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-10">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-linear-to-r from-base-content to-base-content/60 bg-clip-text text-transparent mb-2">
+              {t("bidHistory")}
+            </h1>
+            <p className="text-base-content/60 text-lg">
+              Track your bidding activity and results
+            </p>
+          </div>
+        </div>
+        <SkeletonHistoryPage />
+      </PageLayout>
+    );
+  }
 
   return (
     <PageLayout user={user}>
@@ -234,7 +268,7 @@ export default function HistoryPage({ user, bids, stats }: HistoryPageProps) {
                               href={`/auctions/${bid.auction.id}`}
                               className="text-base-content/70 hover:text-primary transition-colors flex items-center gap-1.5"
                             >
-                              <span className="icon-[tabler--gavel] size-3 opacity-50"></span>
+                              <span className="icon-[tabler--gavel] size-5 opacity-50  shrink-0"></span>
                               {bid.auction.name}
                             </Link>
                           </td>
@@ -287,9 +321,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  // Get bid history data
-  const historyData = await bidService.getUserBidHistory(session.user.id);
-
   return {
     props: {
       user: {
@@ -297,8 +328,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         name: session.user.name || null,
         email: session.user.email || "",
       },
-      bids: historyData.bids,
-      stats: historyData.stats,
       messages: await getMessages(context.locale as Locale),
     },
   };

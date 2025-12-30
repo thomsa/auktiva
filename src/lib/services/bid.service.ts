@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { eventBus } from "@/lib/events/event-bus";
+import { queueOutbidEmail } from "@/lib/email/service";
 import * as notificationService from "./notification.service";
 import type { Bid } from "@/generated/prisma/client";
 
@@ -372,8 +372,8 @@ async function notifyOutbidUser(
     });
 
     if (previousBidder) {
-      // Emit event for outbid email
-      eventBus.emit("bid.outbid", {
+      // Queue outbid email (await to ensure it completes on serverless)
+      await queueOutbidEmail({
         previousBidderId,
         previousBidderEmail: previousBidder.email,
         previousBidderName: previousBidder.name || "",

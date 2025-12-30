@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { PageLayout, BackLink } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
+import { ImageUpload } from "@/components/upload/image-upload";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 
@@ -34,6 +35,13 @@ interface CreateItemProps {
   currencies: Currency[];
 }
 
+interface UploadedImage {
+  id: string;
+  url: string;
+  publicUrl: string;
+  order: number;
+}
+
 export default function CreateItemPage({
   user,
   auction,
@@ -43,8 +51,15 @@ export default function CreateItemPage({
   const t = useTranslations("item.create");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
-  const tAuction = useTranslations("auction"); // For 'backTo' if needed or re-use common back
+  const tAuction = useTranslations("auction");
   const { showToast } = useToast();
+
+  // Wizard state
+  const [step, setStep] = useState(1);
+  const [createdItemId, setCreatedItemId] = useState<string | null>(null);
+  const [images, setImages] = useState<UploadedImage[]>([]);
+
+  // Form state
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showEndDate, setShowEndDate] = useState(
@@ -55,7 +70,8 @@ export default function CreateItemPage({
     setShowEndDate(auction.itemEndMode === "CUSTOM");
   }, [auction.itemEndMode]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  // Step 1: Create item and move to step 2
+  const handleCreateItem = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFieldErrors({});
     setIsLoading(true);
@@ -89,14 +105,26 @@ export default function CreateItemPage({
           showToast(result.message || tErrors("item.createFailed"), "error");
         }
       } else {
+        // Item created, move to step 2
+        setCreatedItemId(result.id);
+        setStep(2);
         showToast(t("createSuccess"), "success");
-        router.push(`/auctions/${auction.id}/items/${result.id}`);
       }
     } catch {
       showToast(tErrors("generic"), "error");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Step 2: Finish and go to item page
+  const handleFinish = () => {
+    router.push(`/auctions/${auction.id}/items/${createdItemId}`);
+  };
+
+  // Skip images and go directly to item page
+  const handleSkipImages = () => {
+    router.push(`/auctions/${auction.id}/items/${createdItemId}`);
   };
 
   return (
@@ -108,222 +136,284 @@ export default function CreateItemPage({
         />
       </div>
 
+      {/* Step Indicator */}
+      <div className="flex items-center justify-center mb-8">
+        <ul className="steps steps-horizontal">
+          <li className={`step ${step >= 1 ? "step-primary" : ""}`}>
+            {t("step1Title")}
+          </li>
+          <li className={`step ${step >= 2 ? "step-primary" : ""}`}>
+            {t("step2Title")}
+          </li>
+        </ul>
+      </div>
+
       <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
         <div className="card-body p-8">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-              <span className="icon-[tabler--package] size-7"></span>
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">{t("title")}</h1>
-              <p className="text-base-content/60">{t("subtitle")}</p>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Basic Info */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">
-                <span className="icon-[tabler--info-circle] size-5"></span>
-                {tAuction("create.basicInfo")}{" "}
-                {/* Reusing from auction.create.basicInfo if appropriate or create new key */}
-              </h2>
-
-              <div className="form-control">
-                <label className="label" htmlFor="name">
-                  <span className="label-text font-medium">
-                    {t("itemName")} *
-                  </span>
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder={t("itemNamePlaceholder")}
-                  className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.name ? "input-error" : ""}`}
-                  required
-                />
-                {fieldErrors.name && (
-                  <label className="label">
-                    <span className="label-text-alt text-error">
-                      {fieldErrors.name}
-                    </span>
-                  </label>
-                )}
-              </div>
-
-              <div className="form-control">
-                <label className="label" htmlFor="description">
-                  <span className="label-text font-medium">
-                    {t("description")}
-                  </span>
-                </label>
-                <textarea
-                  id="description"
-                  name="description"
-                  placeholder={t("descriptionPlaceholder")}
-                  className="textarea textarea-bordered w-full h-32 bg-base-100 focus:bg-base-100 transition-colors"
-                />
-              </div>
-            </div>
-
-            {/* Pricing */}
-            <div className="divider opacity-50"></div>
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2 text-secondary">
-                <span className="icon-[tabler--currency-dollar] size-5"></span>
-                Pricing
-              </h2>
-
-              <div className="form-control">
-                <label className="label" htmlFor="currencyCode">
-                  <span className="label-text font-medium">
-                    {t("currency")} *
-                  </span>
-                </label>
-                <select
-                  id="currencyCode"
-                  name="currencyCode"
-                  className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                  defaultValue="USD"
-                  required
-                >
-                  {currencies.map((currency) => (
-                    <option key={currency.code} value={currency.code}>
-                      {currency.code} - {currency.name} ({currency.symbol})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="form-control">
-                  <label className="label" htmlFor="startingBid">
-                    <span className="label-text font-medium">
-                      {t("startingBid")}
-                    </span>
-                  </label>
-                  <input
-                    id="startingBid"
-                    name="startingBid"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    defaultValue="0"
-                    className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.startingBid ? "input-error" : ""}`}
-                  />
-                  {fieldErrors.startingBid && (
-                    <label className="label">
-                      <span className="label-text-alt text-error">
-                        {fieldErrors.startingBid}
-                      </span>
-                    </label>
-                  )}
+          {/* Step 1: Item Details */}
+          {step === 1 && (
+            <>
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                  <span className="icon-[tabler--package] size-7"></span>
                 </div>
-
-                <div className="form-control">
-                  <label className="label" htmlFor="minBidIncrement">
-                    <span className="label-text font-medium">
-                      {t("minBidIncrement")}
-                    </span>
-                  </label>
-                  <input
-                    id="minBidIncrement"
-                    name="minBidIncrement"
-                    type="number"
-                    min="0.01"
-                    step="0.01"
-                    defaultValue="1"
-                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                  />
+                <div>
+                  <h1 className="text-2xl font-bold">{t("title")}</h1>
+                  <p className="text-base-content/60">{t("subtitle")}</p>
                 </div>
               </div>
-            </div>
 
-            {/* Visibility - deprecated, kept for backwards compatibility */}
-            {false && auction.bidderVisibility === "ITEM_CHOICE" && (
-              <>
-                <div className="divider opacity-50"></div>
+              <form onSubmit={handleCreateItem} className="space-y-8">
+                {/* Basic Info */}
                 <div className="space-y-4">
-                  <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
-                    <span className="icon-[tabler--eye] size-5"></span>
-                    {tAuction("create.biddingSettings")}
+                  <h2 className="text-lg font-semibold flex items-center gap-2 text-primary">
+                    <span className="icon-[tabler--info-circle] size-5"></span>
+                    {tAuction("create.basicInfo")}{" "}
+                    {/* Reusing from auction.create.basicInfo if appropriate or create new key */}
                   </h2>
 
                   <div className="form-control">
-                    <label className="label cursor-pointer justify-start gap-3 p-0">
-                      <input
-                        type="checkbox"
-                        name="bidderAnonymous"
-                        className="checkbox checkbox-primary"
-                      />
-                      <div>
-                        <span className="label-text font-medium">
-                          {tAuction("create.alwaysAnonymous")}
-                        </span>
-                        <p className="text-xs text-base-content/60">
-                          Hide bidder names for this item
-                        </p>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Timing */}
-            {showEndDate && (
-              <>
-                <div className="divider opacity-50"></div>
-                <div className="space-y-4">
-                  <h2 className="text-lg font-semibold flex items-center gap-2 text-info">
-                    <span className="icon-[tabler--clock] size-5"></span>
-                    {tAuction("create.timing")}
-                  </h2>
-
-                  <div className="form-control">
-                    <label className="label" htmlFor="endDate">
+                    <label className="label" htmlFor="name">
                       <span className="label-text font-medium">
-                        {t("endDate")}
+                        {t("itemName")} *
                       </span>
                     </label>
                     <input
-                      id="endDate"
-                      name="endDate"
-                      type="datetime-local"
-                      className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                      id="name"
+                      name="name"
+                      type="text"
+                      placeholder={t("itemNamePlaceholder")}
+                      className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.name ? "input-error" : ""}`}
+                      required
                     />
-                    <label className="label">
-                      <span className="label-text-alt text-base-content/60">
-                        {tAuction("create.endDateHint")}
+                    {fieldErrors.name && (
+                      <label className="label">
+                        <span className="label-text-alt text-error">
+                          {fieldErrors.name}
+                        </span>
+                      </label>
+                    )}
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label" htmlFor="description">
+                      <span className="label-text font-medium">
+                        {t("description")}
                       </span>
                     </label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      placeholder={t("descriptionPlaceholder")}
+                      className="textarea textarea-bordered w-full h-32 bg-base-100 focus:bg-base-100 transition-colors"
+                    />
                   </div>
                 </div>
-              </>
-            )}
 
-            {/* Submit */}
-            <div className="divider opacity-50"></div>
-            <div className="flex gap-4 pt-4">
-              <Link
-                href={`/auctions/${auction.id}`}
-                className="btn btn-ghost flex-1"
-              >
-                {tCommon("cancel")}
-              </Link>
-              <Button
-                type="submit"
-                variant="primary"
-                className="flex-1 shadow-lg shadow-primary/20"
-                isLoading={isLoading}
-                loadingText={t("submitting")}
-                icon={<span className="icon-[tabler--plus] size-5"></span>}
-              >
-                {t("submitButton")}
-              </Button>
-            </div>
-          </form>
+                {/* Pricing */}
+                <div className="divider opacity-50"></div>
+                <div className="space-y-4">
+                  <h2 className="text-lg font-semibold flex items-center gap-2 text-secondary">
+                    <span className="icon-[tabler--currency-dollar] size-5"></span>
+                    Pricing
+                  </h2>
+
+                  <div className="form-control">
+                    <label className="label" htmlFor="currencyCode">
+                      <span className="label-text font-medium">
+                        {t("currency")} *
+                      </span>
+                    </label>
+                    <select
+                      id="currencyCode"
+                      name="currencyCode"
+                      className="select select-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                      defaultValue="USD"
+                      required
+                    >
+                      {currencies.map((currency) => (
+                        <option key={currency.code} value={currency.code}>
+                          {currency.code} - {currency.name} ({currency.symbol})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="form-control">
+                      <label className="label" htmlFor="startingBid">
+                        <span className="label-text font-medium">
+                          {t("startingBid")}
+                        </span>
+                      </label>
+                      <input
+                        id="startingBid"
+                        name="startingBid"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        defaultValue="0"
+                        className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.startingBid ? "input-error" : ""}`}
+                      />
+                      {fieldErrors.startingBid && (
+                        <label className="label">
+                          <span className="label-text-alt text-error">
+                            {fieldErrors.startingBid}
+                          </span>
+                        </label>
+                      )}
+                    </div>
+
+                    <div className="form-control">
+                      <label className="label" htmlFor="minBidIncrement">
+                        <span className="label-text font-medium">
+                          {t("minBidIncrement")}
+                        </span>
+                      </label>
+                      <input
+                        id="minBidIncrement"
+                        name="minBidIncrement"
+                        type="number"
+                        min="0.01"
+                        step="0.01"
+                        defaultValue="1"
+                        className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Visibility - deprecated, kept for backwards compatibility */}
+                {false && auction.bidderVisibility === "ITEM_CHOICE" && (
+                  <>
+                    <div className="divider opacity-50"></div>
+                    <div className="space-y-4">
+                      <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
+                        <span className="icon-[tabler--eye] size-5"></span>
+                        {tAuction("create.biddingSettings")}
+                      </h2>
+
+                      <div className="form-control">
+                        <label className="label cursor-pointer justify-start gap-3 p-0">
+                          <input
+                            type="checkbox"
+                            name="bidderAnonymous"
+                            className="checkbox checkbox-primary"
+                          />
+                          <div>
+                            <span className="label-text font-medium">
+                              {tAuction("create.alwaysAnonymous")}
+                            </span>
+                            <p className="text-xs text-base-content/60">
+                              {tAuction("create.hideBidderNamesDescription")}
+                            </p>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Timing */}
+                {showEndDate && (
+                  <>
+                    <div className="divider opacity-50"></div>
+                    <div className="space-y-4">
+                      <h2 className="text-lg font-semibold flex items-center gap-2 text-info">
+                        <span className="icon-[tabler--clock] size-5"></span>
+                        {tAuction("create.timing")}
+                      </h2>
+
+                      <div className="form-control">
+                        <label className="label" htmlFor="endDate">
+                          <span className="label-text font-medium">
+                            {t("endDate")}
+                          </span>
+                        </label>
+                        <input
+                          id="endDate"
+                          name="endDate"
+                          type="datetime-local"
+                          className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                        />
+                        <label className="label">
+                          <span className="label-text-alt text-base-content/60">
+                            {tAuction("create.endDateHint")}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Submit */}
+                <div className="divider opacity-50"></div>
+                <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
+                  <Link
+                    href={`/auctions/${auction.id}`}
+                    className="btn btn-ghost w-full sm:flex-1"
+                  >
+                    {tCommon("cancel")}
+                  </Link>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="w-full sm:flex-1 shadow-lg shadow-primary/20"
+                    isLoading={isLoading}
+                    loadingText={t("submitting")}
+                    icon={
+                      <span className="icon-[tabler--arrow-right] size-5"></span>
+                    }
+                  >
+                    {t("nextStep")}
+                  </Button>
+                </div>
+              </form>
+            </>
+          )}
+
+          {/* Step 2: Image Upload */}
+          {step === 2 && createdItemId && (
+            <>
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
+                  <span className="icon-[tabler--photo] size-7"></span>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold">{t("step2Heading")}</h1>
+                  <p className="text-base-content/60">{t("step2Subtitle")}</p>
+                </div>
+              </div>
+
+              <ImageUpload
+                auctionId={auction.id}
+                itemId={createdItemId}
+                images={images}
+                onImagesChange={setImages}
+                maxImages={10}
+              />
+
+              <div className="divider opacity-50 mt-8"></div>
+              <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
+                <button
+                  type="button"
+                  className="btn btn-ghost w-full sm:flex-1"
+                  onClick={handleSkipImages}
+                >
+                  {t("skipImages")}
+                </button>
+                <Button
+                  type="button"
+                  variant="primary"
+                  className="w-full sm:flex-1 shadow-lg shadow-primary/20"
+                  onClick={handleFinish}
+                  icon={<span className="icon-[tabler--check] size-5"></span>}
+                >
+                  {t("finishButton")}
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </PageLayout>

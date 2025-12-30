@@ -4,7 +4,7 @@
       "badge": "{version} jest już dostępna",
       "title": "Aukcje",
       "titleHighlight": "proste i społecznościowe",
-      "description": "Platforma open-source do nowoczesnych zbiórek. Organizuj prywatne aukcje, zapraszaj społeczność i zarządzaj wszystkim w jednym miejscu.",
+      "description": "100% darmowa platforma aukcyjna open-source do wydarzeń charytatywnych i użytku osobistego. Idealna do corocznego porządkowania, wyprzedaży garażowych lub sprzedaży rzeczy znajomym. Bez opłat, bez limitów.",
       "startAuction": "Rozpocznij aukcję",
       "viewOnGithub": "Zobacz na GitHub",
       "demoAlt": "Podgląd interaktywnego demo",
@@ -44,10 +44,31 @@
         "description": "Idealne dla wydarzeń charytatywnych. My obsługujemy licytację, a Ty zajmujesz się wymianą przedmiotów offline."
       }
     },
+    "useCases": {
+      "sectionTitle": "Idealna na",
+      "sectionTitleHighlight": "każdą okazję",
+      "sectionDescription": "Czy to zbiórka funduszy, czy sprzątanie garażu, Auktiva to ułatwia.",
+      "charity": {
+        "title": "Aukcje charytatywne",
+        "description": "Organizuj ciche aukcje dla organizacji non-profit, szkół, kościołów i wydarzeń społecznościowych."
+      },
+      "declutter": {
+        "title": "Coroczne porządki",
+        "description": "Pozbądź się nieużywanych rzeczy z domu lub magazynu i pozwól znajomym licytować."
+      },
+      "family": {
+        "title": "Znajomi i rodzina",
+        "description": "Prywatne aukcje na spotkania rodzinne, wyprzedaże sąsiedzkie lub grupy przyjaciół."
+      },
+      "office": {
+        "title": "Likwidacje biurowe",
+        "description": "Firmy mogą licytować stary sprzęt, meble lub artykuły promocyjne dla pracowników."
+      }
+    },
     "howItWorks": {
       "sectionTitle": "Od konfiguracji do",
-      "sectionTitleHighlight": "udanej zbiórki",
-      "sectionDescription": "Cztery proste kroki do przeprowadzenia aukcji charytatywnej. Skup się na swoim celu, my zajmiemy się licytacją.",
+      "sectionTitleHighlight": "udanej aukcji",
+      "sectionDescription": "Cztery proste kroki do przeprowadzenia aukcji. Skup się na tym, co ważne, my zajmiemy się licytacją.",
       "step1": {
         "title": "Utwórz aukcję",
         "description": "Skonfiguruj wydarzenie w kilka minut, dostosuj szczegóły i branding."
@@ -80,8 +101,8 @@
       "moreItems": "+{count}"
     },
     "cta": {
-      "title": "Gotowy na następną zbiórkę?",
-      "description": "Dołącz do organizatorów korzystających z Auktiva do prowadzenia aukcji charytatywnych. Open source, darmowe i stworzone dla społeczności.",
+      "title": "Gotowy, aby rozpocząć aukcję?",
+      "description": "Czy to aukcja charytatywna, czy coroczna wyprzedaż porządkowa, Auktiva jest całkowicie darmowa. Open source, bez opłat, stworzona dla społeczności.",
       "getStarted": "Rozpocznij",
       "freeForever": "Darmowe teraz i na zawsze",
       "selfHostTitle": "Wolisz hostować samodzielnie?",

@@ -1,0 +1,18 @@
+{
+  "listings": {
+    "subtitle": "Kezeld az aukciókra listázott tételeidet",
+    "active": "Aktív",
+    "ended": "Lezárt",
+    "bids": "{count, plural, =0 {Nincs licit} =1 {1 licit} other {# licit}}",
+    "noActive": "Nincs aktív tétel",
+    "noEnded": "Nincs lezárt tétel",
+    "empty": {
+      "title": "Még nincsenek tételeid",
+      "description": "Még nem listáztál egyetlen tételt sem. Menj egy aukcióra és add hozzá az első tételedet!"
+    },
+    "justEnded": {
+      "title": "Nemrég lezárult",
+      "description": "Ezek a tételek az elmúlt 3 napban zárultak le és figyelmet igényelnek. Lépj kapcsolatba a nyertesekkel a kézbesítés egyeztetéséhez."
+    }
+  }
+}

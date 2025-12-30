@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { randomBytes, createHash } from "crypto";
 import { hash } from "bcryptjs";
-import { eventBus } from "@/lib/events/event-bus";
-import { sendEmail } from "@/lib/email/brevo";
+import { sendEmail } from "@/lib/email";
+import { queueWelcomeEmail } from "@/lib/email/service";
 import { getPasswordResetTemplateData } from "@/lib/email/templates";
 
 // ============================================================================
@@ -101,8 +101,8 @@ export async function registerUser(input: RegisterInput) {
     },
   });
 
-  // Emit event for welcome email
-  eventBus.emit("user.registered", {
+  // Queue welcome email (await to ensure it completes on serverless)
+  await queueWelcomeEmail({
     userId: user.id,
     email: user.email,
     name: user.name || "",

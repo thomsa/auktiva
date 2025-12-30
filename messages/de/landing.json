@@ -4,7 +4,7 @@
       "badge": "{version} ist jetzt live",
       "title": "Auktionen",
       "titleHighlight": "einfach & sozial",
-      "description": "Die Open-Source-Plattform für modernes Fundraising. Veranstalte private Auktionen, lade deine Community ein und verwalte alles an einem Ort.",
+      "description": "100% kostenlose, Open-Source-Auktionsplattform für Wohltätigkeitsveranstaltungen und private Nutzung. Perfekt für jährliches Entrümpeln, Flohmärkte oder den Verkauf an Freunde. Keine Gebühren, keine Limits.",
       "startAuction": "Starte deine Auktion",
       "viewOnGithub": "Auf GitHub ansehen",
       "demoAlt": "Interaktive Demo-Vorschau",
@@ -44,10 +44,31 @@
         "description": "Perfekt für Charity-Events. Wir kümmern uns um das Bieten, du dich um die Übergabe der Artikel vor Ort."
       }
     },
+    "useCases": {
+      "sectionTitle": "Perfekt für",
+      "sectionTitleHighlight": "jeden Anlass",
+      "sectionDescription": "Ob Spendensammlung oder Garagenverkauf, Auktiva macht es einfach.",
+      "charity": {
+        "title": "Wohltätigkeitsauktionen",
+        "description": "Veranstalte stille Auktionen für gemeinnützige Organisationen, Schulen, Kirchen und Gemeinschaftsevents."
+      },
+      "declutter": {
+        "title": "Jährliches Entrümpeln",
+        "description": "Räume ungenutzten Sachen aus deinem Zuhause oder Lager und lass Freunde darauf bieten."
+      },
+      "family": {
+        "title": "Freunde & Familie",
+        "description": "Private Auktionen für Familientreffen, Nachbarschaftsverkäufe oder Freundeskreise."
+      },
+      "office": {
+        "title": "Büroauflösungen",
+        "description": "Unternehmen können alte Ausrüstung, Möbel oder Werbeartikel an Mitarbeiter versteigern."
+      }
+    },
     "howItWorks": {
-      "sectionTitle": "Von der Einrichtung zum",
-      "sectionTitleHighlight": "erfolgreichen Spendenaufruf",
-      "sectionDescription": "Vier einfache Schritte für deine Wohltätigkeitsauktion. Konzentriere dich auf deinen Zweck, wir kümmern uns um die Gebote.",
+      "sectionTitle": "Von der Einrichtung zur",
+      "sectionTitleHighlight": "erfolgreichen Auktion",
+      "sectionDescription": "Vier einfache Schritte für deine Auktion. Konzentriere dich auf das Wesentliche, wir kümmern uns um die Gebote.",
       "step1": {
         "title": "Auktion erstellen",
         "description": "Richte dein Event in Minuten mit anpassbaren Details und Branding ein."
@@ -80,8 +101,8 @@
       "moreItems": "+{count}"
     },
     "cta": {
-      "title": "Bereit für deinen nächsten Spendenaufruf?",
-      "description": "Schließ dich Organisatoren an, die Auktiva für Wohltätigkeitsauktionen nutzen. Open Source, kostenlos und für Gemeinschaften gebaut.",
+      "title": "Bereit, deine Auktion zu starten?",
+      "description": "Ob Wohltätigkeitsauktion oder jährlicher Entrümpelungsverkauf, Auktiva ist komplett kostenlos. Open Source, keine Gebühren, für Gemeinschaften gebaut.",
       "getStarted": "Loslegen",
       "freeForever": "Es ist kostenlos und wird immer kostenlos bleiben",
       "selfHostTitle": "Lieber selbst hosten?",

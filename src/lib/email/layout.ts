@@ -13,12 +13,12 @@ export const theme = {
     border: "#e5e5e5", // DaisyUI base-300
     error: "#f87272", // DaisyUI error
   },
-  // Tailwind border-radius values matching app UI
+  // Border-radius values in px (MJML only supports px/%)
   borderRadius: {
-    sm: "0.25rem", // 4px - rounded-sm
-    md: "0.375rem", // 6px - rounded-md (buttons)
-    lg: "0.5rem", // 8px - rounded-lg (cards, inputs)
-    xl: "0.75rem", // 12px - rounded-xl (larger cards)
+    sm: "4px", // rounded-sm
+    md: "6px", // rounded-md (buttons)
+    lg: "8px", // rounded-lg (cards, inputs)
+    xl: "12px", // rounded-xl (larger cards)
   },
   // System font stack similar to Tailwind/DaisyUI default
   fontFamily:

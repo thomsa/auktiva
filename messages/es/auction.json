@@ -19,6 +19,7 @@
       "bidderVisibility": "Visibilidad del Pujador",
       "alwaysVisible": "Siempre Visible - Mostrar nombres de pujadores",
       "alwaysAnonymous": "Siempre Anónimo - Ocultar nombres de pujadores",
+      "hideBidderNamesDescription": "Ocultar nombres de pujadores para este artículo",
       "perBid": "Por Puja - Cada pujador decide",
       "timing": "Tiempos",
       "endDate": "Fecha de Fin de Subasta (opcional)",
@@ -138,7 +139,8 @@
       "winningBid": "Puja Ganadora",
       "noItemsSold": "Ningún artículo vendido",
       "you": "Tú",
-      "anonymous": "Anónimo"
+      "anonymous": "Anónimo",
+      "yourListing": "Tu artículo"
     },
     "acceptInvite": {
       "title": "Unirse a Subasta",

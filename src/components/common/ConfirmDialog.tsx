@@ -42,22 +42,23 @@ export function ConfirmDialog({
       {message && (
         <div className="text-sm text-base-content/60 mb-3">{message}</div>
       )}
-      <div className="flex gap-2">
+      <div className="flex flex-col-reverse sm:flex-row gap-2">
+        <button
+          onClick={onCancel}
+          className="btn btn-ghost w-full sm:w-auto"
+          disabled={isLoading}
+        >
+          {cancel}
+        </button>
         <Button
           onClick={onConfirm}
           variant={variant}
+          className="w-full sm:w-auto"
           isLoading={isLoading}
           loadingText={t("loading")}
         >
           {confirm}
         </Button>
-        <button
-          onClick={onCancel}
-          className="btn btn-ghost"
-          disabled={isLoading}
-        >
-          {cancel}
-        </button>
       </div>
     </div>
   );

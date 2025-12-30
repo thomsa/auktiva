@@ -39,7 +39,12 @@
         "5": {
           "title": "Udostępnianie danych",
           "content1": "Nie sprzedajemy, nie wymieniamy ani w inny sposób nie przekazujemy Twoich danych osobowych stronom trzecim. Twoje dane aukcyjne są widoczne tylko dla członków aukcji, w których uczestniczysz, zgodnie z ustawieniami prywatności skonfigurowanymi przez każdego właściciela aukcji.",
-          "content2": "Właściciele aukcji mogą konfigurować ustawienia prywatności, w tym anonimowe licytowanie w celu ukrycia tożsamości licytujących, ograniczenia dostępu tylko na zaproszenie oraz uprawnienia oparte na rolach w celu kontrolowania, co każdy członek może zobaczyć i zrobić."
+          "content2": "Właściciele aukcji mogą konfigurować ustawienia prywatności, w tym anonimowe licytowanie w celu ukrycia tożsamości licytujących, ograniczenia dostępu tylko na zaproszenie oraz uprawnienia oparte na rolach, aby kontrolować, co każdy członek może zobaczyć i zrobić."
+        },
+        "5b": {
+          "title": "Uwierzytelnianie przez stronę trzecią (Google OAuth)",
+          "content1": "Jeśli zdecydujesz się zalogować za pomocą Google, używamy usługi Google OAuth 2.0 do uwierzytelnienia Twojej tożsamości. Gdy logujesz się za pomocą Google, otrzymujemy podstawowe informacje o profilu (imię i nazwisko, adres e-mail i zdjęcie profilowe) od Google.",
+          "content2": "Nie otrzymujemy ani nie przechowujemy Twojego hasła Google. Wykorzystanie Twoich informacji przez Google podlega Polityce prywatności Google. Możesz w każdej chwili cofnąć dostęp Auktiva do swojego konta Google za pośrednictwem ustawień konta Google na myaccount.google.com."
         },
         "6": {
           "title": "Komunikacja e-mail",
@@ -55,13 +60,19 @@
           "content": "Auktiva to w 100% oprogramowanie open source wydane na licencji MIT. Możesz przejrzeć nasz kompletny kod źródłowy na <a href=\"https://github.com/thomsa/auktiva\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub</a>, aby zobaczyć dokładnie, jak zbieramy, przechowujemy i obsługujemy Twoje dane. Możesz również samodzielnie hostować Auktiva dla pełnej kontroli nad swoimi informacjami."
         },
         "9": {
-          "title": "Twoje prawa",
-          "content1": "Masz prawo do dostępu do swoich danych osobowych poprzez ustawienia konta, poprawiania niedokładnych informacji poprzez aktualizację profilu, żądania usunięcia konta i powiązanych danych, eksportowania danych aukcyjnych w formacie JSON lub CSV oraz zarządzania preferencjami powiadomień e-mail.",
+          "title": "Twoje prawa (RODO)",
+          "content1": "Zgodnie z RODO i podobnymi przepisami o ochronie danych masz prawo do: dostępu do swoich danych osobowych poprzez ustawienia konta, poprawiania niedokładnych informacji poprzez aktualizację profilu, żądania usunięcia konta i wszystkich powiązanych danych (prawo do bycia zapomnianym) oraz zarządzania preferencjami powiadomień e-mail.",
           "content2": "Aby skorzystać z któregokolwiek z tych praw, odwiedź ustawienia konta lub skontaktuj się z nami przez kanały wymienione poniżej."
+        },
+        "9b": {
+          "title": "Usunięcie konta",
+          "content1": "Możesz trwale usunąć swoje konto w dowolnym momencie poprzez Ustawienia → Usuń konto. Ten proces jest natychmiastowy i nieodwracalny.",
+          "content2": "Po usunięciu konta usuwamy: Twoje dane profilowe (imię, e-mail, hash hasła), ustawienia i preferencje użytkownika, członkostwa w aukcjach, aukcje których jesteś właścicielem (lub przenosimy je na innego użytkownika), utworzone przez Ciebie przedmioty, całą historię licytacji, wszystkie powiadomienia oraz połączone konta OAuth.",
+          "content3": "Jeśli jesteś właścicielem aukcji, musisz najpierw przenieść własność na innego zarejestrowanego użytkownika lub wybrać ich usunięcie, zanim będziesz mógł usunąć konto. Jeśli jesteś Administratorem Wdrożenia, musisz najpierw przenieść te uprawnienia."
         },
         "10": {
           "title": "Przechowywanie danych",
-          "content": "Przechowujemy Twoje dane tak długo, jak Twoje konto jest aktywne. Dane aukcyjne są przechowywane do momentu usunięcia aukcji przez właściciela. Możesz zażądać usunięcia konta w dowolnym momencie, a my usuniemy Twoje dane osobowe z naszych systemów."
+          "content": "Przechowujemy Twoje dane tak długo, jak Twoje konto jest aktywne. Dane aukcyjne są przechowywane do momentu usunięcia aukcji przez właściciela. Po usunięciu konta wszystkie Twoje dane osobowe są natychmiast i trwale usuwane z naszych systemów. Nie przechowujemy kopii zapasowych usuniętych danych użytkowników."
         },
         "11": {
           "title": "Prywatność dzieci",
@@ -95,8 +106,13 @@
         },
         "3": {
           "title": "Konta użytkowników",
-          "content1": "Aby korzystać z Auktiva, musisz utworzyć konto z dokładnymi informacjami, w tym imieniem i nazwiskiem, adresem e-mail oraz bezpiecznym hasłem. Jesteś odpowiedzialny za utrzymanie bezpieczeństwa danych logowania do konta i nie powinieneś udostępniać konta innym osobom.",
-          "content2": "Musisz mieć co najmniej 18 lat lub posiadać zgodę rodziców, aby korzystać z Auktiva. Prosimy o aktualizowanie informacji o koncie, aby otrzymywać ważne powiadomienia o swoich aukcjach."
+          "content1": "Aby korzystać z Auktiva, musisz utworzyć konto z dokładnymi informacjami, w tym imieniem i nazwiskiem, adresem e-mail i bezpiecznym hasłem. Alternatywnie możesz zalogować się za pomocą Google OAuth, co pozwala na użycie istniejących danych logowania do konta Google. Jesteś odpowiedzialny za utrzymanie bezpieczeństwa danych logowania do konta i nie powinieneś udostępniać swojego konta innym.",
+          "content2": "Musisz mieć co najmniej 18 lat lub zgodę rodziców, aby korzystać z Auktiva. Aktualizuj informacje o koncie, aby otrzymywać ważne powiadomienia o swoich aukcjach."
+        },
+        "3b": {
+          "title": "Uwierzytelnianie przez stronę trzecią",
+          "content1": "Auktiva oferuje logowanie przez Google OAuth dla wygody. Gdy korzystasz z logowania Google, upoważniasz Google do udostępnienia nam podstawowych informacji o profilu (imię i nazwisko, e-mail, zdjęcie profilowe). Używamy tych informacji wyłącznie do utworzenia i zarządzania Twoim kontem Auktiva.",
+          "content2": "Twoje korzystanie z logowania Google podlega również Warunkom korzystania z usług i Polityce prywatności Google. Możesz w każdej chwili odłączyć swoje konto Google od Auktiva, chociaż może być konieczne ustawienie hasła, aby kontynuować dostęp do konta."
         },
         "4": {
           "title": "Role i uprawnienia",
@@ -155,7 +171,9 @@
         },
         "14": {
           "title": "Rozwiązanie umowy",
-          "content": "Zastrzegamy sobie prawo do zawieszenia lub usunięcia kont naruszających niniejszy regulamin. Możesz usunąć swoje konto w dowolnym momencie poprzez ustawienia konta. Po rozwiązaniu umowy Twój dostęp do usługi zostanie cofnięty, ale dane aukcyjne, które utworzyłeś, mogą zostać zachowane dla innych uczestników."
+          "content1": "Zastrzegamy sobie prawo do zawieszenia lub usunięcia kont naruszających niniejszy regulamin.",
+          "content2": "Możesz usunąć swoje konto w dowolnym momencie poprzez Ustawienia → Usuń konto. Usunięcie konta jest natychmiastowe i trwałe. Przed usunięciem musisz zdecydować o losie aukcji, których jesteś właścicielem - przenieść własność na innego zarejestrowanego użytkownika lub wybrać ich usunięcie. Jeśli jesteś Administratorem Wdrożenia, musisz najpierw przenieść te uprawnienia.",
+          "content3": "Po usunięciu konta: Twoje dane osobowe są trwale usuwane, członkostwa w aukcjach są zakończone, utworzone przez Ciebie przedmioty są usuwane, historia licytacji jest usuwana, a Ty zostajesz natychmiast wylogowany. Tej czynności nie można cofnąć."
         },
         "15": {
           "title": "Zmiany w regulaminie",

@@ -35,7 +35,8 @@ yarn-error.log*
 !.env.example
 
 # vercel
-.vercel
+.vercel/*
+!.vercel/scripts
 
 # typescript
 *.tsbuildinfo
@@ -50,3 +51,10 @@ next-env.d.ts
 # Uploaded files (keep .gitkeep)
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# PM2 logs (keep .gitkeep)
+/logs/*
+!/logs/.gitkeep
+
+# Database backups
+/backups/*

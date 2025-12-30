@@ -8,6 +8,7 @@ export * as memberHandlers from "./member.handlers";
 export * as inviteHandlers from "./invite.handlers";
 export * as userHandlers from "./user.handlers";
 export * as notificationHandlers from "./notification.handlers";
+export * as systemHandlers from "./system.handlers";
 
 // Re-export schemas for convenience
 export {
@@ -34,7 +35,14 @@ export {
   updateProfileSchema,
   updatePasswordSchema,
   updateSettingsSchema,
+  deleteAccountSchema,
   type UpdateProfileBody,
   type UpdatePasswordBody,
   type UpdateSettingsBody,
+  type DeleteAccountBody,
 } from "./user.handlers";
+
+export {
+  updateSystemSettingsSchema,
+  type UpdateSystemSettingsBody,
+} from "./system.handlers";

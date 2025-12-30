@@ -38,8 +38,11 @@
     "dashboard": "Panel",
     "createAuction": "Utwórz aukcję",
     "myBids": "Moje oferty",
+    "myListings": "Moje przedmioty",
     "bidHistory": "Historia ofert",
     "settings": "Ustawienia",
+    "profile": "Profil",
+    "notifications": "Powiadomienia",
     "documentation": "Dokumentacja",
     "feedback": "Opinie",
     "signOut": "Wyloguj się",
@@ -127,7 +130,9 @@
     "change": "Zmień",
     "upload": "Prześlij",
     "remove": "Usuń",
-    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Maks. 5MB • Zalecany kwadrat"
+    "thumbnailFormats": "JPEG, PNG, WebP, GIF • Maks. 5MB • Zalecany kwadrat",
+    "uploadSuccess": "Przesłano pomyślnie",
+    "deleteSuccess": "Usunięto pomyślnie"
   },
   "notifications": {
     "title": "Powiadomienia",
@@ -144,5 +149,18 @@
   "stats": {
     "more": "+{count} więcej",
     "allCurrencies": "Wszystkie waluty"
+  },
+  "update": {
+    "newVersion": "Dostępna jest wersja {version}!",
+    "contactAdmin": "Skontaktuj się z administratorem, aby zaktualizować.",
+    "clickToUpdate": "Kliknij, aby zainstalować aktualizację.",
+    "viewRelease": "Zobacz informacje o wydaniu",
+    "dismiss": "Zamknij",
+    "installUpdate": "Zainstaluj aktualizację",
+    "updating": "Aktualizowanie...",
+    "updateFailed": "Aktualizacja nie powiodła się. Sprawdź logi serwera.",
+    "updateStarted": "Aktualizacja rozpoczęta!",
+    "appRestarting": "Aplikacja zostanie wkrótce uruchomiona ponownie.",
+    "updateTimeout": "Przekroczono limit czasu aktualizacji. Aplikacja może wymagać ręcznego restartu."
   }
 }

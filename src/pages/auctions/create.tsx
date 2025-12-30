@@ -255,14 +255,17 @@ export default function CreateAuctionPage({
 
             {/* Submit */}
             <div className="divider opacity-50"></div>
-            <div className="flex gap-4 pt-4">
-              <Link href="/dashboard" className="btn btn-ghost flex-1">
+            <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
+              <Link
+                href="/dashboard"
+                className="btn btn-ghost w-full sm:flex-1"
+              >
                 {tCommon("cancel")}
               </Link>
               <Button
                 type="submit"
                 variant="primary"
-                className="flex-1 shadow-lg shadow-primary/20"
+                className="w-full sm:flex-1 shadow-lg shadow-primary/20"
                 isLoading={isLoading}
                 loadingText={t("submitting")}
                 icon={<span className="icon-[tabler--plus] size-5"></span>}

@@ -9,6 +9,52 @@ import ora from "ora";
 import chalk from "chalk";
 
 // =============================================================================
+// NODE.JS VERSION CHECK
+// =============================================================================
+
+const MIN_NODE_VERSION = 20;
+
+function checkNodeVersion(): void {
+  const currentVersion = process.versions.node;
+  const majorVersion = parseInt(currentVersion.split(".")[0], 10);
+
+  if (majorVersion < MIN_NODE_VERSION) {
+    console.log();
+    console.log(chalk.red("━".repeat(60)));
+    console.log();
+    console.log(chalk.red.bold("  ✗ Node.js version requirement not met"));
+    console.log();
+    console.log(
+      `  ${chalk.dim("Current version:")}  ${chalk.red(`v${currentVersion}`)}`,
+    );
+    console.log(
+      `  ${chalk.dim("Required version:")} ${chalk.green(
+        `v${MIN_NODE_VERSION}.x or higher`,
+      )}`,
+    );
+    console.log();
+    console.log(chalk.yellow("  Please upgrade Node.js to continue."));
+    console.log();
+    console.log(chalk.dim("  Download the latest LTS version from:"));
+    console.log(chalk.cyan("    https://nodejs.org/"));
+    console.log();
+    console.log(chalk.dim("  Or use a version manager like nvm:"));
+    console.log(chalk.cyan("    nvm install 20"));
+    console.log(chalk.cyan("    nvm use 20"));
+    console.log();
+    console.log(chalk.dim("  After upgrading, run setup again:"));
+    console.log(chalk.cyan("    npm run setup"));
+    console.log();
+    console.log(chalk.red("━".repeat(60)));
+    console.log();
+    process.exit(1);
+  }
+}
+
+// Run version check immediately
+checkNodeVersion();
+
+// =============================================================================
 // BRANDING
 // =============================================================================
 
@@ -33,16 +79,21 @@ interface EnvConfig {
   AUTH_SECRET: string;
   AUTH_URL: string;
   STORAGE_PROVIDER: "local" | "s3";
-  STORAGE_LOCAL_PATH?: string;
-  STORAGE_LOCAL_URL_PREFIX?: string;
   S3_BUCKET?: string;
   S3_REGION?: string;
   S3_ACCESS_KEY_ID?: string;
   S3_SECRET_ACCESS_KEY?: string;
   S3_ENDPOINT?: string;
   ALLOW_OPEN_AUCTIONS: string;
+  PORT: string;
   // Email configuration
+  EMAIL_PROVIDER?: "brevo" | "smtp";
   BREVO_API_KEY?: string;
+  SMTP_HOST?: string;
+  SMTP_PORT?: string;
+  SMTP_SECURE?: string;
+  SMTP_USER?: string;
+  SMTP_PASSWORD?: string;
   MAIL_FROM?: string;
   MAIL_FROM_NAME?: string;
   NEXT_PUBLIC_APP_URL?: string;
@@ -52,6 +103,8 @@ interface EnvConfig {
   GOOGLE_CLIENT_SECRET?: string;
   MICROSOFT_CLIENT_ID?: string;
   MICROSOFT_CLIENT_SECRET?: string;
+  // Deployment admin
+  DEPLOYMENT_ADMIN_EMAIL?: string;
 }
 
 // =============================================================================
@@ -119,21 +172,13 @@ async function setupStorage(): Promise<Partial<EnvConfig>> {
   });
 
   if (provider === "local") {
-    const storagePath = await input({
-      message: "Storage path:",
-      default: "./public/uploads",
-    });
-
-    const urlPrefix = await input({
-      message: "URL prefix for images:",
-      default: "/uploads",
-    });
-
-    return {
-      STORAGE_PROVIDER: "local",
-      STORAGE_LOCAL_PATH: storagePath,
-      STORAGE_LOCAL_URL_PREFIX: urlPrefix,
-    };
+    console.log();
+    console.log(
+      chalk.dim(
+        "Images will be stored in ./public/uploads (served at /uploads)",
+      ),
+    );
+    return { STORAGE_PROVIDER: "local" };
   }
 
   // S3 configuration
@@ -236,36 +281,48 @@ async function setupDatabase(): Promise<Partial<EnvConfig>> {
 }
 
 async function setupAuth(): Promise<Partial<EnvConfig>> {
-  console.log(chalk.dim("Configure where Auktiva will be accessible:"));
+  // Service port - where Next.js actually listens
+  console.log(chalk.dim("Service port where Next.js will listen:"));
   console.log();
 
-  const domain = await input({
-    message: "Domain or IP address:",
-    default: "localhost",
+  const port = await input({
+    message: "Service port:",
+    default: "3000",
     validate: (value) => {
-      if (!value) return "Domain is required";
+      const num = parseInt(value, 10);
+      if (isNaN(num) || num < 1 || num > 65535) {
+        return "Please enter a valid port number (1-65535)";
+      }
       return true;
     },
   });
 
-  // Determine protocol and port
-  const isLocalhost = domain === "localhost" || domain === "127.0.0.1";
-  const isIP = /^(\d{1,3}\.){3}\d{1,3}$/.test(domain);
+  console.log();
+  console.log(
+    chalk.dim("Public URL - how users will access the app externally."),
+  );
+  console.log(
+    chalk.dim(
+      "Examples: https://auctions.mydomain.com, http://192.168.1.50:3000",
+    ),
+  );
+  console.log();
 
-  let protocol = "https";
-  let port = "";
-
-  if (isLocalhost) {
-    protocol = "http";
-    port = ":3000";
-  } else if (isIP) {
-    protocol = "http";
-  }
-
-  const authUrl = `${protocol}://${domain}${port}`;
+  const authUrl = await input({
+    message: "Public URL:",
+    default: `http://localhost:${port}`,
+    validate: (value) => {
+      if (!value) return "URL is required";
+      if (!value.startsWith("http://") && !value.startsWith("https://")) {
+        return "URL must start with http:// or https://";
+      }
+      return true;
+    },
+  });
 
   console.log();
-  printInfo(`Auth URL will be: ${chalk.magenta(authUrl)}`);
+  printInfo(`Next.js will listen on port ${chalk.cyan(port)}`);
+  printInfo(`Users will access via ${chalk.magenta(authUrl)}`);
 
   const authSecret = generateAuthSecret();
   printSuccess("Generated secure AUTH_SECRET");
@@ -273,6 +330,7 @@ async function setupAuth(): Promise<Partial<EnvConfig>> {
   return {
     AUTH_URL: authUrl,
     AUTH_SECRET: authSecret,
+    PORT: port,
   };
 }
 
@@ -287,6 +345,174 @@ async function setupFeatures(): Promise<Partial<EnvConfig>> {
   };
 }
 
+async function setupDeploymentAdmin(): Promise<Partial<EnvConfig>> {
+  console.log(
+    chalk.dim(
+      "The deployment admin can install updates directly from the app.",
+    ),
+  );
+  console.log();
+
+  const adminEmail = await input({
+    message: "Deployment admin email address:",
+    validate: (value) => {
+      if (!value) return true; // Optional
+      if (!value.includes("@")) return "Please enter a valid email address";
+      return true;
+    },
+  });
+
+  if (!adminEmail) {
+    printInfo(
+      "No deployment admin set. Any user can claim this role later in Settings.",
+    );
+    return {};
+  }
+
+  return {
+    DEPLOYMENT_ADMIN_EMAIL: adminEmail,
+  };
+}
+
+async function testSmtpConnection(config: {
+  host: string;
+  port: number;
+  secure: boolean;
+  user?: string;
+  password?: string;
+}): Promise<{ success: boolean; error?: string }> {
+  // Dynamic import to avoid loading nodemailer during setup if not needed
+  const nodemailer = await import("nodemailer");
+
+  const auth = config.user
+    ? { user: config.user, pass: config.password || "" }
+    : undefined;
+
+  const transporter = nodemailer.default.createTransport({
+    host: config.host,
+    port: config.port,
+    secure: config.secure,
+    auth,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+  });
+
+  try {
+    await transporter.verify();
+    return { success: true };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    return { success: false, error: errorMessage };
+  } finally {
+    transporter.close();
+  }
+}
+
+async function setupSmtpConfig(): Promise<Partial<EnvConfig> | null> {
+  console.log();
+  console.log(chalk.dim("Configure your SMTP server settings:"));
+  console.log();
+
+  const smtpHost = await input({
+    message: "SMTP Host:",
+    required: true,
+    validate: (value) => {
+      if (!value.trim()) return "SMTP host is required";
+      return true;
+    },
+  });
+
+  const smtpPort = await input({
+    message: "SMTP Port:",
+    default: "587",
+    validate: (value) => {
+      const port = parseInt(value, 10);
+      if (isNaN(port) || port < 1 || port > 65535) {
+        return "Please enter a valid port number (1-65535)";
+      }
+      return true;
+    },
+  });
+
+  const portNum = parseInt(smtpPort, 10);
+  const defaultSecure = portNum === 465;
+
+  const smtpSecure = await confirm({
+    message: "Use implicit TLS (secure connection)?",
+    default: defaultSecure,
+  });
+
+  console.log();
+  console.log(
+    chalk.dim("SMTP authentication (leave empty for no authentication):"),
+  );
+
+  const smtpUser = await input({
+    message: "SMTP Username (optional):",
+  });
+
+  let smtpPassword = "";
+  if (smtpUser) {
+    smtpPassword = await password({
+      message: "SMTP Password:",
+    });
+  }
+
+  // Test the connection
+  console.log();
+  const spinner = ora("Testing SMTP connection...").start();
+
+  const testResult = await testSmtpConnection({
+    host: smtpHost,
+    port: portNum,
+    secure: smtpSecure,
+    user: smtpUser || undefined,
+    password: smtpPassword || undefined,
+  });
+
+  if (testResult.success) {
+    spinner.succeed("SMTP connection successful!");
+    return {
+      EMAIL_PROVIDER: "smtp",
+      SMTP_HOST: smtpHost,
+      SMTP_PORT: smtpPort,
+      SMTP_SECURE: smtpSecure ? "true" : "false",
+      ...(smtpUser && { SMTP_USER: smtpUser }),
+      ...(smtpPassword && { SMTP_PASSWORD: smtpPassword }),
+    };
+  } else {
+    spinner.fail(`SMTP connection failed: ${testResult.error}`);
+    console.log();
+
+    const retry = await confirm({
+      message: "Would you like to re-enter SMTP settings?",
+      default: true,
+    });
+
+    if (retry) {
+      return setupSmtpConfig();
+    }
+
+    const saveAnyway = await confirm({
+      message: "Save these settings anyway? (You can fix them later in .env)",
+      default: false,
+    });
+
+    if (saveAnyway) {
+      return {
+        EMAIL_PROVIDER: "smtp",
+        SMTP_HOST: smtpHost,
+        SMTP_PORT: smtpPort,
+        SMTP_SECURE: smtpSecure ? "true" : "false",
+        ...(smtpUser && { SMTP_USER: smtpUser }),
+        ...(smtpPassword && { SMTP_PASSWORD: smtpPassword }),
+      };
+    }
+
+    return null;
+  }
+}
+
 async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
   const wantEmail = await confirm({
     message: "Do you want to enable email notifications?",
@@ -297,31 +523,62 @@ async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
     return {};
   }
 
-  console.log();
-  console.log(
-    chalk.dim("Auktiva uses Brevo (formerly Sendinblue) for sending emails."),
-  );
-  console.log(chalk.dim("Brevo offers a free tier with 300 emails/day."));
-  console.log();
-  console.log(
-    chalk.cyan("1. Create a free account at: ") +
-      chalk.bold("https://www.brevo.com/"),
-  );
-  console.log(
-    chalk.cyan("2. Get your API key from: ") +
-      chalk.bold("https://app.brevo.com/settings/keys/api"),
-  );
-  console.log();
-
-  const brevoKey = await password({
-    message: "Brevo API Key:",
+  const emailProvider = await select({
+    message: "Which email provider would you like to use?",
+    choices: [
+      {
+        value: "brevo",
+        name: "Brevo (formerly Sendinblue)",
+        description: "Cloud email service with free tier (300 emails/day)",
+      },
+      {
+        value: "smtp",
+        name: "SMTP Server",
+        description:
+          "Use your own SMTP server (Gmail, Mailgun, self-hosted, etc.)",
+      },
+    ],
   });
 
-  if (!brevoKey) {
-    printInfo("Skipping email configuration. You can add it later to .env");
-    return {};
+  let providerConfig: Partial<EnvConfig> = {};
+
+  if (emailProvider === "brevo") {
+    console.log();
+    console.log(chalk.dim("Brevo offers a free tier with 300 emails/day."));
+    console.log();
+    console.log(
+      chalk.cyan("1. Create a free account at: ") +
+        chalk.bold("https://www.brevo.com/"),
+    );
+    console.log(
+      chalk.cyan("2. Get your API key from: ") +
+        chalk.bold("https://app.brevo.com/settings/keys/api"),
+    );
+    console.log();
+
+    const brevoKey = await password({
+      message: "Brevo API Key:",
+    });
+
+    if (!brevoKey) {
+      printInfo("Skipping email configuration. You can add it later to .env");
+      return {};
+    }
+
+    providerConfig = {
+      EMAIL_PROVIDER: "brevo",
+      BREVO_API_KEY: brevoKey,
+    };
+  } else {
+    const smtpConfig = await setupSmtpConfig();
+    if (!smtpConfig) {
+      printInfo("Skipping email configuration. You can add it later to .env");
+      return {};
+    }
+    providerConfig = smtpConfig;
   }
 
+  // Common email settings
   const mailFrom = await input({
     message: "Sender email address:",
     default: "noreply@auktiva.org",
@@ -340,7 +597,7 @@ async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
   const cronSecret = crypto.randomBytes(32).toString("base64");
 
   return {
-    BREVO_API_KEY: brevoKey,
+    ...providerConfig,
     MAIL_FROM: mailFrom,
     MAIL_FROM_NAME: mailFromName,
     NEXT_PUBLIC_APP_URL: authUrl,
@@ -487,10 +744,7 @@ AUTH_URL="${config.AUTH_URL}"
 STORAGE_PROVIDER="${config.STORAGE_PROVIDER}"
 `;
 
-  if (config.STORAGE_PROVIDER === "local") {
-    env += `STORAGE_LOCAL_PATH="${config.STORAGE_LOCAL_PATH}"\n`;
-    env += `STORAGE_LOCAL_URL_PREFIX="${config.STORAGE_LOCAL_URL_PREFIX}"\n`;
-  } else {
+  if (config.STORAGE_PROVIDER === "s3") {
     env += `S3_BUCKET="${config.S3_BUCKET}"\n`;
     env += `S3_REGION="${config.S3_REGION}"\n`;
     env += `S3_ACCESS_KEY_ID="${config.S3_ACCESS_KEY_ID}"\n`;
@@ -505,20 +759,35 @@ STORAGE_PROVIDER="${config.STORAGE_PROVIDER}"
 # FEATURES
 # =============================================================================
 ALLOW_OPEN_AUCTIONS="${config.ALLOW_OPEN_AUCTIONS}"
+PORT="${config.PORT}"
 `;
 
   // Email configuration (optional)
-  if (config.BREVO_API_KEY) {
+  if (config.EMAIL_PROVIDER) {
     env += `
 # =============================================================================
-# EMAIL (Brevo)
+# EMAIL
 # =============================================================================
-BREVO_API_KEY="${config.BREVO_API_KEY}"
+EMAIL_PROVIDER="${config.EMAIL_PROVIDER}"
 MAIL_FROM="${config.MAIL_FROM}"
 MAIL_FROM_NAME="${config.MAIL_FROM_NAME}"
 NEXT_PUBLIC_APP_URL="${config.NEXT_PUBLIC_APP_URL}"
 CRON_SECRET="${config.CRON_SECRET}"
 `;
+
+    if (config.EMAIL_PROVIDER === "brevo") {
+      env += `BREVO_API_KEY="${config.BREVO_API_KEY}"\n`;
+    } else if (config.EMAIL_PROVIDER === "smtp") {
+      env += `SMTP_HOST="${config.SMTP_HOST}"\n`;
+      env += `SMTP_PORT="${config.SMTP_PORT}"\n`;
+      env += `SMTP_SECURE="${config.SMTP_SECURE}"\n`;
+      if (config.SMTP_USER) {
+        env += `SMTP_USER="${config.SMTP_USER}"\n`;
+      }
+      if (config.SMTP_PASSWORD) {
+        env += `SMTP_PASSWORD="${config.SMTP_PASSWORD}"\n`;
+      }
+    }
   }
 
   // OAuth configuration (optional)
@@ -548,13 +817,27 @@ MICROSOFT_CLIENT_SECRET="${config.MICROSOFT_CLIENT_SECRET}"
 // =============================================================================
 
 async function runPostSetupTasks(config: EnvConfig): Promise<void> {
+  // Build environment variables for child processes
+  // This ensures the new config is used even though .env was just written
+  const childEnv = {
+    ...process.env,
+    DATABASE_URL: config.DATABASE_URL,
+    DATABASE_AUTH_TOKEN: config.DATABASE_AUTH_TOKEN || "",
+  };
+
+  // Create logs directory for PM2
+  const logsDir = path.join(process.cwd(), "logs");
+  if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir, { recursive: true });
+    printSuccess("Created logs directory");
+  }
+
   // Create storage directory if local
-  if (config.STORAGE_PROVIDER === "local" && config.STORAGE_LOCAL_PATH) {
-    const storagePath = config.STORAGE_LOCAL_PATH.replace(/^\.\//, "");
-    const fullPath = path.join(process.cwd(), storagePath);
-    if (!fs.existsSync(fullPath)) {
-      fs.mkdirSync(fullPath, { recursive: true });
-      printSuccess(`Created storage directory: ${storagePath}`);
+  if (config.STORAGE_PROVIDER === "local") {
+    const uploadDir = path.join(process.cwd(), "public/uploads/images");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+      printSuccess("Created storage directory: public/uploads/images");
     }
   }
 
@@ -576,16 +859,31 @@ async function runPostSetupTasks(config: EnvConfig): Promise<void> {
   // Initialize database
   let spinner = ora("Generating Prisma client...").start();
   try {
-    execSync("npm run db:generate", { stdio: "pipe" });
+    execSync("npm run db:generate", { stdio: "pipe", env: childEnv });
     spinner.succeed("Prisma client generated");
 
-    spinner.start("Pushing database schema...");
-    execSync("npm run db:push", { stdio: "pipe" });
-    spinner.succeed("Database schema pushed");
+    spinner.start("Running database migrations...");
+    execSync("npx prisma migrate deploy", { stdio: "pipe", env: childEnv });
+    spinner.succeed("Database migrations applied");
 
     spinner.start("Seeding currencies...");
-    execSync("npm run seed:currencies", { stdio: "pipe" });
+    execSync("npm run seed:currencies", { stdio: "pipe", env: childEnv });
     spinner.succeed("Currencies seeded");
+
+    // Set deployment admin if provided
+    if (config.DEPLOYMENT_ADMIN_EMAIL) {
+      spinner.start("Setting deployment admin...");
+      execSync(
+        `npx tsx prisma/seed-deployment-admin.ts "${config.DEPLOYMENT_ADMIN_EMAIL}"`,
+        {
+          stdio: "pipe",
+          env: childEnv,
+        },
+      );
+      spinner.succeed(
+        `Deployment admin set to ${config.DEPLOYMENT_ADMIN_EMAIL}`,
+      );
+    }
   } catch (error) {
     spinner.fail("Database initialization failed");
     console.error(chalk.red((error as Error).message));
@@ -631,7 +929,7 @@ async function runPostSetupTasks(config: EnvConfig): Promise<void> {
 
   spinner = ora("Starting with PM2...").start();
   try {
-    execSync('pm2 start npm --name "auktiva" -- start', { stdio: "pipe" });
+    execSync("pm2 startOrRestart ecosystem.config.js", { stdio: "pipe" });
     execSync("pm2 save", { stdio: "pipe" });
     spinner.succeed("Application started with PM2");
   } catch (error) {
@@ -676,30 +974,34 @@ async function main() {
   const config: Partial<EnvConfig> = {};
 
   // Step 1: Storage
-  printHeader("Image Storage", { current: 1, total: 6 });
+  printHeader("Image Storage", { current: 1, total: 7 });
   Object.assign(config, await setupStorage());
 
   // Step 2: Database
-  printHeader("Database", { current: 2, total: 6 });
+  printHeader("Database", { current: 2, total: 7 });
   Object.assign(config, await setupDatabase());
 
   // Step 3: Authentication
-  printHeader("Authentication & Domain", { current: 3, total: 6 });
+  printHeader("Authentication & Domain", { current: 3, total: 7 });
   Object.assign(config, await setupAuth());
 
   // Step 4: Features
-  printHeader("Features", { current: 4, total: 6 });
+  printHeader("Features", { current: 4, total: 7 });
   Object.assign(config, await setupFeatures());
 
-  // Step 5: Email
-  printHeader("Email Notifications", { current: 5, total: 6 });
+  // Step 5: Deployment Admin
+  printHeader("Deployment Administration", { current: 5, total: 7 });
+  Object.assign(config, await setupDeploymentAdmin());
+
+  // Step 6: Email
+  printHeader("Email Notifications", { current: 6, total: 7 });
   Object.assign(
     config,
     await setupEmail(config.AUTH_URL || "http://localhost:3000"),
   );
 
-  // Step 6: OAuth
-  printHeader("OAuth Sign-in (Optional)", { current: 6, total: 6 });
+  // Step 7: OAuth
+  printHeader("OAuth Sign-in (Optional)", { current: 7, total: 7 });
   Object.assign(
     config,
     await setupOAuth(config.AUTH_URL || "http://localhost:3000"),
@@ -712,19 +1014,45 @@ async function main() {
   console.log(chalk.bold("Configuration Summary:"));
   console.log();
   console.log(
-    `  ${chalk.dim("Database:")}      ${config.DATABASE_URL?.startsWith("libsql") ? chalk.cyan("Turso") : chalk.green("SQLite")}`,
+    `  ${chalk.dim("Database:")}      ${
+      config.DATABASE_URL?.startsWith("libsql")
+        ? chalk.cyan("Turso")
+        : chalk.green("SQLite")
+    }`,
   );
   console.log(
-    `  ${chalk.dim("Storage:")}       ${config.STORAGE_PROVIDER === "s3" ? chalk.cyan(`S3 (${config.S3_BUCKET})`) : chalk.green("Local")}`,
+    `  ${chalk.dim("Storage:")}       ${
+      config.STORAGE_PROVIDER === "s3"
+        ? chalk.cyan(`S3 (${config.S3_BUCKET})`)
+        : chalk.green("Local")
+    }`,
   );
   console.log(
-    `  ${chalk.dim("URL:")}           ${chalk.magenta(config.AUTH_URL)}`,
+    `  ${chalk.dim("App URL:")}       ${chalk.magenta(config.AUTH_URL)}`,
+  );
+  console.log(`  ${chalk.dim("Service Port:")} ${chalk.cyan(config.PORT)}`);
+  console.log(
+    `  ${chalk.dim("Open Auctions:")} ${
+      config.ALLOW_OPEN_AUCTIONS === "true"
+        ? chalk.green("Enabled")
+        : chalk.yellow("Disabled")
+    }`,
   );
   console.log(
-    `  ${chalk.dim("Open Auctions:")} ${config.ALLOW_OPEN_AUCTIONS === "true" ? chalk.green("Enabled") : chalk.yellow("Disabled")}`,
+    `  ${chalk.dim("Email:")}         ${
+      config.EMAIL_PROVIDER === "brevo"
+        ? chalk.green("Enabled (Brevo)")
+        : config.EMAIL_PROVIDER === "smtp"
+        ? chalk.green(`Enabled (SMTP: ${config.SMTP_HOST})`)
+        : chalk.yellow("Disabled")
+    }`,
   );
   console.log(
-    `  ${chalk.dim("Email:")}         ${config.BREVO_API_KEY ? chalk.green("Enabled (Brevo)") : chalk.yellow("Disabled")}`,
+    `  ${chalk.dim("Deploy Admin:")} ${
+      config.DEPLOYMENT_ADMIN_EMAIL
+        ? chalk.green(config.DEPLOYMENT_ADMIN_EMAIL)
+        : chalk.yellow("Not set")
+    }`,
   );
   // OAuth summary
   const oauthProviders: string[] = [];

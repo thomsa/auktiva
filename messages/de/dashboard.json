@@ -12,6 +12,11 @@
     "activeBids": {
       "title": "Deine aktiven Gebote"
     },
+    "yourItems": {
+      "title": "Deine Artikel",
+      "subtitle": "Artikel, die du eingestellt hast",
+      "bids": "{count, plural, =0 {Keine Gebote} =1 {1 Gebot} other {# Gebote}}"
+    },
     "auctions": {
       "title": "Auktionen, denen du beigetreten bist"
     },

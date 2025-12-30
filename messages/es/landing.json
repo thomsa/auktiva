@@ -4,7 +4,7 @@
       "badge": "{version} ya está disponible",
       "title": "Subastas hechas",
       "titleHighlight": "simples y sociales",
-      "description": "La plataforma de código abierto para la recaudación de fondos moderna. Organiza subastas privadas, invita a tu comunidad y gestiona todo en un solo lugar.",
+      "description": "Plataforma de subastas 100% gratuita y de código abierto para eventos benéficos y uso personal. Perfecta para limpiezas anuales, ventas de garaje o vender artículos a amigos. Sin comisiones, sin límites.",
       "startAuction": "Empieza Tu Subasta",
       "viewOnGithub": "Ver en GitHub",
       "demoAlt": "Vista previa interactiva de demostración",
@@ -44,10 +44,31 @@
         "description": "Perfecto para eventos benéficos. Nosotros gestionamos las pujas, tú gestionas el intercambio de artículos offline."
       }
     },
+    "useCases": {
+      "sectionTitle": "Perfecto para",
+      "sectionTitleHighlight": "cualquier ocasión",
+      "sectionDescription": "Ya sea para recaudar fondos o limpiar tu garaje, Auktiva lo hace simple.",
+      "charity": {
+        "title": "Subastas Benéficas",
+        "description": "Organiza subastas silenciosas para organizaciones sin fines de lucro, escuelas, iglesias y eventos comunitarios."
+      },
+      "declutter": {
+        "title": "Limpieza Anual",
+        "description": "Deshazte de artículos no usados de tu casa o almacén y deja que tus amigos pujen por ellos."
+      },
+      "family": {
+        "title": "Amigos y Familia",
+        "description": "Subastas privadas para reuniones familiares, ventas de vecindario o grupos de amigos."
+      },
+      "office": {
+        "title": "Liquidaciones de Oficina",
+        "description": "Las empresas pueden subastar equipos viejos, muebles o artículos promocionales a sus empleados."
+      }
+    },
     "howItWorks": {
       "sectionTitle": "Desde la configuración hasta",
-      "sectionTitleHighlight": "una recaudación exitosa",
-      "sectionDescription": "Cuatro pasos simples para realizar tu subasta benéfica. Concéntrate en tu causa, nosotros nos encargamos de las pujas.",
+      "sectionTitleHighlight": "una subasta exitosa",
+      "sectionDescription": "Cuatro pasos simples para realizar tu subasta. Concéntrate en lo importante, nosotros nos encargamos de las pujas.",
       "step1": {
         "title": "Crear Subasta",
         "description": "Configura tu evento en minutos con detalles y marca personalizables."
@@ -80,8 +101,8 @@
       "moreItems": "+{count}"
     },
     "cta": {
-      "title": "¿Listo para tu próxima recaudación?",
-      "description": "Únete a los organizadores que usan Auktiva para realizar subastas benéficas. Código abierto, gratis y creado para comunidades.",
+      "title": "¿Listo para empezar tu subasta?",
+      "description": "Ya sea una subasta benéfica o una venta de limpieza anual, Auktiva es completamente gratis. Código abierto, sin comisiones, creado para comunidades.",
       "getStarted": "Empezar",
       "freeForever": "Es gratis y siempre será gratis",
       "selfHostTitle": "¿Prefieres alojarlo tú mismo?",

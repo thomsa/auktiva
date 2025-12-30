@@ -30,7 +30,9 @@
       "newItemNotifications": "Új tétel értesítések",
       "newItemDescription": "Értesítés e-mailben, ha új tétel kerül egy általad követett aukcióba",
       "outbidNotifications": "Túllicitálás értesítések",
-      "outbidDescription": "Értesítés e-mailben, ha valaki túllicitál egy tételen"
+      "outbidDescription": "Értesítés e-mailben, ha valaki túllicitál egy tételen",
+      "itemWonNotifications": "Nyert tétel értesítések",
+      "itemWonDescription": "Értesítés e-mailben, ha megnyersz egy tételt egy aukción"
     },
     "appearance": {
       "title": "Megjelenés",
@@ -49,9 +51,73 @@
       "connected": "Kapcsolódva",
       "notConnected": "Nincs kapcsolva"
     },
+    "deploymentAdmin": {
+      "title": "Telepítés adminisztráció",
+      "description": "Kezeld, ki telepíthet frissítéseket és adminisztrálhatja ezt a telepítést.",
+      "youAreAdmin": "Te vagy a telepítés adminisztrátor",
+      "adminDescription": "Közvetlenül telepíthetsz frissítéseket a frissítési bannerből.",
+      "noAdminSet": "Nincs telepítés adminisztrátor beállítva",
+      "claimAdminDescription": "Legyél az első, aki átveszi az adminisztrátori jogokat ehhez a példányhoz.",
+      "becomeAdmin": "Telepítés adminisztrátor leszek",
+      "claiming": "Átvétel...",
+      "becameAdmin": "Mostantól te vagy a telepítés adminisztrátor",
+      "removeAdmin": "Adminisztrátori jogok eltávolítása",
+      "removing": "Eltávolítás...",
+      "removedAdmin": "Telepítés adminisztrátor eltávolítva",
+      "adminAlreadySet": "Egy másik felhasználó a telepítés adminisztrátor",
+      "contactCurrentAdmin": "Lépj kapcsolatba a jelenlegi adminisztrátorral a jogok átadásához.",
+      "transferTitle": "Adminisztrátori jogok átadása",
+      "transferDescription": "Add át az adminisztrátori jogokat egy másik regisztrált felhasználónak.",
+      "emailPlaceholder": "Add meg a felhasználó email címét",
+      "transfer": "Átadás",
+      "transferring": "Átadás...",
+      "transferred": "Adminisztrátori jogok sikeresen átadva",
+      "enterEmail": "Kérlek adj meg egy email címet",
+      "versionTitle": "Verzió információ",
+      "currentVersion": "Jelenlegi verzió",
+      "latestVersion": "Legújabb verzió",
+      "viewChangelog": "Változásnapló",
+      "updateNow": "Frissítés most",
+      "updating": "Frissítés..."
+    },
     "seo": {
       "title": "Beállítások",
       "description": "Kezeld a fiók beállításaidat"
+    },
+    "deleteAccount": {
+      "title": "Fiók törlése",
+      "description": "Véglegesen töröld a fiókodat és az összes kapcsolódó adatot.",
+      "warning": "Ez a művelet visszafordíthatatlan",
+      "warningDescription": "A törlés után a fiókod és az adataid nem állíthatók vissza.",
+      "deleteButton": "Fiókom törlése",
+      "modalTitle": "Fiók törlése",
+      "modalDescription": "Ez véglegesen törli a fiókodat, beleértve az összes licitálást, az általad létrehozott tételeket és az aukciós tagságokat. Ez a művelet nem vonható vissza.",
+      "ownedAuctionsTitle": "A következő aukciók tulajdonosa vagy",
+      "ownedAuctionsDescription": "Válaszd ki, mit szeretnél tenni az egyes aukciókkal a fiók törlése előtt.",
+      "deleteAuction": "Aukció törlése",
+      "transferOwnership": "Tulajdonjog átadása",
+      "newOwnerEmail": "Az új tulajdonos e-mail címe",
+      "enterTransferEmail": "Kérlek add meg az e-mail címet a(z) {auction} aukcióhoz",
+      "enterPassword": "Add meg a jelszavadat a megerősítéshez",
+      "enterEmail": "Add meg az e-mail címedet a megerősítéshez",
+      "passwordPlaceholder": "Jelenlegi jelszavad",
+      "passwordHint": "Add meg a jelszavadat a személyazonosságod igazolásához",
+      "emailHint": "Írd be pontosan az e-mail címedet a megerősítéshez",
+      "passwordRequired": "Jelszó megadása kötelező",
+      "emailRequired": "E-mail megerősítés szükséges",
+      "incorrectPassword": "Helytelen jelszó",
+      "incorrectEmail": "Az e-mail cím nem egyezik",
+      "mustTransferAdmin": "A fiók törlése előtt át kell adnod a telepítés adminisztrátori jogokat",
+      "cancel": "Mégse",
+      "confirmDelete": "Fiók törlése",
+      "deleting": "Törlés...",
+      "accountDeleted": "A fiókod törölve lett"
+    },
+    "quickLinks": {
+      "title": "Gyorslinkek",
+      "documentation": "Dokumentáció",
+      "feedback": "Visszajelzés küldése",
+      "signOut": "Kijelentkezés"
     }
   }
 }

@@ -77,6 +77,7 @@ model UserSettings {
   // Email Notification Preferences
   emailOnNewItem        Boolean  @default(false)  // Notify when new item added to auction
   emailOnOutbid         Boolean  @default(false)  // Notify when outbid
+  emailOnItemWon        Boolean  @default(false)  // Notify when user wins an item
   
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -244,6 +245,9 @@ model AuctionItem {
   // Timing
   endDate         DateTime? // null = follows auction end or no end
   
+  // Notification tracking
+  winnerNotified  Boolean   @default(false) // Track if winner notification sent
+  
   // Metadata
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -354,6 +358,7 @@ enum EmailType {
   NEW_ITEM        // New item added to auction
   OUTBID          // User was outbid
   PASSWORD_RESET  // Password reset request
+  ITEM_WON        // User won an item
 }
 
 model EmailLog {
@@ -382,6 +387,25 @@ model EmailLog {
 
   @@index([status, createdAt])
   @@map("email_logs")
+}
+
+// ============================================
+// SYSTEM SETTINGS (singleton)
+// ============================================
+
+model SystemSettings {
+  id                    String   @id @default("system")  // Always "system" - singleton pattern
+  
+  // Deployment admin - can trigger updates
+  deploymentAdminEmail  String?  // Email of user who can manage deployments
+  
+  // Update settings
+  autoCheckUpdates      Boolean  @default(true)  // Whether to check for updates
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("system_settings")
 }
 
 // ============================================

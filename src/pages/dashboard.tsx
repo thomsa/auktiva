@@ -2,13 +2,14 @@ import { useMemo } from "react";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import useSWR from "swr";
 import { authOptions } from "@/lib/auth";
 import { getMessages, Locale } from "@/i18n";
-import * as auctionService from "@/lib/services/auction.service";
-import * as bidService from "@/lib/services/bid.service";
+import { fetcher } from "@/lib/fetcher";
 import { PageLayout, EmptyState, SEO } from "@/components/common";
 import { AuctionCard } from "@/components/auction";
 import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
+import { SkeletonDashboard } from "@/components/ui/skeleton";
 import {
   SortDropdown,
   auctionSortOptions,
@@ -62,15 +63,33 @@ interface BidStats {
   currentlyWinning: number;
 }
 
+interface UserItem {
+  id: string;
+  name: string;
+  auctionId: string;
+  auctionName: string;
+  currencySymbol: string;
+  startingBid: number;
+  currentBid: number | null;
+  endDate: string | null;
+  createdAt: string;
+  thumbnailUrl: string | null;
+  bidCount: number;
+}
+
+interface DashboardData {
+  auctions: Auction[];
+  bidItems: BidItem[];
+  bidStats: BidStats;
+  userItems: UserItem[];
+}
+
 interface DashboardProps {
   user: {
     id: string;
     name: string | null;
     email: string;
   };
-  auctions: Auction[];
-  bidItems: BidItem[];
-  bidStats: BidStats;
 }
 
 function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
@@ -92,7 +111,9 @@ function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
           <img
             src={item.thumbnailUrl}
             alt={item.name}
-            className={`w-14 h-14 object-cover rounded-lg shadow-sm ${ended ? "grayscale" : ""}`}
+            className={`w-14 h-14 object-cover rounded-lg shadow-sm ${
+              ended ? "grayscale" : ""
+            }`}
           />
         ) : (
           <div
@@ -136,12 +157,64 @@ function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
   );
 }
 
-export default function DashboardPage({
-  user,
-  auctions,
-  bidItems,
-  bidStats,
-}: DashboardProps) {
+function UserItemCard({ item }: { item: UserItem }) {
+  const t = useTranslations("dashboard");
+  const ended = isItemEnded(item.endDate);
+
+  return (
+    <Link
+      href={`/auctions/${item.auctionId}/items/${item.id}`}
+      className={`flex gap-3 p-3 rounded-xl hover:bg-base-content/5 transition-colors border border-secondary/20 bg-secondary/5 ${
+        ended ? "opacity-60" : ""
+      }`}
+    >
+      <div className="relative shrink-0">
+        {item.thumbnailUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.thumbnailUrl}
+            alt={item.name}
+            className={`w-14 h-14 object-cover rounded-lg shadow-sm ${
+              ended ? "grayscale" : ""
+            }`}
+          />
+        ) : (
+          <div
+            className={`w-14 h-14 bg-base-200 rounded-lg flex items-center justify-center ${
+              ended ? "grayscale" : ""
+            }`}
+          >
+            <span className="icon-[tabler--photo] size-6 text-base-content/30"></span>
+          </div>
+        )}
+        {ended && (
+          <div className="absolute -top-1 -left-1">
+            <div className="badge badge-error badge-xs gap-0.5">
+              <span className="icon-[tabler--flag-filled] size-2"></span>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="font-medium text-sm truncate">{item.name}</div>
+        <div className="text-xs text-base-content/60 truncate">
+          {item.auctionName}
+        </div>
+        <div className="flex items-center gap-2 mt-1">
+          <span className="badge badge-secondary badge-xs">
+            {t("yourItems.bids", { count: item.bidCount })}
+          </span>
+          <span className="text-xs font-semibold">
+            {item.currencySymbol}
+            {(item.currentBid || item.startingBid).toFixed(0)}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+export default function DashboardPage({ user }: DashboardProps) {
   const t = useTranslations("dashboard");
   const tStats = useTranslations("dashboard.stats");
   const tEmpty = useTranslations("dashboard.empty");
@@ -150,6 +223,22 @@ export default function DashboardPage({
     "date-desc",
   );
   const { currentSort: bidSort } = useSortFilter("bidSort", "date-desc");
+
+  // Client-side data fetching
+  const { data, isLoading } = useSWR<DashboardData>(
+    "/api/user/dashboard",
+    fetcher,
+  );
+
+  const auctions = useMemo(() => data?.auctions ?? [], [data?.auctions]);
+  const bidItems = useMemo(() => data?.bidItems ?? [], [data?.bidItems]);
+  const bidStats = data?.bidStats ?? {
+    totalBids: 0,
+    currencyTotals: [],
+    itemsBidOn: 0,
+    currentlyWinning: 0,
+  };
+  const userItems = data?.userItems ?? [];
 
   const sortedAuctions = useMemo(
     () => sortAuctions(auctions, auctionSort),
@@ -160,6 +249,35 @@ export default function DashboardPage({
     () => sortItems(bidItems, bidSort),
     [bidItems, bidSort],
   );
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return (
+      <>
+        <SEO title={t("seo.title")} description={t("seo.description")} />
+        <PageLayout user={user}>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-base-content">
+                {t("title")}
+              </h1>
+              <p className="text-base-content/60 mt-1 text-sm sm:text-base">
+                {t("welcome", { name: user.name || user.email })}
+              </p>
+            </div>
+            <Link
+              href="/auctions/create"
+              className="btn btn-primary w-full sm:w-auto"
+            >
+              <span className="icon-[tabler--plus] size-5"></span>
+              {t("createAuction")}
+            </Link>
+          </div>
+          <SkeletonDashboard />
+        </PageLayout>
+      </>
+    );
+  }
 
   return (
     <>
@@ -186,7 +304,7 @@ export default function DashboardPage({
 
         {/* Stats Cards */}
         {bidStats.totalBids > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <StatsCard
               icon="icon-[tabler--gavel]"
               iconColor="primary"
@@ -211,6 +329,32 @@ export default function DashboardPage({
               value={bidStats.currentlyWinning}
               label={tStats("currentlyWinning")}
             />
+          </div>
+        )}
+
+        {/* Your Items Section */}
+        {userItems.length > 0 && (
+          <div className="mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+              <div>
+                <h2 className="text-lg sm:text-xl font-semibold text-base-content flex items-center gap-2">
+                  <span className="icon-[tabler--tag] size-5 text-secondary"></span>
+                  {t("yourItems.title")}
+                </h2>
+                <p className="text-sm text-base-content/60">
+                  {t("yourItems.subtitle")}
+                </p>
+              </div>
+            </div>
+            <div className="card bg-base-100 shadow border border-secondary/10">
+              <div className="card-body p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 max-h-80 overflow-y-auto">
+                  {userItems.map((item) => (
+                    <UserItemCard key={item.id} item={item} />
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -292,15 +436,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  // Use services for data fetching
-  const [memberAuctions, openAuctions, bidStats, bidItems] = await Promise.all([
-    auctionService.getUserAuctions(session.user.id),
-    auctionService.getOpenAuctionsForUser(session.user.id),
-    bidService.getUserBidStats(session.user.id),
-    bidService.getUserBidItems(session.user.id),
-  ]);
-
-  const auctions = [...memberAuctions, ...openAuctions];
   const messages = await getMessages(context.locale as Locale);
 
   return {
@@ -310,9 +445,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         name: session.user.name || null,
         email: session.user.email || "",
       },
-      auctions,
-      bidItems,
-      bidStats,
       messages,
     },
   };

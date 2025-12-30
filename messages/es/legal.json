@@ -38,8 +38,13 @@
         },
         "5": {
           "title": "Compartir Datos",
-          "content1": "No vendemos, comerciamos ni transferimos tu información personal a terceros. Tus datos de subasta son solo visibles para los miembros de las subastas en las que participas, de acuerdo con los ajustes de privacidad configurados por cada propietario de subasta.",
-          "content2": "Los propietarios de subastas pueden configurar ajustes de privacidad incluyendo pujas anónimas para ocultar identidades de pujadores, restricciones de acceso solo por invitación, y permisos basados en roles para controlar lo que cada miembro puede ver y hacer."
+          "content1": "No vendemos, intercambiamos ni transferimos de ninguna otra manera tu información personal a terceros. Tus datos de subasta solo son visibles para los miembros de las subastas en las que participas, según la configuración de privacidad establecida por cada propietario de subasta.",
+          "content2": "Los propietarios de subastas pueden configurar ajustes de privacidad, incluyendo pujas anónimas para ocultar identidades de pujadores, restricciones de acceso solo por invitación y permisos basados en roles para controlar lo que cada miembro puede ver y hacer."
+        },
+        "5b": {
+          "title": "Autenticación de terceros (Google OAuth)",
+          "content1": "Si eliges iniciar sesión con Google, usamos el servicio OAuth 2.0 de Google para autenticar tu identidad. Cuando inicias sesión con Google, recibimos tu información básica de perfil (nombre, dirección de correo electrónico y foto de perfil) de Google.",
+          "content2": "No recibimos ni almacenamos tu contraseña de Google. El uso de tu información por parte de Google se rige por la Política de Privacidad de Google. Puedes revocar el acceso de Auktiva a tu cuenta de Google en cualquier momento a través de la configuración de tu cuenta de Google en myaccount.google.com."
         },
         "6": {
           "title": "Comunicaciones por Correo",
@@ -55,13 +60,19 @@
           "content": "Auktiva es software 100% de código abierto lanzado bajo la Licencia MIT. Puedes revisar nuestra base de código completa en <a href=\"https://github.com/thomsa/auktiva\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub</a> para ver exactamente cómo recopilamos, almacenamos y manejamos tus datos. También puedes alojar Auktiva tú mismo para tener control total sobre tu información."
         },
         "9": {
-          "title": "Tus Derechos",
-          "content1": "Tienes derecho a acceder a tus datos personales a través de los ajustes de tu cuenta, corregir información inexacta actualizando tu perfil, solicitar la eliminación de tu cuenta y datos asociados, exportar tus datos de subasta en formato JSON o CSV, y gestionar tus preferencias de notificaciones por correo.",
+          "title": "Tus Derechos (RGPD)",
+          "content1": "Bajo el RGPD y regulaciones similares de protección de datos, tienes derecho a: acceder a tus datos personales a través de los ajustes de tu cuenta, corregir información inexacta actualizando tu perfil, solicitar la eliminación de tu cuenta y todos los datos asociados (derecho al olvido), y gestionar tus preferencias de notificaciones por correo.",
           "content2": "Para ejercer cualquiera de estos derechos, visita los ajustes de tu cuenta o contáctanos a través de los canales listados abajo."
+        },
+        "9b": {
+          "title": "Eliminación de Cuenta",
+          "content1": "Puedes eliminar permanentemente tu cuenta en cualquier momento a través de Ajustes → Eliminar cuenta. Este proceso es inmediato e irreversible.",
+          "content2": "Cuando eliminas tu cuenta, eliminamos: tu información de perfil (nombre, correo, hash de contraseña), tus ajustes y preferencias de usuario, tus membresías de subasta, subastas que posees (o las transferimos a otro usuario), artículos que creaste, tu historial completo de pujas, todas tus notificaciones y cuentas OAuth conectadas.",
+          "content3": "Si posees subastas, primero debes transferir la propiedad a otro usuario registrado o elegir eliminarlas antes de poder eliminar tu cuenta. Si eres el Administrador de Despliegue, primero debes transferir esos derechos."
         },
         "10": {
           "title": "Retención de Datos",
-          "content": "Retenemos tus datos mientras tu cuenta esté activa. Los datos de subasta se retienen hasta que el propietario de la subasta la elimina. Puedes solicitar la eliminación de tu cuenta en cualquier momento, y eliminaremos tu información personal de nuestros sistemas."
+          "content": "Retenemos tus datos mientras tu cuenta esté activa. Los datos de subasta se retienen hasta que el propietario de la subasta la elimina. Cuando eliminas tu cuenta, todos tus datos personales se eliminan inmediata y permanentemente de nuestros sistemas. No conservamos copias de seguridad de datos de usuarios eliminados."
         },
         "11": {
           "title": "Privacidad de Niños",
@@ -94,9 +105,14 @@
           "disclaimer": "Auktiva facilita las pujas pero <strong class=\"text-base-content\">no procesa pagos</strong>. Todas las transacciones se liquidan offline entre los participantes. No somos un mercado ni un procesador de pagos."
         },
         "3": {
-          "title": "Cuentas de Usuario",
-          "content1": "Para usar Auktiva, debes crear una cuenta con información precisa incluyendo tu nombre, dirección de correo electrónico y una contraseña segura. Eres responsable de mantener la seguridad de las credenciales de tu cuenta y no debes compartir tu cuenta con otros.",
-          "content2": "Debes tener al menos 18 años o tener consentimiento parental para usar Auktiva. Por favor mantén tu información de cuenta actualizada para asegurar que recibes notificaciones importantes sobre tus subastas."
+          "title": "Cuentas de usuario",
+          "content1": "Para usar Auktiva, debes crear una cuenta con información precisa, incluyendo tu nombre, dirección de correo electrónico y una contraseña segura. Alternativamente, puedes iniciar sesión usando Google OAuth, lo que te permite usar las credenciales de tu cuenta de Google existente. Eres responsable de mantener la seguridad de las credenciales de tu cuenta y no debes compartir tu cuenta con otros.",
+          "content2": "Debes tener al menos 18 años o contar con el consentimiento de tus padres para usar Auktiva. Mantén actualizada la información de tu cuenta para asegurarte de recibir notificaciones importantes sobre tus subastas."
+        },
+        "3b": {
+          "title": "Autenticación de terceros",
+          "content1": "Auktiva ofrece inicio de sesión a través de Google OAuth como una conveniencia. Cuando usas el inicio de sesión de Google, autorizas a Google a compartir tu información básica de perfil (nombre, correo electrónico, foto de perfil) con nosotros. Usamos esta información únicamente para crear y administrar tu cuenta de Auktiva.",
+          "content2": "Tu uso del inicio de sesión de Google también está sujeto a los Términos de Servicio y la Política de Privacidad de Google. Puedes desconectar tu cuenta de Google de Auktiva en cualquier momento, aunque es posible que necesites establecer una contraseña para continuar accediendo a tu cuenta."
         },
         "4": {
           "title": "Roles y Permisos",
@@ -154,8 +170,10 @@
           "content": "En la máxima medida permitida por la ley, Auktiva y sus creadores, contribuyentes y mantenedores no serán responsables por ningún daño indirecto, incidental, especial, consecuente o punitivo que surja de tu uso del servicio. Esto incluye, pero no se limita a, pérdida de beneficios, datos o buena voluntad, transacciones fallidas o disputadas, acceso no autorizado a tu cuenta, e interrupciones o errores del servicio."
         },
         "14": {
-          "title": "Terminación",
-          "content": "Nos reservamos el derecho de suspender o terminar cuentas que violen estos términos. Puedes eliminar tu cuenta en cualquier momento a través de los ajustes de tu cuenta. Tras la terminación, tu acceso al servicio será revocado, pero los datos de subasta que creaste pueden ser retenidos para otros participantes."
+          "title": "Terminación de Cuenta",
+          "content1": "Nos reservamos el derecho de suspender o terminar cuentas que violen estos términos.",
+          "content2": "Puedes eliminar tu cuenta en cualquier momento a través de Ajustes → Eliminar cuenta. La eliminación de cuenta es inmediata y permanente. Antes de la eliminación, debes decidir sobre las subastas que posees - ya sea transferir la propiedad a otro usuario registrado o elegir eliminarlas. Si eres el Administrador de Despliegue, primero debes transferir esos derechos.",
+          "content3": "Tras la eliminación de cuenta: tus datos personales se eliminan permanentemente, tus membresías de subasta terminan, los artículos que creaste se eliminan, tu historial de pujas se elimina, y se cierra tu sesión inmediatamente. Esta acción no se puede deshacer."
         },
         "15": {
           "title": "Cambios en los Términos",

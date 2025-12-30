@@ -14,7 +14,7 @@
           "title": "Information We Collect",
           "content": "We collect information you provide directly to us when you use Auktiva:",
           "accountInfo": "Account Information",
-          "accountInfoDesc": "Your name, email address, and password when you create an account.",
+          "accountInfoDesc": "Your name, email address, and password when you create an account. If you sign in with Google, we receive your name, email address, and profile picture from Google.",
           "auctionData": "Auction Data",
           "auctionDataDesc": "Information about auctions you create or join, items you list, bids you place, and your membership roles.",
           "uploadedContent": "Uploaded Content",
@@ -41,6 +41,11 @@
           "content1": "We do not sell, trade, or otherwise transfer your personal information to third parties. Your auction data is only visible to members of the auctions you participate in, according to the privacy settings configured by each auction owner.",
           "content2": "Auction owners can configure privacy settings including anonymous bidding to hide bidder identities, invite-only access restrictions, and role-based permissions to control what each member can see and do."
         },
+        "5b": {
+          "title": "Third-Party Authentication (Google OAuth)",
+          "content1": "If you choose to sign in with Google, we use Google's OAuth 2.0 service to authenticate your identity. When you sign in with Google, we receive your basic profile information (name, email address, and profile picture) from Google.",
+          "content2": "We do not receive or store your Google password. Google's use of your information is governed by Google's Privacy Policy. You can revoke Auktiva's access to your Google account at any time through your Google Account settings at myaccount.google.com."
+        },
         "6": {
           "title": "Email Communications",
           "content1": "We may send you emails for welcome messages when you register, auction invitations when someone invites you to participate, outbid notifications when another user places a higher bid, and new item notifications for auctions you've joined.",
@@ -55,13 +60,19 @@
           "content": "Auktiva is 100% open source software released under the MIT License. You can review our complete codebase on <a href=\"https://github.com/thomsa/auktiva\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">GitHub</a> to see exactly how we collect, store, and handle your data. You can also self-host Auktiva for complete control over your information."
         },
         "9": {
-          "title": "Your Rights",
-          "content1": "You have the right to access your personal data through your account settings, correct inaccurate information by updating your profile, request deletion of your account and associated data, export your auction data in JSON or CSV format, and manage your email notification preferences.",
+          "title": "Your Rights (GDPR)",
+          "content1": "Under GDPR and similar data protection regulations, you have the right to: access your personal data through your account settings, correct inaccurate information by updating your profile, request deletion of your account and all associated data (right to erasure), and manage your email notification preferences.",
           "content2": "To exercise any of these rights, visit your account settings or contact us through the channels listed below."
+        },
+        "9b": {
+          "title": "Account Deletion",
+          "content1": "You can permanently delete your account at any time through Settings → Delete Account. This process is immediate and irreversible.",
+          "content2": "When you delete your account, we remove: your profile information (name, email, password hash), your user settings and preferences, your auction memberships, auctions you own (or transfer them to another user), items you created, your complete bid history, all your notifications, and any connected OAuth accounts.",
+          "content3": "If you own auctions, you must either transfer ownership to another registered user or choose to delete them before your account can be deleted. If you are the Deployment Admin, you must transfer those rights first."
         },
         "10": {
           "title": "Data Retention",
-          "content": "We retain your data for as long as your account is active. Auction data is retained until the auction owner deletes the auction. You may request deletion of your account at any time, and we will remove your personal information from our systems."
+          "content": "We retain your data for as long as your account is active. Auction data is retained until the auction owner deletes the auction. When you delete your account, all your personal data is immediately and permanently removed from our systems. We do not retain backups of deleted user data."
         },
         "11": {
           "title": "Children's Privacy",
@@ -95,8 +106,13 @@
         },
         "3": {
           "title": "User Accounts",
-          "content1": "To use Auktiva, you must create an account with accurate information including your name, email address, and a secure password. You are responsible for maintaining the security of your account credentials and should not share your account with others.",
+          "content1": "To use Auktiva, you must create an account with accurate information including your name, email address, and a secure password. Alternatively, you may sign in using Google OAuth, which allows you to use your existing Google account credentials. You are responsible for maintaining the security of your account credentials and should not share your account with others.",
           "content2": "You must be at least 18 years old or have parental consent to use Auktiva. Please keep your account information up to date to ensure you receive important notifications about your auctions."
+        },
+        "3b": {
+          "title": "Third-Party Authentication",
+          "content1": "Auktiva offers sign-in through Google OAuth as a convenience. When you use Google sign-in, you authorize Google to share your basic profile information (name, email, profile picture) with us. We use this information solely to create and manage your Auktiva account.",
+          "content2": "Your use of Google sign-in is also subject to Google's Terms of Service and Privacy Policy. You can disconnect your Google account from Auktiva at any time, though you may need to set a password to continue accessing your account."
         },
         "4": {
           "title": "Roles and Permissions",
@@ -154,8 +170,10 @@
           "content": "To the maximum extent permitted by law, Auktiva and its creators, contributors, and maintainers shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the service. This includes but is not limited to loss of profits, data, or goodwill, failed or disputed transactions, unauthorized access to your account, and service interruptions or errors."
         },
         "14": {
-          "title": "Termination",
-          "content": "We reserve the right to suspend or terminate accounts that violate these terms. You may delete your account at any time through your account settings. Upon termination, your access to the service will be revoked, but auction data you created may be retained for other participants."
+          "title": "Account Termination",
+          "content1": "We reserve the right to suspend or terminate accounts that violate these terms.",
+          "content2": "You may delete your account at any time through Settings → Delete Account. Account deletion is immediate and permanent. Before deletion, you must handle any auctions you own by either transferring ownership to another registered user or choosing to delete them. If you are the Deployment Admin, you must transfer those rights to another user first.",
+          "content3": "Upon account deletion: your personal data is permanently removed, your auction memberships are terminated, items you created are deleted, your bid history is removed, and you will be immediately signed out. This action cannot be undone."
         },
         "15": {
           "title": "Changes to Terms",

@@ -19,6 +19,7 @@
       "bidderVisibility": "Widoczność licytujących",
       "alwaysVisible": "Zawsze widoczni - Pokaż imiona licytujących",
       "alwaysAnonymous": "Zawsze anonimowi - Ukryj imiona licytujących",
+      "hideBidderNamesDescription": "Ukryj imiona licytujących dla tego przedmiotu",
       "perBid": "Przy każdej ofercie - Każdy licytujący decyduje sam",
       "timing": "Czas trwania",
       "endDate": "Data zakończenia aukcji (opcjonalnie)",
@@ -138,7 +139,8 @@
       "winningBid": "Zwycięska oferta",
       "noItemsSold": "Brak sprzedanych przedmiotów",
       "you": "Ty",
-      "anonymous": "Anonimowy"
+      "anonymous": "Anonimowy",
+      "yourListing": "Twój przedmiot"
     },
     "acceptInvite": {
       "title": "Dołącz do aukcji",

@@ -1,0 +1,281 @@
+# Deployment Administration
+
+Auktiva includes a deployment administration system that allows a single user to manage updates and system-level settings for a self-hosted instance.
+
+## Overview
+
+The Deployment Admin is a special role that exists at the system level (not per-auction). This user can:
+
+- View version information and check for updates
+- Install updates directly from the settings page
+- Transfer admin rights to another user
+
+import { Callout } from "nextra/components";
+
+<Callout type="info">
+  The Deployment Admin is different from auction Owners/Admins. Auction roles
+  control auction-specific permissions, while the Deployment Admin manages the
+  entire Auktiva instance.
+</Callout>
+
+## How It Works
+
+### Database Model
+
+The deployment admin is stored in the `SystemSettings` table (singleton pattern):
+
+```prisma
+model SystemSettings {
+  id                    String   @id @default("system")
+  deploymentAdminEmail  String?  // Email of the deployment admin
+  autoCheckUpdates      Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+```
+
+### Claiming Admin Rights
+
+The first user to claim deployment admin rights becomes the admin:
+
+1. Any authenticated user can go to **Settings**
+2. Scroll to **Deployment Administration** section
+3. If no admin is set, click **"Become Deployment Admin"**
+4. The user's email is saved as `deploymentAdminEmail`
+
+<Callout type="warning">
+  Only one user can be the Deployment Admin at a time. Once claimed, other users
+  will see "Another user is the Deployment Admin" and cannot claim the role.
+</Callout>
+
+### Transferring Admin Rights
+
+The current Deployment Admin can transfer rights to another user:
+
+1. Go to **Settings** → **Deployment Administration**
+2. Enter the email of the new admin in the transfer field
+3. Click **"Transfer"**
+4. The new user must be a registered Auktiva user
+
+### Account Deletion Restriction
+
+Users who are the Deployment Admin **cannot delete their account** until they transfer admin rights to someone else. This prevents orphaning the deployment without an administrator.
+
+## API Endpoints
+
+### GET /api/system/settings
+
+Returns current system settings. Requires authentication.
+
+**Response:**
+
+```json
+{
+  "deploymentAdminEmail": "admin@example.com",
+  "autoCheckUpdates": true
+}
+```
+
+### PATCH /api/system/settings
+
+Updates system settings. Used for claiming/transferring admin rights.
+
+**Request Body:**
+
+```json
+{
+  "deploymentAdminEmail": "newadmin@example.com"
+}
+```
+
+**Authorization Logic:**
+
+- If no admin is set: any authenticated user can claim
+- If admin is set: only current admin can transfer
+
+### POST /api/system/update
+
+Triggers an update. Only accessible by the Deployment Admin.
+
+**What it does:**
+
+1. Runs `scripts/update.sh` in the background
+2. The script fetches the latest release tag, backs up the database, and rebuilds
+
+### GET /api/version
+
+Returns version information for the deployment.
+
+**Response:**
+
+```json
+{
+  "currentVersion": "1.0.0",
+  "latestVersion": "1.1.0",
+  "updateAvailable": true,
+  "releaseUrl": "https://github.com/thomsa/auktiva/releases/tag/v1.1.0"
+}
+```
+
+## Release Strategy
+
+Auktiva follows a **rolling release** model:
+
+- **Only the latest version is supported** - We do not maintain older versions or backport fixes
+- **Bugs are fixed in the next release** - If v1.6.4 has a bug, it will be fixed in v1.6.5 or v1.7.0, not patched in v1.6.4
+- **Always update to latest** - Running older versions may have known issues that have been resolved
+
+<Callout type="warning">
+  We strongly recommend keeping your Auktiva instance up to date. Older versions
+  are not maintained and may contain bugs or security issues that have been fixed
+  in newer releases.
+</Callout>
+
+This approach keeps development simple and ensures all users benefit from the latest improvements. If you encounter a bug, check if updating to the latest version resolves it before reporting.
+
+## Update Process
+
+When you click "Install Update" in the Settings page, the system runs `scripts/update.sh` which performs the following steps:
+
+### 1. Fetch Latest Release
+
+The script queries the GitHub API for the latest release tag and checks out that specific version:
+
+```bash
+LATEST_TAG=$(curl -fsSL "https://api.github.com/repos/thomsa/auktiva/releases/latest" | \
+  grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
+git fetch --tags origin
+git checkout "$LATEST_TAG"
+```
+
+<Callout type="info">
+  Updates always install official release tags, not the latest commit from main.
+  This ensures you get stable, tested versions.
+</Callout>
+
+### 2. Skip if Already Current
+
+If you're already on the latest release, the script exits early without making changes:
+
+```
+Already on latest version (v1.6.8). Nothing to do.
+```
+
+### 3. Database Backup (SQLite only)
+
+For SQLite databases, the script creates a timestamped backup before running migrations:
+
+```bash
+# Backup location: backups/backup_YYYYMMDD_HHMMSS.db
+cp "$DB_PATH" "backups/backup_$(date +%Y%m%d_%H%M%S).db"
+```
+
+<Callout type="warning">
+  Turso (remote) databases are not backed up by this script. Use Turso's built-in
+  backup features for production deployments.
+</Callout>
+
+### 4. Install Dependencies & Migrate
+
+```bash
+npm install --production=false
+npx prisma generate
+npx prisma db push --accept-data-loss
+```
+
+### 5. Build & Restart
+
+```bash
+npm run build
+pm2 restart auktiva  # If PM2 is configured
+```
+
+## Customizing the Update Script
+
+You can modify `scripts/update.sh` for your deployment environment. Common customizations:
+
+- **Docker**: Replace PM2 restart with container rebuild
+- **systemd**: Use `systemctl restart auktiva`
+- **Custom backup**: Add additional backup steps for uploads or other data
+
+<Callout type="warning">
+  The restart section at the end of the script is a template. Customize it for
+  your specific deployment environment (PM2, systemd, Docker, etc.).
+</Callout>
+
+## Security Considerations
+
+### Single Admin Model
+
+The single-admin model is intentional for simplicity. For multi-admin scenarios, consider:
+
+- Using infrastructure-level access controls
+- Sharing credentials securely among trusted administrators
+- Implementing custom modifications for your organization
+
+### Transfer Validation
+
+When transferring admin rights:
+
+- The target email must belong to a registered user
+- The transfer is immediate (no confirmation email)
+- The previous admin loses access immediately
+
+### Account Deletion Protection
+
+The system prevents Deployment Admins from deleting their accounts to ensure:
+
+- There's always someone who can manage updates
+- The deployment isn't orphaned without administration
+- Intentional handoff of responsibilities
+
+## Service Layer
+
+The deployment admin logic is implemented in `src/lib/services/system.service.ts`:
+
+```typescript
+// Check if a user is the deployment admin
+export async function isDeploymentAdmin(userEmail: string): Promise<boolean>;
+
+// Get system settings
+export async function getSystemSettings(): Promise<SystemSettings>;
+
+// Update system settings (claim/transfer admin)
+export async function updateSystemSettings(
+  data: Partial<SystemSettings>
+): Promise<SystemSettings>;
+```
+
+## Frontend Integration
+
+The Settings page (`src/pages/settings.tsx`) includes the Deployment Administration section that:
+
+1. Shows current admin status
+2. Displays version information (for admins)
+3. Provides transfer functionality (for admins)
+4. Shows claim button (when no admin is set)
+5. Shows "admin already set" message (for non-admins when admin exists)
+
+## Troubleshooting
+
+### "Another user is the Deployment Admin"
+
+This means someone has already claimed admin rights. Contact them to transfer rights if needed.
+
+### Cannot Delete Account
+
+If you see "You must transfer deployment admin rights before deleting your account":
+
+1. Go to Settings → Deployment Administration
+2. Transfer admin rights to another registered user
+3. Then proceed with account deletion
+
+### Update Script Fails
+
+Check the server logs for errors. Common issues:
+
+- Git conflicts (resolve manually)
+- Permission issues (check file ownership)
+- Missing dependencies (check Node.js version)
+- Process manager not configured (customize restart command)

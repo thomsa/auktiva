@@ -7,12 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import * as auctionService from "@/lib/services/auction.service";
 import * as itemService from "@/lib/services/item.service";
-import {
-  PageLayout,
-  BackLink,
-  AlertMessage,
-  ConfirmDialog,
-} from "@/components/common";
+import { PageLayout, BackLink, ConfirmDialog } from "@/components/common";
 import { ImageUpload } from "@/components/upload/image-upload";
 import { Button } from "@/components/ui/button";
 import { useConfirmDialog } from "@/hooks/ui";
@@ -232,7 +227,9 @@ export default function EditItemPage({
                   type="text"
                   defaultValue={item.name}
                   placeholder={tCreate("itemNamePlaceholder")}
-                  className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.name ? "input-error" : ""}`}
+                  className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${
+                    fieldErrors.name ? "input-error" : ""
+                  }`}
                   required
                 />
                 {fieldErrors.name && (
@@ -305,8 +302,8 @@ export default function EditItemPage({
                 </select>
                 {hasBids && (
                   <label className="label">
-                    <span className="label-text-alt text-warning">
-                      Cannot change currency after bids have been placed
+                    <span className="label-text-alt text-warning text-wrap">
+                      {t("cannotChangeCurrency")}
                     </span>
                   </label>
                 )}
@@ -326,19 +323,21 @@ export default function EditItemPage({
                     min="0"
                     step="0.01"
                     defaultValue={item.startingBid}
-                    className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.startingBid ? "input-error" : ""}`}
+                    className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${
+                      fieldErrors.startingBid ? "input-error" : ""
+                    }`}
                     disabled={hasBids}
                   />
                   {hasBids && (
                     <label className="label">
-                      <span className="label-text-alt text-warning">
-                        Cannot change starting bid after bids have been placed
+                      <span className="label-text-alt text-warning text-wrap">
+                        {t("cannotChangeStartingBid")}
                       </span>
                     </label>
                   )}
                   {fieldErrors.startingBid && (
                     <label className="label">
-                      <span className="label-text-alt text-error">
+                      <span className="label-text-alt text-error text-wrap">
                         {fieldErrors.startingBid}
                       </span>
                     </label>
@@ -387,7 +386,7 @@ export default function EditItemPage({
                           {tAuction("create.alwaysAnonymous")}
                         </span>
                         <p className="text-xs text-base-content/60">
-                          Hide bidder names for this item
+                          {tAuction("create.hideBidderNamesDescription")}
                         </p>
                       </div>
                     </label>
@@ -430,9 +429,9 @@ export default function EditItemPage({
                     <span className="icon-[tabler--info-circle] size-4"></span>
                     <span>
                       {auctionHasEndDate
-                        ? "Items end when the auction ends"
-                        : "Items have no end date"}
-                      {" (auction setting)."}
+                        ? t("itemsEndWithAuction")
+                        : t("itemsNoEndDate")}{" "}
+                      {t("auctionSetting")}
                     </span>
                   </div>
                 )}
@@ -441,17 +440,17 @@ export default function EditItemPage({
 
             {/* Submit */}
             <div className="divider opacity-50"></div>
-            <div className="flex gap-4 pt-4">
+            <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
               <Link
                 href={`/auctions/${auction.id}/items/${item.id}`}
-                className="btn btn-ghost flex-1"
+                className="btn btn-ghost w-full sm:flex-1"
               >
                 {tCommon("cancel")}
               </Link>
               <Button
                 type="submit"
                 variant="primary"
-                className="flex-1 shadow-lg shadow-primary/20"
+                className="w-full sm:flex-1 shadow-lg shadow-primary/20"
                 isLoading={isLoading}
                 loadingText={t("saving")}
                 icon={

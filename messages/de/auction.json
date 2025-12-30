@@ -19,6 +19,7 @@
       "bidderVisibility": "Bieter-Sichtbarkeit",
       "alwaysVisible": "Immer sichtbar - Bieter-Namen anzeigen",
       "alwaysAnonymous": "Immer anonym - Bieter-Namen verbergen",
+      "hideBidderNamesDescription": "Bieter-Namen für diesen Artikel verbergen",
       "perBid": "Pro Gebot - Jeder Bieter entscheidet selbst",
       "timing": "Zeitplanung",
       "endDate": "Auktions-Enddatum (optional)",
@@ -138,7 +139,8 @@
       "winningBid": "Gewinnergebot",
       "noItemsSold": "Keine Artikel verkauft",
       "you": "Du",
-      "anonymous": "Anonym"
+      "anonymous": "Anonym",
+      "yourListing": "Dein Artikel"
     },
     "acceptInvite": {
       "title": "Auktion beitreten",

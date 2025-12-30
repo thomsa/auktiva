@@ -35,6 +35,7 @@ export function ItemListItem({
   const { formatShortDate } = useFormatters();
   const ended = isItemEnded(item.endDate);
   const canEditItem = item.creatorId === userId || isAdmin;
+  const isOwnItem = item.creatorId === userId;
 
   // Bid status logic
   const isHighestBidder = item.highestBidderId === userId;
@@ -44,8 +45,12 @@ export function ItemListItem({
 
   return (
     <div
-      className={`flex items-center gap-4 p-3 bg-base-100/50 hover:bg-base-100 border border-base-content/5 hover:border-primary/20 rounded-xl transition-all duration-200 group ${
+      className={`flex items-center gap-4 p-3 bg-base-100/50 hover:bg-base-100 border rounded-xl transition-all duration-200 group ${
         ended ? "opacity-75" : ""
+      } ${
+        isOwnItem
+          ? "border-secondary/30 hover:border-secondary/50 bg-secondary/5"
+          : "border-base-content/5 hover:border-primary/20"
       }`}
     >
       <Link
@@ -58,7 +63,9 @@ export function ItemListItem({
             <img
               src={item.thumbnailUrl}
               alt={item.name}
-              className={`w-14 h-14 object-cover rounded-lg shadow-sm ${ended ? "grayscale" : ""}`}
+              className={`w-14 h-14 object-cover rounded-lg shadow-sm ${
+                ended ? "grayscale" : ""
+              }`}
             />
           ) : (
             <div
@@ -100,6 +107,11 @@ export function ItemListItem({
             <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
               {item.name}
             </h3>
+            {isOwnItem && (
+              <span className="badge badge-secondary badge-xs font-bold">
+                {t("item.yourListing")}
+              </span>
+            )}
             {bidStatus && (
               <div
                 className={`badge badge-xs font-bold ${
@@ -124,9 +136,25 @@ export function ItemListItem({
             </p>
           )}
         </div>
+        {item.endDate && (
+          <div
+            className={`text-xs shrink-0 w-24 text-center font-medium ${
+              ended ? "text-error" : "text-base-content/60"
+            }`}
+          >
+            {ended ? t("status.ended") : t("status.ends")}{" "}
+            {formatShortDate(item.endDate)}
+          </div>
+        )}
         <div className="text-right shrink-0">
           <div
-            className={`font-bold font-mono ${bidStatus === "winning" || bidStatus === "won" ? "text-success" : bidStatus === "outbid" ? "text-warning" : "text-primary"}`}
+            className={`font-bold font-mono ${
+              bidStatus === "winning" || bidStatus === "won"
+                ? "text-success"
+                : bidStatus === "outbid"
+                  ? "text-warning"
+                  : "text-primary"
+            }`}
           >
             {item.currentBid !== null
               ? `${item.currentBid} ${item.currencyCode}`
@@ -137,16 +165,6 @@ export function ItemListItem({
             {t("item.card.bidsCount", { count: item._count.bids })}
           </div>
         </div>
-        {item.endDate && (
-          <div
-            className={`text-xs shrink-0 w-24 text-right font-medium ${
-              ended ? "text-error" : "text-base-content/60"
-            }`}
-          >
-            {ended ? t("status.ended") : t("status.ends")}{" "}
-            {formatShortDate(item.endDate)}
-          </div>
-        )}
       </Link>
       {canEditItem && (
         <Link

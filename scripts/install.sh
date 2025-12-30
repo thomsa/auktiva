@@ -40,6 +40,20 @@ print_info() {
   echo -e "${BLUE}ℹ${NC} $1"
 }
 
+get_latest_release_tag() {
+  curl -fsSL "https://api.github.com/repos/thomsa/auktiva/releases/latest" 2>/dev/null | \
+    grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
+}
+
+USE_LATEST_COMMIT=false
+for arg in "$@"; do
+  case $arg in
+    --latest)
+      USE_LATEST_COMMIT=true
+      ;;
+  esac
+done
+
 # Check if command exists
 command_exists() {
   command -v "$1" >/dev/null 2>&1
@@ -63,6 +77,22 @@ main() {
   echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
   echo ""
 
+  if [ "$USE_LATEST_COMMIT" = true ]; then
+    VERSION="main (latest commit)"
+    GIT_REF="main"
+    echo -e "  ${YELLOW}Installing from ${BOLD}main branch${NC} ${DIM}(--latest flag)${NC}"
+  else
+    LATEST_TAG=$(get_latest_release_tag)
+    if [ -z "$LATEST_TAG" ]; then
+      print_error "Could not fetch latest release. Check your internet connection."
+      exit 1
+    fi
+    VERSION="$LATEST_TAG"
+    GIT_REF="$LATEST_TAG"
+    echo -e "  ${GREEN}Installing version ${BOLD}${LATEST_TAG}${NC}"
+  fi
+  echo ""
+
   # ==========================================================================
   # Check Node.js
   # ==========================================================================
@@ -72,7 +102,7 @@ main() {
   if ! command_exists node; then
     print_error "Node.js is not installed!"
     echo ""
-    echo "  Please install Node.js 18 or later:"
+    echo "  Please install Node.js 20 or later:"
     echo ""
     echo -e "  ${DIM}# Using nvm (recommended):${NC}"
     echo "  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash"
@@ -84,11 +114,21 @@ main() {
   fi
 
   NODE_VERSION=$(get_node_version)
-  if [ "$NODE_VERSION" -lt 18 ]; then
+  if [ "$NODE_VERSION" -lt 20 ]; then
     print_error "Node.js version $NODE_VERSION is too old!"
     echo ""
-    echo "  Please install Node.js 18 or later."
+    echo "  Auktiva requires Node.js 20.0.0 or higher."
     echo "  Current version: $(node -v)"
+    echo ""
+    echo "  Please upgrade Node.js:"
+    echo ""
+    echo -e "  ${DIM}# Using nvm:${NC}"
+    echo "  nvm install 20"
+    echo "  nvm use 20"
+    echo ""
+    echo -e "  ${DIM}# Or download from: https://nodejs.org${NC}"
+    echo ""
+    echo "  After upgrading, run this installer again."
     echo ""
     exit 1
   fi
@@ -123,16 +163,17 @@ main() {
     else
       cd "$INSTALL_DIR"
       if [ -d ".git" ]; then
-        print_info "Pulling latest changes..."
-        git pull origin main 2>/dev/null || true
+        print_info "Updating to ${VERSION}..."
+        git fetch --tags --quiet 2>/dev/null
+        git -c advice.detachedHead=false checkout "$GIT_REF" --quiet 2>/dev/null || true
       fi
     fi
   fi
 
   if [ ! -d "$INSTALL_DIR" ]; then
-    print_info "Downloading Auktiva..."
-    git clone --depth 1 --quiet https://github.com/thomsa/auktiva.git "$INSTALL_DIR"
-    print_success "Downloaded to $INSTALL_DIR"
+    print_info "Downloading Auktiva ${VERSION}..."
+    git clone -c advice.detachedHead=false --branch "$GIT_REF" --depth 1 --quiet https://github.com/thomsa/auktiva.git "$INSTALL_DIR" 2>/dev/null
+    print_success "Downloaded ${VERSION} to $INSTALL_DIR"
   fi
 
   cd "$INSTALL_DIR"

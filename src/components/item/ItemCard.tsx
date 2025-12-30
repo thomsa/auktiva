@@ -30,6 +30,7 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
   const { formatShortDate } = useFormatters();
   const ended = isItemEnded(item.endDate);
   const canEditItem = item.creatorId === userId || isAdmin;
+  const isOwnItem = item.creatorId === userId;
 
   // Bid status logic
   const isHighestBidder = item.highestBidderId === userId;
@@ -39,8 +40,12 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
 
   return (
     <div
-      className={`card bg-base-100/50 backdrop-blur-sm border border-base-content/5 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 relative group overflow-hidden ${
+      className={`card bg-base-100/50 backdrop-blur-sm border hover:shadow-lg transition-all duration-300 relative group overflow-hidden ${
         ended ? "opacity-75" : ""
+      } ${
+        isOwnItem
+          ? "border-secondary/30 hover:border-secondary/50 hover:shadow-secondary/5"
+          : "border-base-content/5 hover:border-primary/20 hover:shadow-primary/5"
       }`}
     >
       <Link
@@ -133,6 +138,11 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
           <div className="flex justify-between items-start gap-2">
             <h3 className="card-title text-base pr-8 line-clamp-1 group-hover:text-primary transition-colors">
               {item.name}
+              {isOwnItem && (
+                <span className="badge badge-secondary badge-xs font-bold ml-1">
+                  {t("item.yourListing")}
+                </span>
+              )}
             </h3>
             {bidStatus === "won" && (
               <div className="badge badge-success badge-sm gap-1 shadow-sm font-bold shrink-0">

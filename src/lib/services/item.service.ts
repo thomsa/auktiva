@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getPublicUrl } from "@/lib/storage";
-import { eventBus } from "@/lib/events/event-bus";
+import { queueNewItemEmails } from "@/lib/email/service";
 import * as notificationService from "./notification.service";
 import type { AuctionItem, AuctionMember } from "@/generated/prisma/client";
 
@@ -674,8 +674,8 @@ export async function createItem(
         : `${appUrl}${item.images[0].url}`
       : null;
 
-  // Emit event for new item notification emails
-  eventBus.emit("item.created", {
+  // Queue new item notification emails (await to ensure it completes on serverless)
+  await queueNewItemEmails({
     itemId: item.id,
     itemName: item.name,
     itemDescription: item.description,
@@ -686,7 +686,7 @@ export async function createItem(
   });
 
   // Send in-app notifications to all auction members (except creator)
-  sendNewItemNotifications(
+  await sendNewItemNotifications(
     auctionId,
     creatorId,
     item.name,
@@ -821,4 +821,73 @@ export function isItemEnded(endDate: Date | string | null): boolean {
   if (!endDate) return false;
   const date = typeof endDate === "string" ? new Date(endDate) : endDate;
   return date < new Date();
+}
+
+/**
+ * Get items created by a user across all auctions they're a member of
+ */
+export async function getUserCreatedItems(userId: string) {
+  const items = await prisma.auctionItem.findMany({
+    where: {
+      creatorId: userId,
+      auction: {
+        members: {
+          some: { userId },
+        },
+      },
+    },
+    include: {
+      auction: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      currency: {
+        select: {
+          symbol: true,
+        },
+      },
+      images: {
+        orderBy: { order: "asc" },
+        take: 1,
+      },
+      bids: {
+        orderBy: { amount: "desc" },
+        take: 1,
+        include: {
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
+      _count: {
+        select: { bids: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    auctionId: item.auction.id,
+    auctionName: item.auction.name,
+    currencySymbol: item.currency.symbol,
+    startingBid: item.startingBid,
+    currentBid: item.bids[0]?.amount ?? null,
+    endDate: item.endDate?.toISOString() ?? null,
+    createdAt: item.createdAt.toISOString(),
+    thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
+    bidCount: item._count.bids,
+    winner: item.bids[0]?.user
+      ? {
+          name: item.bids[0].user.name,
+          email: item.bids[0].user.email,
+        }
+      : null,
+  }));
 }

@@ -8,6 +8,7 @@ import {
 import type { ApiHandler, Middleware } from "@/lib/api";
 import { prisma } from "@/lib/prisma";
 import { getStorage, getPublicUrl } from "@/lib/storage";
+import { uploadLogger as logger } from "@/lib/logger";
 import formidable from "formidable";
 import fs from "fs";
 import sharp from "sharp";
@@ -39,6 +40,26 @@ async function parseForm(
       if (err) reject(err);
       else resolve({ fields, files });
     });
+  });
+}
+
+/**
+ * Parse JSON body manually since bodyParser is disabled for file uploads
+ */
+async function parseJsonBody<T>(req: Parameters<ApiHandler>[0]): Promise<T> {
+  return new Promise((resolve, reject) => {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+    req.on("end", () => {
+      try {
+        resolve(JSON.parse(body));
+      } catch {
+        reject(new BadRequestError("Invalid JSON body"));
+      }
+    });
+    req.on("error", reject);
   });
 }
 
@@ -120,45 +141,110 @@ const uploadImage: ApiHandler = async (req, res, ctx) => {
   const itemId = ctx.params.itemId;
   const { item } = ctx as typeof ctx & ContextWithItem;
 
+  logger.info({ itemId, auctionId }, "Starting image upload");
+
   // Check image limit
   if (item._count.images >= MAX_IMAGES_PER_ITEM) {
+    logger.warn({ imageCount: item._count.images }, "Image limit reached");
     throw new BadRequestError(
       `Maximum ${MAX_IMAGES_PER_ITEM} images allowed per item`,
     );
   }
 
-  const { files } = await parseForm(req);
+  let files;
+  try {
+    const formResult = await parseForm(req);
+    files = formResult.files;
+    logger.debug({ files: Object.keys(files) }, "Form parsed");
+  } catch (parseError) {
+    logger.error({ err: parseError }, "Form parse error");
+    throw new BadRequestError(
+      `Failed to parse upload: ${
+        parseError instanceof Error ? parseError.message : "Unknown error"
+      }`,
+    );
+  }
+
   const fileArray = files.image;
 
   if (!fileArray || (Array.isArray(fileArray) && fileArray.length === 0)) {
+    logger.warn("No image file in request");
     throw new BadRequestError("No image file provided");
   }
 
   const file = Array.isArray(fileArray) ? fileArray[0] : fileArray;
+  logger.debug(
+    {
+      originalFilename: file.originalFilename,
+      mimetype: file.mimetype,
+      size: file.size,
+    },
+    "File received",
+  );
 
   if (!file.mimetype || !ALLOWED_TYPES.includes(file.mimetype)) {
+    logger.warn({ mimetype: file.mimetype }, "Invalid file type");
     throw new BadRequestError(
       "Invalid file type. Allowed: JPEG, PNG, WebP, GIF",
     );
   }
 
   // Process image
-  const processedBuffer = await processImage(file.filepath);
+  let processedBuffer: Buffer;
+  try {
+    processedBuffer = await processImage(file.filepath);
+    logger.debug({ bufferSize: processedBuffer.length }, "Image processed");
+  } catch (processError) {
+    logger.error({ err: processError }, "Image processing error");
+    throw new BadRequestError(
+      `Failed to process image: ${
+        processError instanceof Error ? processError.message : "Unknown error"
+      }`,
+    );
+  }
 
   // Generate unique filename
   const ext = ".jpg"; // Always save as JPEG after processing
-  const filename = `${auctionId}/${itemId}/${Date.now()}-${Math.random().toString(36).substring(7)}${ext}`;
+  const filename = `${auctionId}/${itemId}/${Date.now()}-${Math.random()
+    .toString(36)
+    .substring(7)}${ext}`;
+  logger.debug({ filename }, "Generated filename");
 
   // Upload to storage
-  const storage = getStorage();
-  const result = await storage.addFileFromBuffer({
-    buffer: processedBuffer,
-    targetPath: filename,
-  });
+  let storage;
+  try {
+    storage = getStorage();
+  } catch (storageError) {
+    logger.error({ err: storageError }, "Failed to get storage");
+    throw new BadRequestError(
+      `Storage configuration error: ${
+        storageError instanceof Error ? storageError.message : "Unknown error"
+      }`,
+    );
+  }
+
+  let result;
+  try {
+    result = await storage.addFileFromBuffer({
+      buffer: processedBuffer,
+      targetPath: filename,
+    });
+    logger.debug(
+      { error: result.error, value: result.value },
+      "Storage upload result",
+    );
+  } catch (uploadError) {
+    logger.error({ err: uploadError }, "Storage upload exception");
+    throw new BadRequestError(
+      `Storage upload failed: ${
+        uploadError instanceof Error ? uploadError.message : "Unknown error"
+      }`,
+    );
+  }
 
   if (result.error) {
-    console.error("Storage upload error:", result.error);
-    throw new BadRequestError("Failed to upload image");
+    logger.error({ error: result.error }, "Storage upload error");
+    throw new BadRequestError(`Failed to upload image: ${result.error}`);
   }
 
   // Get current max order
@@ -215,7 +301,8 @@ const deleteImage: ApiHandler = async (req, res, ctx) => {
 
 const reorderImages: ApiHandler = async (req, res, ctx) => {
   const itemId = ctx.params.itemId;
-  const { imageIds } = req.body;
+  const body = await parseJsonBody<{ imageIds?: string[] }>(req);
+  const { imageIds } = body;
 
   if (!Array.isArray(imageIds)) {
     throw new BadRequestError("imageIds array required");

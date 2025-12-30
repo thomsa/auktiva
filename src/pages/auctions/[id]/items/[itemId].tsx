@@ -1,16 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
-import { useRouter } from "next/router";
 import { authOptions } from "@/lib/auth";
 import { getMessages, Locale } from "@/i18n";
 import { Navbar } from "@/components/layout/navbar";
-import {
-  SortDropdown,
-  sidebarItemSortOptions,
-  sortItems,
-} from "@/components/ui/sort-dropdown";
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
+import { ItemsSidebar, SidebarItem } from "@/components/item/ItemsSidebar";
 import { Button } from "@/components/ui/button";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
@@ -30,21 +26,6 @@ interface Bid {
   } | null; // null if anonymous to viewer
 }
 
-interface AuctionItemSummary {
-  id: string;
-  name: string;
-  currentBid: number | null;
-  startingBid: number;
-  thumbnailUrl: string | null;
-  endDate: string | null;
-  createdAt: string;
-  highestBidderId: string | null;
-  userHasBid: boolean;
-  currency: {
-    symbol: string;
-  };
-}
-
 interface ItemDetailProps {
   user: {
     id: string;
@@ -56,7 +37,7 @@ interface ItemDetailProps {
     name: string;
     bidderVisibility: string;
   };
-  auctionItems: AuctionItemSummary[];
+  auctionItems: SidebarItem[];
   itemSidebarCollapsed: boolean;
   item: {
     id: string;
@@ -113,9 +94,9 @@ export default function ItemDetailPage({
   winnerEmail,
   images,
 }: ItemDetailProps) {
-  const router = useRouter();
   const t = useTranslations("item");
   const tCommon = useTranslations("common");
+  const tStatus = useTranslations("status");
   const tTime = useTranslations("time");
   const tErrors = useTranslations("errors");
   const tAuction = useTranslations("auction");
@@ -127,12 +108,6 @@ export default function ItemDetailPage({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     initialSidebarCollapsed,
   );
-
-  // Sidebar sorting
-  const sidebarSort = (router.query.sidebarSort as string) || "date-desc";
-  const sortedAuctionItems = useMemo(() => {
-    return sortItems(auctionItems, sidebarSort);
-  }, [auctionItems, sidebarSort]);
 
   const isEnded =
     initialItem.endDate && new Date(initialItem.endDate) < new Date();
@@ -239,171 +214,31 @@ export default function ItemDetailPage({
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[128px] -translate-x-1/3 translate-y-1/3"></div>
       </div>
 
-      <div className="relative z-10">
+      <div className="relative z-10 mb-5 sm:mb-0">
         <Navbar user={user} />
 
         <div className="flex h-[calc(100vh-64px)]">
           {/* Items Sidebar */}
-          <aside
-            className={`hidden lg:flex flex-col bg-base-100/80 backdrop-blur-xl border-r border-base-content/10 transition-all duration-300 ${
-              sidebarCollapsed ? "w-0 overflow-hidden" : "w-80"
-            }`}
-          >
-            <div className="flex-1 overflow-y-auto">
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-bold text-sm uppercase tracking-wider text-base-content/60 flex items-center gap-2">
-                    <span className="icon-[tabler--list] size-4"></span>
-                    {t("sidebar.title")}
-                  </h2>
-                  <span className="badge badge-sm badge-ghost">
-                    {auctionItems.length}
-                  </span>
-                </div>
-                <div className="sticky top-0 bg-base-100/95 backdrop-blur z-10 pb-4">
-                  <SortDropdown
-                    options={sidebarItemSortOptions}
-                    currentSort={sidebarSort}
-                    paramName="sidebarSort"
-                    fullWidth
-                    dropdownEnd={false}
-                  />
-                </div>
-                <div className="space-y-2">
-                  {sortedAuctionItems.map((auctionItem) => {
-                    const isEnded =
-                      auctionItem.endDate &&
-                      new Date(auctionItem.endDate) < new Date();
-                    const isActive = auctionItem.id === initialItem.id;
-                    const isWinning = auctionItem.highestBidderId === user.id;
-                    const isOutbid = auctionItem.userHasBid && !isWinning;
-
-                    return (
-                      <Link
-                        key={auctionItem.id}
-                        href={`/auctions/${auction.id}/items/${auctionItem.id}`}
-                        className={`block p-3 rounded-xl transition-all border ${
-                          isActive
-                            ? "bg-primary/5 border-primary/20 shadow-sm"
-                            : "bg-base-100/50 border-transparent hover:bg-base-100 hover:border-base-content/10"
-                        } ${isEnded ? "opacity-60" : ""}`}
-                      >
-                        <div className="flex gap-3">
-                          <div className="relative shrink-0">
-                            {auctionItem.thumbnailUrl ? (
-                              <img
-                                src={auctionItem.thumbnailUrl}
-                                alt={auctionItem.name}
-                                className={`w-12 h-12 object-cover rounded-lg ${
-                                  isEnded ? "grayscale" : ""
-                                }`}
-                              />
-                            ) : (
-                              <div
-                                className={`w-12 h-12 bg-base-200 rounded-lg flex items-center justify-center ${
-                                  isEnded ? "grayscale" : ""
-                                }`}
-                              >
-                                <span className="icon-[tabler--photo] size-5 text-base-content/30"></span>
-                              </div>
-                            )}
-                            {isEnded && isWinning ? (
-                              <div className="absolute -top-1 -left-1">
-                                <div className="badge badge-success badge-xs gap-0.5 shadow-sm">
-                                  <span className="icon-[tabler--crown] size-2"></span>
-                                </div>
-                              </div>
-                            ) : isEnded ? (
-                              <div className="absolute -top-1 -left-1">
-                                <div className="badge badge-error badge-xs gap-0.5 shadow-sm">
-                                  <span className="icon-[tabler--flag-filled] size-2"></span>
-                                </div>
-                              </div>
-                            ) : isWinning ? (
-                              <div className="absolute -top-1 -left-1">
-                                <div className="badge badge-success badge-xs gap-0.5 shadow-sm">
-                                  <span className="icon-[tabler--trophy] size-2"></span>
-                                </div>
-                              </div>
-                            ) : isOutbid ? (
-                              <div className="absolute -top-1 -left-1">
-                                <div className="badge badge-warning badge-xs gap-0.5 shadow-sm">
-                                  <span className="icon-[tabler--alert-triangle] size-2"></span>
-                                </div>
-                              </div>
-                            ) : null}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div
-                              className={`font-medium truncate text-sm ${
-                                isActive ? "text-primary" : ""
-                              }`}
-                            >
-                              {auctionItem.name}
-                            </div>
-                            <div
-                              className={`text-xs font-semibold mt-0.5 ${
-                                isEnded
-                                  ? "text-base-content/50"
-                                  : isActive
-                                    ? "text-primary"
-                                    : "text-base-content/70"
-                              }`}
-                            >
-                              {auctionItem.currency.symbol}
-                              {(
-                                auctionItem.currentBid ||
-                                auctionItem.startingBid
-                              ).toFixed(2)}
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          {/* Sidebar Toggle Button */}
-          <button
-            onClick={toggleSidebar}
-            className="hidden lg:flex fixed z-20 bg-base-100 border border-base-content/10 rounded-r-lg p-1.5 shadow-md hover:bg-base-200 transition-all items-center justify-center top-24"
-            style={{ left: sidebarCollapsed ? 0 : "20rem" }}
-            aria-label={
-              sidebarCollapsed ? t("sidebar.show") : t("sidebar.hide")
-            }
-          >
-            <span
-              className={`icon-[tabler--chevron-${
-                sidebarCollapsed ? "right" : "left"
-              }] size-4 text-base-content/60`}
-            ></span>
-          </button>
+          <ItemsSidebar
+            items={auctionItems}
+            auctionId={auction.id}
+            currentItemId={initialItem.id}
+            userId={user.id}
+            collapsed={sidebarCollapsed}
+            onToggle={toggleSidebar}
+          />
 
           {/* Main Content Area */}
           <main className="flex-1 overflow-y-auto bg-base-200/30">
             <div className="container mx-auto px-4 py-8 pb-20 max-w-6xl">
-              <div className="mb-6 flex items-center justify-between">
+              <div className="mb-6 flex items-center justify-between ">
                 <Link
                   href={`/auctions/${auction.id}`}
-                  className="btn btn-ghost btn-sm gap-2 hover:bg-base-content/5"
+                  className="btn btn-ghost btn-sm gap-2 hover:bg-base-content/5 w-full"
                 >
-                  <span className="icon-[tabler--arrow-left] size-4"></span>
+                  <span className="icon-[tabler--arrow-left] size-4 text-wrap"></span>
                   {tAuction("invite.backTo", { name: auction.name })}
                 </Link>
-
-                {/* Mobile: Show items count */}
-                <div className="lg:hidden">
-                  <Link
-                    href={`/auctions/${auction.id}`}
-                    className="btn btn-ghost btn-sm gap-2"
-                  >
-                    <span className="icon-[tabler--list] size-4"></span>
-                    {auctionItems.length} {tAuction("card.items")}
-                  </Link>
-                </div>
               </div>
 
               <div className="flex flex-col xl:flex-row gap-8 items-start">
@@ -412,30 +247,36 @@ export default function ItemDetailPage({
                   <div className="card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl">
                     <div className="card-body p-6 sm:p-8">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
-                        <div>
+                        <div className="w-full">
                           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
                             {item.name}
                           </h1>
-                          <div className="flex items-center gap-2 text-sm text-base-content/60">
+                          <div className="flex items-center gap-2 text-sm text-base-content/60 ">
                             <span className="icon-[tabler--user] size-4"></span>
-                            <span>Listed by</span>
+                            <span>{t("listedBy")}</span>
                             <span className="font-medium text-base-content/80">
                               {item.creator.name || item.creator.email}
                             </span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 self-start">
+                        <div className="flex gap-2 self-start w-full sm:w-auto flex-col items-end">
+                          {isItemOwner && (
+                            <span className="badge badge-secondary font-bold gap-1 w-auto whitespace-nowrap sm:w-full">
+                              <span className="icon-[tabler--tag] size-3"></span>
+                              {t("yourListing")}
+                            </span>
+                          )}
                           {isEnded && (
-                            <div className="badge badge-error gap-1 font-bold">
+                            <div className="badge badge-error gap-1 font-bold w-auto sm:w-full">
                               <span className="icon-[tabler--flag-filled] size-3"></span>
-                              {tCommon("status.ended")}
+                              {tStatus("ended")}
                             </div>
                           )}
                           {canEdit && (
                             <Link
                               href={`/auctions/${auction.id}/items/${item.id}/edit`}
-                              className="btn btn-outline btn-sm gap-2"
+                              className="btn btn-outline btn-sm gap-2  w-full "
                             >
                               <span className="icon-[tabler--edit] size-4"></span>
                               {tCommon("edit")}
@@ -642,7 +483,7 @@ export default function ItemDetailPage({
                           {!isEnded && (
                             <span className="badge badge-sm badge-success gap-1 animate-pulse">
                               <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
-                              {tCommon("status.live")}
+                              {tStatus("live")}
                             </span>
                           )}
                         </div>
@@ -767,7 +608,7 @@ export default function ItemDetailPage({
                       ) : isEnded ? (
                         <div className="space-y-4">
                           <div className="text-center py-6 bg-base-200/30 rounded-xl border border-base-content/5">
-                            <span className="icon-[tabler--gavel-off] size-8 text-base-content/20 mb-2"></span>
+                            <span className="icon-[tabler--hammer-off] size-8 text-base-content/20 mb-2"></span>
                             <div className="text-base-content/60 font-medium">
                               {t("bid.biddingEnded")}
                             </div>
@@ -777,9 +618,12 @@ export default function ItemDetailPage({
                               <span className="icon-[tabler--trophy] size-5"></span>
                               <div>
                                 <div className="font-bold">Winner Contact</div>
-                                <div className="text-sm opacity-90">
+                                <a
+                                  href={`mailto:${winnerEmail}`}
+                                  className="text-sm text-info-content underline underline-offset-2 hover:opacity-80 transition-opacity"
+                                >
                                   {winnerEmail}
-                                </div>
+                                </a>
                               </div>
                             </div>
                           )}
@@ -835,6 +679,8 @@ export default function ItemDetailPage({
           </main>
         </div>
       </div>
+
+      <MobileBottomNav />
     </div>
   );
 }

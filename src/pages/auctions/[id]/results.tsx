@@ -21,6 +21,7 @@ interface Winner {
     email: string;
   } | null;
   isCurrentUser: boolean;
+  isItemCreator: boolean;
 }
 
 interface ResultsPageProps {
@@ -91,9 +92,9 @@ export default function ResultsPage({
                 <span className="icon-[tabler--chart-bar] size-3"></span>
                 {t("title")}
               </p>
-              <h1 className="card-title text-2xl sm:text-4xl font-extrabold tracking-tight flex items-center gap-3">
-                <span className="icon-[tabler--trophy] size-8 text-warning"></span>
-                {auction.name}
+              <h1 className="card-title text-xl sm:text-4xl font-extrabold tracking-tight flex items-center gap-3">
+                <span className="icon-[tabler--trophy] size-6 sm:size-8 text-warning shrink-0"></span>
+                <span className="min-w-0 text-wrap">{auction.name}</span>
               </h1>
             </div>
             <div className="flex items-center gap-3 self-start">
@@ -147,7 +148,7 @@ export default function ResultsPage({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mt-8">
             <StatsCard
               icon="icon-[tabler--trophy]"
               iconColor="warning"
@@ -176,11 +177,11 @@ export default function ResultsPage({
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
         {/* User Wins */}
-        <div className="lg:col-span-1">
-          <div className="card bg-primary/5 border border-primary/10 shadow-xl h-full">
-            <div className="card-body p-6">
+        <div className="lg:col-span-1 min-w-0">
+          <div className="card bg-primary/5 border border-primary/10 shadow-xl h-full overflow-hidden">
+            <div className="card-body p-4 sm:p-6">
               <h2 className="card-title text-lg mb-6 flex items-center gap-2 text-primary">
                 <span className="icon-[tabler--gift] size-5"></span>
                 {t("yourWinnings")}
@@ -245,9 +246,9 @@ export default function ResultsPage({
         </div>
 
         {/* All Winners */}
-        <div className="lg:col-span-2">
-          <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
-            <div className="card-body p-0">
+        <div className="lg:col-span-2 min-w-0">
+          <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl overflow-hidden">
+            <div className="card-body p-0 min-w-0">
               <div className="p-6 border-b border-base-content/5">
                 <h2 className="card-title text-lg flex items-center gap-2">
                   <span className="icon-[tabler--list] size-5"></span>
@@ -258,30 +259,34 @@ export default function ResultsPage({
               {winners.length === 0 ? (
                 <div className="p-12">
                   <EmptyState
-                    icon="icon-[tabler--gavel-off]"
+                    icon="icon-[tabler--hammer-off]"
                     title={t("noItemsSold")}
                     description="No items received bids in this auction."
                   />
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="table table-lg">
+                  <table className="table table-sm sm:table-lg">
                     <thead>
-                      <tr className="bg-base-200/30 text-base-content/60 text-sm">
-                        <th className="pl-8">{t("item")}</th>
-                        <th>{t("winner")}</th>
-                        <th className="text-right pr-8">{t("winningBid")}</th>
+                      <tr className="bg-base-200/30 text-base-content/60 text-xs sm:text-sm">
+                        <th className="pl-4 sm:pl-8">{t("item")}</th>
+                        <th className="hidden sm:table-cell">{t("winner")}</th>
+                        <th className="text-right pr-4 sm:pr-8">
+                          {t("winningBid")}
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-base-content/5">
                       {winners.map((win) => (
                         <tr
                           key={win.itemId}
-                          className="hover:bg-base-content/2 transition-colors"
+                          className={`hover:bg-base-content/2 transition-colors ${
+                            win.isItemCreator ? "bg-secondary/5" : ""
+                          }`}
                         >
-                          <td className="pl-8">
-                            <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 rounded-lg bg-base-200 shrink-0 overflow-hidden">
+                          <td className="pl-4 sm:pl-8">
+                            <div className="flex items-center gap-2 sm:gap-4">
+                              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-base-200 shrink-0 overflow-hidden">
                                 {win.thumbnailUrl ? (
                                   // eslint-disable-next-line @next/next/no-img-element
                                   <img
@@ -295,31 +300,86 @@ export default function ResultsPage({
                                   </div>
                                 )}
                               </div>
-                              <div className="font-medium">{win.itemName}</div>
+                              <div className="min-w-0">
+                                <div className="font-medium truncate flex items-center gap-2">
+                                  {win.itemName}
+                                  {win.isItemCreator && (
+                                    <span className="badge badge-secondary badge-xs font-bold">
+                                      {t("yourListing")}
+                                    </span>
+                                  )}
+                                </div>
+                                {/* Mobile: show winner below item name */}
+                                <div className="sm:hidden text-xs mt-0.5">
+                                  {win.winner ? (
+                                    <div className="flex flex-col gap-0.5">
+                                      <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">
+                                        <span className="icon-[tabler--trophy] size-3"></span>
+                                        {win.winner.name || win.winner.email}
+                                        {win.isCurrentUser && (
+                                          <span className="badge badge-success badge-xs ml-1 font-bold">
+                                            {t("you")}
+                                          </span>
+                                        )}
+                                      </span>
+                                      {win.isItemCreator &&
+                                        win.winner.email && (
+                                          <a
+                                            href={`mailto:${win.winner.email}`}
+                                            className="text-primary flex items-center gap-1 hover:opacity-80 transition-opacity"
+                                          >
+                                            <span className="icon-[tabler--mail] size-3"></span>
+                                            <span className="underline underline-offset-2">
+                                              {win.winner.email}
+                                            </span>
+                                          </a>
+                                        )}
+                                    </div>
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1 bg-base-200 text-base-content/50 px-1.5 py-0.5 rounded italic">
+                                      <span className="icon-[tabler--spy] size-3"></span>
+                                      {t("anonymous")}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
                           </td>
-                          <td>
+                          <td className="hidden sm:table-cell">
                             {win.winner ? (
-                              <div className="flex items-center gap-2">
-                                <span className="icon-[tabler--user] size-4 text-base-content/40"></span>
-                                <span className="font-medium text-base-content/80">
-                                  {win.winner.name || win.winner.email}
+                              <div className="flex flex-col gap-1">
+                                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 rounded-lg">
+                                  <span className="icon-[tabler--trophy] size-4"></span>
+                                  <span className="font-semibold">
+                                    {win.winner.name || win.winner.email}
+                                  </span>
                                   {win.isCurrentUser && (
-                                    <span className="badge badge-success badge-xs ml-2 font-bold shadow-sm">
+                                    <span className="badge badge-success badge-xs font-bold shadow-sm">
                                       {t("you")}
                                     </span>
                                   )}
-                                </span>
+                                </div>
+                                {win.isItemCreator && win.winner.email && (
+                                  <a
+                                    href={`mailto:${win.winner.email}`}
+                                    className="text-xs text-primary flex items-center gap-1 pl-1 hover:opacity-80 transition-opacity"
+                                  >
+                                    <span className="icon-[tabler--mail] size-3"></span>
+                                    <span className="underline underline-offset-2">
+                                      {win.winner.email}
+                                    </span>
+                                  </a>
+                                )}
                               </div>
                             ) : (
-                              <div className="flex items-center gap-2 text-base-content/50 italic">
+                              <div className="inline-flex items-center gap-2 bg-base-200 text-base-content/50 px-3 py-1.5 rounded-lg italic">
                                 <span className="icon-[tabler--spy] size-4"></span>
                                 {t("anonymous")}
                               </div>
                             )}
                           </td>
-                          <td className="text-right pr-8">
-                            <span className="font-bold font-mono text-lg">
+                          <td className="text-right pr-4 sm:pr-8">
+                            <span className="font-bold font-mono text-sm sm:text-lg">
                               {win.currencySymbol}
                               {win.winningBid.toFixed(2)}
                             </span>
@@ -367,10 +427,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  // Get auction results data
+  const isAdmin = auctionService.isAdmin(membership);
+
+  // Get auction results data (pass isAdmin to show winner info for anonymous bids)
   const resultsData = await auctionService.getAuctionResultsData(
     auctionId,
     session.user.id,
+    isAdmin,
   );
 
   if (!resultsData) {
@@ -381,8 +444,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   }
-
-  const isAdmin = auctionService.isAdmin(membership);
 
   return {
     props: {

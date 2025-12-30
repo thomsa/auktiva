@@ -4,6 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import AzureADProvider from "next-auth/providers/azure-ad";
 import { compare } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { queueWelcomeEmail } from "@/lib/email/service";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -129,7 +130,7 @@ export const authOptions: NextAuthOptions = {
           }
         } else {
           // Create new user with OAuth account
-          await prisma.user.create({
+          const newUser = await prisma.user.create({
             data: {
               email: user.email.toLowerCase(),
               name: user.name,
@@ -149,6 +150,13 @@ export const authOptions: NextAuthOptions = {
                 },
               },
             },
+          });
+
+          // Send welcome email to new Google user
+          await queueWelcomeEmail({
+            userId: newUser.id,
+            email: newUser.email,
+            name: newUser.name || "",
           });
         }
       }
