@@ -191,7 +191,14 @@ export const updateItem: ApiHandler = async (req, res, ctx) => {
       );
     }
 
-    if (item.auction.itemEndMode !== "CUSTOM" && newEndDate !== null) {
+    // Allow ending items early (setting end date to now or past) regardless of itemEndMode
+    // Only block setting future custom dates in non-CUSTOM modes
+    const isEndingNow = newEndDate && newEndDate <= now;
+    if (
+      item.auction.itemEndMode !== "CUSTOM" &&
+      newEndDate !== null &&
+      !isEndingNow
+    ) {
       throw new BadRequestError(
         "Custom item end dates are not allowed for this auction",
       );

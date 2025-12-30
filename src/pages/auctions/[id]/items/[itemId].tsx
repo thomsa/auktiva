@@ -115,16 +115,12 @@ export default function ItemDetailPage({
   const [showEndModal, setShowEndModal] = useState(false);
   const [isEndingItem, setIsEndingItem] = useState(false);
 
-  const isEnded =
-    initialItem.endDate && new Date(initialItem.endDate) < new Date();
-
   // Fetch latest item data with SWR (poll every 5 seconds when active)
   const { data, mutate } = useSWR<ItemResponse>(
     `/api/auctions/${auction.id}/items/${initialItem.id}`,
     fetcher,
     {
       fallbackData: { item: initialItem, bids: initialBids },
-      refreshInterval: isEnded ? 0 : 5000,
       revalidateOnFocus: true,
     },
   );
@@ -132,6 +128,9 @@ export default function ItemDetailPage({
   const item = data?.item ?? initialItem;
   const bids: Bid[] = data?.bids ?? initialBids;
   const isHighestBidder = item.highestBidderId === user.id;
+
+  // Use item from SWR data so it updates after ending
+  const isEnded = item.endDate && new Date(item.endDate) < new Date();
 
   const minBid = item.currentBid
     ? item.currentBid + item.minBidIncrement
@@ -309,7 +308,7 @@ export default function ItemDetailPage({
                           {canEdit && (
                             <Link
                               href={`/auctions/${auction.id}/items/${item.id}/edit`}
-                              className="btn btn-outline btn-sm gap-2  w-full "
+                              className="btn btn-outline btn-sm gap-2 w-full"
                             >
                               <span className="icon-[tabler--edit] size-4"></span>
                               {tCommon("edit")}
@@ -663,9 +662,20 @@ export default function ItemDetailPage({
                           )}
                         </div>
                       ) : isItemOwner ? (
-                        <div className="alert alert-info shadow-sm">
-                          <span className="icon-[tabler--info-circle] size-5"></span>
-                          <span>You cannot bid on your own item.</span>
+                        <div className="space-y-4">
+                          <div className="alert alert-info shadow-sm">
+                            <span className="icon-[tabler--info-circle] size-5"></span>
+                            <span>{t("bid.cannotBidOwn")}</span>
+                          </div>
+                          {canEdit && !isEnded && (
+                            <button
+                              onClick={() => setShowEndModal(true)}
+                              className="btn btn-error btn-block gap-2"
+                            >
+                              <span className="icon-[tabler--player-stop] size-5"></span>
+                              {tEdit("endButton")}
+                            </button>
+                          )}
                         </div>
                       ) : (
                         <div className="text-center py-6 bg-base-200/30 rounded-xl border border-base-content/5 text-base-content/60">
@@ -715,6 +725,48 @@ export default function ItemDetailPage({
       </div>
 
       <MobileBottomNav />
+
+      {/* End Item Confirmation Modal */}
+      {showEndModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg flex items-center gap-2">
+              <span className="icon-[tabler--alert-triangle] size-5 text-warning"></span>
+              {tEdit("confirmEnd", { name: item.name })}
+            </h3>
+            <p className="py-4 text-base-content/70">
+              {tEdit("endDescription")}
+            </p>
+            <p className="text-sm text-base-content/60">
+              {bids.length > 0
+                ? tEdit("endMessageWithBids")
+                : tEdit("endMessageNoBids")}
+            </p>
+            <div className="modal-action">
+              <button
+                className="btn btn-ghost"
+                onClick={() => setShowEndModal(false)}
+                disabled={isEndingItem}
+              >
+                {tCommon("cancel")}
+              </button>
+              <Button
+                onClick={handleEndItem}
+                variant="error"
+                isLoading={isEndingItem}
+                loadingText={tCommon("loading")}
+              >
+                <span className="icon-[tabler--player-stop] size-4"></span>
+                {tEdit("endButton")}
+              </Button>
+            </div>
+          </div>
+          <div
+            className="modal-backdrop bg-black/50"
+            onClick={() => !isEndingItem && setShowEndModal(false)}
+          ></div>
+        </div>
+      )}
     </div>
   );
 }
