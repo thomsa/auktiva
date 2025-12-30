@@ -164,6 +164,20 @@
     "appRestarting": "Die Anwendung wird in Kürze neu gestartet.",
     "updateTimeout": "Update-Zeitüberschreitung. Die Anwendung muss möglicherweise manuell neu gestartet werden."
   },
+  "richText": {
+    "placeholder": "Beschreibung eingeben...",
+    "bold": "Fett",
+    "italic": "Kursiv",
+    "strikethrough": "Durchgestrichen",
+    "heading": "Überschrift",
+    "bulletList": "Aufzählung",
+    "numberedList": "Nummerierte Liste",
+    "link": "Link",
+    "quote": "Zitat",
+    "undo": "Rückgängig",
+    "redo": "Wiederholen",
+    "enterUrl": "URL eingeben"
+  },
   "changelog": {
     "title": "Änderungsprotokoll & Versionen",
     "description": "Sieh dir die Neuigkeiten in Auktiva an und verfolge unseren Entwicklungsfortschritt",

@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { PageLayout, BackLink } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 
@@ -132,11 +133,10 @@ export default function CreateAuctionPage({
                     {t("description")}
                   </span>
                 </label>
-                <textarea
+                <RichTextEditor
                   id="description"
                   name="description"
                   placeholder={t("descriptionPlaceholder")}
-                  className="textarea textarea-bordered w-full h-32 bg-base-100 focus:bg-base-100 transition-colors"
                   maxLength={500}
                 />
               </div>

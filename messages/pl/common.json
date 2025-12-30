@@ -164,6 +164,20 @@
     "appRestarting": "Aplikacja zostanie wkrótce uruchomiona ponownie.",
     "updateTimeout": "Przekroczono limit czasu aktualizacji. Aplikacja może wymagać ręcznego restartu."
   },
+  "richText": {
+    "placeholder": "Napisz opis...",
+    "bold": "Pogrubienie",
+    "italic": "Kursywa",
+    "strikethrough": "Przekreślenie",
+    "heading": "Nagłówek",
+    "bulletList": "Lista punktowana",
+    "numberedList": "Lista numerowana",
+    "link": "Link",
+    "quote": "Cytat",
+    "undo": "Cofnij",
+    "redo": "Ponów",
+    "enterUrl": "Wprowadź URL"
+  },
   "changelog": {
     "title": "Historia zmian i wydania",
     "description": "Zobacz co nowego w Auktiva i śledź postęp rozwoju",

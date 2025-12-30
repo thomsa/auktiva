@@ -9,6 +9,7 @@ import * as auctionService from "@/lib/services/auction.service";
 import * as itemService from "@/lib/services/item.service";
 import { PageLayout, BackLink, ConfirmDialog } from "@/components/common";
 import { ImageUpload } from "@/components/upload/image-upload";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { useConfirmDialog } from "@/hooks/ui";
 import { useToast } from "@/components/ui/toast";
@@ -247,12 +248,12 @@ export default function EditItemPage({
                     {tCreate("description")}
                   </span>
                 </label>
-                <textarea
+                <RichTextEditor
                   id="description"
                   name="description"
+                  maxLength={500}
                   defaultValue={item.description || ""}
                   placeholder={tCreate("descriptionPlaceholder")}
-                  className="textarea textarea-bordered w-full h-32 bg-base-100 focus:bg-base-100 transition-colors"
                 />
               </div>
             </div>

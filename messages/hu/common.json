@@ -164,6 +164,20 @@
     "appRestarting": "Az alkalmazás hamarosan újraindul.",
     "updateTimeout": "A frissítés időtúllépés miatt megszakadt. Az alkalmazást manuálisan kell újraindítani."
   },
+  "richText": {
+    "placeholder": "Írd le a leírást...",
+    "bold": "Félkövér",
+    "italic": "Dőlt",
+    "strikethrough": "Áthúzott",
+    "heading": "Címsor",
+    "bulletList": "Felsorolás",
+    "numberedList": "Számozott lista",
+    "link": "Hivatkozás",
+    "quote": "Idézet",
+    "undo": "Visszavonás",
+    "redo": "Újra",
+    "enterUrl": "Add meg az URL-t"
+  },
   "changelog": {
     "title": "Változásnapló és kiadások",
     "description": "Nézd meg az Auktiva újdonságait és kövesd a fejlesztés menetét",

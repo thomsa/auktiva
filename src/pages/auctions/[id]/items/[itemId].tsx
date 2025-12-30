@@ -8,6 +8,8 @@ import { Navbar } from "@/components/layout/navbar";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { ItemsSidebar, SidebarItem } from "@/components/item/ItemsSidebar";
 import { Button } from "@/components/ui/button";
+import { RichTextRenderer } from "@/components/ui/rich-text-editor";
+import { useToast } from "@/components/ui/toast";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { useTranslations } from "next-intl";
@@ -100,6 +102,8 @@ export default function ItemDetailPage({
   const tTime = useTranslations("time");
   const tErrors = useTranslations("errors");
   const tAuction = useTranslations("auction");
+  const tEdit = useTranslations("item.edit");
+  const { showToast } = useToast();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [bidAmount, setBidAmount] = useState("");
   const [bidAsAnonymous, setBidAsAnonymous] = useState(false);
@@ -108,6 +112,8 @@ export default function ItemDetailPage({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     initialSidebarCollapsed,
   );
+  const [showEndModal, setShowEndModal] = useState(false);
+  const [isEndingItem, setIsEndingItem] = useState(false);
 
   const isEnded =
     initialItem.endDate && new Date(initialItem.endDate) < new Date();
@@ -203,6 +209,33 @@ export default function ItemDetailPage({
       });
     } catch (err) {
       console.error("Failed to save sidebar preference:", err);
+    }
+  };
+
+  const handleEndItem = async () => {
+    setIsEndingItem(true);
+    try {
+      const res = await fetch(
+        `/api/auctions/${auction.id}/items/${item.id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ endDate: new Date().toISOString() }),
+        },
+      );
+
+      if (!res.ok) {
+        const data = await res.json();
+        showToast(data.message || tEdit("endFailed"), "error");
+      } else {
+        showToast(tEdit("endNowSuccess"), "success");
+        await mutate();
+        setShowEndModal(false);
+      }
+    } catch {
+      showToast(tErrors("generic"), "error");
+    } finally {
+      setIsEndingItem(false);
     }
   };
 
@@ -372,10 +405,11 @@ export default function ItemDetailPage({
                             <span className="icon-[tabler--file-description] size-5 text-primary"></span>
                             {t("create.description")}
                           </h2>
-                          <div className="prose prose-sm max-w-none text-base-content/80 bg-base-200/30 p-4 rounded-xl border border-base-content/5">
-                            <p className="whitespace-pre-wrap">
-                              {item.description}
-                            </p>
+                          <div className="bg-base-200/30 p-4 rounded-xl border border-base-content/5">
+                            <RichTextRenderer
+                              content={item.description}
+                              className="text-base-content/80"
+                            />
                           </div>
                         </div>
                       )}

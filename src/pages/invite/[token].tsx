@@ -4,6 +4,7 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 
@@ -177,9 +178,12 @@ export default function AcceptInvitePage() {
             </div>
 
             {invite.auction.description && (
-              <p className="text-sm text-base-content/70 mb-4 pl-[52px]">
-                {invite.auction.description}
-              </p>
+              <div className="mb-4 pl-[52px]">
+                <RichTextRenderer
+                  content={invite.auction.description}
+                  className="text-sm text-base-content/70"
+                />
+              </div>
             )}
 
             <div className="divider my-3 opacity-50"></div>
@@ -223,7 +227,9 @@ export default function AcceptInvitePage() {
               </div>
 
               <Link
-                href={`/login?callbackUrl=${encodeURIComponent(`/invite/${token}`)}`}
+                href={`/login?callbackUrl=${encodeURIComponent(
+                  `/invite/${token}`,
+                )}`}
                 className="btn btn-primary w-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
               >
                 {t("loginToAccept")}
@@ -234,7 +240,9 @@ export default function AcceptInvitePage() {
                 </span>
               </div>
               <Link
-                href={`/register?callbackUrl=${encodeURIComponent(`/invite/${token}`)}`}
+                href={`/register?callbackUrl=${encodeURIComponent(
+                  `/invite/${token}`,
+                )}`}
                 className="btn btn-outline w-full hover:bg-base-content/5"
               >
                 {t("createAccount")}

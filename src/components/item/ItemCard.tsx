@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { isItemEnded, getBidStatus } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
+import { stripHtmlTags } from "@/components/ui/rich-text-editor";
 
 interface ItemCardProps {
   item: {
@@ -160,7 +161,7 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
 
           {item.description && (
             <p className="text-sm text-base-content/60 line-clamp-2 h-10 mb-2">
-              {item.description}
+              {stripHtmlTags(item.description)}
             </p>
           )}
           {!item.description && <div className="h-10 mb-2"></div>}

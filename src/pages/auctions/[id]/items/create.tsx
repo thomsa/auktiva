@@ -10,6 +10,7 @@ import { PageLayout, BackLink } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { ImageUpload } from "@/components/upload/image-upload";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 
@@ -183,7 +184,9 @@ export default function CreateItemPage({
                       name="name"
                       type="text"
                       placeholder={t("itemNamePlaceholder")}
-                      className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.name ? "input-error" : ""}`}
+                      className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${
+                        fieldErrors.name ? "input-error" : ""
+                      }`}
                       required
                     />
                     {fieldErrors.name && (
@@ -201,11 +204,11 @@ export default function CreateItemPage({
                         {t("description")}
                       </span>
                     </label>
-                    <textarea
+                    <RichTextEditor
                       id="description"
                       name="description"
+                      maxLength={500}
                       placeholder={t("descriptionPlaceholder")}
-                      className="textarea textarea-bordered w-full h-32 bg-base-100 focus:bg-base-100 transition-colors"
                     />
                   </div>
                 </div>
@@ -253,7 +256,9 @@ export default function CreateItemPage({
                         min="0"
                         step="0.01"
                         defaultValue="0"
-                        className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${fieldErrors.startingBid ? "input-error" : ""}`}
+                        className={`input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors ${
+                          fieldErrors.startingBid ? "input-error" : ""
+                        }`}
                       />
                       {fieldErrors.startingBid && (
                         <label className="label">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { isAuctionEnded } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
+import { stripHtmlTags } from "@/components/ui/rich-text-editor";
 
 interface AuctionCardProps {
   auction: {
@@ -46,7 +47,9 @@ export function AuctionCard({ auction }: AuctionCardProps) {
           <img
             src={auction.thumbnailUrl}
             alt={auction.name}
-            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${ended ? "grayscale" : ""}`}
+            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
+              ended ? "grayscale" : ""
+            }`}
           />
         ) : (
           <div
@@ -78,7 +81,7 @@ export function AuctionCard({ auction }: AuctionCardProps) {
 
         {auction.description && (
           <p className="text-sm text-base-content/60 line-clamp-2 mb-4 h-10">
-            {auction.description}
+            {stripHtmlTags(auction.description)}
           </p>
         )}
         {!auction.description && <div className="h-10 mb-4"></div>}

@@ -164,6 +164,20 @@
     "appRestarting": "La aplicación se reiniciará en breve.",
     "updateTimeout": "Tiempo de actualización agotado. La aplicación puede necesitar reinicio manual."
   },
+  "richText": {
+    "placeholder": "Escribe tu descripción...",
+    "bold": "Negrita",
+    "italic": "Cursiva",
+    "strikethrough": "Tachado",
+    "heading": "Título",
+    "bulletList": "Lista con viñetas",
+    "numberedList": "Lista numerada",
+    "link": "Enlace",
+    "quote": "Cita",
+    "undo": "Deshacer",
+    "redo": "Rehacer",
+    "enterUrl": "Introducir URL"
+  },
   "changelog": {
     "title": "Registro de cambios y versiones",
     "description": "Descubre las novedades de Auktiva y sigue nuestro progreso de desarrollo",

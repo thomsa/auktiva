@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { isItemEnded, getBidStatus } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
+import { stripHtmlTags } from "@/components/ui/rich-text-editor";
 
 interface ItemListItemProps {
   item: {
@@ -132,7 +133,7 @@ export function ItemListItem({
           </div>
           {item.description && (
             <p className="text-sm text-base-content/60 truncate">
-              {item.description}
+              {stripHtmlTags(item.description)}
             </p>
           )}
         </div>

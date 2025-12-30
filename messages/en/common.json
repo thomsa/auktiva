@@ -164,6 +164,20 @@
     "appRestarting": "The application will restart shortly.",
     "updateTimeout": "Update timed out. The application may need manual restart."
   },
+  "richText": {
+    "placeholder": "Write your description...",
+    "bold": "Bold",
+    "italic": "Italic",
+    "strikethrough": "Strikethrough",
+    "heading": "Heading",
+    "bulletList": "Bullet list",
+    "numberedList": "Numbered list",
+    "link": "Link",
+    "quote": "Quote",
+    "undo": "Undo",
+    "redo": "Redo",
+    "enterUrl": "Enter URL"
+  },
   "changelog": {
     "title": "Changelog & Releases",
     "description": "See what's new in Auktiva and track our development progress",

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { isAuctionEnded } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
+import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 
 interface AuctionSidebarProps {
   auction: {
@@ -105,9 +106,12 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
           </div>
 
           {auction.description && (
-            <p className="text-sm text-base-content/70 mb-6 leading-relaxed">
-              {auction.description}
-            </p>
+            <div className="mb-6">
+              <RichTextRenderer
+                content={auction.description}
+                className="text-sm text-base-content/70 leading-relaxed"
+              />
+            </div>
           )}
 
           <div className="space-y-3 p-4 bg-base-200/50 rounded-xl mb-2">
@@ -136,7 +140,9 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                   {t("card.ends")}
                 </span>
                 <span
-                  className={`font-medium ${ended ? "text-error" : "text-primary"}`}
+                  className={`font-medium ${
+                    ended ? "text-error" : "text-primary"
+                  }`}
                 >
                   {formatShortDate(auction.endDate)}
                 </span>

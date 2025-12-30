@@ -4,15 +4,11 @@ import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import * as auctionService from "@/lib/services/auction.service";
-import {
-  PageLayout,
-  BackLink,
-  AlertMessage,
-  ConfirmDialog,
-} from "@/components/common";
+import { PageLayout, BackLink, ConfirmDialog } from "@/components/common";
 import { ThumbnailUpload } from "@/components/upload/thumbnail-upload";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useConfirmDialog } from "@/hooks/ui";
 import { useTranslations } from "next-intl";
@@ -183,11 +179,13 @@ export default function AuctionSettingsPage({
                     {tCreate("description")}
                   </span>
                 </label>
-                <textarea
+                <RichTextEditor
                   name="description"
                   value={formData.description}
-                  onChange={handleChange}
-                  className="textarea textarea-bordered w-full h-24 bg-base-100 focus:bg-base-100 transition-colors"
+                  maxLength={500}
+                  onChange={(value) =>
+                    setFormData((prev) => ({ ...prev, description: value }))
+                  }
                   placeholder={tCreate("descriptionPlaceholder")}
                 />
               </div>
