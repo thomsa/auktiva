@@ -169,7 +169,9 @@ async function setupStorage(): Promise<Partial<EnvConfig>> {
   if (provider === "local") {
     console.log();
     console.log(
-      chalk.dim("Images will be stored in ./public/uploads (served at /uploads)"),
+      chalk.dim(
+        "Images will be stored in ./public/uploads (served at /uploads)",
+      ),
     );
     return { STORAGE_PROVIDER: "local" };
   }
@@ -274,54 +276,12 @@ async function setupDatabase(): Promise<Partial<EnvConfig>> {
 }
 
 async function setupAuth(): Promise<Partial<EnvConfig>> {
-  console.log(chalk.dim("Configure where Auktiva will be accessible:"));
+  // Service port - where Next.js actually listens
+  console.log(chalk.dim("Service port where Next.js will listen:"));
   console.log();
-
-  const domain = await input({
-    message: "Domain or IP address:",
-    default: "localhost",
-    validate: (value) => {
-      if (!value) return "Domain is required";
-      return true;
-    },
-  });
-
-  // Determine protocol and port
-  const isLocalhost = domain === "localhost" || domain === "127.0.0.1";
-  const isIP = /^(\d{1,3}\.){3}\d{1,3}$/.test(domain);
-
-  let protocol = "https";
-  let port = "";
-
-  if (isLocalhost) {
-    protocol = "http";
-    port = ":3000";
-  } else if (isIP) {
-    protocol = "http";
-  }
-
-  const authUrl = `${protocol}://${domain}${port}`;
-
-  console.log();
-  printInfo(`Auth URL will be: ${chalk.magenta(authUrl)}`);
-
-  const authSecret = generateAuthSecret();
-  printSuccess("Generated secure AUTH_SECRET");
-
-  return {
-    AUTH_URL: authUrl,
-    AUTH_SECRET: authSecret,
-  };
-}
-
-async function setupFeatures(): Promise<Partial<EnvConfig>> {
-  const allowOpen = await confirm({
-    message: "Allow public/open auctions (anyone can join without invite)?",
-    default: false,
-  });
 
   const port = await input({
-    message: "Application port:",
+    message: "Service port:",
     default: "3000",
     validate: (value) => {
       const num = parseInt(value, 10);
@@ -332,9 +292,51 @@ async function setupFeatures(): Promise<Partial<EnvConfig>> {
     },
   });
 
+  console.log();
+  console.log(
+    chalk.dim("Public URL - how users will access the app externally."),
+  );
+  console.log(
+    chalk.dim(
+      "Examples: https://auctions.mydomain.com, http://192.168.1.50:3000",
+    ),
+  );
+  console.log();
+
+  const authUrl = await input({
+    message: "Public URL:",
+    default: `http://localhost:${port}`,
+    validate: (value) => {
+      if (!value) return "URL is required";
+      if (!value.startsWith("http://") && !value.startsWith("https://")) {
+        return "URL must start with http:// or https://";
+      }
+      return true;
+    },
+  });
+
+  console.log();
+  printInfo(`Next.js will listen on port ${chalk.cyan(port)}`);
+  printInfo(`Users will access via ${chalk.magenta(authUrl)}`);
+
+  const authSecret = generateAuthSecret();
+  printSuccess("Generated secure AUTH_SECRET");
+
+  return {
+    AUTH_URL: authUrl,
+    AUTH_SECRET: authSecret,
+    PORT: port,
+  };
+}
+
+async function setupFeatures(): Promise<Partial<EnvConfig>> {
+  const allowOpen = await confirm({
+    message: "Allow public/open auctions (anyone can join without invite)?",
+    default: false,
+  });
+
   return {
     ALLOW_OPEN_AUCTIONS: allowOpen ? "true" : "false",
-    PORT: port,
   };
 }
 
@@ -377,7 +379,9 @@ async function testSmtpConnection(config: {
   // Dynamic import to avoid loading nodemailer during setup if not needed
   const nodemailer = await import("nodemailer");
 
-  const auth = config.user ? { user: config.user, pass: config.password || "" } : undefined;
+  const auth = config.user
+    ? { user: config.user, pass: config.password || "" }
+    : undefined;
 
   const transporter = nodemailer.default.createTransport({
     host: config.host,
@@ -525,7 +529,8 @@ async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
       {
         value: "smtp",
         name: "SMTP Server",
-        description: "Use your own SMTP server (Gmail, Mailgun, self-hosted, etc.)",
+        description:
+          "Use your own SMTP server (Gmail, Mailgun, self-hosted, etc.)",
       },
     ],
   });
@@ -534,9 +539,7 @@ async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
 
   if (emailProvider === "brevo") {
     console.log();
-    console.log(
-      chalk.dim("Brevo offers a free tier with 300 emails/day."),
-    );
+    console.log(chalk.dim("Brevo offers a free tier with 300 emails/day."));
     console.log();
     console.log(
       chalk.cyan("1. Create a free account at: ") +
@@ -881,8 +884,9 @@ async function main() {
     }`,
   );
   console.log(
-    `  ${chalk.dim("URL:")}           ${chalk.magenta(config.AUTH_URL)}`,
+    `  ${chalk.dim("App URL:")}       ${chalk.magenta(config.AUTH_URL)}`,
   );
+  console.log(`  ${chalk.dim("Service Port:")} ${chalk.cyan(config.PORT)}`);
   console.log(
     `  ${chalk.dim("Open Auctions:")} ${
       config.ALLOW_OPEN_AUCTIONS === "true"
@@ -890,14 +894,13 @@ async function main() {
         : chalk.yellow("Disabled")
     }`,
   );
-  console.log(`  ${chalk.dim("Port:")}          ${chalk.cyan(config.PORT)}`);
   console.log(
     `  ${chalk.dim("Email:")}         ${
       config.EMAIL_PROVIDER === "brevo"
         ? chalk.green("Enabled (Brevo)")
         : config.EMAIL_PROVIDER === "smtp"
-          ? chalk.green(`Enabled (SMTP: ${config.SMTP_HOST})`)
-          : chalk.yellow("Disabled")
+        ? chalk.green(`Enabled (SMTP: ${config.SMTP_HOST})`)
+        : chalk.yellow("Disabled")
     }`,
   );
   console.log(
