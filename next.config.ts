@@ -79,7 +79,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               // Note: 'unsafe-inline' and 'unsafe-eval' are required for Google reCAPTCHA
               // See: https://developers.google.com/recaptcha/docs/faq#im-using-content-security-policy-csp-on-my-website-how-can-i-configure-it-to-work-with-recaptcha
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.recaptcha.net",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.recaptcha.net https://vercel.live",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://www.gstatic.com https:",
               "font-src 'self' data:",

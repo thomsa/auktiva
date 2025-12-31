@@ -117,7 +117,9 @@ export default function VerifyEmailPage({ token }: VerifyEmailPageProps) {
               <h1 className="text-3xl font-extrabold text-base-content mb-4 tracking-tight">
                 {t("errorTitle")}
               </h1>
-              <p className="text-base-content/60 mb-8 text-lg">{errorMessage}</p>
+              <p className="text-base-content/60 mb-8 text-lg">
+                {errorMessage}
+              </p>
               <div className="space-y-3">
                 <Link
                   href="/login"

@@ -62,7 +62,6 @@
     "dotenv": "^17.2.3",
     "formidable": "^3.5.4",
     "framer-motion": "^12.23.26",
-    "isomorphic-dompurify": "^2.35.0",
     "lucide-react": "^0.559.0",
     "mjml": "^4.18.0",
     "next": "16.0.8",

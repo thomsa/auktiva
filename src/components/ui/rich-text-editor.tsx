@@ -6,8 +6,8 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import DOMPurify from "isomorphic-dompurify";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import DOMPurify from "dompurify";
 
 interface RichTextEditorProps {
   name: string;
@@ -271,18 +271,27 @@ export function RichTextEditor({
 }
 
 // Component to render rich text content (HTML)
+// This component is client-only because DOMPurify requires a DOM environment
 interface RichTextRendererProps {
   content: string;
   className?: string;
 }
 
+const emptySubscribe = () => () => {};
+
 export function RichTextRenderer({
   content,
   className = "",
 }: RichTextRendererProps) {
-  if (!content) return null;
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
-  // Sanitize HTML to prevent XSS attacks
+  if (!content || !isMounted) return null;
+
+  // Sanitize HTML to prevent XSS attacks (client-side only)
   const sanitizedContent = DOMPurify.sanitize(content, {
     ALLOWED_TAGS: [
       "p",

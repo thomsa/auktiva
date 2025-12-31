@@ -218,210 +218,210 @@ export default function RegisterPage({
             ) : (
               // Registration form
               <>
-            <div className="mb-8">
-              <h2 className="text-3xl font-bold text-base-content mb-2">
-                {t("title")}
-              </h2>
-              <p className="text-base-content/60">{t("subtitle")}</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {error && <AlertMessage type="error">{error}</AlertMessage>}
-
-              <div className="form-control">
-                <label className="label pl-0" htmlFor="name">
-                  <span className="label-text font-medium text-base-content/80">
-                    {t("fullName")}
-                  </span>
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--user] size-5"></span>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder={t("fullNamePlaceholder")}
-                    autoComplete="name"
-                    className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
-                      fieldErrors.name ? "input-error" : ""
-                    }`}
-                    required
-                  />
+                <div className="mb-8">
+                  <h2 className="text-3xl font-bold text-base-content mb-2">
+                    {t("title")}
+                  </h2>
+                  <p className="text-base-content/60">{t("subtitle")}</p>
                 </div>
-                {fieldErrors.name && (
-                  <label className="label">
-                    <span className="label-text-alt text-error">
-                      {fieldErrors.name}
-                    </span>
-                  </label>
-                )}
-              </div>
 
-              <div className="form-control">
-                <label className="label pl-0" htmlFor="email">
-                  <span className="label-text font-medium text-base-content/80">
-                    {t("email")}
-                  </span>
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--mail] size-5"></span>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder={t("emailPlaceholder")}
-                    autoComplete="email"
-                    className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
-                      fieldErrors.email ? "input-error" : ""
-                    }`}
-                    required
-                  />
-                </div>
-                {fieldErrors.email && (
-                  <label className="label">
-                    <span className="label-text-alt text-error">
-                      {fieldErrors.email}
-                    </span>
-                  </label>
-                )}
-              </div>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  {error && <AlertMessage type="error">{error}</AlertMessage>}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="form-control">
-                  <label className="label pl-0" htmlFor="password">
-                    <span className="label-text font-medium text-base-content/80">
-                      {t("password")}
-                    </span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--lock] size-5"></span>
-                    <input
-                      id="password"
-                      name="password"
-                      type="password"
-                      placeholder={t("passwordPlaceholder")}
-                      autoComplete="new-password"
-                      className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
-                        fieldErrors.password ? "input-error" : ""
-                      }`}
-                      required
-                      minLength={6}
-                    />
-                  </div>
-                  {fieldErrors.password && (
-                    <label className="label">
-                      <span className="label-text-alt text-error">
-                        {fieldErrors.password}
+                  <div className="form-control">
+                    <label className="label pl-0" htmlFor="name">
+                      <span className="label-text font-medium text-base-content/80">
+                        {t("fullName")}
                       </span>
                     </label>
-                  )}
-                </div>
-
-                <div className="form-control">
-                  <label className="label pl-0" htmlFor="confirmPassword">
-                    <span className="label-text font-medium text-base-content/80">
-                      {t("confirmPassword")}
-                    </span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--lock-check] size-5"></span>
-                    <input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      placeholder={t("confirmPasswordPlaceholder")}
-                      autoComplete="new-password"
-                      className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
-                        fieldErrors.confirmPassword ? "input-error" : ""
-                      }`}
-                      required
-                      minLength={6}
-                    />
-                  </div>
-                  {fieldErrors.confirmPassword && (
-                    <label className="label">
-                      <span className="label-text-alt text-error">
-                        {fieldErrors.confirmPassword}
-                      </span>
-                    </label>
-                  )}
-                </div>
-              </div>
-
-              {/* reCAPTCHA Widget */}
-              {recaptchaSiteKey && (
-                <div className="flex flex-col items-center my-4">
-                  {loadCaptcha ? (
-                    <Suspense
-                      fallback={
-                        <div className="text-base-content/60 text-sm">
-                          {t("loadingRecaptcha")}
-                        </div>
-                      }
-                    >
-                      <LazyReCAPTCHA
-                        sitekey={recaptchaSiteKey}
-                        ref={recaptchaRef}
-                        onChange={handleCaptchaChange}
-                        onExpired={handleCaptchaExpired}
-                        theme="light"
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--user] size-5"></span>
+                      <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        placeholder={t("fullNamePlaceholder")}
+                        autoComplete="name"
+                        className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
+                          fieldErrors.name ? "input-error" : ""
+                        }`}
+                        required
                       />
-                    </Suspense>
-                  ) : (
-                    <div className="text-base-content/60 text-sm">
-                      {t("preparingRecaptcha")}
+                    </div>
+                    {fieldErrors.name && (
+                      <label className="label">
+                        <span className="label-text-alt text-error">
+                          {fieldErrors.name}
+                        </span>
+                      </label>
+                    )}
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label pl-0" htmlFor="email">
+                      <span className="label-text font-medium text-base-content/80">
+                        {t("email")}
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--mail] size-5"></span>
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder={t("emailPlaceholder")}
+                        autoComplete="email"
+                        className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
+                          fieldErrors.email ? "input-error" : ""
+                        }`}
+                        required
+                      />
+                    </div>
+                    {fieldErrors.email && (
+                      <label className="label">
+                        <span className="label-text-alt text-error">
+                          {fieldErrors.email}
+                        </span>
+                      </label>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="form-control">
+                      <label className="label pl-0" htmlFor="password">
+                        <span className="label-text font-medium text-base-content/80">
+                          {t("password")}
+                        </span>
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--lock] size-5"></span>
+                        <input
+                          id="password"
+                          name="password"
+                          type="password"
+                          placeholder={t("passwordPlaceholder")}
+                          autoComplete="new-password"
+                          className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
+                            fieldErrors.password ? "input-error" : ""
+                          }`}
+                          required
+                          minLength={6}
+                        />
+                      </div>
+                      {fieldErrors.password && (
+                        <label className="label">
+                          <span className="label-text-alt text-error">
+                            {fieldErrors.password}
+                          </span>
+                        </label>
+                      )}
+                    </div>
+
+                    <div className="form-control">
+                      <label className="label pl-0" htmlFor="confirmPassword">
+                        <span className="label-text font-medium text-base-content/80">
+                          {t("confirmPassword")}
+                        </span>
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 icon-[tabler--lock-check] size-5"></span>
+                        <input
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          type="password"
+                          placeholder={t("confirmPasswordPlaceholder")}
+                          autoComplete="new-password"
+                          className={`input input-bordered w-full pl-10 bg-base-200/50 focus:bg-base-100 transition-colors ${
+                            fieldErrors.confirmPassword ? "input-error" : ""
+                          }`}
+                          required
+                          minLength={6}
+                        />
+                      </div>
+                      {fieldErrors.confirmPassword && (
+                        <label className="label">
+                          <span className="label-text-alt text-error">
+                            {fieldErrors.confirmPassword}
+                          </span>
+                        </label>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* reCAPTCHA Widget */}
+                  {recaptchaSiteKey && (
+                    <div className="flex flex-col items-center my-4">
+                      {loadCaptcha ? (
+                        <Suspense
+                          fallback={
+                            <div className="text-base-content/60 text-sm">
+                              {t("loadingRecaptcha")}
+                            </div>
+                          }
+                        >
+                          <LazyReCAPTCHA
+                            sitekey={recaptchaSiteKey}
+                            ref={recaptchaRef}
+                            onChange={handleCaptchaChange}
+                            onExpired={handleCaptchaExpired}
+                            theme="light"
+                          />
+                        </Suspense>
+                      ) : (
+                        <div className="text-base-content/60 text-sm">
+                          {t("preparingRecaptcha")}
+                        </div>
+                      )}
                     </div>
                   )}
+
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    modifier="block"
+                    isLoading={isLoading}
+                    loadingText={t("submitting")}
+                    disabled={recaptchaSiteKey ? !isVerified : false}
+                    className="btn-lg text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
+                  >
+                    {t("submitButton")}
+                  </Button>
+
+                  <p className="text-xs text-base-content/50 text-center mt-4">
+                    {t("termsAgreement")}{" "}
+                    <Link href="/terms" className="link link-primary">
+                      {t("termsOfService")}
+                    </Link>{" "}
+                    {t("and")}{" "}
+                    <Link href="/privacy" className="link link-primary">
+                      {t("privacyPolicy")}
+                    </Link>
+                  </p>
+                </form>
+
+                {(googleOAuthEnabled || microsoftOAuthEnabled) && (
+                  <>
+                    <div className="divider my-6 text-base-content/40 text-sm">
+                      {t("orContinueWith")}
+                    </div>
+                    <div className="flex flex-col gap-3">
+                      {googleOAuthEnabled && <GoogleSignInButton />}
+                      {microsoftOAuthEnabled && <MicrosoftSignInButton />}
+                    </div>
+                  </>
+                )}
+
+                <div className="mt-8 text-center">
+                  <p className="text-sm text-base-content/60">
+                    {t("hasAccount")}{" "}
+                    <Link
+                      href="/login"
+                      className="link link-primary font-bold hover:text-primary/80 transition-colors"
+                    >
+                      {t("signIn")}
+                    </Link>
+                  </p>
                 </div>
-              )}
-
-              <Button
-                type="submit"
-                variant="primary"
-                modifier="block"
-                isLoading={isLoading}
-                loadingText={t("submitting")}
-                disabled={recaptchaSiteKey ? !isVerified : false}
-                className="btn-lg text-base shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
-              >
-                {t("submitButton")}
-              </Button>
-
-              <p className="text-xs text-base-content/50 text-center mt-4">
-                {t("termsAgreement")}{" "}
-                <Link href="/terms" className="link link-primary">
-                  {t("termsOfService")}
-                </Link>{" "}
-                {t("and")}{" "}
-                <Link href="/privacy" className="link link-primary">
-                  {t("privacyPolicy")}
-                </Link>
-              </p>
-            </form>
-
-            {(googleOAuthEnabled || microsoftOAuthEnabled) && (
-              <>
-                <div className="divider my-6 text-base-content/40 text-sm">
-                  {t("orContinueWith")}
-                </div>
-                <div className="flex flex-col gap-3">
-                  {googleOAuthEnabled && <GoogleSignInButton />}
-                  {microsoftOAuthEnabled && <MicrosoftSignInButton />}
-                </div>
-              </>
-            )}
-
-            <div className="mt-8 text-center">
-              <p className="text-sm text-base-content/60">
-                {t("hasAccount")}{" "}
-                <Link
-                  href="/login"
-                  className="link link-primary font-bold hover:text-primary/80 transition-colors"
-                >
-                  {t("signIn")}
-                </Link>
-              </p>
-            </div>
               </>
             )}
           </div>
