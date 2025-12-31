@@ -3,7 +3,10 @@ import { randomBytes, createHash } from "crypto";
 import { hash } from "bcryptjs";
 import { sendEmail } from "@/lib/email";
 import { queueWelcomeEmail } from "@/lib/email/service";
-import { getPasswordResetTemplateData } from "@/lib/email/templates";
+import {
+  getPasswordResetTemplateData,
+  getAccountExistsTemplateData,
+} from "@/lib/email/templates";
 
 // ============================================================================
 // Types
@@ -76,6 +79,8 @@ export async function getPasswordResetToken(rawToken: string) {
 
 /**
  * Register a new user
+ * To prevent email enumeration attacks, this function always succeeds.
+ * If the email already exists, we send an "account exists" email instead.
  */
 export async function registerUser(input: RegisterInput) {
   const { name, email, password } = input;
@@ -87,7 +92,29 @@ export async function registerUser(input: RegisterInput) {
   });
 
   if (existingUser) {
-    return { success: false, error: "email_exists" as const };
+    // Send "account already exists" email instead of revealing this to the API caller
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      process.env.AUTH_URL ||
+      "http://localhost:3000";
+
+    const templateData = getAccountExistsTemplateData({
+      name: existingUser.name || "there",
+      appUrl,
+    });
+
+    await sendEmail({
+      to: existingUser.email,
+      toName: existingUser.name || undefined,
+      subject: "Account Already Exists - Auktiva",
+      mjmlTemplate: templateData.template,
+      replacements: templateData.replacements,
+      type: "ACCOUNT_EXISTS",
+      metadata: { userId: existingUser.id },
+    });
+
+    // Return success to prevent email enumeration
+    return { success: true, emailSent: true, isExistingUser: true };
   }
 
   // Hash password and create user
@@ -108,7 +135,7 @@ export async function registerUser(input: RegisterInput) {
     name: user.name || "",
   });
 
-  return { success: true, user };
+  return { success: true, user, emailSent: true };
 }
 
 /**

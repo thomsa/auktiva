@@ -359,6 +359,7 @@ enum EmailType {
   OUTBID          // User was outbid
   PASSWORD_RESET  // Password reset request
   ITEM_WON        // User won an item
+  ACCOUNT_EXISTS  // Registration attempt with existing email
 }
 
 model EmailLog {

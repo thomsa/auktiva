@@ -7,6 +7,7 @@ import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import DOMPurify from "dompurify";
 
 interface RichTextEditorProps {
   name: string;
@@ -281,10 +282,31 @@ export function RichTextRenderer({
 }: RichTextRendererProps) {
   if (!content) return null;
 
+  // Sanitize HTML to prevent XSS attacks
+  const sanitizedContent = DOMPurify.sanitize(content, {
+    ALLOWED_TAGS: [
+      "p",
+      "br",
+      "strong",
+      "em",
+      "u",
+      "s",
+      "h1",
+      "h2",
+      "h3",
+      "ul",
+      "ol",
+      "li",
+      "a",
+      "blockquote",
+    ],
+    ALLOWED_ATTR: ["href", "target", "rel", "class"],
+  });
+
   return (
     <div
       className={`prose prose-sm max-w-none ${className}`}
-      dangerouslySetInnerHTML={{ __html: content }}
+      dangerouslySetInnerHTML={{ __html: sanitizedContent }}
     />
   );
 }

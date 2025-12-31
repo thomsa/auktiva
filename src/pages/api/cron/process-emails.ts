@@ -23,6 +23,12 @@ export default async function handler(
   const authHeader = req.headers.authorization;
   const cronSecret = process.env.CRON_SECRET;
 
+  // In production, require CRON_SECRET to be configured
+  if (!cronSecret && process.env.NODE_ENV === "production") {
+    cronLogger.error("CRON_SECRET not configured in production");
+    return res.status(500).json({ error: "Server misconfiguration" });
+  }
+
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     cronLogger.warn("Unauthorized cron request attempt");
     return res.status(401).json({ error: "Unauthorized" });

@@ -1,0 +1,289 @@
+# Security
+
+Auktiva implements multiple layers of security to protect your data and users. This page documents the security features and best practices for deployment.
+
+## Overview
+
+Security features include:
+
+- **XSS Protection** - HTML sanitization for user-generated content
+- **CSRF Protection** - Built-in NextAuth.js CSRF tokens
+- **Rate Limiting** - Protection against brute-force attacks
+- **Input Validation** - Zod schema validation on all API endpoints
+- **SQL Injection Prevention** - Prisma ORM with parameterized queries
+- **Path Traversal Protection** - Secure file upload handling
+- **Security Headers** - Comprehensive HTTP security headers
+
+## Content Security Policy (CSP)
+
+Auktiva includes a strict Content Security Policy configured in `next.config.ts`:
+
+```javascript
+{
+  "default-src": "'self'",
+  "script-src": "'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.recaptcha.net",
+  "style-src": "'self' 'unsafe-inline'",
+  "img-src": "'self' data: blob: https:",
+  "frame-src": "'self' https://www.google.com https://www.recaptcha.net",
+  "frame-ancestors": "'none'",
+  "object-src": "'none'",
+  "upgrade-insecure-requests": true
+}
+```
+
+<Callout type="info">
+  `unsafe-inline` and `unsafe-eval` are required for Google reCAPTCHA
+  compatibility. If you don't use reCAPTCHA, you can remove these directives for
+  stricter security.
+</Callout>
+
+### Additional Security Headers
+
+- **Strict-Transport-Security** - Enforces HTTPS
+- **X-Content-Type-Options** - Prevents MIME sniffing
+- **X-Frame-Options** - Prevents clickjacking
+- **X-XSS-Protection** - Legacy XSS filter
+- **Referrer-Policy** - Controls referrer information
+- **Permissions-Policy** - Restricts browser features
+- **Cross-Origin-Opener-Policy** - Isolates browsing context
+- **Cross-Origin-Resource-Policy** - Restricts resource loading
+
+## XSS Protection
+
+### Rich Text Content
+
+User-generated rich text content is sanitized using [DOMPurify](https://github.com/cure53/DOMPurify) before rendering:
+
+```typescript
+// src/components/ui/rich-text-editor.tsx
+import DOMPurify from "dompurify";
+
+const sanitizedContent = DOMPurify.sanitize(content, {
+  ALLOWED_TAGS: [
+    "p",
+    "br",
+    "strong",
+    "em",
+    "u",
+    "s",
+    "h1",
+    "h2",
+    "h3",
+    "ul",
+    "ol",
+    "li",
+    "a",
+    "blockquote",
+  ],
+  ALLOWED_ATTR: ["href", "target", "rel", "class"],
+});
+```
+
+### Email Templates
+
+All user-provided content in email templates is HTML-encoded using the `escapeHtml()` utility:
+
+```typescript
+// src/lib/email/layout.ts
+export function escapeHtml(unsafe: string): string {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+```
+
+## Rate Limiting
+
+Auktiva includes rate limiting middleware to protect against brute-force attacks.
+
+### Configuration
+
+Rate limiting is implemented in `src/lib/api/middleware/rate-limit.ts` using [rate-limiter-flexible](https://github.com/animir/node-rate-limiter-flexible).
+
+| Endpoint       | Limit       | Window     |
+| -------------- | ----------- | ---------- |
+| Registration   | 3 requests  | 1 hour     |
+| Password Reset | 3 requests  | 1 hour     |
+| Authentication | 5 requests  | 15 minutes |
+| Bid Placement  | 30 requests | 1 minute   |
+
+### Usage
+
+```typescript
+import { withRateLimit, withRegistrationRateLimit } from "@/lib/api";
+
+// Use preset rate limiters
+export default createHandler({
+  POST: [[withRegistrationRateLimit], register],
+});
+
+// Or create custom rate limits
+export default createHandler({
+  POST: [[withRateLimit({ points: 10, duration: 60 })], handler],
+});
+```
+
+<Callout type="warning">
+  **Serverless Limitation**: The default in-memory rate limiting only works
+  reliably for self-hosted deployments (PM2, Docker, single server). On
+  serverless platforms like Vercel, each function invocation may run in a
+  different instance, making in-memory storage ineffective. For Vercel
+  deployments, consider using: -
+  [@upstash/ratelimit](https://github.com/upstash/ratelimit) with Upstash Redis
+  - Vercel KV - External Redis with `RateLimiterRedis`
+</Callout>
+
+## Input Validation
+
+All API endpoints use [Zod](https://zod.dev/) schemas for input validation:
+
+```typescript
+const createAuctionSchema = z.object({
+  name: z.string().min(1).max(100),
+  description: z.string().max(5000).optional(),
+  currency: z.string().length(3),
+  // ...
+});
+
+export default createHandler({
+  POST: [[withAuth, withValidation(createAuctionSchema)], createAuction],
+});
+```
+
+## File Upload Security
+
+### Path Traversal Protection
+
+File uploads are protected against path traversal attacks:
+
+```typescript
+// src/pages/api/uploads/[...path].ts
+const uploadsDir = path.resolve(process.cwd(), "public/uploads");
+const filePath = path.resolve(uploadsDir, relativePath);
+
+// Ensure resolved path stays within uploads directory
+if (!filePath.startsWith(uploadsDir + path.sep)) {
+  return res.status(400).json({ error: "Invalid path" });
+}
+```
+
+### File Type Validation
+
+Only allowed image types are accepted:
+
+- `image/jpeg`
+- `image/png`
+- `image/webp`
+- `image/gif`
+
+### Size Limits
+
+- Item images: 10MB max
+- Auction thumbnails: 5MB max
+- Maximum 10 images per item
+
+## Authentication Security
+
+### Password Hashing
+
+Passwords are hashed using [bcryptjs](https://github.com/dcodeIO/bcrypt.js) with 12 salt rounds:
+
+```typescript
+const passwordHash = await bcrypt.hash(password, 12);
+```
+
+### Password Reset
+
+- Tokens are hashed with SHA-256 before storage
+- Tokens expire after 10 minutes
+- Rate limited to 3 requests per hour
+- Email enumeration is prevented (same response regardless of email existence)
+
+### Email Enumeration Prevention
+
+Registration and password reset endpoints don't reveal whether an email exists:
+
+```typescript
+// Registration: Always returns success, sends different emails
+// - New user: Welcome email
+// - Existing user: "Account already exists" email with login link
+
+// Password reset: Always returns same message
+return res.status(200).json({
+  message:
+    "If an account with that email exists, we've sent a password reset link.",
+});
+```
+
+## Cron Job Security
+
+Cron endpoints are protected by a secret token:
+
+```bash
+# .env
+CRON_SECRET=your-secure-random-string
+```
+
+```typescript
+// Cron requests must include the secret
+Authorization: Bearer ${CRON_SECRET}
+```
+
+<Callout type="error">
+  In production (`NODE_ENV=production`), `CRON_SECRET` is **required**. The cron
+  endpoints will return a 500 error if not configured.
+</Callout>
+
+## Environment Variables
+
+Sensitive configuration should be stored in environment variables:
+
+| Variable               | Description                | Required    |
+| ---------------------- | -------------------------- | ----------- |
+| `NEXTAUTH_SECRET`      | Session encryption key     | Yes         |
+| `DATABASE_URL`         | Database connection string | Yes         |
+| `CRON_SECRET`          | Cron job authentication    | Production  |
+| `RECAPTCHA_SECRET_KEY` | reCAPTCHA server key       | Optional    |
+| `S3_SECRET_ACCESS_KEY` | S3 storage credentials     | If using S3 |
+
+See [Configuration](/developers/configuration) for the complete list.
+
+## Security Best Practices
+
+### For Self-Hosted Deployments
+
+1. **Use HTTPS** - Always deploy behind HTTPS (nginx, Caddy, or cloud load balancer)
+2. **Set strong secrets** - Use cryptographically random values for `NEXTAUTH_SECRET` and `CRON_SECRET`
+3. **Keep dependencies updated** - Regularly run `npm audit` and update packages
+4. **Backup database** - Regular backups, especially before updates
+5. **Monitor logs** - Watch for suspicious activity patterns
+
+### For Vercel Deployments
+
+1. **Use Vercel's environment variables** - Never commit secrets to git
+2. **Enable Vercel's DDoS protection** - Included by default
+3. **Consider Upstash Redis** - For effective rate limiting
+4. **Use Vercel KV** - For session storage if needed
+
+## Reporting Security Issues
+
+If you discover a security vulnerability, please report it responsibly:
+
+1. **Do not** open a public GitHub issue
+2. Email security concerns to the maintainers
+3. Allow time for a fix before public disclosure
+
+## Changelog
+
+### December 2024
+
+- Added DOMPurify sanitization for rich text content
+- Implemented email enumeration prevention on registration
+- Added rate limiting middleware with `rate-limiter-flexible`
+- Enhanced path traversal protection for file uploads
+- Added HTML encoding for email templates
+- Required `CRON_SECRET` in production environments
+- Improved CSP with `object-src 'none'` and `upgrade-insecure-requests`

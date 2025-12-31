@@ -1,4 +1,4 @@
-import { renderLayout, theme } from "../layout";
+import { renderLayout, theme, escapeHtml } from "../layout";
 
 const content = `
     <mj-text font-size="22px" font-weight="600" color="${theme.colors.text.main}">
@@ -38,10 +38,11 @@ export function getInviteTemplateData(data: {
   return {
     template: inviteTemplate,
     replacements: {
-      "{{SENDER_NAME}}": data.senderName || "Someone",
-      "{{AUCTION_NAME}}": data.auctionName,
-      "{{ROLE}}": roleDisplay,
-      "{{INVITE_URL}}": `${data.appUrl}/invite/${data.token}`,
+      // HTML-encode user-provided content to prevent injection
+      "{{SENDER_NAME}}": escapeHtml(data.senderName || "Someone"),
+      "{{AUCTION_NAME}}": escapeHtml(data.auctionName),
+      "{{ROLE}}": escapeHtml(roleDisplay),
+      "{{INVITE_URL}}": `${data.appUrl}/invite/${encodeURIComponent(data.token)}`,
       "{{YEAR}}": new Date().getFullYear().toString(),
     },
   };

@@ -41,15 +41,15 @@ export const register: ApiHandler = async (req, res) => {
     throw new ValidationError("Validation failed", errors);
   }
 
-  const result = await authService.registerUser(parsed.data);
+  await authService.registerUser(parsed.data);
 
-  if (!result.success && result.error === "email_exists") {
-    throw new ValidationError("Validation failed", {
-      email: ["An account with this email already exists"],
-    });
-  }
-
-  return res.status(201).json({ message: "User created successfully" });
+  // Always return success to prevent email enumeration attacks
+  // If email exists, the service will send a "you already have an account" email
+  // instead of revealing this information to potential attackers
+  return res.status(201).json({
+    message: "Registration successful. Please check your email.",
+    emailSent: true,
+  });
 };
 
 // ============================================================================

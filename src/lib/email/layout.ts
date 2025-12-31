@@ -1,3 +1,16 @@
+/**
+ * HTML-encode a string to prevent XSS in email templates
+ * This should be used for all user-provided content in email templates
+ */
+export function escapeHtml(unsafe: string): string {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 // DaisyUI 5 light theme colors (converted from oklch)
 export const theme = {
   colors: {

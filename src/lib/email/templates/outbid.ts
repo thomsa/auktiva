@@ -1,4 +1,4 @@
-import { renderLayout, theme } from "../layout";
+import { renderLayout, theme, escapeHtml } from "../layout";
 
 const content = `
     <mj-text font-size="22px" font-weight="600" color="${theme.colors.text.main}">
@@ -45,11 +45,14 @@ export function getOutbidTemplateData(data: {
   return {
     template: outbidTemplate,
     replacements: {
-      "{{ITEM_NAME}}": data.itemName,
-      "{{AUCTION_NAME}}": data.auctionName,
-      "{{CURRENCY_SYMBOL}}": data.currencySymbol,
+      // HTML-encode user-provided content to prevent injection
+      "{{ITEM_NAME}}": escapeHtml(data.itemName),
+      "{{AUCTION_NAME}}": escapeHtml(data.auctionName),
+      "{{CURRENCY_SYMBOL}}": escapeHtml(data.currencySymbol),
       "{{NEW_AMOUNT}}": data.newAmount.toFixed(2),
-      "{{ITEM_URL}}": `${data.appUrl}/auctions/${data.auctionId}/items/${data.itemId}`,
+      "{{ITEM_URL}}": `${data.appUrl}/auctions/${encodeURIComponent(
+        data.auctionId,
+      )}/items/${encodeURIComponent(data.itemId)}`,
       "{{YEAR}}": new Date().getFullYear().toString(),
     },
   };

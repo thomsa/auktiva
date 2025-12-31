@@ -1,6 +1,6 @@
-import { createHandler } from "@/lib/api";
+import { createHandler, withPasswordResetRateLimit } from "@/lib/api";
 import { forgotPassword } from "@/lib/api/handlers/auth.handlers";
 
 export default createHandler({
-  POST: forgotPassword,
+  POST: [[withPasswordResetRateLimit], forgotPassword],
 });

@@ -1,4 +1,4 @@
-import { renderLayout, theme } from "../layout";
+import { renderLayout, theme, escapeHtml } from "../layout";
 
 const content = `
     <mj-text font-size="22px" font-weight="600" color="${theme.colors.text.main}">
@@ -41,24 +41,31 @@ export function getNewItemTemplateData(data: {
   itemId: string;
   appUrl: string;
 }) {
-  // Build image MJML if image exists
+  // Build image MJML if image exists (URL is system-generated, safe)
   const imageSection = data.itemImageUrl
-    ? `<mj-image src="${data.itemImageUrl}" alt="${data.itemName}" width="400px" border-radius="8px" padding="16px 0" />`
+    ? `<mj-image src="${data.itemImageUrl}" alt="${escapeHtml(
+        data.itemName,
+      )}" width="400px" border-radius="8px" padding="16px 0" />`
     : "";
 
-  // Build description text if exists
+  // Build description text if exists - HTML-encode user content
   const descriptionSection = data.itemDescription
-    ? `<mj-text font-size="14px" color="${theme.colors.text.muted}" padding="8px 0">${data.itemDescription}</mj-text>`
+    ? `<mj-text font-size="14px" color="${
+        theme.colors.text.muted
+      }" padding="8px 0">${escapeHtml(data.itemDescription)}</mj-text>`
     : "";
 
   return {
     template: newItemTemplate,
     replacements: {
-      "{{ITEM_NAME}}": data.itemName,
-      "{{AUCTION_NAME}}": data.auctionName,
+      // HTML-encode user-provided content to prevent injection
+      "{{ITEM_NAME}}": escapeHtml(data.itemName),
+      "{{AUCTION_NAME}}": escapeHtml(data.auctionName),
       "{{ITEM_IMAGE}}": imageSection,
       "{{ITEM_DESCRIPTION}}": descriptionSection,
-      "{{ITEM_URL}}": `${data.appUrl}/auctions/${data.auctionId}/items/${data.itemId}`,
+      "{{ITEM_URL}}": `${data.appUrl}/auctions/${encodeURIComponent(
+        data.auctionId,
+      )}/items/${encodeURIComponent(data.itemId)}`,
       "{{YEAR}}": new Date().getFullYear().toString(),
     },
   };

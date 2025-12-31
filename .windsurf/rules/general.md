@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # Auktiva - Project Context for Windsurf
 
 > This file provides complete context for Windsurf AI to understand the project architecture, tech stack, and current state.
@@ -22,6 +26,7 @@
 - Generated client: `src/generated/prisma`
 - Config: `prisma.config.ts` (Prisma 7 style)
 - IMPORTANT: Whenever you change schema you need to generate a migration file
+- IMPORTANT: On production we use Turso DB and it requires migrations to be run. It's scripts are available in ./scripts/migrate-turso
 
 ### Authentication
 

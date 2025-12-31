@@ -26,6 +26,12 @@ if [ -z "$LATEST_TAG" ]; then
   exit 1
 fi
 
+# Validate tag format to prevent command injection (must be semver like v1.2.3 or 1.2.3)
+if [[ ! "$LATEST_TAG" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+  echo "Error: Invalid tag format '$LATEST_TAG'. Expected semver format (e.g., v1.2.3)"
+  exit 1
+fi
+
 echo "Latest release: $LATEST_TAG"
 
 CURRENT_TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")

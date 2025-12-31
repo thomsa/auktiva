@@ -32,13 +32,23 @@ export default async function handler(
     return res.status(400).json({ error: "Invalid path" });
   }
 
-  // Construct file path and prevent directory traversal
+  // Construct file path with robust path traversal protection
   const relativePath = pathSegments.join("/");
-  if (relativePath.includes("..")) {
+
+  // Reject obvious traversal attempts (including encoded variants)
+  const decodedPath = decodeURIComponent(relativePath);
+  if (decodedPath.includes("..") || relativePath.includes("..")) {
     return res.status(400).json({ error: "Invalid path" });
   }
 
-  const filePath = path.join(process.cwd(), "public/uploads", relativePath);
+  // Use path.resolve to get absolute path and verify it's within uploads directory
+  const uploadsDir = path.resolve(process.cwd(), "public/uploads");
+  const filePath = path.resolve(uploadsDir, relativePath);
+
+  // Ensure the resolved path is still within the uploads directory
+  if (!filePath.startsWith(uploadsDir + path.sep) && filePath !== uploadsDir) {
+    return res.status(400).json({ error: "Invalid path" });
+  }
 
   // Check if file exists
   if (!fs.existsSync(filePath)) {

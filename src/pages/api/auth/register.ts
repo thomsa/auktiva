@@ -1,6 +1,6 @@
-import { createHandler } from "@/lib/api";
+import { createHandler, withRegistrationRateLimit } from "@/lib/api";
 import { register } from "@/lib/api/handlers/auth.handlers";
 
 export default createHandler({
-  POST: register,
+  POST: [[withRegistrationRateLimit], register],
 });

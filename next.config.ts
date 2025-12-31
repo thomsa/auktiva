@@ -77,15 +77,19 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com",
+              // Note: 'unsafe-inline' and 'unsafe-eval' are required for Google reCAPTCHA
+              // See: https://developers.google.com/recaptcha/docs/faq#im-using-content-security-policy-csp-on-my-website-how-can-i-configure-it-to-work-with-recaptcha
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://www.recaptcha.net",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https:",
+              "img-src 'self' data: blob: https://www.gstatic.com https:",
               "font-src 'self' data:",
-              "connect-src 'self' https:",
+              "connect-src 'self' https://www.google.com https:",
               "frame-src 'self' https://www.google.com https://www.recaptcha.net",
               "frame-ancestors 'none'",
               "base-uri 'self'",
-              "form-action 'self' https://accounts.google.com",
+              "form-action 'self' https://accounts.google.com https://login.microsoftonline.com",
+              "object-src 'none'",
+              "upgrade-insecure-requests",
             ].join("; "),
           },
         ],

@@ -1,4 +1,4 @@
-import { renderLayout, theme } from "../layout";
+import { renderLayout, theme, escapeHtml } from "../layout";
 
 const content = `
     <mj-text font-size="22px" font-weight="600" color="${theme.colors.text.main}">
@@ -41,7 +41,8 @@ export function getPasswordResetTemplateData(data: {
   return {
     template: passwordResetTemplate,
     replacements: {
-      "{{NAME}}": data.name || "there",
+      // HTML-encode user-provided content to prevent injection
+      "{{NAME}}": escapeHtml(data.name || "there"),
       "{{RESET_URL}}": data.resetUrl,
       "{{YEAR}}": new Date().getFullYear().toString(),
     },

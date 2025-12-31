@@ -21,6 +21,11 @@ export {
   requireAdmin,
   withValidation,
   validatedHandler,
+  withRateLimit,
+  withAuthRateLimit,
+  withRegistrationRateLimit,
+  withBidRateLimit,
+  withPasswordResetRateLimit,
 } from "./middleware";
 export type { ValidatedRequest } from "./middleware";
 

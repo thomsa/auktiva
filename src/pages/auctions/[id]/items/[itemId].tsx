@@ -214,14 +214,11 @@ export default function ItemDetailPage({
   const handleEndItem = async () => {
     setIsEndingItem(true);
     try {
-      const res = await fetch(
-        `/api/auctions/${auction.id}/items/${item.id}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ endDate: new Date().toISOString() }),
-        },
-      );
+      const res = await fetch(`/api/auctions/${auction.id}/items/${item.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ endDate: new Date().toISOString() }),
+      });
 
       if (!res.ok) {
         const data = await res.json();

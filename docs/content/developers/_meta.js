@@ -5,6 +5,7 @@ export default {
   database: "Database",
   storage: "Storage",
   authentication: "Authentication",
+  security: "Security",
   "deployment-admin": "Deployment Admin",
   architecture: "Architecture",
   deployment: "Deployment",
