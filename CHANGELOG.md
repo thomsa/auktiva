@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.11.2] - 2025-12-31
+
+### 🐛 Bug Fixes
+
+- Replace dompurify with isomorphic-dompurify for SSR compatibility by @thomsa
+
 ## [1.11.1] - 2025-12-31
 
 ### 🐛 Bug Fixes
