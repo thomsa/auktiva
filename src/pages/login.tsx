@@ -27,6 +27,11 @@ export default function LoginPage({
   const tErrors = useTranslations("errors");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [emailNotVerified, setEmailNotVerified] = useState(false);
+  const [loginEmail, setLoginEmail] = useState<string>("");
+  const [resendStatus, setResendStatus] = useState<
+    "idle" | "sending" | "sent" | "error"
+  >("idle");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,7 +50,15 @@ export default function LoginPage({
       });
 
       if (result?.error) {
-        setError(tErrors("auth.invalidCredentials"));
+        // Check if the error is specifically about email not being verified
+        if (result.error === "EMAIL_NOT_VERIFIED") {
+          setEmailNotVerified(true);
+          setLoginEmail(email);
+          setError(null);
+        } else {
+          setEmailNotVerified(false);
+          setError(tErrors("auth.invalidCredentials"));
+        }
       } else {
         router.push("/dashboard");
       }
@@ -128,6 +141,56 @@ export default function LoginPage({
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && <AlertMessage type="error">{error}</AlertMessage>}
+
+              {emailNotVerified && (
+                <div className="alert alert-warning">
+                  <span className="icon-[tabler--mail-exclamation] size-5"></span>
+                  <div className="flex flex-col gap-2">
+                    <span>{t("emailNotVerified")}</span>
+                    {resendStatus === "sent" ? (
+                      <span className="text-sm opacity-80">
+                        {t("verificationEmailSent")}
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        className="link link-hover text-sm text-left"
+                        disabled={resendStatus === "sending"}
+                        onClick={async () => {
+                          setResendStatus("sending");
+                          try {
+                            const res = await fetch(
+                              "/api/auth/resend-verification",
+                              {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ email: loginEmail }),
+                              },
+                            );
+                            if (res.ok) {
+                              setResendStatus("sent");
+                            } else {
+                              setResendStatus("error");
+                            }
+                          } catch {
+                            setResendStatus("error");
+                          }
+                        }}
+                      >
+                        {resendStatus === "sending"
+                          ? t("resendingVerification")
+                          : t("resendVerificationEmail")}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {router.query.verified && (
+                <AlertMessage type="success">
+                  {t("emailVerifiedSuccess")}
+                </AlertMessage>
+              )}
 
               {router.query.registered && (
                 <AlertMessage type="success">

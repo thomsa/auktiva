@@ -20,19 +20,21 @@ model User {
   passwordHash  String?   // Optional for OAuth users
   name          String?
   image         String?   // Profile image from OAuth provider
+  emailVerified DateTime? // When email was verified (null = unverified)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   // Relations
-  accounts            Account[]
-  auctionMemberships  AuctionMember[]
-  createdAuctions     Auction[]            @relation("AuctionCreator")
-  createdItems        AuctionItem[]        @relation("ItemCreator")
-  bids                Bid[]
-  sentInvites         AuctionInvite[]      @relation("InviteSender")
-  notifications       Notification[]
-  settings            UserSettings?
-  passwordResetTokens PasswordResetToken[]
+  accounts                  Account[]
+  auctionMemberships        AuctionMember[]
+  createdAuctions           Auction[]                  @relation("AuctionCreator")
+  createdItems              AuctionItem[]              @relation("ItemCreator")
+  bids                      Bid[]
+  sentInvites               AuctionInvite[]            @relation("InviteSender")
+  notifications             Notification[]
+  settings                  UserSettings?
+  passwordResetTokens       PasswordResetToken[]
+  emailVerificationTokens   EmailVerificationToken[]
 
   @@map("users")
 }
@@ -353,13 +355,14 @@ enum EmailStatus {
 }
 
 enum EmailType {
-  WELCOME         // Welcome email on registration
-  INVITE          // Auction invite
-  NEW_ITEM        // New item added to auction
-  OUTBID          // User was outbid
-  PASSWORD_RESET  // Password reset request
-  ITEM_WON        // User won an item
-  ACCOUNT_EXISTS  // Registration attempt with existing email
+  WELCOME            // Welcome email on registration
+  INVITE             // Auction invite
+  NEW_ITEM           // New item added to auction
+  OUTBID             // User was outbid
+  PASSWORD_RESET     // Password reset request
+  ITEM_WON           // User won an item
+  ACCOUNT_EXISTS     // Registration attempt with existing email
+  EMAIL_VERIFICATION // Email verification on registration
 }
 
 model EmailLog {
@@ -426,4 +429,23 @@ model PasswordResetToken {
 
   @@index([userId, createdAt])
   @@map("password_reset_tokens")
+}
+
+// ============================================
+// EMAIL VERIFICATION TOKENS
+// ============================================
+
+model EmailVerificationToken {
+  id          String   @id @default(cuid())
+  
+  token       String   @unique  // Hashed token for security
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("email_verification_tokens")
 }

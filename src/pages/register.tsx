@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
-import { useRouter } from "next/router";
 import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
@@ -25,7 +24,6 @@ export default function RegisterPage({
   googleOAuthEnabled,
   microsoftOAuthEnabled,
 }: RegisterPageProps) {
-  const router = useRouter();
   const t = useTranslations("auth.register");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
@@ -34,6 +32,8 @@ export default function RegisterPage({
   const [isLoading, setIsLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(!recaptchaSiteKey);
   const [loadCaptcha, setLoadCaptcha] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState<string>("");
   const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   // Delay loading reCAPTCHA slightly for better UX
@@ -132,7 +132,9 @@ export default function RegisterPage({
           setError(data.message || t("registrationFailed"));
         }
       } else {
-        router.push("/login?registered=true");
+        // Show verification pending state instead of redirecting
+        setRegisteredEmail(email);
+        setRegistrationSuccess(true);
       }
     } catch {
       setError(tErrors("generic"));
@@ -184,6 +186,38 @@ export default function RegisterPage({
           </Link>
 
           <div className="w-full max-w-[400px]">
+            {registrationSuccess ? (
+              // Verification pending state
+              <div className="text-center space-y-6">
+                <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto">
+                  <span className="icon-[tabler--mail-check] size-10 text-success"></span>
+                </div>
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold text-base-content">
+                    {t("verifyEmailTitle")}
+                  </h2>
+                  <p className="text-base-content/60">
+                    {t("verifyEmailMessage", { email: registeredEmail })}
+                  </p>
+                </div>
+                <div className="bg-base-200/50 rounded-xl p-4 text-sm text-base-content/60">
+                  <p className="flex items-center gap-2 justify-center">
+                    <span className="icon-[tabler--info-circle] size-4"></span>
+                    {t("checkSpamNote")}
+                  </p>
+                </div>
+                <div className="pt-4">
+                  <Link
+                    href="/login"
+                    className="btn btn-outline btn-primary w-full"
+                  >
+                    {t("backToLogin")}
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              // Registration form
+              <>
             <div className="mb-8">
               <h2 className="text-3xl font-bold text-base-content mb-2">
                 {t("title")}
@@ -388,6 +422,8 @@ export default function RegisterPage({
                 </Link>
               </p>
             </div>
+              </>
+            )}
           </div>
         </div>
       </div>

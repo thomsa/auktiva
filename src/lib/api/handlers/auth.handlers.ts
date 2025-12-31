@@ -22,6 +22,14 @@ const resetPasswordSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+const verifyEmailSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+});
+
+const resendVerificationSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
 // ============================================================================
 // Register
 // ============================================================================
@@ -109,6 +117,58 @@ export const resetPassword: ApiHandler = async (req, res) => {
   return res.status(200).json({
     message:
       "Password reset successfully. You can now log in with your new password.",
+  });
+};
+
+// ============================================================================
+// Email Verification
+// ============================================================================
+
+export const verifyEmail: ApiHandler = async (req, res) => {
+  const parsed = verifyEmailSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    throw new BadRequestError("Token is required");
+  }
+
+  const result = await authService.verifyEmail(parsed.data.token);
+
+  if (!result.success) {
+    if (result.error === "invalid_token") {
+      throw new BadRequestError(
+        "Invalid verification link. Please request a new verification email.",
+      );
+    }
+    if (result.error === "expired_token") {
+      throw new BadRequestError(
+        "This verification link has expired. Please request a new verification email.",
+      );
+    }
+  }
+
+  return res.status(200).json({
+    message: "Email verified successfully. You can now log in.",
+  });
+};
+
+// ============================================================================
+// Resend Verification Email
+// ============================================================================
+
+export const resendVerification: ApiHandler = async (req, res) => {
+  const parsed = resendVerificationSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    throw new BadRequestError("Email is required");
+  }
+
+  const result = await authService.resendVerificationEmail(parsed.data.email);
+
+  // Always return success to prevent email enumeration
+  // Include rate limit info if applicable
+  return res.status(200).json({
+    message: "If an account exists, we've sent a verification email.",
+    rateLimited: result.rateLimited || false,
   });
 };
 

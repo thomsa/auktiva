@@ -43,6 +43,12 @@ const providers: NextAuthOptions["providers"] = [
         return null;
       }
 
+      // Check if email is verified (only for credential users, not OAuth)
+      if (!user.emailVerified) {
+        // Throw a specific error that the frontend can detect
+        throw new Error("EMAIL_NOT_VERIFIED");
+      }
+
       return {
         id: user.id,
         email: user.email,
@@ -119,22 +125,30 @@ export const authOptions: NextAuthOptions = {
           }
 
           // Update user info from OAuth provider if not set
-          if (!existingUser.name || !existingUser.image) {
+          // Also mark email as verified since OAuth providers verify emails
+          if (
+            !existingUser.name ||
+            !existingUser.image ||
+            !existingUser.emailVerified
+          ) {
             await prisma.user.update({
               where: { id: existingUser.id },
               data: {
                 name: existingUser.name || user.name,
                 image: existingUser.image || user.image,
+                emailVerified: existingUser.emailVerified || new Date(),
               },
             });
           }
         } else {
           // Create new user with OAuth account
+          // OAuth users are automatically verified since the provider verifies their email
           const newUser = await prisma.user.create({
             data: {
               email: user.email.toLowerCase(),
               name: user.name,
               image: user.image,
+              emailVerified: new Date(),
               accounts: {
                 create: {
                   type: account.type,
