@@ -854,6 +854,159 @@ export function isItemEnded(endDate: Date | string | null): boolean {
 }
 
 /**
+ * Get items for bulk editing - includes all editable fields
+ */
+export interface BulkEditItem {
+  id: string;
+  name: string;
+  description: string | null;
+  currencyCode: string;
+  startingBid: number;
+  minBidIncrement: number;
+  isPublished: boolean;
+  endDate: string | null;
+  createdAt: string;
+  auctionId: string;
+  auctionName: string;
+  thumbnailUrl: string | null;
+  bidCount: number;
+  currencySymbol: string;
+}
+
+export async function getUserItemsForBulkEdit(
+  userId: string,
+): Promise<BulkEditItem[]> {
+  const items = await prisma.auctionItem.findMany({
+    where: {
+      creatorId: userId,
+      auction: {
+        members: {
+          some: { userId },
+        },
+      },
+    },
+    include: {
+      auction: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      currency: {
+        select: {
+          symbol: true,
+        },
+      },
+      images: {
+        orderBy: { order: "asc" },
+        take: 1,
+      },
+      _count: {
+        select: { bids: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    description: item.description,
+    currencyCode: item.currencyCode,
+    startingBid: item.startingBid,
+    minBidIncrement: item.minBidIncrement,
+    isPublished: item.isPublished,
+    endDate: item.endDate?.toISOString() ?? null,
+    createdAt: item.createdAt.toISOString(),
+    auctionId: item.auction.id,
+    auctionName: item.auction.name,
+    thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
+    bidCount: item._count.bids,
+    currencySymbol: item.currency.symbol,
+  }));
+}
+
+/**
+ * Bulk update multiple items
+ */
+export interface BulkUpdateInput {
+  currencyCode?: string;
+  startingBid?: number;
+  minBidIncrement?: number;
+  isPublished?: boolean;
+}
+
+export async function bulkUpdateItems(
+  itemIds: string[],
+  userId: string,
+  input: BulkUpdateInput,
+): Promise<{ updated: number; skipped: number }> {
+  // Get items that belong to this user and check bid counts
+  const items = await prisma.auctionItem.findMany({
+    where: {
+      id: { in: itemIds },
+      creatorId: userId,
+    },
+    select: {
+      id: true,
+      _count: { select: { bids: true } },
+    },
+  });
+
+  const updateData: Record<string, unknown> = {};
+  let updated = 0;
+  let skipped = 0;
+
+  // Build update data based on what's allowed
+  if (input.minBidIncrement !== undefined) {
+    updateData.minBidIncrement = input.minBidIncrement;
+  }
+
+  // For each item, apply updates based on whether it has bids
+  for (const item of items) {
+    const hasBids = item._count.bids > 0;
+    const itemUpdateData = { ...updateData };
+
+    // Only allow currency/startingBid/unpublish changes if no bids
+    if (!hasBids) {
+      if (input.currencyCode !== undefined) {
+        itemUpdateData.currencyCode = input.currencyCode;
+      }
+      if (input.startingBid !== undefined) {
+        itemUpdateData.startingBid = input.startingBid;
+      }
+      if (input.isPublished !== undefined) {
+        itemUpdateData.isPublished = input.isPublished;
+      }
+    } else {
+      // With bids, can only publish (not unpublish)
+      if (input.isPublished === true) {
+        itemUpdateData.isPublished = true;
+      }
+      // Skip items with bids if trying to change restricted fields
+      if (
+        input.currencyCode !== undefined ||
+        input.startingBid !== undefined ||
+        input.isPublished === false
+      ) {
+        skipped++;
+        continue;
+      }
+    }
+
+    if (Object.keys(itemUpdateData).length > 0) {
+      await prisma.auctionItem.update({
+        where: { id: item.id },
+        data: itemUpdateData,
+      });
+      updated++;
+    }
+  }
+
+  return { updated, skipped };
+}
+
+/**
  * Get items created by a user across all auctions they're a member of
  */
 export async function getUserCreatedItems(userId: string) {

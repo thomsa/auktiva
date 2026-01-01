@@ -145,6 +145,24 @@ export default function ListingsPage({ user }: ListingsPageProps) {
             {tListings("subtitle")}
           </p>
         </div>
+        <div className="flex gap-2">
+          <Link
+            href="/csv-import"
+            className="btn btn-outline btn-secondary gap-2"
+          >
+            <span className="icon-[tabler--file-import] size-5"></span>
+            {tListings("csvImport")}
+          </Link>
+          {items.length > 0 && (
+            <Link
+              href="/bulk-edit"
+              className="btn btn-outline btn-primary gap-2"
+            >
+              <span className="icon-[tabler--table-options] size-5"></span>
+              {tListings("bulkEdit")}
+            </Link>
+          )}
+        </div>
       </div>
 
       {items.length === 0 ? (

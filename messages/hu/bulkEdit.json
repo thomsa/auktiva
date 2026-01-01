@@ -1,0 +1,35 @@
+{
+  "bulkEdit": {
+    "title": "Tételek tömeges szerkesztése",
+    "subtitle": "Több tétel szerkesztése egyszerre",
+    "seo": {
+      "title": "Tételek tömeges szerkesztése",
+      "description": "Több aukciós tétel szerkesztése egyszerre"
+    },
+    "instructions": {
+      "title": "Használat",
+      "clickToEdit": "Kattints bármely cellára a szerkesztéshez",
+      "autoSave": "A változtatások automatikusan mentésre kerülnek, amikor máshova kattintasz",
+      "selectMultiple": "Jelölj ki több tételt a jelölőnégyzetekkel a tömeges módosításhoz",
+      "bidsRestriction": "A licittel rendelkező tételek pénzneme, kezdő ára és közzétételi állapota nem módosítható"
+    },
+    "selected": "{count} tétel kiválasztva",
+    "selectItems": "Válassz tételeket a szerkesztéshez",
+    "viewItem": "Tétel megtekintése",
+    "publishAll": "Összes közzététele",
+    "unpublishAll": "Összes visszavonása",
+    "applyToSelected": "Alkalmaz",
+    "bulkResult": "{updated} frissítve, {skipped} kihagyva",
+    "cannotUnpublishWithBids": "Licittel rendelkező tételek nem vonhatók vissza",
+    "someItemsHaveBids": "Néhány kiválasztott tételnek van licitje és nem módosítható",
+    "name": "Név",
+    "description": "Leírás",
+    "currency": "Pénznem",
+    "startingBid": "Kezdő ár",
+    "minIncrement": "Min. emelés",
+    "status": "Állapot",
+    "bids": "Licitek",
+    "auction": "Aukció",
+    "noItems": "Nincsenek tételek. Először hozz létre néhányat."
+  }
+}

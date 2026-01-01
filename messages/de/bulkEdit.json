@@ -1,0 +1,35 @@
+{
+  "bulkEdit": {
+    "title": "Artikel massenbearbeiten",
+    "subtitle": "Mehrere Artikel gleichzeitig bearbeiten",
+    "seo": {
+      "title": "Artikel massenbearbeiten",
+      "description": "Mehrere Auktionsartikel gleichzeitig bearbeiten"
+    },
+    "instructions": {
+      "title": "Anleitung",
+      "clickToEdit": "Klicke auf eine Zelle, um sie zu bearbeiten",
+      "autoSave": "Änderungen werden automatisch gespeichert, wenn du woanders klickst",
+      "selectMultiple": "Wähle mehrere Artikel mit Kontrollkästchen aus, um Massenänderungen anzuwenden",
+      "bidsRestriction": "Artikel mit Geboten können nicht in Währung, Startgebot oder Veröffentlichungsstatus geändert werden"
+    },
+    "selected": "{count} Artikel ausgewählt",
+    "selectItems": "Artikel zum Bearbeiten auswählen",
+    "viewItem": "Artikel ansehen",
+    "publishAll": "Alle veröffentlichen",
+    "unpublishAll": "Alle zurückziehen",
+    "applyToSelected": "Anwenden",
+    "bulkResult": "{updated} aktualisiert, {skipped} übersprungen",
+    "cannotUnpublishWithBids": "Artikel mit Geboten können nicht zurückgezogen werden",
+    "someItemsHaveBids": "Einige ausgewählte Artikel haben Gebote und können nicht geändert werden",
+    "name": "Name",
+    "description": "Beschreibung",
+    "currency": "Währung",
+    "startingBid": "Startgebot",
+    "minIncrement": "Min. Erhöhung",
+    "status": "Status",
+    "bids": "Gebote",
+    "auction": "Auktion",
+    "noItems": "Keine Artikel gefunden. Erstelle zuerst einige Artikel."
+  }
+}

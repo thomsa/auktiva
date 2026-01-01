@@ -1,0 +1,49 @@
+{
+  "csvImport": {
+    "seo": {
+      "title": "Importar CSV",
+      "description": "Importar múltiples artículos de subasta desde un archivo CSV"
+    },
+    "title": "Importar CSV",
+    "subtitle": "Importar múltiples artículos desde un archivo CSV",
+    "selectAuction": "Seleccionar subasta destino",
+    "selectAuctionPlaceholder": "Elige una subasta...",
+    "noAuctions": "No tienes subastas donde puedas añadir artículos. Crea una subasta primero.",
+    "uploadCSV": "Subir archivo CSV",
+    "downloadTemplate": "Descargar plantilla",
+    "csvFormat": "Formato CSV",
+    "csvFormatDesc": "Tu CSV debe tener encabezados en la primera fila. Columnas soportadas:",
+    "previewAndEdit": "Vista previa y editar",
+    "importAll": "Importar {count} artículos",
+    "importing": "Importando...",
+    "importingTo": "Los artículos se importarán a: {auction}",
+    "parseSuccess": "{count} artículos procesados correctamente",
+    "parseWarnings": "{count} advertencias encontradas durante el procesamiento",
+    "parseError": "Error al procesar el archivo CSV",
+    "importSuccess": "{count} artículos importados correctamente",
+    "importPartial": "{success} artículos importados, {failed} fallidos",
+    "importResult": "{success} importados, {failed} fallidos",
+    "fixErrorsFirst": "Por favor corrige todos los errores antes de importar",
+    "errorsFound": "{count} artículo(s) tienen errores",
+    "fixErrorsBeforeImport": "Corrige los errores resaltados antes de importar",
+    "selectItems": "Selecciona artículos para editar",
+    "selected": "{count} artículo(s) seleccionado(s)",
+    "publishAll": "Publicar todos",
+    "unpublishAll": "Despublicar todos",
+    "applyToSelected": "Aplicar",
+    "removeSelected": "Eliminar seleccionados",
+    "removeItem": "Eliminar artículo",
+    "name": "Nombre",
+    "description": "Descripción",
+    "currency": "Moneda",
+    "startingBid": "Puja inicial",
+    "minIncrement": "Incremento mín.",
+    "status": "Estado",
+    "noItems": "No hay artículos para importar. Sube un archivo CSV para comenzar.",
+    "cannotSelectWithErrors": "Corrige los errores antes de seleccionar",
+    "validation": {
+      "required": "Este campo es obligatorio",
+      "invalid": "Valor inválido"
+    }
+  }
+}

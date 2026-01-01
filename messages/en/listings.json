@@ -1,6 +1,8 @@
 {
   "listings": {
     "subtitle": "Manage items you have listed for auction",
+    "bulkEdit": "Bulk Edit",
+    "csvImport": "CSV Import",
     "active": "Active",
     "ended": "Ended",
     "bids": "{count, plural, =0 {No bids} =1 {1 bid} other {# bids}}",

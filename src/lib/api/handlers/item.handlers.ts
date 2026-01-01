@@ -171,7 +171,9 @@ export const updateItem: ApiHandler = async (req, res, ctx) => {
 
   // Validate isPublished changes - cannot unpublish items with bids
   if (validatedBody.isPublished === false && item._count.bids > 0) {
-    throw new BadRequestError("Cannot unpublish an item that has received bids");
+    throw new BadRequestError(
+      "Cannot unpublish an item that has received bids",
+    );
   }
 
   // Validate end date changes

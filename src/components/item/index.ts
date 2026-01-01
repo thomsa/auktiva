@@ -4,3 +4,5 @@ export * from "./ItemGallery";
 export * from "./BidForm";
 export * from "./BidHistory";
 export * from "./ItemSidebar";
+export * from "./BulkEditTable";
+export * from "./ImportPreviewTable";

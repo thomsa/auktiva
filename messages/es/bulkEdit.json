@@ -1,0 +1,35 @@
+{
+  "bulkEdit": {
+    "title": "Edición masiva de artículos",
+    "subtitle": "Editar múltiples artículos a la vez",
+    "seo": {
+      "title": "Edición masiva de artículos",
+      "description": "Editar múltiples artículos de subasta a la vez"
+    },
+    "instructions": {
+      "title": "Cómo usar",
+      "clickToEdit": "Haz clic en cualquier celda para editarla",
+      "autoSave": "Los cambios se guardan automáticamente cuando haces clic en otro lugar",
+      "selectMultiple": "Selecciona múltiples artículos usando las casillas para aplicar cambios masivos",
+      "bidsRestriction": "Los artículos con pujas no pueden cambiar su moneda, puja inicial o estado de publicación"
+    },
+    "selected": "{count} artículo(s) seleccionado(s)",
+    "selectItems": "Selecciona artículos para editar",
+    "viewItem": "Ver artículo",
+    "publishAll": "Publicar todos",
+    "unpublishAll": "Despublicar todos",
+    "applyToSelected": "Aplicar",
+    "bulkResult": "{updated} actualizados, {skipped} omitidos",
+    "cannotUnpublishWithBids": "No se pueden despublicar artículos con pujas",
+    "someItemsHaveBids": "Algunos artículos seleccionados tienen pujas y no pueden modificarse",
+    "name": "Nombre",
+    "description": "Descripción",
+    "currency": "Moneda",
+    "startingBid": "Puja inicial",
+    "minIncrement": "Incremento mín.",
+    "status": "Estado",
+    "bids": "Pujas",
+    "auction": "Subasta",
+    "noItems": "No se encontraron artículos. Crea algunos primero."
+  }
+}

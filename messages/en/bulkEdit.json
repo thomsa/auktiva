@@ -1,0 +1,35 @@
+{
+  "bulkEdit": {
+    "title": "Bulk Edit Items",
+    "subtitle": "Edit multiple items at once",
+    "seo": {
+      "title": "Bulk Edit Items",
+      "description": "Edit multiple auction items at once"
+    },
+    "instructions": {
+      "title": "How to use",
+      "clickToEdit": "Click on any cell to edit it inline",
+      "autoSave": "Changes are saved automatically when you click away",
+      "selectMultiple": "Select multiple items using checkboxes to apply bulk changes",
+      "bidsRestriction": "Items with bids cannot have their currency, starting bid, or publish status changed"
+    },
+    "selected": "{count} item(s) selected",
+    "selectItems": "Select items to edit",
+    "viewItem": "View item",
+    "publishAll": "Publish All",
+    "unpublishAll": "Unpublish All",
+    "applyToSelected": "Apply",
+    "bulkResult": "{updated} updated, {skipped} skipped",
+    "cannotUnpublishWithBids": "Cannot unpublish items with bids",
+    "someItemsHaveBids": "Some selected items have bids and cannot be modified",
+    "name": "Name",
+    "description": "Description",
+    "currency": "Currency",
+    "startingBid": "Starting Bid",
+    "minIncrement": "Min Increment",
+    "status": "Status",
+    "bids": "Bids",
+    "auction": "Auction",
+    "noItems": "No items found. Create some items first."
+  }
+}

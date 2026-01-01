@@ -142,7 +142,14 @@ export default function CreateItemPage({
     const hasPrice = itemData.startingBid >= 0;
     const hasIncrement = itemData.minBidIncrement > 0;
     const hasImages = images.length > 0;
-    return hasName && hasDescription && hasCurrency && hasPrice && hasIncrement && hasImages;
+    return (
+      hasName &&
+      hasDescription &&
+      hasCurrency &&
+      hasPrice &&
+      hasIncrement &&
+      hasImages
+    );
   };
 
   // Step 2: Finish - show publish modal
@@ -164,11 +171,14 @@ export default function CreateItemPage({
     setIsPublishing(true);
 
     try {
-      const res = await fetch(`/api/auctions/${auction.id}/items/${createdItemId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isPublished: true }),
-      });
+      const res = await fetch(
+        `/api/auctions/${auction.id}/items/${createdItemId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isPublished: true }),
+        },
+      );
 
       if (!res.ok) {
         const result = await res.json();

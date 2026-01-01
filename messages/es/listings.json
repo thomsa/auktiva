@@ -1,6 +1,8 @@
 {
   "listings": {
     "subtitle": "Gestiona los artículos que has listado para subasta",
+    "bulkEdit": "Edición masiva",
+    "csvImport": "Importar CSV",
     "active": "Activos",
     "ended": "Finalizados",
     "bids": "{count, plural, =0 {Sin pujas} =1 {1 puja} other {# pujas}}",

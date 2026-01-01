@@ -1,0 +1,35 @@
+{
+  "bulkEdit": {
+    "title": "Masowa edycja przedmiotów",
+    "subtitle": "Edytuj wiele przedmiotów naraz",
+    "seo": {
+      "title": "Masowa edycja przedmiotów",
+      "description": "Edytuj wiele przedmiotów aukcyjnych naraz"
+    },
+    "instructions": {
+      "title": "Jak używać",
+      "clickToEdit": "Kliknij dowolną komórkę, aby ją edytować",
+      "autoSave": "Zmiany są zapisywane automatycznie po kliknięciu w inne miejsce",
+      "selectMultiple": "Zaznacz wiele przedmiotów za pomocą pól wyboru, aby zastosować zmiany zbiorcze",
+      "bidsRestriction": "Przedmioty z ofertami nie mogą mieć zmienionej waluty, ceny wywoławczej ani statusu publikacji"
+    },
+    "selected": "{count} przedmiot(ów) zaznaczonych",
+    "selectItems": "Wybierz przedmioty do edycji",
+    "viewItem": "Zobacz przedmiot",
+    "publishAll": "Opublikuj wszystkie",
+    "unpublishAll": "Wycofaj wszystkie",
+    "applyToSelected": "Zastosuj",
+    "bulkResult": "{updated} zaktualizowanych, {skipped} pominiętych",
+    "cannotUnpublishWithBids": "Nie można wycofać przedmiotów z ofertami",
+    "someItemsHaveBids": "Niektóre zaznaczone przedmioty mają oferty i nie mogą być modyfikowane",
+    "name": "Nazwa",
+    "description": "Opis",
+    "currency": "Waluta",
+    "startingBid": "Cena wywoławcza",
+    "minIncrement": "Min. przyrost",
+    "status": "Status",
+    "bids": "Oferty",
+    "auction": "Aukcja",
+    "noItems": "Nie znaleziono przedmiotów. Najpierw utwórz kilka."
+  }
+}

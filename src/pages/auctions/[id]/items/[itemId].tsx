@@ -277,7 +277,9 @@ export default function ItemDetailPage({
                   <span className="icon-[tabler--eye-off] size-6"></span>
                   <div className="flex-1">
                     <h3 className="font-bold">{tEdit("statusDraft")}</h3>
-                    <p className="text-sm opacity-80">{tEdit("draftDescription")}</p>
+                    <p className="text-sm opacity-80">
+                      {tEdit("draftDescription")}
+                    </p>
                   </div>
                   <Link
                     href={`/auctions/${auction.id}/items/${item.id}/edit`}

@@ -1,6 +1,8 @@
 {
   "listings": {
     "subtitle": "Zarządzaj przedmiotami wystawionymi na aukcję",
+    "bulkEdit": "Masowa edycja",
+    "csvImport": "Import CSV",
     "active": "Aktywne",
     "ended": "Zakończone",
     "bids": "{count, plural, =0 {Brak ofert} =1 {1 oferta} other {# ofert}}",

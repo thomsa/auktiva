@@ -1,0 +1,49 @@
+{
+  "csvImport": {
+    "seo": {
+      "title": "CSV Import",
+      "description": "Import multiple auction items from a CSV file"
+    },
+    "title": "CSV Import",
+    "subtitle": "Import multiple items from a CSV file",
+    "selectAuction": "Select Target Auction",
+    "selectAuctionPlaceholder": "Choose an auction...",
+    "noAuctions": "You don't have any auctions where you can add items. Create an auction first.",
+    "uploadCSV": "Upload CSV File",
+    "downloadTemplate": "Download Template",
+    "csvFormat": "CSV Format",
+    "csvFormatDesc": "Your CSV should have headers in the first row. Supported columns:",
+    "previewAndEdit": "Preview & Edit",
+    "importAll": "Import {count} Items",
+    "importing": "Importing...",
+    "importingTo": "Items will be imported to: {auction}",
+    "parseSuccess": "{count} items parsed successfully",
+    "parseWarnings": "{count} warnings found during parsing",
+    "parseError": "Failed to parse CSV file",
+    "importSuccess": "Successfully imported {count} items",
+    "importPartial": "{success} items imported, {failed} failed",
+    "importResult": "{success} imported, {failed} failed",
+    "fixErrorsFirst": "Please fix all errors before importing",
+    "errorsFound": "{count} item(s) have errors",
+    "fixErrorsBeforeImport": "Fix the highlighted errors before importing",
+    "selectItems": "Select items to edit",
+    "selected": "{count} item(s) selected",
+    "publishAll": "Publish All",
+    "unpublishAll": "Unpublish All",
+    "applyToSelected": "Apply",
+    "removeSelected": "Remove Selected",
+    "removeItem": "Remove item",
+    "name": "Name",
+    "description": "Description",
+    "currency": "Currency",
+    "startingBid": "Starting Bid",
+    "minIncrement": "Min Increment",
+    "status": "Status",
+    "noItems": "No items to import. Upload a CSV file to get started.",
+    "cannotSelectWithErrors": "Fix validation errors before selecting",
+    "validation": {
+      "required": "This field is required",
+      "invalid": "Invalid value"
+    }
+  }
+}

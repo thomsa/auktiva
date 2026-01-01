@@ -13,6 +13,8 @@ export async function getMessages(locale: Locale) {
     ...(await import(`../../messages/${locale}/legal.json`)).default,
     ...(await import(`../../messages/${locale}/maintenance.json`)).default,
     ...(await import(`../../messages/${locale}/listings.json`)).default,
+    ...(await import(`../../messages/${locale}/bulkEdit.json`)).default,
+    ...(await import(`../../messages/${locale}/csvImport.json`)).default,
   };
 }
 

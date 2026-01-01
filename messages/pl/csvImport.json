@@ -1,0 +1,49 @@
+{
+  "csvImport": {
+    "seo": {
+      "title": "Import CSV",
+      "description": "Importuj wiele przedmiotów aukcyjnych z pliku CSV"
+    },
+    "title": "Import CSV",
+    "subtitle": "Importuj wiele przedmiotów z pliku CSV",
+    "selectAuction": "Wybierz aukcję docelową",
+    "selectAuctionPlaceholder": "Wybierz aukcję...",
+    "noAuctions": "Nie masz żadnych aukcji, do których możesz dodać przedmioty. Najpierw utwórz aukcję.",
+    "uploadCSV": "Prześlij plik CSV",
+    "downloadTemplate": "Pobierz szablon",
+    "csvFormat": "Format CSV",
+    "csvFormatDesc": "Twój CSV powinien mieć nagłówki w pierwszym wierszu. Obsługiwane kolumny:",
+    "previewAndEdit": "Podgląd i edycja",
+    "importAll": "Importuj {count} przedmiotów",
+    "importing": "Importowanie...",
+    "importingTo": "Przedmioty zostaną zaimportowane do: {auction}",
+    "parseSuccess": "{count} przedmiotów pomyślnie przetworzonych",
+    "parseWarnings": "{count} ostrzeżeń podczas przetwarzania",
+    "parseError": "Nie udało się przetworzyć pliku CSV",
+    "importSuccess": "Pomyślnie zaimportowano {count} przedmiotów",
+    "importPartial": "{success} przedmiotów zaimportowanych, {failed} nieudanych",
+    "importResult": "{success} zaimportowanych, {failed} nieudanych",
+    "fixErrorsFirst": "Proszę naprawić wszystkie błędy przed importem",
+    "errorsFound": "{count} przedmiot(ów) ma błędy",
+    "fixErrorsBeforeImport": "Napraw podświetlone błędy przed importem",
+    "selectItems": "Wybierz przedmioty do edycji",
+    "selected": "{count} przedmiot(ów) zaznaczonych",
+    "publishAll": "Opublikuj wszystkie",
+    "unpublishAll": "Wycofaj wszystkie",
+    "applyToSelected": "Zastosuj",
+    "removeSelected": "Usuń zaznaczone",
+    "removeItem": "Usuń przedmiot",
+    "name": "Nazwa",
+    "description": "Opis",
+    "currency": "Waluta",
+    "startingBid": "Cena wywoławcza",
+    "minIncrement": "Min. przyrost",
+    "status": "Status",
+    "noItems": "Brak przedmiotów do importu. Prześlij plik CSV, aby rozpocząć.",
+    "cannotSelectWithErrors": "Napraw błędy przed zaznaczeniem",
+    "validation": {
+      "required": "To pole jest wymagane",
+      "invalid": "Nieprawidłowa wartość"
+    }
+  }
+}

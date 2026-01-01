@@ -270,9 +270,7 @@ export default function EditItemPage({
                 onClick={handlePublishToggle}
                 disabled={isPublishing || (hasBids && isPublished)}
                 className={`btn btn-sm ${
-                  isPublished
-                    ? "btn-outline btn-warning"
-                    : "btn-success"
+                  isPublished ? "btn-outline btn-warning" : "btn-success"
                 } ${isPublishing ? "loading" : ""}`}
               >
                 {isPublishing ? (

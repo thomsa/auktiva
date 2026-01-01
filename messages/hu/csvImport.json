@@ -1,0 +1,49 @@
+{
+  "csvImport": {
+    "seo": {
+      "title": "CSV Importálás",
+      "description": "Több aukciós tétel importálása CSV fájlból"
+    },
+    "title": "CSV Importálás",
+    "subtitle": "Több tétel importálása CSV fájlból",
+    "selectAuction": "Cél aukció kiválasztása",
+    "selectAuctionPlaceholder": "Válassz egy aukciót...",
+    "noAuctions": "Nincs olyan aukciód, ahová tételeket adhatsz. Először hozz létre egy aukciót.",
+    "uploadCSV": "CSV fájl feltöltése",
+    "downloadTemplate": "Sablon letöltése",
+    "csvFormat": "CSV formátum",
+    "csvFormatDesc": "A CSV első sorában fejléceknek kell lennie. Támogatott oszlopok:",
+    "previewAndEdit": "Előnézet és szerkesztés",
+    "importAll": "{count} tétel importálása",
+    "importing": "Importálás...",
+    "importingTo": "A tételek ide kerülnek: {auction}",
+    "parseSuccess": "{count} tétel sikeresen feldolgozva",
+    "parseWarnings": "{count} figyelmeztetés a feldolgozás során",
+    "parseError": "Nem sikerült feldolgozni a CSV fájlt",
+    "importSuccess": "{count} tétel sikeresen importálva",
+    "importPartial": "{success} tétel importálva, {failed} sikertelen",
+    "importResult": "{success} importálva, {failed} sikertelen",
+    "fixErrorsFirst": "Kérlek javítsd ki a hibákat az importálás előtt",
+    "errorsFound": "{count} tételben hiba van",
+    "fixErrorsBeforeImport": "Javítsd ki a kiemelt hibákat az importálás előtt",
+    "selectItems": "Válassz tételeket a szerkesztéshez",
+    "selected": "{count} tétel kiválasztva",
+    "publishAll": "Összes közzététele",
+    "unpublishAll": "Összes visszavonása",
+    "applyToSelected": "Alkalmaz",
+    "removeSelected": "Kiválasztottak törlése",
+    "removeItem": "Tétel törlése",
+    "name": "Név",
+    "description": "Leírás",
+    "currency": "Pénznem",
+    "startingBid": "Kezdő ár",
+    "minIncrement": "Min. emelés",
+    "status": "Állapot",
+    "noItems": "Nincs importálandó tétel. Tölts fel egy CSV fájlt a kezdéshez.",
+    "cannotSelectWithErrors": "Javítsd ki a hibákat a kiválasztás előtt",
+    "validation": {
+      "required": "Ez a mező kötelező",
+      "invalid": "Érvénytelen érték"
+    }
+  }
+}

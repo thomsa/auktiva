@@ -1,0 +1,49 @@
+{
+  "csvImport": {
+    "seo": {
+      "title": "CSV-Import",
+      "description": "Mehrere Auktionsartikel aus einer CSV-Datei importieren"
+    },
+    "title": "CSV-Import",
+    "subtitle": "Mehrere Artikel aus einer CSV-Datei importieren",
+    "selectAuction": "Zielauktion auswählen",
+    "selectAuctionPlaceholder": "Auktion wählen...",
+    "noAuctions": "Du hast keine Auktionen, zu denen du Artikel hinzufügen kannst. Erstelle zuerst eine Auktion.",
+    "uploadCSV": "CSV-Datei hochladen",
+    "downloadTemplate": "Vorlage herunterladen",
+    "csvFormat": "CSV-Format",
+    "csvFormatDesc": "Deine CSV sollte Überschriften in der ersten Zeile haben. Unterstützte Spalten:",
+    "previewAndEdit": "Vorschau & Bearbeiten",
+    "importAll": "{count} Artikel importieren",
+    "importing": "Importiere...",
+    "importingTo": "Artikel werden importiert nach: {auction}",
+    "parseSuccess": "{count} Artikel erfolgreich geparst",
+    "parseWarnings": "{count} Warnungen beim Parsen gefunden",
+    "parseError": "CSV-Datei konnte nicht geparst werden",
+    "importSuccess": "{count} Artikel erfolgreich importiert",
+    "importPartial": "{success} Artikel importiert, {failed} fehlgeschlagen",
+    "importResult": "{success} importiert, {failed} fehlgeschlagen",
+    "fixErrorsFirst": "Bitte behebe alle Fehler vor dem Import",
+    "errorsFound": "{count} Artikel haben Fehler",
+    "fixErrorsBeforeImport": "Behebe die markierten Fehler vor dem Import",
+    "selectItems": "Artikel zum Bearbeiten auswählen",
+    "selected": "{count} Artikel ausgewählt",
+    "publishAll": "Alle veröffentlichen",
+    "unpublishAll": "Alle zurückziehen",
+    "applyToSelected": "Anwenden",
+    "removeSelected": "Ausgewählte entfernen",
+    "removeItem": "Artikel entfernen",
+    "name": "Name",
+    "description": "Beschreibung",
+    "currency": "Währung",
+    "startingBid": "Startgebot",
+    "minIncrement": "Min. Erhöhung",
+    "status": "Status",
+    "noItems": "Keine Artikel zum Importieren. Lade eine CSV-Datei hoch, um zu beginnen.",
+    "cannotSelectWithErrors": "Behebe Fehler vor der Auswahl",
+    "validation": {
+      "required": "Dieses Feld ist erforderlich",
+      "invalid": "Ungültiger Wert"
+    }
+  }
+}
