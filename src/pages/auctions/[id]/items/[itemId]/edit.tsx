@@ -52,6 +52,7 @@ interface EditItemProps {
     bidderAnonymous: boolean;
     endDate: string | null;
     currentBid: number | null;
+    isPublished: boolean;
   };
   currencies: Currency[];
   hasBids: boolean;
@@ -78,6 +79,8 @@ export default function EditItemPage({
   const { showToast } = useToast();
   const [images, setImages] = useState<ItemImage[]>(initialImages);
   const [isEnding, setIsEnding] = useState(false);
+  const [isPublished, setIsPublished] = useState(item.isPublished);
+  const [isPublishing, setIsPublishing] = useState(false);
   const deleteDialog = useConfirmDialog();
   const endDialog = useConfirmDialog();
   const [itemEndDate, setItemEndDate] = useState(
@@ -180,6 +183,34 @@ export default function EditItemPage({
     }
   };
 
+  const handlePublishToggle = async () => {
+    setIsPublishing(true);
+    const newPublishedState = !isPublished;
+
+    try {
+      const res = await fetch(`/api/auctions/${auction.id}/items/${item.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isPublished: newPublishedState }),
+      });
+
+      if (!res.ok) {
+        const result = await res.json();
+        showToast(result.message || tErrors("item.updateFailed"), "error");
+      } else {
+        setIsPublished(newPublishedState);
+        showToast(
+          newPublishedState ? t("publishSuccess") : t("unpublishSuccess"),
+          "success",
+        );
+      }
+    } catch {
+      showToast(tErrors("generic"), "error");
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
   return (
     <PageLayout user={user} maxWidth="2xl">
       <div className="mb-8">
@@ -207,6 +238,65 @@ export default function EditItemPage({
               <span>{t("hasBidsWarning")}</span>
             </div>
           )}
+
+          {/* Publish Status Toggle */}
+          <div className="mb-6 p-4 rounded-xl border border-base-content/10 bg-base-200/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    isPublished
+                      ? "bg-success/10 text-success"
+                      : "bg-warning/10 text-warning"
+                  }`}
+                >
+                  <span
+                    className={`${isPublished ? "icon-[tabler--eye]" : "icon-[tabler--eye-off]"} size-5`}
+                  ></span>
+                </div>
+                <div>
+                  <p className="font-semibold">
+                    {isPublished ? t("statusPublished") : t("statusDraft")}
+                  </p>
+                  <p className="text-sm text-base-content/60">
+                    {isPublished
+                      ? t("publishedDescription")
+                      : t("draftDescription")}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handlePublishToggle}
+                disabled={isPublishing || (hasBids && isPublished)}
+                className={`btn btn-sm ${
+                  isPublished
+                    ? "btn-outline btn-warning"
+                    : "btn-success"
+                } ${isPublishing ? "loading" : ""}`}
+              >
+                {isPublishing ? (
+                  <span className="loading loading-spinner loading-xs"></span>
+                ) : isPublished ? (
+                  <>
+                    <span className="icon-[tabler--eye-off] size-4"></span>
+                    {t("unpublish")}
+                  </>
+                ) : (
+                  <>
+                    <span className="icon-[tabler--eye] size-4"></span>
+                    {t("publish")}
+                  </>
+                )}
+              </button>
+            </div>
+            {hasBids && isPublished && (
+              <p className="text-xs text-base-content/50 mt-2 flex items-center gap-1">
+                <span className="icon-[tabler--info-circle] size-3"></span>
+                {t("cannotUnpublishWithBids")}
+              </p>
+            )}
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Info */}

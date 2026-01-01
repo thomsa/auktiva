@@ -10,6 +10,10 @@
       "title": "Sin artículos aún",
       "description": "No has listado ningún artículo para subasta todavía. ¡Ve a una subasta y añade tu primer artículo!"
     },
+    "drafts": {
+      "title": "Borradores",
+      "description": "Estos artículos aún no son visibles para otros miembros de la subasta. Haz clic para editar y publicar."
+    },
     "justEnded": {
       "title": "Recién finalizados",
       "description": "Estos artículos finalizaron en los últimos 3 días y necesitan tu atención. Contacta a los ganadores para coordinar la entrega."

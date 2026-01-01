@@ -10,6 +10,10 @@
       "title": "Noch keine Artikel",
       "description": "Du hast noch keine Artikel eingestellt. Gehe zu einer Auktion und füge deinen ersten Artikel hinzu!"
     },
+    "drafts": {
+      "title": "Entwürfe",
+      "description": "Diese Artikel sind noch nicht für andere Auktionsteilnehmer sichtbar. Klicke zum Bearbeiten und Veröffentlichen."
+    },
     "justEnded": {
       "title": "Gerade beendet",
       "description": "Diese Artikel sind in den letzten 3 Tagen beendet und benötigen deine Aufmerksamkeit. Kontaktiere die Gewinner zur Lieferungsvereinbarung."

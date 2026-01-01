@@ -63,6 +63,20 @@ export default function CreateItemPage({
   // Form state
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+
+  // Publish modal state
+  const [showPublishModal, setShowPublishModal] = useState(false);
+  const [canPublish, setCanPublish] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+
+  // Track item data for publish validation
+  const [itemData, setItemData] = useState<{
+    name: string;
+    description?: string;
+    currencyCode: string;
+    startingBid: number;
+    minBidIncrement: number;
+  } | null>(null);
   const [showEndDate, setShowEndDate] = useState(
     auction.itemEndMode === "CUSTOM",
   );
@@ -108,6 +122,7 @@ export default function CreateItemPage({
       } else {
         // Item created, move to step 2
         setCreatedItemId(result.id);
+        setItemData(data);
         setStep(2);
         showToast(t("createSuccess"), "success");
       }
@@ -118,14 +133,71 @@ export default function CreateItemPage({
     }
   };
 
-  // Step 2: Finish and go to item page
+  // Check if item has all required data for publishing
+  const checkCanPublish = () => {
+    if (!itemData) return false;
+    const hasName = !!itemData.name?.trim();
+    const hasDescription = !!itemData.description?.trim();
+    const hasCurrency = !!itemData.currencyCode;
+    const hasPrice = itemData.startingBid >= 0;
+    const hasIncrement = itemData.minBidIncrement > 0;
+    const hasImages = images.length > 0;
+    return hasName && hasDescription && hasCurrency && hasPrice && hasIncrement && hasImages;
+  };
+
+  // Step 2: Finish - show publish modal
   const handleFinish = () => {
+    const publishable = checkCanPublish();
+    setCanPublish(publishable);
+    setShowPublishModal(true);
+  };
+
+  // Skip images - show modal (will always be "cannot publish" since no images)
+  const handleSkipImages = () => {
+    setCanPublish(false);
+    setShowPublishModal(true);
+  };
+
+  // Publish the item and redirect
+  const handlePublish = async () => {
+    if (!createdItemId) return;
+    setIsPublishing(true);
+
+    try {
+      const res = await fetch(`/api/auctions/${auction.id}/items/${createdItemId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isPublished: true }),
+      });
+
+      if (!res.ok) {
+        const result = await res.json();
+        showToast(result.message || tErrors("item.updateFailed"), "error");
+      } else {
+        showToast(t("publishSuccess"), "success");
+        router.push(`/auctions/${auction.id}/items/${createdItemId}`);
+      }
+    } catch {
+      showToast(tErrors("generic"), "error");
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  // Don't publish, just redirect
+  const handleDontPublish = () => {
     router.push(`/auctions/${auction.id}/items/${createdItemId}`);
   };
 
-  // Skip images and go directly to item page
-  const handleSkipImages = () => {
-    router.push(`/auctions/${auction.id}/items/${createdItemId}`);
+  // Reset form to create another item
+  const handleCreateAnother = () => {
+    setStep(1);
+    setCreatedItemId(null);
+    setImages([]);
+    setItemData(null);
+    setFieldErrors({});
+    setShowPublishModal(false);
+    setCanPublish(false);
   };
 
   return (
@@ -407,6 +479,14 @@ export default function CreateItemPage({
                 >
                   {t("skipImages")}
                 </button>
+                <button
+                  type="button"
+                  className="btn btn-outline btn-secondary w-full sm:flex-1"
+                  onClick={handleCreateAnother}
+                >
+                  <span className="icon-[tabler--plus] size-5"></span>
+                  {t("createAnother")}
+                </button>
                 <Button
                   type="button"
                   variant="primary"
@@ -421,6 +501,97 @@ export default function CreateItemPage({
           )}
         </div>
       </div>
+
+      {/* Publish Modal */}
+      {showPublishModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <div className="flex items-center gap-3 mb-4">
+              <div
+                className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                  canPublish
+                    ? "bg-success/10 text-success"
+                    : "bg-warning/10 text-warning"
+                }`}
+              >
+                <span
+                  className={`${canPublish ? "icon-[tabler--eye]" : "icon-[tabler--eye-off]"} size-7`}
+                ></span>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold">
+                  {canPublish ? t("publishModalTitle") : t("draftModalTitle")}
+                </h3>
+              </div>
+            </div>
+
+            <p className="text-base-content/70 mb-6">
+              {canPublish ? t("publishModalMessage") : t("draftModalMessage")}
+            </p>
+
+            <div className="modal-action flex-wrap gap-2">
+              {canPublish ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    onClick={handleDontPublish}
+                    disabled={isPublishing}
+                  >
+                    {t("dontPublishYet")}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-secondary"
+                    onClick={handleCreateAnother}
+                    disabled={isPublishing}
+                  >
+                    <span className="icon-[tabler--plus] size-4"></span>
+                    {t("createAnother")}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={handlePublish}
+                    disabled={isPublishing}
+                  >
+                    {isPublishing ? (
+                      <span className="loading loading-spinner loading-sm"></span>
+                    ) : (
+                      <>
+                        <span className="icon-[tabler--eye] size-5"></span>
+                        {t("publishNow")}
+                      </>
+                    )}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-secondary"
+                    onClick={handleCreateAnother}
+                  >
+                    <span className="icon-[tabler--plus] size-4"></span>
+                    {t("createAnother")}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleDontPublish}
+                  >
+                    {tCommon("ok")}
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+          <div
+            className="modal-backdrop bg-base-content/20"
+            onClick={() => !isPublishing && setShowPublishModal(false)}
+          ></div>
+        </div>
+      )}
     </PageLayout>
   );
 }

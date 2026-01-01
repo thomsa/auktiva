@@ -17,6 +17,7 @@ interface ItemListItemProps {
     thumbnailUrl: string | null;
     highestBidderId?: string | null;
     userHasBid?: boolean;
+    isPublished?: boolean;
     _count: {
       bids: number;
     };
@@ -77,7 +78,13 @@ export function ItemListItem({
               <span className="icon-[tabler--photo] size-6 text-base-content/20"></span>
             </div>
           )}
-          {bidStatus === "won" ? (
+          {item.isPublished === false && isOwnItem ? (
+            <div className="absolute -top-1 -left-1">
+              <div className="badge badge-warning badge-xs gap-0.5 shadow-sm">
+                <span className="icon-[tabler--eye-off] size-2"></span>
+              </div>
+            </div>
+          ) : bidStatus === "won" ? (
             <div className="absolute -top-1 -left-1">
               <div className="badge badge-success badge-xs gap-0.5 shadow-sm">
                 <span className="icon-[tabler--crown] size-2"></span>

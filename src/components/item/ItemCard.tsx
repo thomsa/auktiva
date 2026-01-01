@@ -17,6 +17,7 @@ interface ItemCardProps {
     thumbnailUrl: string | null;
     highestBidderId?: string | null;
     userHasBid?: boolean;
+    isPublished?: boolean;
     _count: {
       bids: number;
     };
@@ -63,7 +64,14 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
                 ended ? "grayscale" : ""
               }`}
             />
-            {bidStatus === "won" ? (
+            {item.isPublished === false && isOwnItem ? (
+              <div className="absolute top-3 left-3">
+                <div className="badge badge-warning gap-1 shadow-sm font-bold">
+                  <span className="icon-[tabler--eye-off] size-3"></span>
+                  {t("item.edit.statusDraft")}
+                </div>
+              </div>
+            ) : bidStatus === "won" ? (
               <div className="absolute top-3 left-3">
                 <div className="badge badge-success gap-1 shadow-sm font-bold">
                   <span className="icon-[tabler--crown] size-3"></span>
@@ -102,7 +110,14 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
             }`}
           >
             <span className="icon-[tabler--photo] size-12 text-base-content/10 group-hover:scale-110 transition-transform duration-300"></span>
-            {bidStatus === "won" ? (
+            {item.isPublished === false && isOwnItem ? (
+              <div className="absolute top-3 left-3">
+                <div className="badge badge-warning gap-1 shadow-sm font-bold">
+                  <span className="icon-[tabler--eye-off] size-3"></span>
+                  {t("item.edit.statusDraft")}
+                </div>
+              </div>
+            ) : bidStatus === "won" ? (
               <div className="absolute top-3 left-3">
                 <div className="badge badge-success gap-1 shadow-sm font-bold">
                   <span className="icon-[tabler--crown] size-3"></span>

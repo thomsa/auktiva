@@ -58,6 +58,7 @@ interface ItemDetailProps {
     bidderAnonymous: boolean;
     endDate: string | null;
     createdAt: string;
+    isPublished: boolean;
     creator: {
       id: string;
       name: string | null;
@@ -269,6 +270,24 @@ export default function ItemDetailPage({
                   {tAuction("invite.backTo", { name: auction.name })}
                 </Link>
               </div>
+
+              {/* Draft Banner - Only visible to item owner */}
+              {!item.isPublished && isItemOwner && (
+                <div className="alert alert-warning mb-6 shadow-lg border border-warning/30">
+                  <span className="icon-[tabler--eye-off] size-6"></span>
+                  <div className="flex-1">
+                    <h3 className="font-bold">{tEdit("statusDraft")}</h3>
+                    <p className="text-sm opacity-80">{tEdit("draftDescription")}</p>
+                  </div>
+                  <Link
+                    href={`/auctions/${auction.id}/items/${item.id}/edit`}
+                    className="btn btn-warning btn-sm gap-1"
+                  >
+                    <span className="icon-[tabler--eye] size-4"></span>
+                    {tEdit("publish")}
+                  </Link>
+                </div>
+              )}
 
               <div className="flex flex-col xl:flex-row gap-8 items-start">
                 {/* Main Content */}

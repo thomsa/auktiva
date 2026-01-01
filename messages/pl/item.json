@@ -49,7 +49,15 @@
       "step2Heading": "Dodaj zdjęcia",
       "step2Subtitle": "Prześlij zdjęcia przedmiotu (opcjonalnie)",
       "skipImages": "Pomiń",
-      "finishButton": "Gotowe"
+      "finishButton": "Gotowe",
+      "publishModalTitle": "Opublikuj przedmiot",
+      "publishModalMessage": "Twój przedmiot ma wszystkie wymagane informacje. Czy chcesz go teraz opublikować, aby inni uczestnicy aukcji mogli go zobaczyć i licytować?",
+      "draftModalTitle": "Przedmiot zapisany jako szkic",
+      "draftModalMessage": "Brakuje niektórych informacji (nazwa, opis, zdjęcia, cena lub waluta). Twój przedmiot został zapisany jako szkic. Możesz go opublikować później na stronie Edytuj przedmiot, gdy wszystkie szczegóły będą kompletne.",
+      "publishNow": "Opublikuj",
+      "dontPublishYet": "Jeszcze nie",
+      "publishSuccess": "Przedmiot opublikowany pomyślnie",
+      "createAnother": "Utwórz kolejny"
     },
     "edit": {
       "title": "Edytuj przedmiot",
@@ -79,7 +87,16 @@
       "cannotChangeStartingBid": "Nie można zmienić ceny wywoławczej po złożeniu ofert",
       "itemsEndWithAuction": "Przedmioty kończą się wraz z aukcją",
       "itemsNoEndDate": "Przedmioty nie mają daty zakończenia",
-      "auctionSetting": "(ustawienie aukcji)"
+      "auctionSetting": "(ustawienie aukcji)",
+      "statusPublished": "Opublikowany",
+      "statusDraft": "Szkic",
+      "publishedDescription": "Ten przedmiot jest widoczny dla wszystkich uczestników aukcji i może otrzymywać oferty.",
+      "draftDescription": "Ten przedmiot jest widoczny tylko dla Ciebie. Opublikuj go, aby inni mogli go zobaczyć.",
+      "publish": "Opublikuj",
+      "unpublish": "Wycofaj",
+      "publishSuccess": "Przedmiot opublikowany pomyślnie",
+      "unpublishSuccess": "Przedmiot wycofany pomyślnie",
+      "cannotUnpublishWithBids": "Nie można wycofać przedmiotu, który otrzymał oferty"
     },
     "yourListing": "Twój przedmiot",
     "listedBy": "Wystawione przez",

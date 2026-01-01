@@ -12,9 +12,9 @@
     "activeBids": {
       "title": "Aktív licitjeid"
     },
-    "yourItems": {
+    "myListings": {
       "title": "Tételeid",
-      "subtitle": "Általad listázott tételek",
+      "subtitle": "Aukciókra listázott tételeid",
       "bids": "{count, plural, =0 {Nincs licit} =1 {1 licit} other {# licit}}"
     },
     "auctions": {

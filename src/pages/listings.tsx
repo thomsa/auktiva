@@ -31,6 +31,7 @@ interface UserItem {
   createdAt: string;
   thumbnailUrl: string | null;
   bidCount: number;
+  isPublished: boolean;
   winner: {
     name: string | null;
     email: string;
@@ -69,22 +70,34 @@ export default function ListingsPage({ user }: ListingsPageProps) {
     return date;
   }, []);
 
+  // Draft items (unpublished)
+  const draftItems = useMemo(
+    () => items.filter((item) => !item.isPublished),
+    [items],
+  );
+
+  // Published items only for active/ended filtering
+  const publishedItems = useMemo(
+    () => items.filter((item) => item.isPublished),
+    [items],
+  );
+
   const activeItems = useMemo(
     () =>
       sortListings(
-        items.filter((item) => !isItemEnded(item.endDate)),
+        publishedItems.filter((item) => !isItemEnded(item.endDate)),
         activeSort,
       ),
-    [items, activeSort],
+    [publishedItems, activeSort],
   );
 
   const endedItems = useMemo(
     () =>
       sortListings(
-        items.filter((item) => isItemEnded(item.endDate)),
+        publishedItems.filter((item) => isItemEnded(item.endDate)),
         endedSort,
       ),
-    [items, endedSort],
+    [publishedItems, endedSort],
   );
 
   // Items that ended in the last 3 days (need attention)
@@ -146,6 +159,31 @@ export default function ListingsPage({ user }: ListingsPageProps) {
         </div>
       ) : (
         <div className="space-y-6">
+          {/* Draft Section - Unpublished items */}
+          {draftItems.length > 0 && (
+            <div className="card bg-warning/5 border border-warning/20">
+              <div className="card-body p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="icon-[tabler--eye-off] size-5 text-warning"></span>
+                  <h2 className="text-lg font-semibold">
+                    {tListings("drafts.title")}
+                  </h2>
+                  <span className="badge badge-warning badge-sm">
+                    {draftItems.length}
+                  </span>
+                </div>
+                <p className="text-sm text-base-content/60 mb-4">
+                  {tListings("drafts.description")}
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {draftItems.map((item) => (
+                    <DraftCard key={item.id} item={item} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Just Ended Section - Items needing attention */}
           {justEndedItems.length > 0 && (
             <div className="card bg-primary/5 border border-primary/20">
@@ -221,6 +259,47 @@ export default function ListingsPage({ user }: ListingsPageProps) {
         </div>
       )}
     </PageLayout>
+  );
+}
+
+function DraftCard({ item }: { item: UserItem }) {
+  return (
+    <Link
+      href={`/auctions/${item.auctionId}/items/${item.id}/edit`}
+      className="flex gap-3 p-3 rounded-lg bg-base-100 border border-warning/20 hover:border-warning/40 hover:shadow-md transition-all"
+    >
+      <div className="relative shrink-0">
+        {item.thumbnailUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.thumbnailUrl}
+            alt={item.name}
+            className="w-12 h-12 object-cover rounded-lg opacity-70"
+          />
+        ) : (
+          <div className="w-12 h-12 bg-base-200 rounded-lg flex items-center justify-center">
+            <span className="icon-[tabler--photo] size-5 text-base-content/30"></span>
+          </div>
+        )}
+        <div className="absolute -top-1 -right-1">
+          <div className="badge badge-warning badge-xs gap-0.5">
+            <span className="icon-[tabler--eye-off] size-2"></span>
+          </div>
+        </div>
+      </div>
+      <div className="flex-1 min-w-0">
+        <span className="font-semibold text-sm truncate block hover:text-warning transition-colors">
+          {item.name}
+        </span>
+        <div className="text-xs text-base-content/60 mt-0.5 truncate">
+          {item.auctionName}
+        </div>
+        <div className="flex items-center gap-1 text-xs text-warning mt-1">
+          <span className="icon-[tabler--edit] size-3"></span>
+          <span>Click to edit & publish</span>
+        </div>
+      </div>
+    </Link>
   );
 }
 

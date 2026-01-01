@@ -49,7 +49,15 @@
       "step2Heading": "Add Images",
       "step2Subtitle": "Upload photos of your item (optional)",
       "skipImages": "Skip for now",
-      "finishButton": "Done"
+      "finishButton": "Done",
+      "publishModalTitle": "Publish Item",
+      "publishModalMessage": "Your item has all the required information. Would you like to publish it now so other auction members can see it and place bids?",
+      "draftModalTitle": "Item Saved as Draft",
+      "draftModalMessage": "Some information is missing (name, description, images, price, or currency). Your item has been saved as a draft. You can publish it later from the Edit Item page once all details are complete.",
+      "publishNow": "Publish",
+      "dontPublishYet": "Not yet",
+      "publishSuccess": "Item published successfully",
+      "createAnother": "Create Another"
     },
     "edit": {
       "title": "Edit Item",
@@ -79,7 +87,16 @@
       "cannotChangeStartingBid": "Cannot change starting bid after bids have been placed",
       "itemsEndWithAuction": "Items end when the auction ends",
       "itemsNoEndDate": "Items have no end date",
-      "auctionSetting": "(auction setting)"
+      "auctionSetting": "(auction setting)",
+      "statusPublished": "Published",
+      "statusDraft": "Draft",
+      "publishedDescription": "This item is visible to all auction members and can receive bids.",
+      "draftDescription": "This item is only visible to you. Publish it to make it visible to others.",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "publishSuccess": "Item published successfully",
+      "unpublishSuccess": "Item unpublished successfully",
+      "cannotUnpublishWithBids": "Cannot unpublish an item that has received bids"
     },
     "yourListing": "Your Listing",
     "listedBy": "Listed by",

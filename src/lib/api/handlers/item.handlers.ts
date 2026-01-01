@@ -21,6 +21,7 @@ export const createItemSchema = z.object({
   minBidIncrement: z.number().min(0.01).optional(),
   bidderAnonymous: z.boolean().optional(),
   endDate: z.string().optional(),
+  isPublished: z.boolean().optional(),
 });
 
 export const updateItemSchema = z.object({
@@ -31,6 +32,7 @@ export const updateItemSchema = z.object({
   minBidIncrement: z.number().min(0.01).optional(),
   bidderAnonymous: z.boolean().optional(),
   endDate: z.string().nullable().optional(),
+  isPublished: z.boolean().optional(),
 });
 
 export type CreateItemBody = z.infer<typeof createItemSchema>;
@@ -166,6 +168,11 @@ export const updateItem: ApiHandler = async (req, res, ctx) => {
   }
 
   const { validatedBody } = req as ValidatedRequest<UpdateItemBody>;
+
+  // Validate isPublished changes - cannot unpublish items with bids
+  if (validatedBody.isPublished === false && item._count.bids > 0) {
+    throw new BadRequestError("Cannot unpublish an item that has received bids");
+  }
 
   // Validate end date changes
   if (validatedBody.endDate !== undefined) {

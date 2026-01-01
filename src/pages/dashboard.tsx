@@ -75,6 +75,7 @@ interface UserItem {
   createdAt: string;
   thumbnailUrl: string | null;
   bidCount: number;
+  isPublished: boolean;
 }
 
 interface DashboardData {
@@ -159,14 +160,18 @@ function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
 
 function UserItemCard({ item }: { item: UserItem }) {
   const t = useTranslations("dashboard");
+  const tItem = useTranslations("item.edit");
   const ended = isItemEnded(item.endDate);
+  const isDraft = !item.isPublished;
 
   return (
     <Link
       href={`/auctions/${item.auctionId}/items/${item.id}`}
-      className={`flex gap-3 p-3 rounded-xl hover:bg-base-content/5 transition-colors border border-secondary/20 bg-secondary/5 ${
-        ended ? "opacity-60" : ""
-      }`}
+      className={`flex gap-3 p-3 rounded-xl hover:bg-base-content/5 transition-colors border ${
+        isDraft
+          ? "border-warning/30 bg-warning/5"
+          : "border-secondary/20 bg-secondary/5"
+      } ${ended ? "opacity-60" : ""}`}
     >
       <div className="relative shrink-0">
         {item.thumbnailUrl ? (
@@ -176,7 +181,7 @@ function UserItemCard({ item }: { item: UserItem }) {
             alt={item.name}
             className={`w-14 h-14 object-cover rounded-lg shadow-sm ${
               ended ? "grayscale" : ""
-            }`}
+            } ${isDraft ? "opacity-70" : ""}`}
           />
         ) : (
           <div
@@ -187,13 +192,19 @@ function UserItemCard({ item }: { item: UserItem }) {
             <span className="icon-[tabler--photo] size-6 text-base-content/30"></span>
           </div>
         )}
-        {ended && (
+        {isDraft ? (
+          <div className="absolute -top-1 -left-1">
+            <div className="badge badge-warning badge-xs gap-0.5">
+              <span className="icon-[tabler--eye-off] size-2"></span>
+            </div>
+          </div>
+        ) : ended ? (
           <div className="absolute -top-1 -left-1">
             <div className="badge badge-error badge-xs gap-0.5">
               <span className="icon-[tabler--flag-filled] size-2"></span>
             </div>
           </div>
-        )}
+        ) : null}
       </div>
       <div className="flex-1 min-w-0">
         <div className="font-medium text-sm truncate">{item.name}</div>
@@ -201,9 +212,15 @@ function UserItemCard({ item }: { item: UserItem }) {
           {item.auctionName}
         </div>
         <div className="flex items-center gap-2 mt-1">
-          <span className="badge badge-secondary badge-xs">
-            {t("yourItems.bids", { count: item.bidCount })}
-          </span>
+          {isDraft ? (
+            <span className="badge badge-warning badge-xs">
+              {tItem("statusDraft")}
+            </span>
+          ) : (
+            <span className="badge badge-secondary badge-xs">
+              {t("myListings.bids", { count: item.bidCount })}
+            </span>
+          )}
           <span className="text-xs font-semibold">
             {item.currencySymbol}
             {(item.currentBid || item.startingBid).toFixed(0)}
@@ -332,17 +349,17 @@ export default function DashboardPage({ user }: DashboardProps) {
           </div>
         )}
 
-        {/* Your Items Section */}
+        {/* My Listings Section */}
         {userItems.length > 0 && (
           <div className="mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
               <div>
                 <h2 className="text-lg sm:text-xl font-semibold text-base-content flex items-center gap-2">
                   <span className="icon-[tabler--tag] size-5 text-secondary"></span>
-                  {t("yourItems.title")}
+                  {t("myListings.title")}
                 </h2>
                 <p className="text-sm text-base-content/60">
-                  {t("yourItems.subtitle")}
+                  {t("myListings.subtitle")}
                 </p>
               </div>
             </div>

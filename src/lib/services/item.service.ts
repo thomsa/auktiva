@@ -52,6 +52,7 @@ export interface CreateItemInput {
   minBidIncrement?: number;
   bidderAnonymous?: boolean;
   endDate?: string | null;
+  isPublished?: boolean;
 }
 
 export interface UpdateItemInput {
@@ -62,6 +63,7 @@ export interface UpdateItemInput {
   minBidIncrement?: number;
   bidderAnonymous?: boolean;
   endDate?: string | null;
+  isPublished?: boolean;
 }
 
 export interface ItemWithDetails extends AuctionItem {
@@ -94,6 +96,7 @@ export interface ItemDetailForPage {
   bidderAnonymous: boolean;
   endDate: string | null;
   createdAt: string;
+  isPublished: boolean;
   creator: {
     id: string;
     name: string | null;
@@ -175,6 +178,7 @@ export async function getItemForDetailPage(
     bidderAnonymous: item.bidderAnonymous,
     endDate: item.endDate?.toISOString() || null,
     createdAt: item.createdAt.toISOString(),
+    isPublished: item.isPublished,
     creator: item.creator,
   };
 }
@@ -200,6 +204,11 @@ export async function getItemDetailPageData(
   });
 
   if (!item || item.auctionId !== auctionId) return null;
+
+  // Check if user can view this item (must be published or creator)
+  if (!item.isPublished && item.creatorId !== viewerId) {
+    return null;
+  }
 
   // Get bids with user info
   const bidsRaw = await prisma.bid.findMany({
@@ -294,6 +303,7 @@ export async function getItemDetailPageData(
       endDate: item.endDate?.toISOString() || null,
       createdAt: item.createdAt.toISOString(),
       updatedAt: item.updatedAt.toISOString(),
+      isPublished: item.isPublished,
       creatorId: item.creatorId,
       creator: item.creator,
     },
@@ -352,6 +362,7 @@ export async function getItemForEditPage(
       bidderAnonymous: item.bidderAnonymous,
       endDate: item.endDate?.toISOString() || null,
       currentBid: item.currentBid,
+      isPublished: item.isPublished,
     },
     hasBids: item._count.bids > 0,
     canEdit,
@@ -387,13 +398,17 @@ export async function getAuctionItems(
 
 /**
  * Get items for auction list page with user bid status
+ * Only shows published items OR items created by the user
  */
 export async function getAuctionItemsForListPage(
   auctionId: string,
   userId: string,
 ): Promise<ItemListItem[]> {
   const items = await prisma.auctionItem.findMany({
-    where: { auctionId },
+    where: {
+      auctionId,
+      OR: [{ isPublished: true }, { creatorId: userId }],
+    },
     include: {
       currency: {
         select: { symbol: true },
@@ -433,6 +448,7 @@ export async function getAuctionItemsForListPage(
     endDate: item.endDate?.toISOString() || null,
     createdAt: item.createdAt.toISOString(),
     creatorId: item.creatorId,
+    isPublished: item.isPublished,
     thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
     currency: {
       symbol: item.currency.symbol,
@@ -443,13 +459,17 @@ export async function getAuctionItemsForListPage(
 
 /**
  * Get items for sidebar display
+ * Only shows published items OR items created by the user
  */
 export async function getAuctionItemsForSidebar(
   auctionId: string,
   userId: string,
 ): Promise<ItemSidebarItem[]> {
   const items = await prisma.auctionItem.findMany({
-    where: { auctionId },
+    where: {
+      auctionId,
+      OR: [{ isPublished: true }, { creatorId: userId }],
+    },
     select: {
       id: true,
       name: true,
@@ -647,6 +667,7 @@ export async function createItem(
       minBidIncrement: input.minBidIncrement || 1,
       bidderAnonymous: input.bidderAnonymous || false,
       endDate: input.endDate ? new Date(input.endDate) : null,
+      isPublished: input.isPublished ?? false,
       creatorId,
     },
     include: {
@@ -763,6 +784,15 @@ export async function updateItem(
       updateData.currencyCode = input.currencyCode;
     if (input.startingBid !== undefined)
       updateData.startingBid = input.startingBid;
+    // Can only unpublish if no bids (publishing is always allowed)
+    if (input.isPublished !== undefined) {
+      updateData.isPublished = input.isPublished;
+    }
+  } else {
+    // With bids, can only publish (not unpublish)
+    if (input.isPublished === true) {
+      updateData.isPublished = true;
+    }
   }
 
   return prisma.auctionItem.update({
@@ -883,6 +913,7 @@ export async function getUserCreatedItems(userId: string) {
     createdAt: item.createdAt.toISOString(),
     thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
     bidCount: item._count.bids,
+    isPublished: item.isPublished,
     winner: item.bids[0]?.user
       ? {
           name: item.bids[0].user.name,

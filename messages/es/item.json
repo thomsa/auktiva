@@ -49,7 +49,15 @@
       "step2Heading": "Añadir imágenes",
       "step2Subtitle": "Sube fotos de tu artículo (opcional)",
       "skipImages": "Omitir",
-      "finishButton": "Listo"
+      "finishButton": "Listo",
+      "publishModalTitle": "Publicar Artículo",
+      "publishModalMessage": "Tu artículo tiene toda la información requerida. ¿Quieres publicarlo ahora para que otros miembros de la subasta puedan verlo y pujar?",
+      "draftModalTitle": "Artículo Guardado como Borrador",
+      "draftModalMessage": "Falta información (nombre, descripción, imágenes, precio o moneda). Tu artículo se ha guardado como borrador. Puedes publicarlo más tarde desde la página de Editar Artículo cuando todos los detalles estén completos.",
+      "publishNow": "Publicar",
+      "dontPublishYet": "Todavía no",
+      "publishSuccess": "Artículo publicado con éxito",
+      "createAnother": "Crear otro"
     },
     "edit": {
       "title": "Editar Artículo",
@@ -79,7 +87,16 @@
       "cannotChangeStartingBid": "No se puede cambiar la puja inicial después de recibir ofertas",
       "itemsEndWithAuction": "Los artículos terminan cuando termina la subasta",
       "itemsNoEndDate": "Los artículos no tienen fecha de finalización",
-      "auctionSetting": "(configuración de subasta)"
+      "auctionSetting": "(configuración de subasta)",
+      "statusPublished": "Publicado",
+      "statusDraft": "Borrador",
+      "publishedDescription": "Este artículo es visible para todos los miembros de la subasta y puede recibir pujas.",
+      "draftDescription": "Este artículo solo es visible para ti. Publícalo para que otros puedan verlo.",
+      "publish": "Publicar",
+      "unpublish": "Despublicar",
+      "publishSuccess": "Artículo publicado con éxito",
+      "unpublishSuccess": "Artículo despublicado con éxito",
+      "cannotUnpublishWithBids": "No se puede despublicar un artículo que ha recibido pujas"
     },
     "yourListing": "Tu artículo",
     "listedBy": "Listado por",

@@ -10,6 +10,10 @@
       "title": "Brak przedmiotów",
       "description": "Nie wystawiłeś jeszcze żadnych przedmiotów na aukcję. Przejdź do aukcji i dodaj swój pierwszy przedmiot!"
     },
+    "drafts": {
+      "title": "Szkice",
+      "description": "Te przedmioty nie są jeszcze widoczne dla innych uczestników aukcji. Kliknij, aby edytować i opublikować."
+    },
     "justEnded": {
       "title": "Właśnie zakończone",
       "description": "Te przedmioty zakończyły się w ciągu ostatnich 3 dni i wymagają Twojej uwagi. Skontaktuj się ze zwycięzcami w sprawie dostawy."

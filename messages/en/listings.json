@@ -10,6 +10,10 @@
       "title": "No listings yet",
       "description": "You haven't listed any items for auction yet. Go to an auction and add your first item!"
     },
+    "drafts": {
+      "title": "Drafts",
+      "description": "These items are not yet visible to other auction members. Click to edit and publish them."
+    },
     "justEnded": {
       "title": "Just Ended",
       "description": "These items ended in the last 3 days and need your attention. Contact the winners to arrange delivery."

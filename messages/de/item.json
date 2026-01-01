@@ -49,7 +49,15 @@
       "step2Heading": "Bilder hinzufügen",
       "step2Subtitle": "Lade Fotos deines Artikels hoch (optional)",
       "skipImages": "Überspringen",
-      "finishButton": "Fertig"
+      "finishButton": "Fertig",
+      "publishModalTitle": "Artikel veröffentlichen",
+      "publishModalMessage": "Dein Artikel hat alle erforderlichen Informationen. Möchtest du ihn jetzt veröffentlichen, damit andere Auktionsteilnehmer ihn sehen und bieten können?",
+      "draftModalTitle": "Artikel als Entwurf gespeichert",
+      "draftModalMessage": "Einige Informationen fehlen (Name, Beschreibung, Bilder, Preis oder Währung). Dein Artikel wurde als Entwurf gespeichert. Du kannst ihn später auf der Artikel-Bearbeiten-Seite veröffentlichen, wenn alle Details vollständig sind.",
+      "publishNow": "Veröffentlichen",
+      "dontPublishYet": "Noch nicht",
+      "publishSuccess": "Artikel erfolgreich veröffentlicht",
+      "createAnother": "Weiteren erstellen"
     },
     "edit": {
       "title": "Artikel bearbeiten",
@@ -79,7 +87,16 @@
       "cannotChangeStartingBid": "Startgebot kann nach Gebotsabgabe nicht geändert werden",
       "itemsEndWithAuction": "Artikel enden mit der Auktion",
       "itemsNoEndDate": "Artikel haben kein Enddatum",
-      "auctionSetting": "(Auktionseinstellung)"
+      "auctionSetting": "(Auktionseinstellung)",
+      "statusPublished": "Veröffentlicht",
+      "statusDraft": "Entwurf",
+      "publishedDescription": "Dieser Artikel ist für alle Auktionsteilnehmer sichtbar und kann Gebote erhalten.",
+      "draftDescription": "Dieser Artikel ist nur für dich sichtbar. Veröffentliche ihn, um ihn für andere sichtbar zu machen.",
+      "publish": "Veröffentlichen",
+      "unpublish": "Zurückziehen",
+      "publishSuccess": "Artikel erfolgreich veröffentlicht",
+      "unpublishSuccess": "Artikel erfolgreich zurückgezogen",
+      "cannotUnpublishWithBids": "Ein Artikel mit Geboten kann nicht zurückgezogen werden"
     },
     "yourListing": "Dein Artikel",
     "listedBy": "Eingestellt von",

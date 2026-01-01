@@ -10,6 +10,10 @@
       "title": "Még nincsenek tételeid",
       "description": "Még nem listáztál egyetlen tételt sem. Menj egy aukcióra és add hozzá az első tételedet!"
     },
+    "drafts": {
+      "title": "Piszkozatok",
+      "description": "Ezek a tételek még nem láthatók az aukció többi tagja számára. Kattints a szerkesztéshez és közzétételhez."
+    },
     "justEnded": {
       "title": "Nemrég lezárult",
       "description": "Ezek a tételek az elmúlt 3 napban zárultak le és figyelmet igényelnek. Lépj kapcsolatba a nyertesekkel a kézbesítés egyeztetéséhez."

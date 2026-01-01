@@ -244,6 +244,9 @@ model AuctionItem {
   // Deprecated - kept for migration, use Bid.isAnonymous instead
   bidderAnonymous Boolean   @default(false)
   
+  // Publishing state
+  isPublished     Boolean   @default(false) // Draft items are not visible to other users
+  
   // Timing
   endDate         DateTime? // null = follows auction end or no end
   

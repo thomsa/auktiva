@@ -49,7 +49,15 @@
       "step2Heading": "Képek hozzáadása",
       "step2Subtitle": "Tölts fel fotókat a tételről (opcionális)",
       "skipImages": "Kihagyás",
-      "finishButton": "Kész"
+      "finishButton": "Kész",
+      "publishModalTitle": "Tétel közzététele",
+      "publishModalMessage": "A tételed minden szükséges információval rendelkezik. Szeretnéd most közzétenni, hogy az aukció többi tagja láthassa és licitálhasson rá?",
+      "draftModalTitle": "Tétel piszkozatként mentve",
+      "draftModalMessage": "Néhány információ hiányzik (név, leírás, képek, ár vagy pénznem). A tételed piszkozatként lett mentve. Később közzéteheted a Tétel szerkesztése oldalon, ha minden részlet megvan.",
+      "publishNow": "Közzététel",
+      "dontPublishYet": "Még nem",
+      "publishSuccess": "Tétel sikeresen közzétéve",
+      "createAnother": "Új tétel"
     },
     "edit": {
       "title": "Tétel szerkesztése",
@@ -79,7 +87,16 @@
       "cannotChangeStartingBid": "A kezdő licit nem módosítható, miután liciteket adtak le",
       "itemsEndWithAuction": "A tételek az aukció végével zárulnak",
       "itemsNoEndDate": "A tételeknek nincs záró dátumuk",
-      "auctionSetting": "(aukció beállítás)"
+      "auctionSetting": "(aukció beállítás)",
+      "statusPublished": "Közzétéve",
+      "statusDraft": "Piszkozat",
+      "publishedDescription": "Ez a tétel látható az aukció minden tagja számára és liciteket fogadhat.",
+      "draftDescription": "Ez a tétel csak neked látható. Tedd közzé, hogy mások is láthassák.",
+      "publish": "Közzététel",
+      "unpublish": "Visszavonás",
+      "publishSuccess": "Tétel sikeresen közzétéve",
+      "unpublishSuccess": "Tétel sikeresen visszavonva",
+      "cannotUnpublishWithBids": "Nem vonható vissza olyan tétel, amelyre már licitáltak"
     },
     "yourListing": "Saját tétel",
     "listedBy": "Listázta",

@@ -55,6 +55,11 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
     throw new NotFoundError("Item not found");
   }
 
+  // Check if item is published
+  if (!item.isPublished) {
+    throw new BadRequestError("Cannot bid on unpublished items");
+  }
+
   // Check if user is the item creator
   if (item.creatorId === ctx.session!.user.id) {
     throw new ForbiddenError("You cannot bid on your own item");

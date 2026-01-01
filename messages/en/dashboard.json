@@ -12,9 +12,9 @@
     "activeBids": {
       "title": "Your Active Bids"
     },
-    "yourItems": {
-      "title": "Your Items",
-      "subtitle": "Items you have listed",
+    "myListings": {
+      "title": "Your Listings",
+      "subtitle": "Items you have listed for auction",
       "bids": "{count, plural, =0 {No bids} =1 {1 bid} other {# bids}}"
     },
     "auctions": {
