@@ -71,3 +71,107 @@ Item is accepting bids.
 ### Ended
 
 Bidding is closed, shows winning bid.
+
+### Draft
+
+Item is created but not yet visible to other auction members. Only you can see draft items until you publish them.
+
+## Bulk Edit
+
+Bulk Edit allows you to modify multiple items at once, saving time when managing many listings.
+
+### Accessing Bulk Edit
+
+1. Go to **My Listings** page
+2. Click **"Bulk Edit"** button
+
+### Features
+
+- **Inline Editing** - Click any cell to edit directly in the table
+- **Multi-Select** - Check multiple items to apply changes to all at once
+- **Bulk Actions**:
+  - Change currency for all selected items
+  - Update starting bid
+  - Update minimum bid increment
+  - Publish or unpublish items
+
+### How to Use
+
+1. **Select items** using the checkboxes on the left
+2. **Choose a bulk action** from the toolbar:
+   - Select a currency from the dropdown
+   - Enter a starting bid amount
+   - Enter a minimum increment
+3. Click **"Apply"** to update all selected items
+4. Use **"Publish All"** or **"Unpublish All"** for quick status changes
+
+<Callout type="info">
+  Changes are saved immediately when you click Apply or toggle publish status.
+</Callout>
+
+### Restrictions
+
+- Items with bids cannot have their currency or starting bid changed
+- You can only edit items you created
+
+## CSV Import
+
+CSV Import allows you to create multiple items at once by uploading a spreadsheet file.
+
+### Accessing CSV Import
+
+1. Go to **My Listings** page
+2. Click **"CSV Import"** button
+
+### CSV File Format
+
+Your CSV file should have headers in the first row. Supported columns:
+
+| Column | Required | Description |
+|--------|----------|-------------|
+| `name` | Yes | Item title |
+| `description` | Yes | Item description (can include basic HTML) |
+| `currency` | No | Currency code (e.g., USD, EUR). Defaults to auction currency |
+| `startingBid` | No | Starting bid amount. Defaults to 0 |
+| `minBidIncrement` | No | Minimum bid increment. Defaults to 1 |
+| `published` | No | `true` or `false`. Defaults to false (draft) |
+
+**Alternative column names are supported:**
+- `name`: title, item
+- `description`: desc
+- `currency`: currencyCode, currency_code
+- `startingBid`: starting_bid, startbid, price
+- `minBidIncrement`: min_increment, minbidincrement
+
+### Import Process
+
+1. **Select Target Auction** - Choose which auction to import items into
+2. **Upload CSV File** - Click the upload area or drag and drop your file
+3. **Preview & Edit** - Review parsed items, fix any errors, make adjustments
+4. **Import** - Click "Import Items" to create all items
+
+### Validation
+
+Items with errors are highlighted in red and cannot be selected for import until fixed:
+
+- **Name** is required
+- **Description** is required
+- **Starting Bid** cannot be negative
+- **Min Increment** must be greater than 0
+
+<Callout type="warning">
+  Fix all validation errors before importing. Items with errors will show the specific issue under each field.
+</Callout>
+
+### Editing Before Import
+
+You can edit items in the preview table before importing:
+
+- Click any cell to edit inline
+- Use bulk actions to update multiple items
+- Remove unwanted items with the X button
+- Download a template CSV for reference
+
+### Template
+
+Click **"Download Template"** to get a sample CSV file with the correct format and example data.
