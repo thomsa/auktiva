@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.12.1] - 2026-01-01
+
+### 📚 Documentation
+
+- Add bulk edit and CSV import documentation by @thomsa
+
 ## [1.12.0] - 2026-01-01
 
 ### 🚀 Features
