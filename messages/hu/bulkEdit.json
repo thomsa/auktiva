@@ -30,6 +30,13 @@
     "status": "Állapot",
     "bids": "Licitek",
     "auction": "Aukció",
-    "noItems": "Nincsenek tételek. Először hozz létre néhányat."
+    "noItems": "Nincsenek tételek. Először hozz létre néhányat.",
+    "noItemsMatchFilter": "Nincs a szűrőnek megfelelő tétel.",
+    "filter": "Szűrő",
+    "filterAll": "Összes",
+    "filterHasBids": "Van licit",
+    "filterNoBids": "Nincs licit",
+    "clearFilter": "Törlés",
+    "showing": "{count} / {total} megjelenítve"
   }
 }

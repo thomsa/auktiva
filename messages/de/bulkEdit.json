@@ -30,6 +30,13 @@
     "status": "Status",
     "bids": "Gebote",
     "auction": "Auktion",
-    "noItems": "Keine Artikel gefunden. Erstelle zuerst einige Artikel."
+    "noItems": "Keine Artikel gefunden. Erstelle zuerst einige Artikel.",
+    "noItemsMatchFilter": "Keine Artikel entsprechen dem aktuellen Filter.",
+    "filter": "Filter",
+    "filterAll": "Alle",
+    "filterHasBids": "Mit Geboten",
+    "filterNoBids": "Ohne Gebote",
+    "clearFilter": "Löschen",
+    "showing": "{count} von {total} angezeigt"
   }
 }

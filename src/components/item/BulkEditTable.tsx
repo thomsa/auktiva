@@ -1,9 +1,18 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+
+type SortField =
+  | "name"
+  | "startingBid"
+  | "bidCount"
+  | "createdAt"
+  | "auctionName";
+type SortDirection = "asc" | "desc";
+type BidFilter = "all" | "hasBids" | "noBids";
 
 export interface BulkEditItem {
   id: string;
@@ -63,6 +72,11 @@ export function BulkEditTable({
   const [bulkUpdating, setBulkUpdating] = useState(false);
   const [showBulkSuccess, setShowBulkSuccess] = useState<string | null>(null);
 
+  // Filter and sort state
+  const [bidFilter, setBidFilter] = useState<BidFilter>("all");
+  const [sortField, setSortField] = useState<SortField>("createdAt");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+
   // Bulk edit form state
   const [bulkCurrency, setBulkCurrency] = useState("");
   const [bulkStartingBid, setBulkStartingBid] = useState("");
@@ -73,13 +87,64 @@ export function BulkEditTable({
     setLocalItems(items);
   }, [items]);
 
+  // Filter and sort items
+  const filteredAndSortedItems = useMemo(() => {
+    let result = [...localItems];
+
+    // Apply bid filter
+    if (bidFilter === "hasBids") {
+      result = result.filter((item) => item.bidCount > 0);
+    } else if (bidFilter === "noBids") {
+      result = result.filter((item) => item.bidCount === 0);
+    }
+
+    // Apply sorting
+    result.sort((a, b) => {
+      let comparison = 0;
+      switch (sortField) {
+        case "name":
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case "startingBid":
+          comparison = a.startingBid - b.startingBid;
+          break;
+        case "bidCount":
+          comparison = a.bidCount - b.bidCount;
+          break;
+        case "createdAt":
+          comparison =
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          break;
+        case "auctionName":
+          comparison = a.auctionName.localeCompare(b.auctionName);
+          break;
+      }
+      return sortDirection === "asc" ? comparison : -comparison;
+    });
+
+    return result;
+  }, [localItems, bidFilter, sortField, sortDirection]);
+
+  const handleSort = useCallback((field: SortField) => {
+    setSortField((prev) => {
+      if (prev === field) {
+        setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+        return prev;
+      }
+      setSortDirection("asc");
+      return field;
+    });
+  }, []);
+
   const handleSelectAll = useCallback(() => {
-    if (selectedIds.size === localItems.length) {
+    const visibleIds = filteredAndSortedItems.map((item) => item.id);
+    const allVisibleSelected = visibleIds.every((id) => selectedIds.has(id));
+    if (allVisibleSelected && visibleIds.length > 0) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(localItems.map((item) => item.id)));
+      setSelectedIds(new Set(visibleIds));
     }
-  }, [localItems, selectedIds.size]);
+  }, [filteredAndSortedItems, selectedIds]);
 
   const handleSelectItem = useCallback((id: string) => {
     setSelectedIds((prev) => {
@@ -325,6 +390,56 @@ export function BulkEditTable({
         )}
       </div>
 
+      {/* Quick Filters */}
+      <div className="flex flex-wrap items-center gap-4">
+        <span className="text-sm font-medium text-base-content/70">
+          {t("filter")}:
+        </span>
+        <div className="join">
+          <button
+            type="button"
+            className={`btn btn-sm join-item ${bidFilter === "all" ? "btn-active" : ""}`}
+            onClick={() => setBidFilter("all")}
+          >
+            {t("filterAll")} ({localItems.length})
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm join-item ${bidFilter === "hasBids" ? "btn-active" : ""}`}
+            onClick={() => setBidFilter("hasBids")}
+          >
+            {t("filterHasBids")} (
+            {localItems.filter((i) => i.bidCount > 0).length})
+          </button>
+          <button
+            type="button"
+            className={`btn btn-sm join-item ${bidFilter === "noBids" ? "btn-active" : ""}`}
+            onClick={() => setBidFilter("noBids")}
+          >
+            {t("filterNoBids")} (
+            {localItems.filter((i) => i.bidCount === 0).length})
+          </button>
+        </div>
+
+        {bidFilter !== "all" && (
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm gap-1"
+            onClick={() => setBidFilter("all")}
+          >
+            <span className="icon-[tabler--x] size-4"></span>
+            {t("clearFilter")}
+          </button>
+        )}
+
+        <span className="text-sm text-base-content/50 ml-auto">
+          {t("showing", {
+            count: filteredAndSortedItems.length,
+            total: localItems.length,
+          })}
+        </span>
+      </div>
+
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="table table-zebra w-full">
@@ -335,26 +450,57 @@ export function BulkEditTable({
                   type="checkbox"
                   className="checkbox checkbox-sm"
                   checked={
-                    selectedIds.size === localItems.length &&
-                    localItems.length > 0
+                    filteredAndSortedItems.length > 0 &&
+                    filteredAndSortedItems.every((item) =>
+                      selectedIds.has(item.id),
+                    )
                   }
                   onChange={handleSelectAll}
+                  disabled={filteredAndSortedItems.length === 0}
                 />
               </th>
               <th className="w-16"></th>
-              <th className="min-w-48">{t("name")}</th>
+              <SortableHeader
+                field="name"
+                label={t("name")}
+                currentSort={sortField}
+                direction={sortDirection}
+                onSort={handleSort}
+                className="min-w-48"
+              />
               <th className="min-w-64">{t("description")}</th>
               <th className="w-24">{t("currency")}</th>
-              <th className="w-28">{t("startingBid")}</th>
+              <SortableHeader
+                field="startingBid"
+                label={t("startingBid")}
+                currentSort={sortField}
+                direction={sortDirection}
+                onSort={handleSort}
+                className="w-28"
+              />
               <th className="w-28">{t("minIncrement")}</th>
               <th className="w-24">{t("status")}</th>
-              <th className="w-20">{t("bids")}</th>
-              <th className="min-w-32">{t("auction")}</th>
+              <SortableHeader
+                field="bidCount"
+                label={t("bids")}
+                currentSort={sortField}
+                direction={sortDirection}
+                onSort={handleSort}
+                className="w-20"
+              />
+              <SortableHeader
+                field="auctionName"
+                label={t("auction")}
+                currentSort={sortField}
+                direction={sortDirection}
+                onSort={handleSort}
+                className="min-w-32"
+              />
               <th className="w-16"></th>
             </tr>
           </thead>
           <tbody>
-            {localItems.map((item) => (
+            {filteredAndSortedItems.map((item) => (
               <BulkEditRow
                 key={item.id}
                 item={item}
@@ -371,9 +517,9 @@ export function BulkEditTable({
         </table>
       </div>
 
-      {localItems.length === 0 && (
+      {filteredAndSortedItems.length === 0 && (
         <div className="text-center py-12 text-base-content/60">
-          {t("noItems")}
+          {bidFilter !== "all" ? t("noItemsMatchFilter") : t("noItems")}
         </div>
       )}
     </div>
@@ -755,5 +901,46 @@ function EditableDescriptionCell({
     >
       {plainText || <span className="text-base-content/40">—</span>}
     </div>
+  );
+}
+
+// Sortable column header component
+interface SortableHeaderProps {
+  field: SortField;
+  label: string;
+  currentSort: SortField;
+  direction: SortDirection;
+  onSort: (field: SortField) => void;
+  className?: string;
+}
+
+function SortableHeader({
+  field,
+  label,
+  currentSort,
+  direction,
+  onSort,
+  className = "",
+}: SortableHeaderProps) {
+  const isActive = currentSort === field;
+
+  return (
+    <th
+      className={`cursor-pointer select-none hover:bg-base-200 ${className}`}
+      onClick={() => onSort(field)}
+    >
+      <div className="flex items-center gap-1">
+        {label}
+        <span
+          className={`size-4 ${
+            isActive
+              ? direction === "asc"
+                ? "icon-[tabler--sort-ascending]"
+                : "icon-[tabler--sort-descending]"
+              : "icon-[tabler--arrows-sort] opacity-30"
+          }`}
+        ></span>
+      </div>
+    </th>
   );
 }

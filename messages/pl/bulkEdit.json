@@ -30,6 +30,13 @@
     "status": "Status",
     "bids": "Oferty",
     "auction": "Aukcja",
-    "noItems": "Nie znaleziono przedmiotów. Najpierw utwórz kilka."
+    "noItems": "Nie znaleziono przedmiotów. Najpierw utwórz kilka.",
+    "noItemsMatchFilter": "Żaden przedmiot nie pasuje do bieżącego filtra.",
+    "filter": "Filtr",
+    "filterAll": "Wszystkie",
+    "filterHasBids": "Z ofertami",
+    "filterNoBids": "Bez ofert",
+    "clearFilter": "Wyczyść",
+    "showing": "Pokazano {count} z {total}"
   }
 }

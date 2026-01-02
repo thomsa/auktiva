@@ -30,6 +30,13 @@
     "status": "Status",
     "bids": "Bids",
     "auction": "Auction",
-    "noItems": "No items found. Create some items first."
+    "noItems": "No items found. Create some items first.",
+    "noItemsMatchFilter": "No items match the current filter.",
+    "filter": "Filter",
+    "filterAll": "All",
+    "filterHasBids": "Has Bids",
+    "filterNoBids": "No Bids",
+    "clearFilter": "Clear",
+    "showing": "Showing {count} of {total}"
   }
 }

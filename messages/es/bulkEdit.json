@@ -30,6 +30,13 @@
     "status": "Estado",
     "bids": "Pujas",
     "auction": "Subasta",
-    "noItems": "No se encontraron artículos. Crea algunos primero."
+    "noItems": "No se encontraron artículos. Crea algunos primero.",
+    "noItemsMatchFilter": "Ningún artículo coincide con el filtro actual.",
+    "filter": "Filtro",
+    "filterAll": "Todos",
+    "filterHasBids": "Con pujas",
+    "filterNoBids": "Sin pujas",
+    "clearFilter": "Limpiar",
+    "showing": "Mostrando {count} de {total}"
   }
 }
