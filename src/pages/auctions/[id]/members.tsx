@@ -1,8 +1,5 @@
 import { useState } from "react";
-import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { authOptions } from "@/lib/auth";
 import * as auctionService from "@/lib/services/auction.service";
 import * as memberService from "@/lib/services/member.service";
 import { PageLayout, BackLink, AlertMessage } from "@/components/common";
@@ -10,6 +7,7 @@ import { MemberCard, MemberRow } from "@/components/member";
 import { useToast } from "@/components/ui/toast";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { withAuth } from "@/lib/auth/withAuth";
 
 interface Member {
   id: string;
@@ -217,23 +215,12 @@ export default function MembersPage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session?.user?.id) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
+export const getServerSideProps = withAuth(async (context) => {
   const auctionId = context.params?.id as string;
 
   const membership = await auctionService.getUserMembershipWithAuction(
     auctionId,
-    session.user.id,
+    context.session.user.id,
   );
 
   if (!membership) {
@@ -263,9 +250,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       user: {
-        id: session.user.id,
-        name: session.user.name || null,
-        email: session.user.email || "",
+        id: context.session.user.id,
+        name: context.session.user.name || null,
+        email: context.session.user.email || "",
       },
       auction: {
         id: membership.auction.id,
@@ -277,4 +264,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       messages: await getMessages(context.locale as Locale),
     },
   };
-};
+});

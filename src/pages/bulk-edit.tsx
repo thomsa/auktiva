@@ -1,7 +1,4 @@
-import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
 import useSWR from "swr";
-import { authOptions } from "@/lib/auth";
 import { getMessages, Locale } from "@/i18n";
 import { fetcher } from "@/lib/fetcher";
 import { prisma } from "@/lib/prisma";
@@ -10,6 +7,7 @@ import { BulkEditTable, BulkEditItem } from "@/components/item/BulkEditTable";
 import { SkeletonTable } from "@/components/ui/skeleton";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
+import { withAuth } from "@/lib/auth/withAuth";
 
 interface Currency {
   code: string;
@@ -163,18 +161,7 @@ export default function BulkEditPage({ user, currencies }: BulkEditPageProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
+export const getServerSideProps = withAuth(async (context) => {
   const currencies = await prisma.currency.findMany({
     orderBy: { code: "asc" },
   });
@@ -184,13 +171,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       user: {
-        id: session.user.id,
-        name: session.user.name ?? null,
-        email: session.user.email,
-        image: session.user.image ?? null,
+        id: context.session.user.id,
+        name: context.session.user.name ?? null,
+        email: context.session.user.email,
+        image: context.session.user.image ?? null,
       },
       currencies,
       messages,
     },
   };
-};
+});

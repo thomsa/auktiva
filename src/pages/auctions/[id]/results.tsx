@@ -1,12 +1,10 @@
-import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { authOptions } from "@/lib/auth";
 import * as auctionService from "@/lib/services/auction.service";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { StatsCard } from "@/components/ui/stats-card";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { withAuth } from "@/lib/auth/withAuth";
 
 interface Winner {
   itemId: string;
@@ -398,24 +396,13 @@ export default function ResultsPage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session?.user?.id) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
+export const getServerSideProps = withAuth(async (context) => {
   const auctionId = context.params?.id as string;
 
   // Check membership
   const membership = await auctionService.getUserMembership(
     auctionId,
-    session.user.id,
+    context.session.user.id,
   );
 
   if (!membership) {
@@ -432,7 +419,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // Get auction results data (pass isAdmin to show winner info for anonymous bids)
   const resultsData = await auctionService.getAuctionResultsData(
     auctionId,
-    session.user.id,
+    context.session.user.id,
     isAdmin,
   );
 
@@ -448,9 +435,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       user: {
-        id: session.user.id,
-        name: session.user.name || null,
-        email: session.user.email || "",
+        id: context.session.user.id,
+        name: context.session.user.name || null,
+        email: context.session.user.email || "",
       },
       auction: resultsData.auction,
       winners: resultsData.winners,
@@ -461,4 +448,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       messages: await getMessages(context.locale as Locale),
     },
   };
-};
+});

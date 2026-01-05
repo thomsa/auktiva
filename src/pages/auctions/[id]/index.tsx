@@ -1,10 +1,7 @@
 import { useMemo } from "react";
-import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import useSWR from "swr";
-import { authOptions } from "@/lib/auth";
 import { getMessages, Locale } from "@/i18n";
 import { fetcher } from "@/lib/fetcher";
 import * as auctionService from "@/lib/services/auction.service";
@@ -18,6 +15,7 @@ import {
   sortItems,
 } from "@/components/ui/sort-dropdown";
 import { useSortFilter, usePollingInterval } from "@/hooks/ui";
+import { withAuth } from "@/lib/auth/withAuth";
 import { isUserAdmin, canUserCreateItems } from "@/utils/auction-helpers";
 import { useTranslations } from "next-intl";
 
@@ -268,18 +266,7 @@ export default function AuctionDetailPage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session?.user?.id) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
+export const getServerSideProps = withAuth(async (context) => {
   const auctionId = context.params?.id as string;
 
   // Get auction details
@@ -297,7 +284,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // Get membership check
   let membership = await auctionService.getUserMembership(
     auctionId,
-    session.user.id,
+    context.session.user.id,
   );
 
   // If not a member, check if this is an OPEN or LINK auction
@@ -306,7 +293,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       // Auto-join the user to the open/link auction
       membership = await auctionService.autoJoinAuction(
         auctionId,
-        session.user.id,
+        context.session.user.id,
       );
     } else {
       // Not a member and not an open/link auction - redirect
@@ -322,9 +309,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       user: {
-        id: session.user.id,
-        name: session.user.name || null,
-        email: session.user.email || "",
+        id: context.session.user.id,
+        name: context.session.user.name || null,
+        email: context.session.user.email || "",
       },
       auctionId,
       membership: {
@@ -333,4 +320,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       messages: await getMessages(context.locale as Locale),
     },
   };
-};
+});

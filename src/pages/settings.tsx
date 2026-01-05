@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
-import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
 import { signOut } from "next-auth/react";
-import { authOptions } from "@/lib/auth";
 import * as userService from "@/lib/services/user.service";
 import * as systemService from "@/lib/services/system.service";
 import { PageLayout, SEO } from "@/components/common";
@@ -13,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { LanguageSelect } from "@/components/ui/language-select";
 import { createLogger } from "@/lib/logger";
 import { useToast } from "@/components/ui/toast";
+import { withAuth } from "@/lib/auth/withAuth";
 
 const settingsLogger = createLogger("settings");
 
@@ -1334,19 +1332,8 @@ export default function SettingsPage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session?.user?.id) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
-  const user = await userService.getUserById(session.user.id);
+export const getServerSideProps = withAuth(async (context) => {
+  const user = await userService.getUserById(context.session.user.id);
 
   if (!user) {
     return {
@@ -1358,15 +1345,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   // Get or create user settings
-  const settings = await userService.getOrCreateUserSettings(session.user.id);
+  const settings = await userService.getOrCreateUserSettings(
+    context.session.user.id,
+  );
 
   // Get connected OAuth accounts
   const connectedAccounts = await userService.getUserConnectedAccounts(
-    session.user.id,
+    context.session.user.id,
   );
 
   // Check if user has a password (for OAuth-only users)
-  const hasPassword = await userService.userHasPassword(session.user.id);
+  const hasPassword = await userService.userHasPassword(
+    context.session.user.id,
+  );
 
   // Check if Google OAuth is enabled
   const googleOAuthEnabled = !!(
@@ -1478,4 +1469,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       messages,
     },
   };
-};
+});

@@ -1,8 +1,5 @@
 import { useState } from "react";
 import Link from "next/link";
-import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { getMessages, Locale } from "@/i18n";
 import { Navbar } from "@/components/layout/navbar";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
@@ -11,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 import { useToast } from "@/components/ui/toast";
 import { usePollingInterval } from "@/hooks/ui";
+import { withAuth } from "@/lib/auth/withAuth";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { useTranslations } from "next-intl";
@@ -801,25 +799,14 @@ export default function ItemDetailPage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session?.user?.id) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
+export const getServerSideProps = withAuth(async (context) => {
   const auctionId = context.params?.id as string;
   const itemId = context.params?.itemId as string;
 
   // Check membership with auction info
   const membership = await auctionService.getUserMembershipWithAuction(
     auctionId,
-    session.user.id,
+    context.session.user.id,
   );
 
   if (!membership) {
@@ -835,7 +822,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const itemData = await itemService.getItemDetailPageData(
     itemId,
     auctionId,
-    session.user.id,
+    context.session.user.id,
     membership.auction.bidderVisibility,
     auctionService.isAdmin(membership),
   );
@@ -852,18 +839,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // Get sidebar items
   const auctionItems = await itemService.getAuctionItemsForListPage(
     auctionId,
-    session.user.id,
+    context.session.user.id,
   );
 
   // Get user settings
-  const userSettings = await userService.getUserSettings(session.user.id);
+  const userSettings = await userService.getUserSettings(
+    context.session.user.id,
+  );
 
   return {
     props: {
       user: {
-        id: session.user.id,
-        name: session.user.name || null,
-        email: session.user.email || "",
+        id: context.session.user.id,
+        name: context.session.user.name || null,
+        email: context.session.user.email || "",
       },
       auction: {
         id: membership.auction.id,
@@ -883,4 +872,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       messages: await getMessages(context.locale as Locale),
     },
   };
-};
+});

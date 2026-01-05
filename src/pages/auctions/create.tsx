@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { PageLayout, BackLink } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { withAuth } from "@/lib/auth/withAuth";
 
 interface CreateAuctionProps {
   user: {
@@ -280,29 +278,18 @@ export default function CreateAuctionPage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session?.user?.id) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
+export const getServerSideProps = withAuth(async (context) => {
   const messages = await getMessages(context.locale as Locale);
 
   return {
     props: {
       user: {
-        id: session.user.id,
-        name: session.user.name || null,
-        email: session.user.email || "",
+        id: context.session.user.id,
+        name: context.session.user.name || null,
+        email: context.session.user.email || "",
       },
       allowOpenAuctions: process.env.ALLOW_OPEN_AUCTIONS === "true",
       messages,
     },
   };
-};
+});

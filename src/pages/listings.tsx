@@ -1,9 +1,6 @@
 import { useMemo, useState } from "react";
-import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
 import Link from "next/link";
 import useSWR from "swr";
-import { authOptions } from "@/lib/auth";
 import { fetcher } from "@/lib/fetcher";
 import { PageLayout, EmptyState } from "@/components/common";
 import {
@@ -18,6 +15,7 @@ import { isItemEnded } from "@/utils/auction-helpers";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { useFormatters } from "@/i18n";
+import { withAuth } from "@/lib/auth/withAuth";
 
 interface UserItem {
   id: string;
@@ -454,26 +452,15 @@ function ListingCard({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session?.user?.id) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
+export const getServerSideProps = withAuth(async (context) => {
   return {
     props: {
       user: {
-        id: session.user.id,
-        name: session.user.name || null,
-        email: session.user.email || "",
+        id: context.session.user.id,
+        name: context.session.user.name || null,
+        email: context.session.user.email || "",
       },
       messages: await getMessages(context.locale as Locale),
     },
   };
-};
+});

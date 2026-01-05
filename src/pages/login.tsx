@@ -11,6 +11,7 @@ import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { MicrosoftSignInButton } from "@/components/auth/microsoft-sign-in-button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { getSafeRedirectUrl } from "@/utils/auth-redirect";
 
 interface LoginPageProps {
   googleOAuthEnabled: boolean;
@@ -60,7 +61,9 @@ export default function LoginPage({
           setError(tErrors("auth.invalidCredentials"));
         }
       } else {
-        router.push("/dashboard");
+        // Redirect to callback URL or dashboard
+        const redirectUrl = getSafeRedirectUrl(router.query.redirectUrl);
+        router.push(redirectUrl);
       }
     } catch {
       setError(tErrors("generic"));

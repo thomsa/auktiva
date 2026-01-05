@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import * as auctionService from "@/lib/services/auction.service";
 import { prisma } from "@/lib/prisma";
 import { PageLayout, BackLink } from "@/components/common";
@@ -13,6 +10,7 @@ import { ImageUpload } from "@/components/upload/image-upload";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { withAuth } from "@/lib/auth/withAuth";
 
 interface Currency {
   code: string;
@@ -606,24 +604,13 @@ export default function CreateItemPage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session?.user?.id) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
+export const getServerSideProps = withAuth(async (context) => {
   const auctionId = context.params?.id as string;
 
   // Check membership and permission
   const membership = await auctionService.getUserMembership(
     auctionId,
-    session.user.id,
+    context.session.user.id,
   );
 
   if (!membership) {
@@ -663,9 +650,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       user: {
-        id: session.user.id,
-        name: session.user.name || null,
-        email: session.user.email || "",
+        id: context.session.user.id,
+        name: context.session.user.name || null,
+        email: context.session.user.email || "",
       },
       auction: {
         id: auction.id,
@@ -678,4 +665,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       messages: await getMessages(context.locale as Locale),
     },
   };
-};
+});

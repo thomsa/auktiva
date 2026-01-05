@@ -127,16 +127,17 @@ CSV Import allows you to create multiple items at once by uploading a spreadshee
 
 Your CSV file should have headers in the first row. Supported columns:
 
-| Column | Required | Description |
-|--------|----------|-------------|
-| `name` | Yes | Item title |
-| `description` | Yes | Item description (can include basic HTML) |
-| `currency` | No | Currency code (e.g., USD, EUR). Defaults to auction currency |
-| `startingBid` | No | Starting bid amount. Defaults to 0 |
-| `minBidIncrement` | No | Minimum bid increment. Defaults to 1 |
-| `published` | No | `true` or `false`. Defaults to false (draft) |
+| Column            | Required | Description                                                  |
+| ----------------- | -------- | ------------------------------------------------------------ |
+| `name`            | Yes      | Item title                                                   |
+| `description`     | Yes      | Item description (can include basic HTML)                    |
+| `currency`        | No       | Currency code (e.g., USD, EUR). Defaults to auction currency |
+| `startingBid`     | No       | Starting bid amount. Defaults to 0                           |
+| `minBidIncrement` | No       | Minimum bid increment. Defaults to 1                         |
+| `published`       | No       | `true` or `false`. Defaults to false (draft)                 |
 
 **Alternative column names are supported:**
+
 - `name`: title, item
 - `description`: desc
 - `currency`: currencyCode, currency_code
@@ -160,7 +161,8 @@ Items with errors are highlighted in red and cannot be selected for import until
 - **Min Increment** must be greater than 0
 
 <Callout type="warning">
-  Fix all validation errors before importing. Items with errors will show the specific issue under each field.
+  Fix all validation errors before importing. Items with errors will show the
+  specific issue under each field.
 </Callout>
 
 ### Editing Before Import

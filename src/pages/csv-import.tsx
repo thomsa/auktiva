@@ -1,13 +1,11 @@
-import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth";
 import { useState, useCallback, useRef } from "react";
-import { authOptions } from "@/lib/auth";
 import { getMessages, Locale } from "@/i18n";
 import { prisma } from "@/lib/prisma";
 import { PageLayout, BackLink, SEO } from "@/components/common";
 import { ImportPreviewTable } from "@/components/item/ImportPreviewTable";
 import { useToast } from "@/components/ui/toast";
 import { useTranslations } from "next-intl";
+import { withAuth } from "@/lib/auth/withAuth";
 import {
   parseCSV,
   validateCurrencies,
@@ -401,24 +399,13 @@ export default function CSVImportPage({
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
+export const getServerSideProps = withAuth(async (context) => {
   // Get auctions where user is owner or admin
   const auctions = await prisma.auction.findMany({
     where: {
       members: {
         some: {
-          userId: session.user.id,
+          userId: context.session.user.id,
           role: { in: ["OWNER", "ADMIN"] },
         },
       },
@@ -439,14 +426,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       user: {
-        id: session.user.id,
-        name: session.user.name ?? null,
-        email: session.user.email,
-        image: session.user.image ?? null,
+        id: context.session.user.id,
+        name: context.session.user.name ?? null,
+        email: context.session.user.email,
+        image: context.session.user.image ?? null,
       },
       currencies,
       auctions,
       messages,
     },
   };
-};
+});
