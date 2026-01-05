@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
+import { usePollingInterval, type PollingPriority } from "@/hooks/ui";
 
 export interface Notification {
   id: string;
@@ -44,14 +45,18 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   const { status } = useSession();
   const isAuthenticated = status === "authenticated";
 
-  // Determine polling interval based on current route
-  const refreshInterval = useMemo(() => {
-    // Check if user is on an auction page
+  // Determine polling priority based on current route
+  const priority = useMemo((): PollingPriority => {
+    // High priority on auction pages, low elsewhere
     const isAuctionPage = router.pathname.startsWith("/auctions/");
-
-    // 5 seconds on auction pages, 30 seconds elsewhere
-    return isAuctionPage ? 5000 : 30000;
+    return isAuctionPage ? "high" : "low";
   }, [router.pathname]);
+
+  // Use polling hook - pauses when tab hidden, adjusts by priority
+  const refreshInterval = usePollingInterval({
+    priority,
+    disabled: !isAuthenticated,
+  });
 
   // Single shared SWR instance with smart polling configuration
   // Only fetch if user is authenticated (pass null key to disable)

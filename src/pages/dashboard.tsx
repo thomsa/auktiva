@@ -17,7 +17,7 @@ import {
   sortAuctions,
   sortItems,
 } from "@/components/ui/sort-dropdown";
-import { useSortFilter } from "@/hooks/ui";
+import { useSortFilter, usePollingInterval } from "@/hooks/ui";
 import { isItemEnded, getBidStatus } from "@/utils/auction-helpers";
 import { useTranslations } from "next-intl";
 
@@ -241,10 +241,17 @@ export default function DashboardPage({ user }: DashboardProps) {
   );
   const { currentSort: bidSort } = useSortFilter("bidSort", "date-desc");
 
-  // Client-side data fetching
+  // Use medium priority for dashboard, pauses when tab hidden
+  const refreshInterval = usePollingInterval({ priority: "medium" });
+
+  // Client-side data fetching with polling for bid status updates
   const { data, isLoading } = useSWR<DashboardData>(
     "/api/user/dashboard",
     fetcher,
+    {
+      refreshInterval,
+      revalidateOnFocus: true,
+    },
   );
 
   const auctions = useMemo(() => data?.auctions ?? [], [data?.auctions]);

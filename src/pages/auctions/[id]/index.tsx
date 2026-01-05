@@ -17,7 +17,7 @@ import {
   itemSortOptions,
   sortItems,
 } from "@/components/ui/sort-dropdown";
-import { useSortFilter } from "@/hooks/ui";
+import { useSortFilter, usePollingInterval } from "@/hooks/ui";
 import { isUserAdmin, canUserCreateItems } from "@/utils/auction-helpers";
 import { useTranslations } from "next-intl";
 
@@ -91,10 +91,17 @@ export default function AuctionDetailPage({
   const { currentSort } = useSortFilter("sort", "date-desc");
   const viewMode = (router.query.view as "grid" | "list") || "grid";
 
-  // Client-side data fetching
+  // Use high priority for auction detail page, pauses when tab hidden
+  const refreshInterval = usePollingInterval({ priority: "high" });
+
+  // Client-side data fetching with polling for live bid updates
   const { data, isLoading } = useSWR<AuctionDetailsData>(
     `/api/auctions/${auctionId}/details`,
     fetcher,
+    {
+      refreshInterval,
+      revalidateOnFocus: true,
+    },
   );
 
   const auction = data?.auction;

@@ -10,6 +10,7 @@ import { ItemsSidebar, SidebarItem } from "@/components/item/ItemsSidebar";
 import { Button } from "@/components/ui/button";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 import { useToast } from "@/components/ui/toast";
+import { usePollingInterval } from "@/hooks/ui";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { useTranslations } from "next-intl";
@@ -116,12 +117,23 @@ export default function ItemDetailPage({
   const [showEndModal, setShowEndModal] = useState(false);
   const [isEndingItem, setIsEndingItem] = useState(false);
 
-  // Fetch latest item data with SWR (poll every 5 seconds when active)
+  // Check if item has ended (use initialItem for initial polling config)
+  const initialIsEnded =
+    initialItem.endDate && new Date(initialItem.endDate) < new Date();
+
+  // Use critical priority for active bidding, pauses when tab hidden
+  const refreshInterval = usePollingInterval({
+    priority: "critical",
+    disabled: !!initialIsEnded,
+  });
+
+  // Fetch latest item data with SWR
   const { data, mutate } = useSWR<ItemResponse>(
     `/api/auctions/${auction.id}/items/${initialItem.id}`,
     fetcher,
     {
       fallbackData: { item: initialItem, bids: initialBids },
+      refreshInterval,
       revalidateOnFocus: true,
     },
   );
