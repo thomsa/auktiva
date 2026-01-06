@@ -212,7 +212,7 @@ npm start
 
 ### Phase 3 (Pending)
 
-- [ ] Real-time updates (WebSocket/polling)
+- [ ] Real-time updates (polling)
 - [ ] Auction closing logic
 - [ ] Winner determination
 - [ ] Member management page

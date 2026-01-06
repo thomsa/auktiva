@@ -21,7 +21,7 @@
       "sectionDescription": "Powerful features built for organizers and bidders alike.",
       "realTimeBidding": {
         "title": "Real-time Bidding",
-        "description": "Watch bids happen instantly with our WebSocket-powered live updates. No refreshing required."
+        "description": "Watch bids happen instantly with our live updates. No refreshing required."
       },
       "privateSecure": {
         "title": "Private & Secure",

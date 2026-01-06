@@ -21,7 +21,7 @@
       "sectionDescription": "Funcionalidades potentes creadas tanto para organizadores como para pujadores.",
       "realTimeBidding": {
         "title": "Pujas en tiempo real",
-        "description": "Observa las pujas al instante con nuestras actualizaciones en vivo por WebSocket. No hace falta refrescar."
+        "description": "Observa las pujas al instante con nuestras actualizaciones en vivo. No hace falta refrescar."
       },
       "privateSecure": {
         "title": "Privado y Seguro",

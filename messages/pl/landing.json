@@ -21,7 +21,7 @@
       "sectionDescription": "Potężne funkcje stworzone dla organizatorów i licytujących.",
       "realTimeBidding": {
         "title": "Licytacja w czasie rzeczywistym",
-        "description": "Obserwuj oferty na żywo dzięki aktualizacjom WebSocket. Bez konieczności odświeżania."
+        "description": "Obserwuj oferty na żywo dzięki automatycznym aktualizacjom. Bez konieczności odświeżania."
       },
       "privateSecure": {
         "title": "Prywatne i bezpieczne",
