@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.14.1] - 2026-01-06
+
+### 📚 Documentation
+
+- Remove WebSocket references from landing page and documentation by @thomsa
+
 ## [1.14.0] - 2026-01-05
 
 ### 🚀 Features
