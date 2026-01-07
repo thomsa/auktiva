@@ -83,7 +83,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://www.gstatic.com https:",
               "font-src 'self' data:",
-              "connect-src 'self' https://www.google.com https: ws://127.0.0.1:* wss://127.0.0.1:* ws://localhost:* wss://localhost:*",
+              "connect-src 'self' https://www.google.com https: ws://127.0.0.1:* wss://127.0.0.1:* ws://localhost:* wss://localhost:* wss://*.pusher.com",
               "frame-src 'self' https://www.google.com https://www.recaptcha.net",
               "frame-ancestors 'none'",
               "base-uri 'self'",
