@@ -53,6 +53,7 @@ export interface CreateItemInput {
   bidderAnonymous?: boolean;
   endDate?: string | null;
   isPublished?: boolean;
+  discussionsEnabled?: boolean;
 }
 
 export interface UpdateItemInput {
@@ -64,6 +65,7 @@ export interface UpdateItemInput {
   bidderAnonymous?: boolean;
   endDate?: string | null;
   isPublished?: boolean;
+  discussionsEnabled?: boolean;
 }
 
 export interface ItemWithDetails extends AuctionItem {
@@ -115,10 +117,26 @@ export interface BidForDisplay {
   } | null;
 }
 
+export interface DiscussionForDisplay {
+  id: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  isEdited: boolean;
+  parentId: string | null;
+  user: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
+  replies: DiscussionForDisplay[];
+}
+
 export interface ItemDetailPageData {
-  item: ItemDetailForPage & { updatedAt: string; creatorId: string };
+  item: ItemDetailForPage & { updatedAt: string; creatorId: string; discussionsEnabled: boolean };
   bids: BidForDisplay[];
   images: { id: string; url: string; publicUrl: string; order: number }[];
+  discussions: DiscussionForDisplay[];
   isHighestBidder: boolean;
   canBid: boolean;
   canEdit: boolean;
@@ -284,6 +302,49 @@ export async function getItemDetailPageData(
     orderBy: { order: "asc" },
   });
 
+  // Get discussions as threaded tree
+  const allDiscussions = await prisma.itemDiscussion.findMany({
+    where: { auctionItemId: itemId },
+    orderBy: { createdAt: "asc" },
+    include: {
+      user: {
+        select: { id: true, name: true, image: true },
+      },
+    },
+  });
+
+  // Build threaded tree structure
+  const discussionMap = new Map<string, DiscussionForDisplay>();
+  const topLevelDiscussions: DiscussionForDisplay[] = [];
+
+  for (const d of allDiscussions) {
+    discussionMap.set(d.id, {
+      id: d.id,
+      content: d.content,
+      createdAt: d.createdAt.toISOString(),
+      updatedAt: d.updatedAt.toISOString(),
+      isEdited: d.updatedAt > d.createdAt,
+      parentId: d.parentId,
+      user: d.user,
+      replies: [],
+    });
+  }
+
+  for (const d of allDiscussions) {
+    const discussion = discussionMap.get(d.id)!;
+    if (d.parentId) {
+      const parent = discussionMap.get(d.parentId);
+      if (parent) {
+        parent.replies.push(discussion);
+      }
+    } else {
+      topLevelDiscussions.push(discussion);
+    }
+  }
+
+  // Sort top-level by newest first
+  topLevelDiscussions.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
   const isHighestBidder = item.highestBidderId === viewerId;
   const canEdit = isItemOwner || isViewerAdmin;
   const canBid = !isItemOwner && !isItemEnded;
@@ -306,6 +367,7 @@ export async function getItemDetailPageData(
       isPublished: item.isPublished,
       creatorId: item.creatorId,
       creator: item.creator,
+      discussionsEnabled: item.discussionsEnabled,
     },
     bids,
     images: images.map((img) => ({
@@ -314,6 +376,7 @@ export async function getItemDetailPageData(
       publicUrl: getPublicUrl(img.url),
       order: img.order,
     })),
+    discussions: topLevelDiscussions,
     isHighestBidder,
     canBid,
     canEdit,
@@ -363,6 +426,7 @@ export async function getItemForEditPage(
       endDate: item.endDate?.toISOString() || null,
       currentBid: item.currentBid,
       isPublished: item.isPublished,
+      discussionsEnabled: item.discussionsEnabled,
     },
     hasBids: item._count.bids > 0,
     canEdit,
@@ -864,6 +928,7 @@ export interface BulkEditItem {
   startingBid: number;
   minBidIncrement: number;
   isPublished: boolean;
+  discussionsEnabled: boolean;
   endDate: string | null;
   createdAt: string;
   auctionId: string;
@@ -916,6 +981,7 @@ export async function getUserItemsForBulkEdit(
     startingBid: item.startingBid,
     minBidIncrement: item.minBidIncrement,
     isPublished: item.isPublished,
+    discussionsEnabled: item.discussionsEnabled,
     endDate: item.endDate?.toISOString() ?? null,
     createdAt: item.createdAt.toISOString(),
     auctionId: item.auction.id,
@@ -934,6 +1000,7 @@ export interface BulkUpdateInput {
   startingBid?: number;
   minBidIncrement?: number;
   isPublished?: boolean;
+  discussionsEnabled?: boolean;
 }
 
 export async function bulkUpdateItems(
@@ -960,6 +1027,9 @@ export async function bulkUpdateItems(
   // Build update data based on what's allowed
   if (input.minBidIncrement !== undefined) {
     updateData.minBidIncrement = input.minBidIncrement;
+  }
+  if (input.discussionsEnabled !== undefined) {
+    updateData.discussionsEnabled = input.discussionsEnabled;
   }
 
   // For each item, apply updates based on whether it has bids

@@ -68,6 +68,15 @@
     },
     "settings": {
       "updateFailed": "Error al actualizar configuración"
+    },
+    "discussion": {
+      "createFailed": "Error al publicar discusión",
+      "updateFailed": "Error al actualizar discusión",
+      "deleteFailed": "Error al eliminar discusión",
+      "notFound": "Comentario no encontrado",
+      "disabled": "Los comentarios están deshabilitados para este artículo",
+      "tooLong": "El comentario es demasiado largo (máx 2000 caracteres)",
+      "empty": "El comentario no puede estar vacío"
     }
   }
 }

@@ -177,7 +177,13 @@
     "quote": "Quote",
     "undo": "Undo",
     "redo": "Redo",
-    "enterUrl": "Enter URL"
+    "enterUrl": "Enter URL",
+    "insertLink": "Insert Link",
+    "urlLabel": "URL",
+    "urlHint": "Leave empty to remove the link",
+    "cancel": "Cancel",
+    "applyLink": "Apply Link",
+    "removeLink": "Remove Link"
   },
   "changelog": {
     "title": "Changelog & Releases",

@@ -68,6 +68,15 @@
     },
     "settings": {
       "updateFailed": "Aktualisieren der Einstellungen fehlgeschlagen"
+    },
+    "discussion": {
+      "createFailed": "Posten der Diskussion fehlgeschlagen",
+      "updateFailed": "Aktualisieren der Diskussion fehlgeschlagen",
+      "deleteFailed": "Löschen der Diskussion fehlgeschlagen",
+      "notFound": "Kommentar nicht gefunden",
+      "disabled": "Kommentare sind für diesen Artikel deaktiviert",
+      "tooLong": "Kommentar ist zu lang (max 2000 Zeichen)",
+      "empty": "Kommentar darf nicht leer sein"
     }
   }
 }

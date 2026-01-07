@@ -9,6 +9,7 @@ export * as inviteHandlers from "./invite.handlers";
 export * as userHandlers from "./user.handlers";
 export * as notificationHandlers from "./notification.handlers";
 export * as systemHandlers from "./system.handlers";
+export * as discussionHandlers from "./discussion.handlers";
 
 // Re-export schemas for convenience
 export {
@@ -46,3 +47,10 @@ export {
   updateSystemSettingsSchema,
   type UpdateSystemSettingsBody,
 } from "./system.handlers";
+
+export {
+  createDiscussionSchema,
+  updateDiscussionSchema,
+  type CreateDiscussionBody,
+  type UpdateDiscussionBody,
+} from "./discussion.handlers";

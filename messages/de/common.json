@@ -177,7 +177,13 @@
     "quote": "Zitat",
     "undo": "Rückgängig",
     "redo": "Wiederholen",
-    "enterUrl": "URL eingeben"
+    "enterUrl": "URL eingeben",
+    "insertLink": "Link einfügen",
+    "urlLabel": "URL",
+    "urlHint": "Leer lassen um den Link zu entfernen",
+    "cancel": "Abbrechen",
+    "applyLink": "Link anwenden",
+    "removeLink": "Link entfernen"
   },
   "changelog": {
     "title": "Änderungsprotokoll & Versionen",

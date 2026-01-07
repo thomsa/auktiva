@@ -177,7 +177,13 @@
     "quote": "Idézet",
     "undo": "Visszavonás",
     "redo": "Újra",
-    "enterUrl": "Add meg az URL-t"
+    "enterUrl": "Add meg az URL-t",
+    "insertLink": "Hivatkozás beszúrása",
+    "urlLabel": "URL",
+    "urlHint": "Hagyd üresen a hivatkozás eltávolításához",
+    "cancel": "Mégse",
+    "applyLink": "Hivatkozás alkalmazása",
+    "removeLink": "Hivatkozás eltávolítása"
   },
   "changelog": {
     "title": "Változásnapló és kiadások",

@@ -4,6 +4,7 @@ import { getMessages, Locale } from "@/i18n";
 import { Navbar } from "@/components/layout/navbar";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { ItemsSidebar, SidebarItem } from "@/components/item/ItemsSidebar";
+import { DiscussionSection } from "@/components/item/DiscussionSection";
 import { Button } from "@/components/ui/button";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 import { useToast } from "@/components/ui/toast";
@@ -25,6 +26,21 @@ interface Bid {
     id: string;
     name: string | null;
   } | null; // null if anonymous to viewer
+}
+
+interface Discussion {
+  id: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  isEdited: boolean;
+  parentId: string | null;
+  user: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
+  replies: Discussion[];
 }
 
 interface ItemDetailProps {
@@ -58,6 +74,7 @@ interface ItemDetailProps {
     endDate: string | null;
     createdAt: string;
     isPublished: boolean;
+    discussionsEnabled: boolean;
     creator: {
       id: string;
       name: string | null;
@@ -65,10 +82,12 @@ interface ItemDetailProps {
     };
   };
   bids: Bid[];
+  discussions: Discussion[];
   isHighestBidder: boolean;
   canBid: boolean;
   canEdit: boolean;
   isItemOwner: boolean;
+  isOwnerOrAdmin: boolean;
   winnerEmail: string | null;
   images: Array<{
     id: string;
@@ -90,9 +109,11 @@ export default function ItemDetailPage({
   itemSidebarCollapsed: initialSidebarCollapsed,
   item: initialItem,
   bids: initialBids,
+  discussions: initialDiscussions,
   canBid,
   canEdit,
   isItemOwner,
+  isOwnerOrAdmin,
   winnerEmail,
   images,
 }: ItemDetailProps) {
@@ -523,6 +544,20 @@ export default function ItemDetailPage({
                           </div>
                         )}
                       </div>
+
+                      <div className="divider opacity-50"></div>
+
+                      {/* Discussions Section */}
+                      <DiscussionSection
+                        auctionId={auction.id}
+                        itemId={initialItem.id}
+                        currentUserId={user.id}
+                        itemCreatorId={initialItem.creator.id}
+                        isOwnerOrAdmin={isOwnerOrAdmin}
+                        initialDiscussions={initialDiscussions}
+                        discussionsEnabled={initialItem.discussionsEnabled}
+                      />
+
                     </div>
                   </div>
                 </div>
@@ -863,10 +898,12 @@ export const getServerSideProps = withAuth(async (context) => {
       itemSidebarCollapsed: userSettings?.itemSidebarCollapsed ?? false,
       item: itemData.item,
       bids: itemData.bids,
+      discussions: itemData.discussions,
       isHighestBidder: itemData.isHighestBidder,
       canBid: itemData.canBid,
       canEdit: itemData.canEdit,
       isItemOwner: itemData.isItemOwner,
+      isOwnerOrAdmin: auctionService.isAdmin(membership),
       winnerEmail: itemData.winnerEmail,
       images: itemData.images,
       messages: await getMessages(context.locale as Locale),

@@ -6,7 +6,8 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore, useRef } from "react";
+import { createPortal } from "react-dom";
 import DOMPurify from "dompurify";
 
 interface RichTextEditorProps {
@@ -15,6 +16,7 @@ interface RichTextEditorProps {
   defaultValue?: string;
   value?: string;
   onChange?: (value: string) => void;
+  onSubmit?: () => void;
   placeholder?: string;
   maxLength?: number;
   className?: string;
@@ -26,12 +28,16 @@ export function RichTextEditor({
   defaultValue = "",
   value,
   onChange,
+  onSubmit,
   placeholder,
   className = "",
   maxLength = 1000,
 }: RichTextEditorProps) {
   const t = useTranslations("richText");
   const [content, setContent] = useState(value || defaultValue);
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+  const linkInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
     extensions: [
@@ -59,6 +65,14 @@ export function RichTextEditor({
       attributes: {
         class:
           "prose prose-sm max-w-none min-h-[120px] p-3 focus:outline-none text-base-content",
+      },
+      handleKeyDown: (view, event) => {
+        if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+          event.preventDefault();
+          onSubmit?.();
+          return true;
+        }
+        return false;
       },
     },
     onUpdate: ({ editor }) => {
@@ -96,20 +110,35 @@ export function RichTextEditor({
     return <div className="animate-pulse bg-base-200 rounded-lg h-32"></div>;
   }
 
-  const setLink = () => {
-    const previousUrl = editor.getAttributes("link").href;
-    const url = window.prompt(t("enterUrl"), previousUrl);
+  const openLinkModal = () => {
+    const previousUrl = editor.getAttributes("link").href || "";
+    setLinkUrl(previousUrl);
+    setShowLinkModal(true);
+    setTimeout(() => linkInputRef.current?.focus(), 100);
+  };
 
-    if (url === null) {
-      return;
-    }
+  const closeLinkModal = () => {
+    setShowLinkModal(false);
+    setLinkUrl("");
+    editor.chain().focus().run();
+  };
 
-    if (url === "") {
+  const applyLink = () => {
+    if (linkUrl === "") {
       editor.chain().focus().extendMarkRange("link").unsetLink().run();
-      return;
+    } else {
+      editor.chain().focus().extendMarkRange("link").setLink({ href: linkUrl }).run();
     }
+    closeLinkModal();
+  };
 
-    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+  const handleLinkKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      applyLink();
+    } else if (e.key === "Escape") {
+      closeLinkModal();
+    }
   };
 
   return (
@@ -195,7 +224,7 @@ export function RichTextEditor({
 
         <button
           type="button"
-          onClick={setLink}
+          onClick={openLinkModal}
           className={`btn btn-ghost btn-xs btn-square tooltip tooltip-bottom ${
             editor.isActive("link") ? "bg-base-300" : ""
           }`}
@@ -266,6 +295,62 @@ export function RichTextEditor({
         </svg>
         {characterCount} / {maxLength} characters
       </div>
+
+      {/* Link Modal - rendered in portal */}
+      {showLinkModal && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div 
+            className="fixed inset-0 bg-black/50" 
+            onClick={closeLinkModal}
+            onKeyDown={(e) => e.key === "Escape" && closeLinkModal()}
+            role="button"
+            tabIndex={0}
+            aria-label="Close modal"
+          />
+          <div className="relative bg-base-100 rounded-lg shadow-xl p-6 w-full max-w-md mx-4 z-10">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <span className="icon-[tabler--link] size-5"></span>
+              {t("insertLink")}
+            </h3>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">{t("urlLabel")}</span>
+              </label>
+              <input
+                ref={linkInputRef}
+                type="url"
+                className="input input-bordered w-full"
+                placeholder="https://example.com"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                onKeyDown={handleLinkKeyDown}
+              />
+              <label className="label">
+                <span className="label-text-alt text-base-content/60">
+                  {t("urlHint")}
+                </span>
+              </label>
+            </div>
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={closeLinkModal}
+              >
+                {t("cancel")}
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={applyLink}
+              >
+                {linkUrl ? t("applyLink") : t("removeLink")}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

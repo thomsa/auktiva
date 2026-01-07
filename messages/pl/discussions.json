@@ -1,0 +1,29 @@
+{
+  "discussions": {
+    "title": "Dyskusje",
+    "empty": "Brak dyskusji. Bądź pierwszy i podziel się swoimi przemyśleniami!",
+    "disabled": "Dyskusje są wyłączone dla tego przedmiotu.",
+    "placeholder": "Podziel się swoimi przemyśleniami o tym przedmiocie...",
+    "replyPlaceholder": "Napisz odpowiedź...",
+    "submit": "Opublikuj",
+    "submitting": "Publikowanie...",
+    "reply": "Odpowiedz",
+    "orderBy": "Sortuj według",
+    "newest": "Najnowsze",
+    "oldest": "Najstarsze",
+    "edited": "edytowano",
+    "editedAt": "Edytowano",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "confirmDelete": "Czy na pewno?",
+    "cancel": "Anuluj",
+    "deleteSuccess": "Dyskusja usunięta",
+    "updateSuccess": "Dyskusja zaktualizowana",
+    "createSuccess": "Dyskusja opublikowana",
+    "settings": "Dyskusje",
+    "enableDiscussions": "Włącz dyskusje",
+    "enableDiscussionsDescription": "Pozwól członkom aukcji dyskutować o tym przedmiocie",
+    "anonymous": "Anonimowy",
+    "itemOwner": "Właściciel"
+  }
+}

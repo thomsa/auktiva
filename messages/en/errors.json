@@ -68,6 +68,15 @@
     },
     "settings": {
       "updateFailed": "Failed to update settings"
+    },
+    "discussion": {
+      "createFailed": "Failed to post discussion",
+      "updateFailed": "Failed to update discussion",
+      "deleteFailed": "Failed to delete discussion",
+      "notFound": "Discussion not found",
+      "disabled": "Discussions are disabled for this item",
+      "tooLong": "Discussion is too long (max 2000 characters)",
+      "empty": "Discussion cannot be empty"
     }
   }
 }

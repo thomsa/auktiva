@@ -22,6 +22,7 @@ export const createItemSchema = z.object({
   bidderAnonymous: z.boolean().optional(),
   endDate: z.string().optional(),
   isPublished: z.boolean().optional(),
+  commentsEnabled: z.boolean().optional(),
 });
 
 export const updateItemSchema = z.object({
@@ -33,6 +34,7 @@ export const updateItemSchema = z.object({
   bidderAnonymous: z.boolean().optional(),
   endDate: z.string().nullable().optional(),
   isPublished: z.boolean().optional(),
+  commentsEnabled: z.boolean().optional(),
 });
 
 export type CreateItemBody = z.infer<typeof createItemSchema>;

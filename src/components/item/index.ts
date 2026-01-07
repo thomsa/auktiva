@@ -6,3 +6,6 @@ export * from "./BidHistory";
 export * from "./ItemSidebar";
 export * from "./BulkEditTable";
 export * from "./ImportPreviewTable";
+export * from "./DiscussionSection";
+export * from "./DiscussionForm";
+export * from "./DiscussionItem";

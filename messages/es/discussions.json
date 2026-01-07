@@ -1,0 +1,29 @@
+{
+  "discussions": {
+    "title": "Discusiones",
+    "empty": "Aún no hay discusiones. ¡Sé el primero en compartir tus pensamientos!",
+    "disabled": "Las discusiones están deshabilitadas para este artículo.",
+    "placeholder": "Comparte tus pensamientos sobre este artículo...",
+    "replyPlaceholder": "Escribe una respuesta...",
+    "submit": "Publicar",
+    "submitting": "Publicando...",
+    "reply": "Responder",
+    "orderBy": "Ordenar por",
+    "newest": "Más recientes primero",
+    "oldest": "Más antiguos primero",
+    "edited": "editado",
+    "editedAt": "Editado el",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Estás seguro?",
+    "cancel": "Cancelar",
+    "deleteSuccess": "Discusión eliminada",
+    "updateSuccess": "Discusión actualizada",
+    "createSuccess": "Discusión publicada",
+    "settings": "Discusiones",
+    "enableDiscussions": "Habilitar discusiones",
+    "enableDiscussionsDescription": "Permitir que los miembros de la subasta discutan este artículo",
+    "anonymous": "Anónimo",
+    "itemOwner": "Propietario"
+  }
+}

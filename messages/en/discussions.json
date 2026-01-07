@@ -1,0 +1,29 @@
+{
+  "discussions": {
+    "title": "Discussions",
+    "empty": "No discussions yet. Be the first to share your thoughts!",
+    "disabled": "Discussions are disabled for this item.",
+    "placeholder": "Share your thoughts about this item...",
+    "replyPlaceholder": "Write a reply...",
+    "submit": "Post",
+    "submitting": "Posting...",
+    "reply": "Reply",
+    "orderBy": "Sort by",
+    "newest": "Newest first",
+    "oldest": "Oldest first",
+    "edited": "edited",
+    "editedAt": "Edited at",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure?",
+    "cancel": "Cancel",
+    "deleteSuccess": "Discussion deleted",
+    "updateSuccess": "Discussion updated",
+    "createSuccess": "Discussion posted",
+    "settings": "Discussions",
+    "enableDiscussions": "Enable discussions",
+    "enableDiscussionsDescription": "Allow auction members to discuss this item",
+    "anonymous": "Anonymous",
+    "itemOwner": "Item Owner"
+  }
+}

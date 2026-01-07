@@ -15,6 +15,7 @@ export async function getMessages(locale: Locale) {
     ...(await import(`../../messages/${locale}/listings.json`)).default,
     ...(await import(`../../messages/${locale}/bulkEdit.json`)).default,
     ...(await import(`../../messages/${locale}/csvImport.json`)).default,
+    ...(await import(`../../messages/${locale}/discussions.json`)).default,
   };
 }
 

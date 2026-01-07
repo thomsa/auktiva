@@ -8,3 +8,4 @@ export * as memberService from "./member.service";
 export * as inviteService from "./invite.service";
 export * as userService from "./user.service";
 export * as notificationService from "./notification.service";
+export * as discussionService from "./discussion.service";

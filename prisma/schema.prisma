@@ -30,6 +30,7 @@ model User {
   createdAuctions           Auction[]                  @relation("AuctionCreator")
   createdItems              AuctionItem[]              @relation("ItemCreator")
   bids                      Bid[]
+  itemDiscussions           ItemDiscussion[]
   sentInvites               AuctionInvite[]            @relation("InviteSender")
   notifications             Notification[]
   settings                  UserSettings?
@@ -261,9 +262,13 @@ model AuctionItem {
   creatorId       String
   creator         User      @relation("ItemCreator", fields: [creatorId], references: [id], onDelete: Cascade)
   
+  // Discussions
+  discussionsEnabled Boolean   @default(true)  // Admin/creator can toggle
+  
   // Relations
   images          AuctionItemImage[]
   bids            Bid[]
+  discussions     ItemDiscussion[]
 
   @@map("auction_items")
 }
@@ -451,4 +456,32 @@ model EmailVerificationToken {
 
   @@index([userId, createdAt])
   @@map("email_verification_tokens")
+}
+
+// ============================================
+// ITEM DISCUSSIONS (threaded comments)
+// ============================================
+
+model ItemDiscussion {
+  id            String      @id @default(cuid())
+  
+  auctionItemId String
+  auctionItem   AuctionItem @relation(fields: [auctionItemId], references: [id], onDelete: Cascade)
+  
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  content       String      // Rich text HTML content (sanitized)
+  
+  // Threading support - null means top-level discussion
+  parentId      String?
+  parent        ItemDiscussion?  @relation("DiscussionReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       ItemDiscussion[] @relation("DiscussionReplies")
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([auctionItemId, createdAt])
+  @@index([parentId])
+  @@map("item_discussions")
 }

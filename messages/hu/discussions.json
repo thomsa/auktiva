@@ -1,0 +1,29 @@
+{
+  "discussions": {
+    "title": "Beszélgetések",
+    "empty": "Még nincsenek beszélgetések. Légy az első, aki megosztja gondolatait!",
+    "disabled": "A beszélgetések le vannak tiltva ennél a tételnél.",
+    "placeholder": "Oszd meg gondolataidat erről a tételről...",
+    "replyPlaceholder": "Írj választ...",
+    "submit": "Küldés",
+    "submitting": "Küldés...",
+    "reply": "Válasz",
+    "orderBy": "Rendezés",
+    "newest": "Legújabb elöl",
+    "oldest": "Legrégebbi elöl",
+    "edited": "szerkesztve",
+    "editedAt": "Szerkesztve:",
+    "edit": "Szerkesztés",
+    "delete": "Törlés",
+    "confirmDelete": "Biztosan törlöd?",
+    "cancel": "Mégse",
+    "deleteSuccess": "Beszélgetés törölve",
+    "updateSuccess": "Beszélgetés frissítve",
+    "createSuccess": "Beszélgetés elküldve",
+    "settings": "Beszélgetések",
+    "enableDiscussions": "Beszélgetések engedélyezése",
+    "enableDiscussionsDescription": "Aukció tagjai beszélgethetnek erről a tételről",
+    "anonymous": "Névtelen",
+    "itemOwner": "Tétel tulajdonosa"
+  }
+}

@@ -177,7 +177,13 @@
     "quote": "Cytat",
     "undo": "Cofnij",
     "redo": "Ponów",
-    "enterUrl": "Wprowadź URL"
+    "enterUrl": "Wprowadź URL",
+    "insertLink": "Wstaw link",
+    "urlLabel": "URL",
+    "urlHint": "Pozostaw puste aby usunąć link",
+    "cancel": "Anuluj",
+    "applyLink": "Zastosuj link",
+    "removeLink": "Usuń link"
   },
   "changelog": {
     "title": "Historia zmian i wydania",

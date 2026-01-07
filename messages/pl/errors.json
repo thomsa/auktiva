@@ -68,6 +68,15 @@
     },
     "settings": {
       "updateFailed": "Nie udało się zaktualizować ustawień"
+    },
+    "discussion": {
+      "createFailed": "Nie udało się opublikować dyskusji",
+      "updateFailed": "Nie udało się zaktualizować dyskusji",
+      "deleteFailed": "Nie udało się usunąć dyskusji",
+      "notFound": "Nie znaleziono komentarza",
+      "disabled": "Komentarze są wyłączone dla tego przedmiotu",
+      "tooLong": "Komentarz jest za długi (max 2000 znaków)",
+      "empty": "Komentarz nie może być pusty"
     }
   }
 }

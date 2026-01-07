@@ -51,6 +51,7 @@ export default function CreateItemPage({
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
   const tAuction = useTranslations("auction");
+  const tDiscussions = useTranslations("discussions");
   const { showToast } = useToast();
 
   // Wizard state
@@ -99,6 +100,7 @@ export default function CreateItemPage({
         parseFloat(formData.get("minBidIncrement") as string) || 1,
       bidderAnonymous: formData.get("bidderAnonymous") === "on",
       endDate: (formData.get("endDate") as string) || undefined,
+      discussionsEnabled: formData.get("discussionsEnabled") === "on",
     };
 
     try {
@@ -430,6 +432,34 @@ export default function CreateItemPage({
                     </div>
                   </>
                 )}
+
+                {/* Comments Settings */}
+                <div className="divider opacity-50"></div>
+                <div className="space-y-4">
+                  <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
+                    <span className="icon-[tabler--message-circle] size-5"></span>
+                    {tDiscussions("settings")}
+                  </h2>
+
+                  <div className="form-control">
+                    <label className="label cursor-pointer justify-start gap-3 p-0">
+                      <input
+                        type="checkbox"
+                        name="discussionsEnabled"
+                        className="toggle toggle-primary"
+                        defaultChecked={true}
+                      />
+                      <div>
+                        <span className="label-text font-medium">
+                          {tDiscussions("enableDiscussions")}
+                        </span>
+                        <p className="text-xs text-base-content/60">
+                          {tDiscussions("enableDiscussionsDescription")}
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
 
                 {/* Submit */}
                 <div className="divider opacity-50"></div>

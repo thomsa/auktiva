@@ -51,6 +51,7 @@ interface EditItemProps {
     endDate: string | null;
     currentBid: number | null;
     isPublished: boolean;
+    discussionsEnabled: boolean;
   };
   currencies: Currency[];
   hasBids: boolean;
@@ -71,6 +72,7 @@ export default function EditItemPage({
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
   const tAuction = useTranslations("auction");
+  const tDiscussions = useTranslations("discussions");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -84,6 +86,7 @@ export default function EditItemPage({
   const [itemEndDate, setItemEndDate] = useState(
     item.endDate ? item.endDate.slice(0, 16) : "",
   );
+  const [discussionsEnabled, setDiscussionsEnabled] = useState(item.discussionsEnabled);
 
   const isItemEnded = !!(item.endDate && new Date(item.endDate) < new Date());
   const auctionHasEndDate = !!auction.endDate;
@@ -104,6 +107,7 @@ export default function EditItemPage({
         parseFloat(formData.get("minBidIncrement") as string) || 1,
       bidderAnonymous: formData.get("bidderAnonymous") === "on",
       endDate: (formData.get("endDate") as string) || null,
+      discussionsEnabled,
     };
 
     try {
@@ -522,6 +526,34 @@ export default function EditItemPage({
                     </span>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Comments Settings */}
+            <div className="divider opacity-50"></div>
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-accent">
+                <span className="icon-[tabler--message-circle] size-5"></span>
+                {tDiscussions("settings")}
+              </h2>
+
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-3 p-0">
+                  <input
+                    type="checkbox"
+                    checked={discussionsEnabled}
+                    onChange={(e) => setDiscussionsEnabled(e.target.checked)}
+                    className="toggle toggle-primary"
+                  />
+                  <div>
+                    <span className="label-text font-medium">
+                      {tDiscussions("enableDiscussions")}
+                    </span>
+                    <p className="text-xs text-base-content/60">
+                      {tDiscussions("enableDiscussionsDescription")}
+                    </p>
+                  </div>
+                </label>
               </div>
             </div>
 

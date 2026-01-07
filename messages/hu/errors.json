@@ -68,6 +68,15 @@
     },
     "settings": {
       "updateFailed": "Nem sikerült frissíteni a beállításokat"
+    },
+    "discussion": {
+      "createFailed": "Nem sikerült elküldeni a beszélgetést",
+      "updateFailed": "Nem sikerült frissíteni a beszélgetést",
+      "deleteFailed": "Nem sikerült törölni a beszélgetést",
+      "notFound": "Hozzászólás nem található",
+      "disabled": "A hozzászólások le vannak tiltva ennél a tételnél",
+      "tooLong": "A hozzászólás túl hosszú (max 2000 karakter)",
+      "empty": "A hozzászólás nem lehet üres"
     }
   }
 }

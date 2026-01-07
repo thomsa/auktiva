@@ -177,7 +177,13 @@
     "quote": "Cita",
     "undo": "Deshacer",
     "redo": "Rehacer",
-    "enterUrl": "Introducir URL"
+    "enterUrl": "Introducir URL",
+    "insertLink": "Insertar enlace",
+    "urlLabel": "URL",
+    "urlHint": "Dejar vacío para eliminar el enlace",
+    "cancel": "Cancelar",
+    "applyLink": "Aplicar enlace",
+    "removeLink": "Eliminar enlace"
   },
   "changelog": {
     "title": "Registro de cambios y versiones",
