@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { queueOutbidEmail } from "@/lib/email/service";
 import * as notificationService from "./notification.service";
+import { publish, Events, Channels } from "@/lib/realtime";
+import type { BidNewEvent, BidOutbidEvent } from "@/lib/realtime/events";
 import type { Bid } from "@/generated/prisma/client";
 
 // ============================================================================
@@ -285,16 +287,22 @@ export async function placeBid(
   input: CreateBidInput,
   bidderVisibility: string,
 ): Promise<Bid> {
-  // Get item with auction info
-  const item = await prisma.auctionItem.findUnique({
-    where: { id: itemId },
-    include: {
-      currency: true,
-      auction: {
-        select: { id: true, name: true, bidderVisibility: true },
+  // Get item with auction info and bidder name
+  const [item, bidder] = await Promise.all([
+    prisma.auctionItem.findUnique({
+      where: { id: itemId },
+      include: {
+        currency: true,
+        auction: {
+          select: { id: true, name: true, bidderVisibility: true },
+        },
       },
-    },
-  });
+    }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true },
+    }),
+  ]);
 
   if (!item) {
     throw new Error("Item not found");
@@ -326,6 +334,21 @@ export async function placeBid(
     }),
   ]);
 
+  // Publish realtime event for new bid (public item channel)
+  const bidEvent: BidNewEvent = {
+    itemId,
+    auctionId: item.auction.id,
+    bidId: bid.id,
+    amount: input.amount,
+    currencyCode: item.currency.code,
+    bidderId: userId,
+    bidderName: shouldBeAnonymous ? null : bidder?.name || null,
+    isAnonymous: shouldBeAnonymous,
+    timestamp: bid.createdAt.toISOString(),
+    highestBid: input.amount,
+  };
+  publish(Channels.item(itemId), Events.BID_NEW, bidEvent);
+
   // Notify previous bidder they've been outbid
   if (previousBidderId && previousBidderId !== userId) {
     notifyOutbidUser(
@@ -336,6 +359,7 @@ export async function placeBid(
       input.amount,
       item.currency.symbol,
       item.auction.name,
+      item.currency.code,
     );
   }
 
@@ -353,7 +377,30 @@ async function notifyOutbidUser(
   newAmount: number,
   currencySymbol: string,
   auctionName: string,
+  currencyCode: string,
 ) {
+  // Get previous bidder's highest bid for the outbid event
+  const previousBid = await prisma.bid.findFirst({
+    where: { auctionItemId: itemId, userId: previousBidderId },
+    orderBy: { amount: "desc" },
+    select: { amount: true },
+  });
+
+  // Publish realtime outbid event to user's private channel
+  const outbidEvent: BidOutbidEvent = {
+    itemId,
+    itemName,
+    auctionId,
+    auctionName,
+    newHighestBid: newAmount,
+    currencyCode,
+    yourBid: previousBid?.amount || 0,
+  };
+  publish(
+    Channels.privateUser(previousBidderId),
+    Events.BID_OUTBID,
+    outbidEvent,
+  );
   try {
     // In-app notification
     await notificationService.notifyOutbid(

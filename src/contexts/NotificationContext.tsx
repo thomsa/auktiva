@@ -4,6 +4,16 @@ import { useSession } from "next-auth/react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { usePollingInterval, type PollingPriority } from "@/hooks/ui";
+import {
+  usePrivateUserChannel,
+  useEvent,
+  useRealtimeSWRConfig,
+  Events,
+} from "@/hooks/realtime";
+import type {
+  NotificationNewEvent,
+  NotificationCountEvent,
+} from "@/lib/realtime/events";
 
 export interface Notification {
   id: string;
@@ -45,6 +55,9 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   const { status } = useSession();
   const isAuthenticated = status === "authenticated";
 
+  // Subscribe to user's private channel for realtime notifications
+  const userChannel = usePrivateUserChannel();
+
   // Determine polling priority based on current route
   const priority = useMemo((): PollingPriority => {
     // High priority on auction pages, low elsewhere
@@ -53,21 +66,28 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   }, [router.pathname]);
 
   // Use polling hook - pauses when tab hidden, adjusts by priority
-  const refreshInterval = usePollingInterval({
+  const baseRefreshInterval = usePollingInterval({
     priority,
     disabled: !isAuthenticated,
   });
 
-  // Single shared SWR instance with smart polling configuration
+  // Get SWR config based on realtime connection status
+  // When realtime is connected: disables all auto-revalidation (no polling, no focus refresh)
+  // When realtime is disconnected: enables fallback polling
+  const swrConfig = useRealtimeSWRConfig(baseRefreshInterval);
+
+  // Single shared SWR instance with realtime-aware configuration
   // Only fetch if user is authenticated (pass null key to disable)
   const { data, error, isLoading, mutate } = useSWR<NotificationsResponse>(
     isAuthenticated ? "/api/notifications?limit=20" : null,
     fetcher,
     {
-      refreshInterval: isAuthenticated ? refreshInterval : 0,
-      // Revalidate on focus (when user returns to tab)
-      revalidateOnFocus: true,
-      // Don't revalidate on mount if data exists (avoid duplicate requests)
+      // Realtime-aware config - disables polling when connected
+      refreshInterval: isAuthenticated ? swrConfig.refreshInterval : 0,
+      revalidateOnFocus: swrConfig.revalidateOnFocus,
+      revalidateOnReconnect: swrConfig.revalidateOnReconnect,
+      revalidateIfStale: swrConfig.revalidateIfStale,
+      // Always fetch on mount to get initial data
       revalidateOnMount: true,
       // Dedupe requests within 2 seconds
       dedupingInterval: 2000,
@@ -76,12 +96,62 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       // Retry on error with exponential backoff
       errorRetryCount: 3,
       errorRetryInterval: 5000,
-      // Don't revalidate when window is hidden (tab inactive)
-      revalidateIfStale: false,
       // Focus throttle - prevent too many requests on rapid focus changes
       focusThrottleInterval: 5000,
     },
   );
+
+  // Handle realtime notification events - add new notification to list
+  const handleNewNotification = useCallback(
+    (event: NotificationNewEvent) => {
+      mutate(
+        (current) =>
+          current
+            ? {
+                ...current,
+                notifications: [
+                  {
+                    id: event.id,
+                    type: event.type,
+                    title: event.title,
+                    message: event.message,
+                    imageUrl: event.imageUrl,
+                    auctionId: event.auctionId,
+                    itemId: event.itemId,
+                    read: false,
+                    createdAt: event.createdAt,
+                  },
+                  ...current.notifications,
+                ].slice(0, 20), // Keep max 20
+                unreadCount: current.unreadCount + 1,
+              }
+            : current,
+        false,
+      );
+    },
+    [mutate],
+  );
+
+  // Handle realtime count update events
+  const handleCountUpdate = useCallback(
+    (event: NotificationCountEvent) => {
+      mutate(
+        (current) =>
+          current
+            ? {
+                ...current,
+                unreadCount: event.unreadCount,
+              }
+            : current,
+        false,
+      );
+    },
+    [mutate],
+  );
+
+  // Subscribe to realtime events
+  useEvent(userChannel, Events.NOTIFICATION_NEW, handleNewNotification);
+  useEvent(userChannel, Events.NOTIFICATION_COUNT, handleCountUpdate);
 
   const markAsRead = useCallback(
     async (id: string): Promise<void> => {

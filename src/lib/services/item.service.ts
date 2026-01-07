@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { getPublicUrl } from "@/lib/storage";
 import { queueNewItemEmails } from "@/lib/email/service";
 import * as notificationService from "./notification.service";
+import { publish, Events, Channels } from "@/lib/realtime";
+import type { ItemCreatedEvent } from "@/lib/realtime/events";
 import type { AuctionItem, AuctionMember } from "@/generated/prisma/client";
 
 // ============================================================================
@@ -133,7 +135,11 @@ export interface DiscussionForDisplay {
 }
 
 export interface ItemDetailPageData {
-  item: ItemDetailForPage & { updatedAt: string; creatorId: string; discussionsEnabled: boolean };
+  item: ItemDetailForPage & {
+    updatedAt: string;
+    creatorId: string;
+    discussionsEnabled: boolean;
+  };
   bids: BidForDisplay[];
   images: { id: string; url: string; publicUrl: string; order: number }[];
   discussions: DiscussionForDisplay[];
@@ -343,7 +349,9 @@ export async function getItemDetailPageData(
   }
 
   // Sort top-level by newest first
-  topLevelDiscussions.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  topLevelDiscussions.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   const isHighestBidder = item.highestBidderId === viewerId;
   const canEdit = isItemOwner || isViewerAdmin;
@@ -778,6 +786,23 @@ export async function createItem(
     item.description,
     firstImageUrl,
     item.id,
+  );
+
+  // Publish realtime event for new item (private auction channel - members only)
+  const itemCreatedEvent: ItemCreatedEvent = {
+    itemId: item.id,
+    auctionId,
+    name: item.name,
+    creatorId,
+    creatorName: item.creator.name || "Unknown",
+    thumbnailUrl: firstImageUrl,
+    startingBid: item.startingBid,
+    currencyCode: item.currencyCode,
+  };
+  publish(
+    Channels.privateAuction(auctionId),
+    Events.ITEM_CREATED,
+    itemCreatedEvent,
   );
 
   return item;

@@ -82,7 +82,9 @@ export function BulkEditTable({
   const [bulkCurrency, setBulkCurrency] = useState("");
   const [bulkStartingBid, setBulkStartingBid] = useState("");
   const [bulkMinIncrement, setBulkMinIncrement] = useState("");
-  const [bulkDiscussionsEnabled, setBulkDiscussionsEnabled] = useState<"" | "true" | "false">("");
+  const [bulkDiscussionsEnabled, setBulkDiscussionsEnabled] = useState<
+    "" | "true" | "false"
+  >("");
 
   // Update local items when props change
   useEffect(() => {
@@ -225,7 +227,8 @@ export function BulkEditTable({
     if (bulkStartingBid) updates.startingBid = parseFloat(bulkStartingBid);
     if (bulkMinIncrement)
       updates.minBidIncrement = parseFloat(bulkMinIncrement);
-    if (bulkDiscussionsEnabled) updates.discussionsEnabled = bulkDiscussionsEnabled === "true";
+    if (bulkDiscussionsEnabled)
+      updates.discussionsEnabled = bulkDiscussionsEnabled === "true";
 
     if (Object.keys(updates).length === 0) return;
 
@@ -357,7 +360,11 @@ export function BulkEditTable({
             <select
               className="select select-bordered select-sm w-36"
               value={bulkDiscussionsEnabled}
-              onChange={(e) => setBulkDiscussionsEnabled(e.target.value as "" | "true" | "false")}
+              onChange={(e) =>
+                setBulkDiscussionsEnabled(
+                  e.target.value as "" | "true" | "false",
+                )
+              }
               disabled={noneSelected}
             >
               <option value="">{t("discussions")}</option>
@@ -382,7 +389,10 @@ export function BulkEditTable({
               disabled={
                 bulkUpdating ||
                 noneSelected ||
-                (!bulkCurrency && !bulkStartingBid && !bulkMinIncrement && !bulkDiscussionsEnabled)
+                (!bulkCurrency &&
+                  !bulkStartingBid &&
+                  !bulkMinIncrement &&
+                  !bulkDiscussionsEnabled)
               }
             >
               {bulkUpdating ? (

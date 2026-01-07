@@ -86,7 +86,9 @@ export default function EditItemPage({
   const [itemEndDate, setItemEndDate] = useState(
     item.endDate ? item.endDate.slice(0, 16) : "",
   );
-  const [discussionsEnabled, setDiscussionsEnabled] = useState(item.discussionsEnabled);
+  const [discussionsEnabled, setDiscussionsEnabled] = useState(
+    item.discussionsEnabled,
+  );
 
   const isItemEnded = !!(item.endDate && new Date(item.endDate) < new Date());
   const auctionHasEndDate = !!auction.endDate;

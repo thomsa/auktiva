@@ -10,7 +10,13 @@ interface DiscussionFormProps {
   initialContent?: string;
 }
 
-export function DiscussionForm({ onSubmit, isSubmitting, isReply, onCancel, initialContent = "" }: DiscussionFormProps) {
+export function DiscussionForm({
+  onSubmit,
+  isSubmitting,
+  isReply,
+  onCancel,
+  initialContent = "",
+}: DiscussionFormProps) {
   const t = useTranslations("discussions");
   const [content, setContent] = useState(initialContent);
   const [editorKey, setEditorKey] = useState(0);

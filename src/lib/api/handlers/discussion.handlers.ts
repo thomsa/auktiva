@@ -92,7 +92,13 @@ export const listDiscussions: ApiHandler = async (req, res, ctx) => {
   // Check item exists and belongs to auction
   const item = await prisma.auctionItem.findUnique({
     where: { id: itemId },
-    select: { id: true, auctionId: true, discussionsEnabled: true, isPublished: true, creatorId: true },
+    select: {
+      id: true,
+      auctionId: true,
+      discussionsEnabled: true,
+      isPublished: true,
+      creatorId: true,
+    },
   });
 
   if (!item || item.auctionId !== ctx.params.id) {
@@ -130,7 +136,13 @@ export const createDiscussion: ApiHandler = async (req, res, ctx) => {
   // Check item exists and has discussions enabled
   const item = await prisma.auctionItem.findUnique({
     where: { id: itemId },
-    select: { id: true, auctionId: true, discussionsEnabled: true, isPublished: true, creatorId: true },
+    select: {
+      id: true,
+      auctionId: true,
+      discussionsEnabled: true,
+      isPublished: true,
+      creatorId: true,
+    },
   });
 
   if (!item || item.auctionId !== ctx.params.id) {
@@ -163,16 +175,22 @@ export const createDiscussion: ApiHandler = async (req, res, ctx) => {
 
   // If replying, verify parent exists and belongs to same item
   if (validatedBody.parentId) {
-    const parent = await discussionService.getDiscussionById(validatedBody.parentId);
+    const parent = await discussionService.getDiscussionById(
+      validatedBody.parentId,
+    );
     if (!parent || parent.auctionItemId !== itemId) {
       throw new BadRequestError("Parent discussion not found");
     }
   }
 
-  const discussion = await discussionService.createDiscussion(itemId, ctx.session!.user.id, {
-    content: sanitizedContent,
-    parentId: validatedBody.parentId || null,
-  });
+  const discussion = await discussionService.createDiscussion(
+    itemId,
+    ctx.session!.user.id,
+    {
+      content: sanitizedContent,
+      parentId: validatedBody.parentId || null,
+    },
+  );
 
   res.status(201).json(discussion);
 };
@@ -205,7 +223,12 @@ export const updateDiscussion: ApiHandler = async (req, res, ctx) => {
   }
 
   // Only author can edit
-  if (!discussionService.canEditDiscussion(ctx.session!.user.id, discussion.userId)) {
+  if (
+    !discussionService.canEditDiscussion(
+      ctx.session!.user.id,
+      discussion.userId,
+    )
+  ) {
     throw new ForbiddenError("You can only edit your own discussions");
   }
 
@@ -246,7 +269,9 @@ export const deleteDiscussion: ApiHandler = async (_req, res, ctx) => {
       ctx.membership!,
     )
   ) {
-    throw new ForbiddenError("You don't have permission to delete this discussion");
+    throw new ForbiddenError(
+      "You don't have permission to delete this discussion",
+    );
   }
 
   await discussionService.deleteDiscussion(discussionId);

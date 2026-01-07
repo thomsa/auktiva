@@ -7,5 +7,6 @@ export default {
   roles: "Roles & Permissions",
   invitations: "Invitations",
   notifications: "Notifications",
+  realtime: "Real-Time Updates",
   settings: "Settings",
 };
