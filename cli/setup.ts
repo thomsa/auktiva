@@ -335,10 +335,58 @@ async function setupAuth(): Promise<Partial<EnvConfig>> {
 }
 
 async function setupFeatures(): Promise<Partial<EnvConfig>> {
+  // Explain open auctions before asking
+  console.log(chalk.bold("About Open Auctions:"));
+  console.log();
+  console.log(
+    chalk.dim("  By default, auctions in Auktiva are private. Users can only"),
+  );
+  console.log(
+    chalk.dim("  join an auction if they are explicitly invited by the owner"),
+  );
+  console.log(chalk.dim("  or have a direct invite link."));
+  console.log();
+  console.log(chalk.dim("  Enabling open auctions adds a third option:"));
+  console.log();
+  console.log(
+    `    ${chalk.cyan("•")} ${chalk.bold("Open/Public Auctions")} - Any registered user can browse`,
+  );
+  console.log(
+    chalk.dim("      and join these auctions without needing an invitation."),
+  );
+  console.log(
+    chalk.dim(
+      "      They appear in a public auction listing accessible to all.",
+    ),
+  );
+  console.log();
+  console.log(chalk.yellow("  ⚠ Security consideration:"));
+  console.log(
+    chalk.dim("    If your instance is publicly accessible on the internet,"),
+  );
+  console.log(
+    chalk.dim("    enabling this means anyone who registers can participate"),
+  );
+  console.log(
+    chalk.dim("    in open auctions. This is ideal for community marketplaces"),
+  );
+  console.log(
+    chalk.dim("    but may not be suitable for private/corporate deployments."),
+  );
+  console.log();
+
   const allowOpen = await confirm({
-    message: "Allow public/open auctions (anyone can join without invite)?",
+    message: "Enable open/public auctions on this instance?",
     default: false,
   });
+
+  if (allowOpen) {
+    printSuccess(
+      "Open auctions enabled - users can create publicly joinable auctions",
+    );
+  } else {
+    printInfo("Open auctions disabled - all auctions require invitations");
+  }
 
   return {
     ALLOW_OPEN_AUCTIONS: allowOpen ? "true" : "false",
