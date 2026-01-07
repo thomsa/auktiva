@@ -1,0 +1,405 @@
+# Realtime Features
+
+Auktiva supports real-time updates for bids, notifications, and discussions using WebSocket connections. This eliminates the need for constant database polling and provides instant updates to all connected users.
+
+## Architecture
+
+Auktiva uses a **Pusher-compatible** WebSocket protocol, which means you can choose between:
+
+- **Soketi** (self-hosted) - Free, unlimited connections. Recommended for PM2/self-hosted deployments.
+- **Pusher Channels** (cloud) - Managed service with free tier. Recommended for Vercel deployments.
+
+Both options use the same client code, so you can switch between them by changing environment variables.
+
+## Setup Options
+
+### Option 1: Soketi (Self-Hosted)
+
+Soketi is a free, open-source Pusher-compatible WebSocket server. It runs as a Docker container alongside Auktiva.
+
+#### Prerequisites
+
+- **Docker** (required - Soketi doesn't support Node.js 20+)
+- PM2 (for running Auktiva)
+
+#### Installation
+
+If you ran `npm run setup`, Soketi was offered as an option. The setup script will:
+
+1. Check if Docker is installed and running
+2. Generate secure credentials
+3. Start Soketi as a Docker container with auto-restart
+
+To install Docker: https://docs.docker.com/get-docker/
+
+To start Soketi manually:
+
+```bash
+docker run -d --name soketi --restart unless-stopped \
+  -p 6001:6001 \
+  -e SOKETI_DEFAULT_APP_ID=auktiva \
+  -e SOKETI_DEFAULT_APP_KEY=your-key \
+  -e SOKETI_DEFAULT_APP_SECRET=your-secret \
+  -e SOKETI_DEFAULT_APP_HOST=0.0.0.0 \
+  quay.io/soketi/soketi:latest
+```
+
+#### Configuration
+
+Add these environment variables to your `.env` file:
+
+```bash
+# Shared config (used by both server and client)
+NEXT_PUBLIC_REALTIME_DRIVER="soketi"
+NEXT_PUBLIC_SOKETI_APP_KEY="your-app-key"   # Generate with: openssl rand -hex 16
+NEXT_PUBLIC_SOKETI_PORT="6001"
+NEXT_PUBLIC_SOKETI_USE_TLS="true"           # Use wss:// for public connections
+
+# Server-only config (not exposed to browser)
+SOKETI_APP_ID="auktiva"
+SOKETI_APP_SECRET="your-app-secret"         # Generate with: openssl rand -hex 32
+SOKETI_HOST="127.0.0.1"                     # Server connects internally
+
+# Client-only config (public host for browser connections)
+NEXT_PUBLIC_SOKETI_HOST="yourdomain.com"    # Public domain or IP - NOT localhost!
+```
+
+<Callout type="warning">
+**Important: Server vs Client Host**
+
+- `SOKETI_HOST` is for **server-side** connections. The Next.js server connects to Soketi on the same machine, so this should always be `127.0.0.1`.
+
+- `NEXT_PUBLIC_SOKETI_HOST` is for **browser** connections. Users' browsers need to connect from outside, so this must be your **public domain** or **public IP address**.
+
+Example:
+
+- Server: `SOKETI_HOST="127.0.0.1"` → Next.js connects internally
+- Browser: `NEXT_PUBLIC_SOKETI_HOST="auctions.example.com"` → Users connect via internet
+  </Callout>
+
+#### Managing Soketi
+
+Soketi runs as a Docker container, separate from PM2:
+
+```bash
+# Check if Soketi is running
+docker ps | grep soketi
+
+# View Soketi logs
+docker logs soketi
+docker logs -f soketi  # Follow logs
+
+# Restart Soketi
+docker restart soketi
+
+# Stop Soketi
+docker stop soketi
+
+# Start Soketi (if stopped)
+docker start soketi
+
+# Remove and recreate (to update config)
+docker stop soketi && docker rm soketi
+docker run -d --name soketi --restart unless-stopped \
+  -p 6001:6001 \
+  -e SOKETI_DEFAULT_APP_ID=auktiva \
+  -e SOKETI_DEFAULT_APP_KEY=your-key \
+  -e SOKETI_DEFAULT_APP_SECRET=your-secret \
+  -e SOKETI_DEFAULT_APP_HOST=0.0.0.0 \
+  quay.io/soketi/soketi:latest
+```
+
+#### External Access (Optional)
+
+If users connect from outside localhost (e.g., via a domain), you need to:
+
+1. Update `NEXT_PUBLIC_SOKETI_HOST` to your domain or public IP
+2. Configure a reverse proxy (nginx) for WebSocket connections
+3. Optionally enable TLS
+
+Example nginx configuration:
+
+```nginx
+# WebSocket proxy for Soketi
+location /app {
+    proxy_pass http://127.0.0.1:6001;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_read_timeout 86400;
+}
+```
+
+### Option 2: Pusher Channels (Cloud)
+
+Pusher Channels is a managed WebSocket service. The free tier includes:
+
+- 200,000 messages/day
+- 100 concurrent connections
+- Unlimited channels
+
+#### Setup
+
+1. Create a free account at [pusher.com](https://pusher.com)
+2. Create a new Channels app
+3. Copy your credentials
+
+#### Configuration
+
+```bash
+# Shared config (used by both server and client)
+NEXT_PUBLIC_REALTIME_DRIVER="pusher"
+NEXT_PUBLIC_PUSHER_KEY="your-app-key"
+NEXT_PUBLIC_PUSHER_CLUSTER="eu"  # or us2, ap1, etc.
+
+# Server-only config (not exposed to browser)
+PUSHER_APP_ID="your-app-id"
+PUSHER_SECRET="your-app-secret"
+```
+
+### Option 3: Disabled (Polling Fallback)
+
+If realtime is not configured, Auktiva falls back to polling:
+
+```bash
+REALTIME_DRIVER="disabled"
+# or simply don't set any realtime variables
+```
+
+Polling intervals:
+
+- Critical (item detail page): 2 seconds
+- High (auction pages): 5 seconds
+- Medium (dashboard): 15 seconds
+- Low (other pages): 30 seconds
+
+## Event Types
+
+All events are sent on private channels that require authentication.
+
+### Item Events
+
+| Event                | Channel                 | Description        |
+| -------------------- | ----------------------- | ------------------ |
+| `bid:new`            | `private-item-{itemId}` | New bid placed     |
+| `discussion:new`     | `private-item-{itemId}` | New comment posted |
+| `discussion:deleted` | `private-item-{itemId}` | Comment deleted    |
+
+### User Events
+
+| Event                | Channel                 | Description          |
+| -------------------- | ----------------------- | -------------------- |
+| `bid:outbid`         | `private-user-{userId}` | User was outbid      |
+| `notification:new`   | `private-user-{userId}` | New notification     |
+| `notification:count` | `private-user-{userId}` | Unread count updated |
+
+### Auction Events
+
+| Event          | Channel                       | Description         |
+| -------------- | ----------------------------- | ------------------- |
+| `item:created` | `private-auction-{auctionId}` | New item in auction |
+
+## Security
+
+### Channel Types
+
+**All channels in Auktiva are private** and require authentication. This ensures that only authorized users can receive realtime updates.
+
+| Channel                       | Who Can Subscribe                  |
+| ----------------------------- | ---------------------------------- |
+| `private-user-{userId}`       | Only the user with matching ID     |
+| `private-auction-{auctionId}` | Only members of the auction        |
+| `private-item-{itemId}`       | Only members of the item's auction |
+
+### Authentication Flow
+
+Private channels use Pusher's authentication protocol:
+
+1. Client attempts to subscribe to `private-user-abc123`
+2. Pusher client automatically calls `/api/pusher/auth` with socket ID and channel name
+3. Server validates:
+   - User is logged in (NextAuth session)
+   - User has permission for this channel (e.g., `userId === channelUserId`)
+4. Server signs the auth response with `SOKETI_APP_SECRET` (HMAC-SHA256)
+5. Client presents signed auth to Soketi/Pusher
+6. Soketi/Pusher verifies signature and allows subscription
+
+### Authorization Rules
+
+| Channel Pattern               | Who Can Subscribe                  |
+| ----------------------------- | ---------------------------------- |
+| `private-user-{userId}`       | Only the user with matching ID     |
+| `private-auction-{auctionId}` | Only members of the auction        |
+| `private-item-{itemId}`       | Only members of the item's auction |
+
+### Security Best Practices
+
+1. **Keep secrets secure** - Never expose `SOKETI_APP_SECRET` or `PUSHER_SECRET` to the client
+2. **Use TLS in production** - Set `NEXT_PUBLIC_SOKETI_USE_TLS="true"` for encrypted connections
+3. **Validate all channel access** - The auth endpoint checks permissions before signing
+4. **Don't trust client data** - Event payloads are generated server-side, not from client input
+
+### What Users Can See
+
+- **Their own notifications** - Only via `private-user-{theirId}`
+- **Auction events** - Only if they're a member of that auction
+- **Item events (bids, discussions)** - Only if they're a member of the item's auction
+
+Users **cannot**:
+
+- Subscribe to other users' private channels
+- Access auction or item channels without membership
+- Forge authentication (requires server-side secret)
+
+## Troubleshooting
+
+### Soketi won't start
+
+```bash
+# Check if port 6001 is in use
+lsof -i :6001
+
+# Check Soketi logs
+pm2 logs soketi --lines 50
+
+# Try running manually to see errors
+soketi start
+```
+
+### WebSocket connection fails
+
+1. Check browser console for connection errors
+2. Verify `NEXT_PUBLIC_SOKETI_HOST` matches how users access your server
+3. If using a reverse proxy, ensure WebSocket upgrade headers are passed
+
+### Pusher limit exceeded
+
+If you see "PUSHER LIMIT EXCEEDED" in logs:
+
+- Consider upgrading your Pusher plan
+- Switch to self-hosted Soketi
+- The app will automatically fall back to polling
+
+### Private channel auth fails
+
+Private channels require authentication. Check:
+
+1. User is logged in
+2. `/api/pusher/auth` endpoint is accessible
+3. User has permission to access the channel (e.g., auction member)
+
+## Local Development
+
+For local development, Auktiva provides convenient npm scripts to run Soketi alongside the Next.js dev server.
+
+### Quick Start
+
+```bash
+# Start both Soketi and Next.js dev server with debug logging
+npm run dev:realtime
+```
+
+This runs Soketi with debug mode enabled and pre-configured credentials:
+
+- App ID: `auktiva`
+- App Key: `dev-key`
+- App Secret: `dev-secret`
+- Port: `6001`
+
+### Environment Variables for Development
+
+Create or update your `.env` file with these development settings:
+
+```bash
+# Shared config (used by both server and client)
+NEXT_PUBLIC_REALTIME_DRIVER="soketi"
+NEXT_PUBLIC_SOKETI_APP_KEY="dev-key"
+NEXT_PUBLIC_SOKETI_PORT="6001"
+NEXT_PUBLIC_SOKETI_USE_TLS="false"
+
+# Server-only config
+SOKETI_APP_ID="auktiva"
+SOKETI_APP_SECRET="dev-secret"
+SOKETI_HOST="127.0.0.1"
+
+# Client-only config (for local dev, can be localhost)
+NEXT_PUBLIC_SOKETI_HOST="127.0.0.1"
+
+# Enable debug logging (optional, enabled by default in development)
+REALTIME_DEBUG="true"
+```
+
+### Debug Logging
+
+Debug logs are **automatically enabled** in development mode (`NODE_ENV=development`).
+
+**Server-side logs** appear in your terminal:
+
+```
+[Realtime:Server] Initializing Pusher client { driver: 'soketi', host: '127.0.0.1', port: 6001 }
+[Realtime:Server] Publishing: bid:new → item-abc123 { ... }
+[Realtime:Server] Published successfully: bid:new → item-abc123
+```
+
+**Client-side logs** appear in browser DevTools console (purple color):
+
+```
+[Realtime:Client] Initializing Pusher client { driver: 'soketi', wsHost: '127.0.0.1', wsPort: 6001 }
+[Realtime:Client] Connection state: initialized → connecting
+[Realtime:Client] Connection state: connecting → connected
+[Realtime:Client] Connected successfully!
+[Realtime:Client] Subscribing to channel: private-user-xyz789
+[Realtime:Client] Subscribed to channel: private-user-xyz789
+[Realtime:Client] Received event: notification:new { ... }
+```
+
+To enable debug logging in production or disable in development:
+
+- **Server**: Set `REALTIME_DEBUG="true"` or `"false"` in `.env`
+- **Client**: Run `localStorage.setItem('REALTIME_DEBUG', 'true')` in browser console
+
+### Running Soketi Separately
+
+If you prefer to run Soketi in a separate terminal:
+
+```bash
+# Terminal 1: Start Soketi with debug logging
+npm run soketi:dev
+
+# Terminal 2: Start Next.js
+npm run dev
+```
+
+### Manual Soketi Start
+
+For more control over Soketi options:
+
+```bash
+# With debug logging
+SOKETI_DEBUG=true soketi start
+
+# With custom port
+SOKETI_PORT=6002 soketi start
+
+# With custom credentials
+SOKETI_DEFAULT_APP_ID=myapp \
+SOKETI_DEFAULT_APP_KEY=mykey \
+SOKETI_DEFAULT_APP_SECRET=mysecret \
+soketi start
+```
+
+### Testing Realtime Events
+
+1. Open two browser windows to the same auction item
+2. Place a bid in one window
+3. Watch the other window update instantly
+4. Check browser console for `[Realtime:Client]` logs
+
+### Using PM2 for Development
+
+```bash
+pm2 start ecosystem.config.js
+pm2 logs
+```

@@ -1,5 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import type { AuctionMember } from "@/generated/prisma/client";
+import { publish, Events, Channels } from "@/lib/realtime";
+import type {
+  DiscussionNewEvent,
+  DiscussionDeletedEvent,
+} from "@/lib/realtime/events";
 
 // ============================================================================
 // Types
@@ -91,9 +96,15 @@ export async function getItemDiscussions(
 
   // Sort top-level by order preference
   if (order === "newest") {
-    topLevel.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    topLevel.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
   } else {
-    topLevel.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    topLevel.sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    );
   }
 
   return topLevel;
@@ -121,7 +132,9 @@ export async function getDiscussionById(discussionId: string) {
 /**
  * Check if item has discussions enabled
  */
-export async function getItemDiscussionsEnabled(itemId: string): Promise<boolean> {
+export async function getItemDiscussionsEnabled(
+  itemId: string,
+): Promise<boolean> {
   const item = await prisma.auctionItem.findUnique({
     where: { id: itemId },
     select: { discussionsEnabled: true },
@@ -156,8 +169,26 @@ export async function createDiscussion(
           image: true,
         },
       },
+      auctionItem: {
+        select: {
+          auctionId: true,
+        },
+      },
     },
   });
+
+  // Publish realtime event for new discussion
+  const discussionEvent: DiscussionNewEvent = {
+    discussionId: discussion.id,
+    itemId,
+    auctionId: discussion.auctionItem.auctionId,
+    authorId: userId,
+    authorName: discussion.user.name || "Anonymous",
+    content: discussion.content,
+    createdAt: discussion.createdAt.toISOString(),
+    parentId: discussion.parentId,
+  };
+  publish(Channels.item(itemId), Events.DISCUSSION_NEW, discussionEvent);
 
   return {
     id: discussion.id,
@@ -210,9 +241,28 @@ export async function updateDiscussion(
  * Delete a discussion (cascades to replies)
  */
 export async function deleteDiscussion(discussionId: string): Promise<void> {
+  // Get discussion info before deleting for realtime event
+  const discussion = await prisma.itemDiscussion.findUnique({
+    where: { id: discussionId },
+    select: { auctionItemId: true },
+  });
+
   await prisma.itemDiscussion.delete({
     where: { id: discussionId },
   });
+
+  // Publish realtime event for deleted discussion
+  if (discussion) {
+    const deleteEvent: DiscussionDeletedEvent = {
+      discussionId,
+      itemId: discussion.auctionItemId,
+    };
+    publish(
+      Channels.item(discussion.auctionItemId),
+      Events.DISCUSSION_DELETED,
+      deleteEvent,
+    );
+  }
 }
 
 // ============================================================================
@@ -247,6 +297,9 @@ export function canDeleteDiscussion(
  * Check if user can edit a discussion
  * - Only discussion author can edit
  */
-export function canEditDiscussion(userId: string, discussionUserId: string): boolean {
+export function canEditDiscussion(
+  userId: string,
+  discussionUserId: string,
+): boolean {
   return userId === discussionUserId;
 }

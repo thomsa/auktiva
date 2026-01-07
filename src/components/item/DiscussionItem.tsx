@@ -44,7 +44,7 @@ export function DiscussionItem({
   depth,
 }: DiscussionItemProps) {
   const t = useTranslations("discussions");
-    const { formatDate } = useFormatters();
+  const { formatDate } = useFormatters();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -67,7 +67,6 @@ export function DiscussionItem({
     await onReply(content, discussion.id);
   };
 
-  
   const startEditing = () => {
     setEditingId(discussion.id);
     setReplyingTo(null);
@@ -79,7 +78,7 @@ export function DiscussionItem({
 
   return (
     <div className={depth > 0 ? "ml-6 border-l-2 border-base-300 pl-4" : ""}>
-      <div 
+      <div
         className={`bg-base-200 rounded-lg p-4 relative group ${
           isAuthor ? "ring-2 ring-primary/30" : ""
         }`}
@@ -100,7 +99,9 @@ export function DiscussionItem({
         <div className="flex items-start gap-3">
           {/* Avatar */}
           <div className="avatar placeholder shrink-0">
-            <div className={`bg-base-300 text-base-content/70 rounded-full ${depth > 0 ? "w-8 h-8" : "w-10 h-10"}`}>
+            <div
+              className={`bg-base-300 text-base-content/70 rounded-full ${depth > 0 ? "w-8 h-8" : "w-10 h-10"}`}
+            >
               {discussion.user.image ? (
                 <Image
                   src={discussion.user.image}
@@ -132,7 +133,7 @@ export function DiscussionItem({
                 {formatDate(discussion.createdAt)}
               </span>
               {discussion.isEdited && (
-                <span 
+                <span
                   className="text-xs text-base-content/50 italic tooltip tooltip-bottom cursor-help"
                   data-tip={`${t("editedAt")} ${formatDate(discussion.updatedAt)}`}
                 >

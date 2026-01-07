@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { getMessages, Locale } from "@/i18n";
 import { Navbar } from "@/components/layout/navbar";
@@ -9,6 +9,13 @@ import { Button } from "@/components/ui/button";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 import { useToast } from "@/components/ui/toast";
 import { usePollingInterval } from "@/hooks/ui";
+import {
+  useItemChannel,
+  useEvent,
+  useRealtimeSWRConfig,
+  Events,
+} from "@/hooks/realtime";
+import type { BidNewEvent } from "@/lib/realtime/events";
 import { withAuth } from "@/lib/auth/withAuth";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
@@ -141,10 +148,15 @@ export default function ItemDetailPage({
     initialItem.endDate && new Date(initialItem.endDate) < new Date();
 
   // Use critical priority for active bidding, pauses when tab hidden
-  const refreshInterval = usePollingInterval({
+  const baseRefreshInterval = usePollingInterval({
     priority: "critical",
     disabled: !!initialIsEnded,
   });
+
+  // Get SWR config based on realtime connection status
+  // When realtime is connected: disables polling (updates come via WebSocket)
+  // When realtime is disconnected: falls back to polling
+  const swrConfig = useRealtimeSWRConfig(baseRefreshInterval);
 
   // Fetch latest item data with SWR
   const { data, mutate } = useSWR<ItemResponse>(
@@ -152,10 +164,52 @@ export default function ItemDetailPage({
     fetcher,
     {
       fallbackData: { item: initialItem, bids: initialBids },
-      refreshInterval,
-      revalidateOnFocus: true,
+      refreshInterval: swrConfig.refreshInterval,
+      revalidateOnFocus: swrConfig.revalidateOnFocus,
+      revalidateOnReconnect: swrConfig.revalidateOnReconnect,
+      revalidateIfStale: swrConfig.revalidateIfStale,
     },
   );
+
+  // Subscribe to item channel for realtime bid updates
+  const itemChannel = useItemChannel(initialItem.id);
+
+  // Handle realtime bid events - optimistically update UI with event data
+  const handleNewBid = useCallback(
+    (event: BidNewEvent) => {
+      // Optimistically update SWR cache with the new bid data
+      mutate(
+        (current) => {
+          if (!current) return current;
+
+          // Create new bid entry from event data
+          const newBid: Bid = {
+            id: event.bidId,
+            amount: event.amount,
+            createdAt: event.timestamp,
+            isAnonymous: event.isAnonymous,
+            user: event.isAnonymous
+              ? null
+              : { id: event.bidderId, name: event.bidderName },
+          };
+
+          return {
+            ...current,
+            item: {
+              ...current.item,
+              currentBid: event.highestBid,
+              highestBidderId: event.bidderId,
+            },
+            bids: [newBid, ...current.bids],
+          };
+        },
+        { revalidate: false }, // Don't refetch - we have all the data
+      );
+    },
+    [mutate],
+  );
+
+  useEvent(itemChannel, Events.BID_NEW, handleNewBid);
 
   const item = data?.item ?? initialItem;
   const bids: Bid[] = data?.bids ?? initialBids;
@@ -557,7 +611,6 @@ export default function ItemDetailPage({
                         initialDiscussions={initialDiscussions}
                         discussionsEnabled={initialItem.discussionsEnabled}
                       />
-
                     </div>
                   </div>
                 </div>

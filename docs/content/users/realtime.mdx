@@ -1,0 +1,72 @@
+# Real-Time Updates
+
+Auktiva supports real-time updates, meaning you see changes instantly without refreshing the page. When someone places a bid, posts a comment, or sends you a notification, it appears immediately.
+
+## How It Works
+
+When real-time is enabled by your administrator, Auktiva uses WebSocket connections to push updates directly to your browser. This provides:
+
+- **Instant bid updates** - See new bids the moment they're placed
+- **Live discussions** - Comments appear in real-time as others post
+- **Immediate notifications** - Get notified instantly when you're outbid or receive messages
+
+## What Updates in Real-Time
+
+### On Item Pages
+
+When viewing an item, you'll see live updates for:
+
+- **New bids** - The current bid amount and bid history update instantly
+- **Discussion comments** - New comments and replies appear without refreshing
+- **Deleted comments** - Removed comments disappear immediately
+
+### Notifications
+
+Your notification bell updates in real-time:
+
+- **New notifications** - Appear instantly in your notification list
+- **Unread count** - The badge updates as new notifications arrive
+- **Outbid alerts** - Get notified immediately when someone outbids you
+
+## Connection Status
+
+You can check if real-time is working by looking at your browser's developer console (F12). When connected, you'll see messages like:
+
+```
+[Realtime:Client] Connected successfully!
+```
+
+## Fallback Behavior
+
+If real-time is not available (disabled by admin, connection issues, or unsupported browser), Auktiva automatically falls back to polling:
+
+- The page will refresh data every few seconds
+- You'll still see updates, just with a slight delay
+- No action needed on your part - it happens automatically
+
+## Privacy & Security
+
+Real-time updates are secure:
+
+- **Private channels** - Your personal notifications are only visible to you
+- **Auction membership** - You only receive updates for auctions you're a member of
+- **Encrypted connections** - All data is transmitted securely (when TLS is enabled)
+
+You cannot see other users' private notifications or access auctions you're not invited to.
+
+## Troubleshooting
+
+### Updates Not Appearing
+
+1. **Check your connection** - Ensure you have a stable internet connection
+2. **Refresh the page** - Sometimes a page refresh re-establishes the connection
+3. **Check browser console** - Look for connection errors (F12 → Console tab)
+4. **Try a different browser** - Some older browsers may not support WebSockets
+
+### Delayed Updates
+
+If updates seem delayed:
+
+- Real-time may be disabled - the system falls back to polling (every 2-30 seconds)
+- Your network may have WebSocket restrictions (some corporate firewalls block them)
+- Contact your administrator if the issue persists

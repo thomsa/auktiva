@@ -105,6 +105,23 @@ interface EnvConfig {
   MICROSOFT_CLIENT_SECRET?: string;
   // Deployment admin
   DEPLOYMENT_ADMIN_EMAIL?: string;
+  // Realtime configuration
+  REALTIME_DRIVER?: "soketi" | "pusher" | "disabled";
+  SOKETI_APP_ID?: string;
+  SOKETI_APP_KEY?: string;
+  SOKETI_APP_SECRET?: string;
+  SOKETI_HOST?: string;
+  SOKETI_PORT?: string;
+  SOKETI_USE_TLS?: string;
+  NEXT_PUBLIC_REALTIME_DRIVER?: string;
+  NEXT_PUBLIC_SOKETI_APP_KEY?: string;
+  NEXT_PUBLIC_SOKETI_HOST?: string;
+  NEXT_PUBLIC_SOKETI_PORT?: string;
+  NEXT_PUBLIC_SOKETI_USE_TLS?: string;
+  PUSHER_APP_ID?: string;
+  PUSHER_SECRET?: string;
+  NEXT_PUBLIC_PUSHER_KEY?: string;
+  NEXT_PUBLIC_PUSHER_CLUSTER?: string;
 }
 
 // =============================================================================
@@ -653,6 +670,321 @@ async function setupEmail(authUrl: string): Promise<Partial<EnvConfig>> {
   };
 }
 
+async function setupRealtime(
+  port: string,
+  authUrl: string,
+): Promise<Partial<EnvConfig>> {
+  console.log(chalk.bold("About Realtime Features:"));
+  console.log();
+  console.log(
+    chalk.dim("  Realtime features provide instant updates for bids,"),
+  );
+  console.log(chalk.dim("  notifications, and comments without page refresh."));
+  console.log();
+  console.log(
+    `    ${chalk.cyan("•")} ${chalk.bold("Soketi")} - Self-hosted, free, unlimited`,
+  );
+  console.log(chalk.dim("      Runs alongside Auktiva via PM2. Recommended."));
+  console.log();
+  console.log(
+    `    ${chalk.cyan("•")} ${chalk.bold("Pusher")} - Cloud service, free tier available`,
+  );
+  console.log(
+    chalk.dim("      200k messages/day, 100 concurrent connections."),
+  );
+  console.log(chalk.dim("      Best for Vercel deployments."));
+  console.log();
+  console.log(
+    `    ${chalk.cyan("•")} ${chalk.bold("Disabled")} - Use polling instead`,
+  );
+  console.log(chalk.dim("      Falls back to periodic database queries."));
+  console.log();
+
+  const realtimeChoice = await select({
+    message: "Enable realtime features?",
+    choices: [
+      {
+        value: "soketi",
+        name: "Yes, with Soketi (self-hosted)",
+        description:
+          "Free, unlimited. Recommended for self-hosted deployments.",
+      },
+      {
+        value: "pusher",
+        name: "Yes, with Pusher (cloud)",
+        description: "Free tier available. Best for Vercel deployments.",
+      },
+      {
+        value: "disabled",
+        name: "No, use polling",
+        description: "Periodic database queries. Higher database usage.",
+      },
+    ],
+  });
+
+  if (realtimeChoice === "disabled") {
+    printInfo("Realtime disabled. Using polling for updates.");
+    return { REALTIME_DRIVER: "disabled" };
+  }
+
+  if (realtimeChoice === "soketi") {
+    // Check if Docker is available (required for Soketi since it doesn't support Node 20+)
+    const dockerInstalled = commandExists("docker");
+
+    if (!dockerInstalled) {
+      console.log();
+      console.log(chalk.yellow("  Docker is required for Soketi."));
+      console.log();
+      console.log(
+        chalk.dim(
+          "  Soketi doesn't support Node.js 20+, so it runs via Docker.",
+        ),
+      );
+      console.log();
+
+      const installDocker = await confirm({
+        message: "Install Docker now?",
+        default: true,
+      });
+
+      if (installDocker) {
+        const platform = process.platform;
+        const spinner = ora("Installing Docker...").start();
+
+        try {
+          if (platform === "darwin") {
+            // macOS - use Homebrew
+            if (!commandExists("brew")) {
+              spinner.fail("Homebrew is required to install Docker on macOS");
+              console.log(
+                chalk.dim("  Install Homebrew first: https://brew.sh"),
+              );
+              console.log(chalk.dim("  Then re-run: npm run setup"));
+              process.exit(1);
+            }
+            spinner.text =
+              "Installing Docker via Homebrew (this may take a few minutes)...";
+            execSync("brew install --cask docker", { stdio: "pipe" });
+            spinner.succeed("Docker installed");
+            console.log();
+            console.log(
+              chalk.cyan("  Please open Docker Desktop to complete setup,"),
+            );
+            console.log(chalk.cyan("  then re-run: npm run setup"));
+            console.log();
+            process.exit(0);
+          } else if (platform === "linux") {
+            // Linux - use official Docker install script
+            spinner.text = "Installing Docker via official script...";
+            execSync("curl -fsSL https://get.docker.com | sh", {
+              stdio: "pipe",
+            });
+            // Add current user to docker group
+            try {
+              execSync(`sudo usermod -aG docker $USER`, { stdio: "pipe" });
+            } catch {
+              // Ignore if fails
+            }
+            spinner.succeed("Docker installed");
+            console.log();
+            console.log(
+              chalk.cyan(
+                "  You may need to log out and back in for Docker permissions.",
+              ),
+            );
+            console.log(chalk.cyan("  Then re-run: npm run setup"));
+            console.log();
+            process.exit(0);
+          } else {
+            spinner.fail(
+              "Automatic Docker installation not supported on this platform",
+            );
+            console.log(
+              chalk.dim(
+                "  Install Docker manually: https://docs.docker.com/get-docker/",
+              ),
+            );
+            console.log(chalk.dim("  Then re-run: npm run setup"));
+            process.exit(1);
+          }
+        } catch (error) {
+          spinner.fail("Docker installation failed");
+          console.error(chalk.red((error as Error).message));
+          console.log();
+          console.log(
+            chalk.dim(
+              "  Install Docker manually: https://docs.docker.com/get-docker/",
+            ),
+          );
+          console.log(chalk.dim("  Then re-run: npm run setup"));
+          process.exit(1);
+        }
+      } else {
+        console.log();
+        console.log(
+          chalk.dim(
+            "  Install Docker manually: https://docs.docker.com/get-docker/",
+          ),
+        );
+        console.log(chalk.dim("  Then re-run: npm run setup"));
+        console.log();
+        process.exit(0);
+      }
+    }
+
+    // Check if Docker daemon is running
+    try {
+      execSync("docker info", { stdio: "pipe" });
+      printSuccess("Docker is available");
+    } catch {
+      console.log();
+      console.log(chalk.yellow("  Docker is installed but not running."));
+      console.log();
+
+      if (process.platform === "darwin") {
+        console.log(
+          chalk.dim("  Please open Docker Desktop and wait for it to start."),
+        );
+      } else {
+        console.log(
+          chalk.dim("  Start Docker with: sudo systemctl start docker"),
+        );
+      }
+      console.log(chalk.dim("  Then re-run: npm run setup"));
+      console.log();
+      process.exit(0);
+    }
+
+    // Generate credentials
+    const soketiAppKey = crypto.randomBytes(16).toString("hex");
+    const soketiAppSecret = crypto.randomBytes(32).toString("hex");
+
+    // Configure port
+    const soketiPort = await input({
+      message: "Soketi port:",
+      default: "6001",
+      validate: (value) => {
+        const num = parseInt(value, 10);
+        if (isNaN(num) || num < 1 || num > 65535) {
+          return "Please enter a valid port number (1-65535)";
+        }
+        if (value === port) {
+          return "Soketi port must be different from the app port";
+        }
+        return true;
+      },
+    });
+
+    // Ask for public host (for browser connections)
+    console.log();
+    console.log(chalk.bold("Public WebSocket Host:"));
+    console.log();
+    console.log(
+      chalk.dim("  The server connects to Soketi internally via 127.0.0.1,"),
+    );
+    console.log(
+      chalk.dim("  but browsers need a publicly accessible address."),
+    );
+    console.log();
+    console.log(
+      chalk.dim("  Examples: yourdomain.com, 192.168.1.50, auction.local"),
+    );
+    console.log();
+
+    // Extract host from AUTH_URL for default suggestion
+    let defaultPublicHost = "127.0.0.1";
+    try {
+      const parsedUrl = new URL(authUrl || "http://localhost:3000");
+      if (parsedUrl.hostname !== "localhost") {
+        defaultPublicHost = parsedUrl.hostname;
+      }
+    } catch {
+      // Ignore URL parse errors
+    }
+
+    const publicHost = await input({
+      message: "Public host for WebSocket connections:",
+      default: defaultPublicHost,
+      validate: (value) => {
+        if (!value.trim()) return "Host is required";
+        // Basic validation - no protocol prefix
+        if (value.includes("://")) {
+          return "Enter hostname only, without http:// or https://";
+        }
+        return true;
+      },
+    });
+
+    // Ask about TLS for public connections
+    const publicUseTLS = await confirm({
+      message: "Use TLS (wss://) for WebSocket connections?",
+      default: publicHost !== "127.0.0.1" && publicHost !== "localhost",
+    });
+
+    printSuccess("Generated Soketi credentials");
+    printInfo(`Soketi will run on port ${chalk.cyan(soketiPort)}`);
+    printInfo(
+      `Server connects via ${chalk.cyan("127.0.0.1:" + soketiPort)} (internal)`,
+    );
+    printInfo(
+      `Browsers connect via ${chalk.cyan((publicUseTLS ? "wss://" : "ws://") + publicHost + ":" + soketiPort)} (public)`,
+    );
+
+    return {
+      // Shared config (NEXT_PUBLIC_ used by both server and client)
+      NEXT_PUBLIC_REALTIME_DRIVER: "soketi",
+      NEXT_PUBLIC_SOKETI_APP_KEY: soketiAppKey,
+      NEXT_PUBLIC_SOKETI_PORT: soketiPort,
+      NEXT_PUBLIC_SOKETI_USE_TLS: publicUseTLS ? "true" : "false",
+      // Server-only config
+      SOKETI_APP_ID: "auktiva",
+      SOKETI_APP_SECRET: soketiAppSecret,
+      SOKETI_HOST: "127.0.0.1",
+      // Client-only config (public host for browser connections)
+      NEXT_PUBLIC_SOKETI_HOST: publicHost,
+    };
+  }
+
+  // Pusher configuration
+  console.log();
+  console.log(chalk.dim("Enter your Pusher Channels credentials:"));
+  console.log(
+    chalk.cyan("Get them from: ") + chalk.bold("https://dashboard.pusher.com/"),
+  );
+  console.log();
+
+  const pusherAppId = await input({
+    message: "Pusher App ID:",
+    required: true,
+  });
+
+  const pusherKey = await input({
+    message: "Pusher Key:",
+    required: true,
+  });
+
+  const pusherSecret = await password({
+    message: "Pusher Secret:",
+  });
+
+  const pusherCluster = await input({
+    message: "Pusher Cluster:",
+    default: "eu",
+  });
+
+  printSuccess("Pusher configured");
+
+  return {
+    // Shared config (NEXT_PUBLIC_ used by both server and client)
+    NEXT_PUBLIC_REALTIME_DRIVER: "pusher",
+    NEXT_PUBLIC_PUSHER_KEY: pusherKey,
+    NEXT_PUBLIC_PUSHER_CLUSTER: pusherCluster,
+    // Server-only config
+    PUSHER_APP_ID: pusherAppId,
+    PUSHER_SECRET: pusherSecret,
+  };
+}
+
 async function setupOAuth(authUrl: string): Promise<Partial<EnvConfig>> {
   const config: Partial<EnvConfig> = {};
 
@@ -857,6 +1189,41 @@ MICROSOFT_CLIENT_SECRET="${config.MICROSOFT_CLIENT_SECRET}"
     }
   }
 
+  // Realtime configuration (optional)
+  if (config.REALTIME_DRIVER && config.REALTIME_DRIVER !== "disabled") {
+    env += `
+# =============================================================================
+# REALTIME
+# =============================================================================
+REALTIME_DRIVER="${config.REALTIME_DRIVER}"
+`;
+    if (config.REALTIME_DRIVER === "soketi") {
+      env += `SOKETI_APP_ID="${config.SOKETI_APP_ID}"
+SOKETI_APP_KEY="${config.SOKETI_APP_KEY}"
+SOKETI_APP_SECRET="${config.SOKETI_APP_SECRET}"
+SOKETI_HOST="${config.SOKETI_HOST}"
+SOKETI_PORT="${config.SOKETI_PORT}"
+SOKETI_USE_TLS="${config.SOKETI_USE_TLS}"
+
+# Client-side Soketi config
+NEXT_PUBLIC_REALTIME_DRIVER="${config.NEXT_PUBLIC_REALTIME_DRIVER}"
+NEXT_PUBLIC_SOKETI_APP_KEY="${config.NEXT_PUBLIC_SOKETI_APP_KEY}"
+NEXT_PUBLIC_SOKETI_HOST="${config.NEXT_PUBLIC_SOKETI_HOST}"
+NEXT_PUBLIC_SOKETI_PORT="${config.NEXT_PUBLIC_SOKETI_PORT}"
+NEXT_PUBLIC_SOKETI_USE_TLS="${config.NEXT_PUBLIC_SOKETI_USE_TLS}"
+`;
+    } else if (config.REALTIME_DRIVER === "pusher") {
+      env += `PUSHER_APP_ID="${config.PUSHER_APP_ID}"
+PUSHER_SECRET="${config.PUSHER_SECRET}"
+
+# Client-side Pusher config
+NEXT_PUBLIC_REALTIME_DRIVER="${config.NEXT_PUBLIC_REALTIME_DRIVER}"
+NEXT_PUBLIC_PUSHER_KEY="${config.NEXT_PUBLIC_PUSHER_KEY}"
+NEXT_PUBLIC_PUSHER_CLUSTER="${config.NEXT_PUBLIC_PUSHER_CLUSTER}"
+`;
+    }
+  }
+
   return env;
 }
 
@@ -975,9 +1342,62 @@ async function runPostSetupTasks(config: EnvConfig): Promise<void> {
     }
   }
 
+  // Start Soketi via Docker if configured (before PM2)
+  if (config.REALTIME_DRIVER === "soketi") {
+    spinner = ora("Starting Soketi WebSocket server via Docker...").start();
+    try {
+      // Stop existing container if running
+      execSync("docker stop soketi 2>/dev/null || true", { stdio: "pipe" });
+      execSync("docker rm soketi 2>/dev/null || true", { stdio: "pipe" });
+
+      // Start Soketi container
+      // SOKETI_DEFAULT_APP_HOST=0.0.0.0 is required to accept connections from outside the container
+      const soketiCmd = [
+        "docker run -d",
+        "--name soketi",
+        "--restart unless-stopped",
+        `-p ${config.SOKETI_PORT || "6001"}:6001`,
+        `-e SOKETI_DEFAULT_APP_ID=${config.SOKETI_APP_ID || "auktiva"}`,
+        `-e SOKETI_DEFAULT_APP_KEY=${config.SOKETI_APP_KEY}`,
+        `-e SOKETI_DEFAULT_APP_SECRET=${config.SOKETI_APP_SECRET}`,
+        "-e SOKETI_DEFAULT_APP_HOST=0.0.0.0",
+        "quay.io/soketi/soketi:latest",
+      ].join(" ");
+
+      execSync(soketiCmd, { stdio: "pipe" });
+      spinner.succeed("Soketi started via Docker");
+    } catch (error) {
+      spinner.fail("Failed to start Soketi");
+      console.error(chalk.red((error as Error).message));
+      console.log(chalk.dim("  You can start it manually later with:"));
+      console.log(
+        chalk.dim("  docker run -d --name soketi --restart unless-stopped \\"),
+      );
+      console.log(chalk.dim(`    -p ${config.SOKETI_PORT || "6001"}:6001 \\`));
+      console.log(
+        chalk.dim(
+          `    -e SOKETI_DEFAULT_APP_ID=${config.SOKETI_APP_ID || "auktiva"} \\`,
+        ),
+      );
+      console.log(
+        chalk.dim(`    -e SOKETI_DEFAULT_APP_KEY=${config.SOKETI_APP_KEY} \\`),
+      );
+      console.log(
+        chalk.dim(
+          `    -e SOKETI_DEFAULT_APP_SECRET=${config.SOKETI_APP_SECRET} \\`,
+        ),
+      );
+      console.log(chalk.dim("    quay.io/soketi/soketi:latest"));
+    }
+  }
+
   spinner = ora("Starting with PM2...").start();
   try {
-    execSync("pm2 startOrRestart ecosystem.config.js", { stdio: "pipe" });
+    // Start main Auktiva app
+    execSync("pm2 startOrRestart ecosystem.config.js --only auktiva", {
+      stdio: "pipe",
+    });
+
     execSync("pm2 save", { stdio: "pipe" });
     spinner.succeed("Application started with PM2");
   } catch (error) {
@@ -1022,34 +1442,44 @@ async function main() {
   const config: Partial<EnvConfig> = {};
 
   // Step 1: Storage
-  printHeader("Image Storage", { current: 1, total: 7 });
+  printHeader("Image Storage", { current: 1, total: 8 });
   Object.assign(config, await setupStorage());
 
   // Step 2: Database
-  printHeader("Database", { current: 2, total: 7 });
+  printHeader("Database", { current: 2, total: 8 });
   Object.assign(config, await setupDatabase());
 
   // Step 3: Authentication
-  printHeader("Authentication & Domain", { current: 3, total: 7 });
+  printHeader("Authentication & Domain", { current: 3, total: 8 });
   Object.assign(config, await setupAuth());
 
   // Step 4: Features
-  printHeader("Features", { current: 4, total: 7 });
+  printHeader("Features", { current: 4, total: 8 });
   Object.assign(config, await setupFeatures());
 
   // Step 5: Deployment Admin
-  printHeader("Deployment Administration", { current: 5, total: 7 });
+  printHeader("Deployment Administration", { current: 5, total: 8 });
   Object.assign(config, await setupDeploymentAdmin());
 
   // Step 6: Email
-  printHeader("Email Notifications", { current: 6, total: 7 });
+  printHeader("Email Notifications", { current: 6, total: 8 });
   Object.assign(
     config,
     await setupEmail(config.AUTH_URL || "http://localhost:3000"),
   );
 
-  // Step 7: OAuth
-  printHeader("OAuth Sign-in (Optional)", { current: 7, total: 7 });
+  // Step 7: Realtime
+  printHeader("Realtime Features", { current: 7, total: 8 });
+  Object.assign(
+    config,
+    await setupRealtime(
+      config.PORT || "3000",
+      config.AUTH_URL || "http://localhost:3000",
+    ),
+  );
+
+  // Step 8: OAuth
+  printHeader("OAuth Sign-in (Optional)", { current: 8, total: 8 });
   Object.assign(
     config,
     await setupOAuth(config.AUTH_URL || "http://localhost:3000"),
@@ -1100,6 +1530,16 @@ async function main() {
       config.DEPLOYMENT_ADMIN_EMAIL
         ? chalk.green(config.DEPLOYMENT_ADMIN_EMAIL)
         : chalk.yellow("Not set")
+    }`,
+  );
+  // Realtime summary
+  console.log(
+    `  ${chalk.dim("Realtime:")}      ${
+      config.REALTIME_DRIVER === "soketi"
+        ? chalk.green(`Soketi (port ${config.SOKETI_PORT})`)
+        : config.REALTIME_DRIVER === "pusher"
+          ? chalk.green("Pusher")
+          : chalk.yellow("Disabled (polling)")
     }`,
   );
   // OAuth summary

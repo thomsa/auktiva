@@ -127,7 +127,12 @@ export function RichTextEditor({
     if (linkUrl === "") {
       editor.chain().focus().extendMarkRange("link").unsetLink().run();
     } else {
-      editor.chain().focus().extendMarkRange("link").setLink({ href: linkUrl }).run();
+      editor
+        .chain()
+        .focus()
+        .extendMarkRange("link")
+        .setLink({ href: linkUrl })
+        .run();
     }
     closeLinkModal();
   };
@@ -297,60 +302,62 @@ export function RichTextEditor({
       </div>
 
       {/* Link Modal - rendered in portal */}
-      {showLinkModal && typeof document !== "undefined" && createPortal(
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div 
-            className="fixed inset-0 bg-black/50" 
-            onClick={closeLinkModal}
-            onKeyDown={(e) => e.key === "Escape" && closeLinkModal()}
-            role="button"
-            tabIndex={0}
-            aria-label="Close modal"
-          />
-          <div className="relative bg-base-100 rounded-lg shadow-xl p-6 w-full max-w-md mx-4 z-10">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <span className="icon-[tabler--link] size-5"></span>
-              {t("insertLink")}
-            </h3>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">{t("urlLabel")}</span>
-              </label>
-              <input
-                ref={linkInputRef}
-                type="url"
-                className="input input-bordered w-full"
-                placeholder="https://example.com"
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-                onKeyDown={handleLinkKeyDown}
-              />
-              <label className="label">
-                <span className="label-text-alt text-base-content/60">
-                  {t("urlHint")}
-                </span>
-              </label>
+      {showLinkModal &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div
+              className="fixed inset-0 bg-black/50"
+              onClick={closeLinkModal}
+              onKeyDown={(e) => e.key === "Escape" && closeLinkModal()}
+              role="button"
+              tabIndex={0}
+              aria-label="Close modal"
+            />
+            <div className="relative bg-base-100 rounded-lg shadow-xl p-6 w-full max-w-md mx-4 z-10">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <span className="icon-[tabler--link] size-5"></span>
+                {t("insertLink")}
+              </h3>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">{t("urlLabel")}</span>
+                </label>
+                <input
+                  ref={linkInputRef}
+                  type="url"
+                  className="input input-bordered w-full"
+                  placeholder="https://example.com"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  onKeyDown={handleLinkKeyDown}
+                />
+                <label className="label">
+                  <span className="label-text-alt text-base-content/60">
+                    {t("urlHint")}
+                  </span>
+                </label>
+              </div>
+              <div className="flex justify-end gap-2 mt-4">
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={closeLinkModal}
+                >
+                  {t("cancel")}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={applyLink}
+                >
+                  {linkUrl ? t("applyLink") : t("removeLink")}
+                </button>
+              </div>
             </div>
-            <div className="flex justify-end gap-2 mt-4">
-              <button
-                type="button"
-                className="btn btn-ghost"
-                onClick={closeLinkModal}
-              >
-                {t("cancel")}
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={applyLink}
-              >
-                {linkUrl ? t("applyLink") : t("removeLink")}
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

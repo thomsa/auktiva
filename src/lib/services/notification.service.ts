@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { NotificationType } from "@/generated/prisma/client";
 import type { Notification } from "@/generated/prisma/client";
+import { publish, Events, Channels } from "@/lib/realtime";
+import type {
+  NotificationNewEvent,
+  NotificationCountEvent,
+} from "@/lib/realtime/events";
 
 // ============================================================================
 // Types
@@ -91,7 +96,7 @@ export async function getNotificationById(
 export async function createNotification(
   input: CreateNotificationInput,
 ): Promise<Notification> {
-  return prisma.notification.create({
+  const notification = await prisma.notification.create({
     data: {
       userId: input.userId,
       type: input.type,
@@ -102,6 +107,34 @@ export async function createNotification(
       itemId: input.itemId,
     },
   });
+
+  // Publish realtime event to user's private channel
+  const notificationEvent: NotificationNewEvent = {
+    id: notification.id,
+    type: notification.type,
+    title: notification.title,
+    message: notification.message,
+    imageUrl: notification.imageUrl,
+    auctionId: notification.auctionId,
+    itemId: notification.itemId,
+    createdAt: notification.createdAt.toISOString(),
+  };
+  publish(
+    Channels.privateUser(input.userId),
+    Events.NOTIFICATION_NEW,
+    notificationEvent,
+  );
+
+  // Also publish updated unread count
+  const unreadCount = await getUnreadCount(input.userId);
+  const countEvent: NotificationCountEvent = { unreadCount };
+  publish(
+    Channels.privateUser(input.userId),
+    Events.NOTIFICATION_COUNT,
+    countEvent,
+  );
+
+  return notification;
 }
 
 /**

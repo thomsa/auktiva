@@ -2,6 +2,11 @@ import { useTranslations } from "next-intl";
 import { useState, useCallback, useEffect } from "react";
 import { DiscussionForm } from "./DiscussionForm";
 import { DiscussionItem } from "./DiscussionItem";
+import { useItemChannel, useEvent, Events } from "@/hooks/realtime";
+import type {
+  DiscussionNewEvent,
+  DiscussionDeletedEvent,
+} from "@/lib/realtime/events";
 
 export interface Discussion {
   id: string;
@@ -51,6 +56,9 @@ export function DiscussionSection({
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Subscribe to item channel for realtime discussion updates
+  const itemChannel = useItemChannel(itemId);
+
   // Reset state when item changes
   useEffect(() => {
     setDiscussions(initialDiscussions);
@@ -59,6 +67,94 @@ export function DiscussionSection({
     setEditingId(null);
     setError(null);
   }, [itemId, initialDiscussions]);
+
+  // Handle realtime new discussion events - optimistically add to list
+  const handleNewDiscussion = useCallback(
+    (event: DiscussionNewEvent) => {
+      // Don't add if it's from the current user (already added optimistically)
+      if (event.authorId === currentUserId) return;
+
+      const newDiscussion: Discussion = {
+        id: event.discussionId,
+        content: event.content,
+        createdAt: event.createdAt,
+        updatedAt: event.createdAt,
+        isEdited: false,
+        parentId: event.parentId,
+        user: {
+          id: event.authorId,
+          name: event.authorName,
+          image: null,
+        },
+        replies: [],
+      };
+
+      setDiscussions((current) => {
+        // Helper to check if discussion exists anywhere in the tree
+        const existsInTree = (items: Discussion[], id: string): boolean => {
+          for (const item of items) {
+            if (item.id === id) return true;
+            if (existsInTree(item.replies, id)) return true;
+          }
+          return false;
+        };
+
+        // Check if already exists (dedup)
+        if (existsInTree(current, event.discussionId)) return current;
+
+        // If it's a reply, add it under the parent
+        if (event.parentId) {
+          const addReplyToParent = (items: Discussion[]): Discussion[] => {
+            return items.map((item) => {
+              if (item.id === event.parentId) {
+                // Found the parent - add reply
+                return {
+                  ...item,
+                  replies: [...item.replies, newDiscussion],
+                };
+              }
+              // Recursively check nested replies
+              return {
+                ...item,
+                replies: addReplyToParent(item.replies),
+              };
+            });
+          };
+          return addReplyToParent(current);
+        }
+
+        // Top-level discussion - add based on sort order
+        if (sortOrder === "newest") {
+          return [newDiscussion, ...current];
+        } else {
+          return [...current, newDiscussion];
+        }
+      });
+    },
+    [currentUserId, sortOrder],
+  );
+
+  // Handle realtime discussion deleted events - remove from list
+  const handleDiscussionDeleted = useCallback(
+    (event: DiscussionDeletedEvent) => {
+      // Helper to recursively remove discussion from tree
+      const removeDiscussion = (items: Discussion[]): Discussion[] => {
+        return items
+          .filter((d) => d.id !== event.discussionId)
+          .map((d) => ({
+            ...d,
+            replies: removeDiscussion(d.replies),
+          }));
+      };
+
+      setDiscussions((current) => removeDiscussion(current));
+    },
+    [],
+  );
+
+  // Subscribe to realtime events
+  useEvent(itemChannel, Events.DISCUSSION_NEW, handleNewDiscussion);
+  useEvent(itemChannel, Events.DISCUSSION_DELETED, handleDiscussionDeleted);
 
   // Count total discussions including replies
   const countDiscussions = (items: Discussion[]): number => {
