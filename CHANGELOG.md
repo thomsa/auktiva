@@ -2,6 +2,13 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.15.0] - 2026-01-07
+
+### 🚀 Features
+
+- Add discussion system with rich text editor enhancements and bulk edit support by @thomsa
+- Add detailed explanation for open auctions feature in CLI setup by @thomsa
+
 ## [1.14.1] - 2026-01-06
 
 ### 📚 Documentation
