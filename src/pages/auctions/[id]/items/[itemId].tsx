@@ -272,14 +272,8 @@ export default function ItemDetailPage({
       );
 
       const result = await res.json();
-      console.log("[Bid] API response:", {
-        ok: res.ok,
-        status: res.status,
-        result,
-      });
 
       if (!res.ok) {
-        console.error("[Bid] API error:", result);
         setError(result.message || tErrors("bid.placeFailed"));
       } else {
         // Optimistically update UI with the new bid
@@ -311,8 +305,7 @@ export default function ItemDetailPage({
         );
         setBidAmount("");
       }
-    } catch (err) {
-      console.error("[Bid] Fetch error:", err);
+    } catch {
       setError(tErrors("generic"));
     } finally {
       setIsLoading(false);
