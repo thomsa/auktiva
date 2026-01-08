@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { useFormatters } from "@/i18n";
+import { UserAvatar, AnonymousAvatar } from "@/components/ui/user-avatar";
 
 interface Bid {
   id: string;
@@ -43,15 +44,24 @@ export function BidHistory({ bids, currencySymbol }: BidHistoryProps) {
                 index === 0 ? "bg-primary/10" : "bg-base-200"
               }`}
             >
-              <div className="flex items-center gap-2">
-                <span className="font-medium">
-                  {bid.user ? bid.user.name || t("anonymous") : t("anonymous")}
-                </span>
-                {index === 0 && (
-                  <span className="badge badge-primary badge-sm text-center">
-                    {t("highest")}
-                  </span>
+              <div className="flex items-center gap-3">
+                {bid.user && !bid.isAnonymous ? (
+                  <UserAvatar name={bid.user.name} size="sm" />
+                ) : (
+                  <AnonymousAvatar size="sm" />
                 )}
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">
+                    {bid.user && !bid.isAnonymous
+                      ? bid.user.name || t("anonymous")
+                      : t("anonymous")}
+                  </span>
+                  {index === 0 && (
+                    <span className="badge badge-primary badge-sm text-center">
+                      {t("highest")}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="text-right">
                 <div className="font-bold">

@@ -3,6 +3,7 @@ import { signOut } from "next-auth/react";
 import { useTheme } from "@/components/providers/theme-provider";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { MobileNotificationSheet } from "@/components/notifications/mobile-notification-sheet";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import packageJson from "../../../package.json";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -132,26 +133,7 @@ export function Navbar({ user }: NavbarProps) {
               tabIndex={0}
               className="group flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-base-content/5 transition-all cursor-pointer ring-offset-2 focus:ring-2 focus:ring-primary/20 outline-none"
             >
-              <div className="w-9 h-9 rounded-full bg-linear-to-br from-primary to-secondary p-[2px]">
-                <div className="w-full h-full rounded-full bg-base-100 flex items-center justify-center">
-                  <span className="font-bold text-xs bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    {(() => {
-                      const name = user.name?.trim();
-                      if (name) {
-                        const parts = name.split(/\s+/);
-                        if (parts.length >= 2) {
-                          return (
-                            parts[0].charAt(0) +
-                            parts[parts.length - 1].charAt(0)
-                          ).toUpperCase();
-                        }
-                        return name.substring(0, 2).toUpperCase();
-                      }
-                      return user.email?.charAt(0).toUpperCase() || "U";
-                    })()}
-                  </span>
-                </div>
-              </div>
+              <UserAvatar name={user.name} email={user.email} size="sm" />
               <span className="icon-[tabler--chevron-down] size-4 text-base-content/40 group-hover:text-base-content/60 transition-colors"></span>
             </button>
             <ul

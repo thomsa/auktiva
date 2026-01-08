@@ -2,9 +2,9 @@ import { useTranslations } from "next-intl";
 import { useFormatters } from "@/i18n";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 import { useState } from "react";
-import Image from "next/image";
 import { DiscussionForm } from "./DiscussionForm";
 import type { Discussion } from "./DiscussionSection";
+import { UserAvatar } from "@/components/ui/user-avatar";
 
 interface DiscussionItemProps {
   discussion: Discussion;
@@ -98,25 +98,10 @@ export function DiscussionItem({
         )}
         <div className="flex items-start gap-3">
           {/* Avatar */}
-          <div className="avatar placeholder shrink-0">
-            <div
-              className={`bg-base-300 text-base-content/70 rounded-full ${depth > 0 ? "w-8 h-8" : "w-10 h-10"}`}
-            >
-              {discussion.user.image ? (
-                <Image
-                  src={discussion.user.image}
-                  alt={discussion.user.name || "User"}
-                  width={depth > 0 ? 32 : 40}
-                  height={depth > 0 ? 32 : 40}
-                  className="rounded-full"
-                />
-              ) : (
-                <span className={depth > 0 ? "text-sm" : "text-lg"}>
-                  {(discussion.user.name || "U").charAt(0).toUpperCase()}
-                </span>
-              )}
-            </div>
-          </div>
+          <UserAvatar
+            name={discussion.user.name}
+            size={depth > 0 ? "sm" : "md"}
+          />
 
           {/* Content */}
           <div className="flex-1 min-w-0">

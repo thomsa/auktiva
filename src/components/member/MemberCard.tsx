@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { ROLE_COLORS, ROLE_OPTIONS } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
+import { UserAvatar } from "@/components/ui/user-avatar";
 
 interface MemberCardProps {
   member: {
@@ -50,13 +51,11 @@ export function MemberCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="avatar placeholder">
-            <div className="bg-neutral text-neutral-content w-10 h-10 rounded-full">
-              <span>
-                {member.user.name?.charAt(0) || member.user.email.charAt(0)}
-              </span>
-            </div>
-          </div>
+          <UserAvatar
+            name={member.user.name}
+            email={member.user.email}
+            size="md"
+          />
           <div>
             <div className="font-bold text-sm">
               {member.user.name || t("noName")}
