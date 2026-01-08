@@ -7,7 +7,7 @@
 
 import Pusher from "pusher";
 import { getRealtimeConfig, isRealtimeEnabled } from "./config";
-import type { EventPayloadMap } from "./events";
+import type { EventPayloadMap, ChannelName } from "./events";
 import { Events } from "./events";
 
 // Debug logging - enabled via REALTIME_DEBUG=true
@@ -95,7 +95,7 @@ function getPusherInstance(): Pusher | null {
  * @returns Promise that resolves when the event is published
  */
 export async function publish<E extends keyof EventPayloadMap>(
-  channel: string,
+  channel: ChannelName,
   event: E,
   data: EventPayloadMap[E],
 ): Promise<void> {
@@ -136,7 +136,7 @@ export async function publish<E extends keyof EventPayloadMap>(
  * Publish to multiple channels at once
  */
 export async function publishToMany<E extends keyof EventPayloadMap>(
-  channels: string[],
+  channels: ChannelName[],
   event: E,
   data: EventPayloadMap[E],
 ): Promise<void> {

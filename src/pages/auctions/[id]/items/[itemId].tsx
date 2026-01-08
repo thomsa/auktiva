@@ -277,25 +277,25 @@ export default function ItemDetailPage({
         setError(result.message || tErrors("bid.placeFailed"));
       } else {
         // Optimistically update UI with the new bid
+        const isAnon =
+          auction.bidderVisibility === "PER_BID" ? bidAsAnonymous : false;
+        const newBid: Bid = {
+          id: result.id,
+          amount,
+          createdAt: new Date().toISOString(),
+          isAnonymous: isAnon,
+          user: isAnon ? null : { id: user.id, name: user.name },
+        };
+
         mutate(
           (current) => {
             if (!current) return current;
-
-            const newBid: Bid = {
-              id: result.id,
-              amount: result.amount,
-              createdAt: result.createdAt,
-              isAnonymous: result.isAnonymous,
-              user: result.isAnonymous
-                ? null
-                : { id: user.id, name: user.name },
-            };
 
             return {
               ...current,
               item: {
                 ...current.item,
-                currentBid: result.amount,
+                currentBid: amount,
                 highestBidderId: user.id,
               },
               bids: [newBid, ...current.bids],

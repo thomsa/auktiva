@@ -9,18 +9,35 @@
  */
 
 // =============================================================================
-// Channel Names
+// Channel Types (Type-safe channel names)
+// =============================================================================
+
+/** Branded type for item channel names */
+export type ItemChannel = `private-item-${string}`;
+
+/** Branded type for user channel names */
+export type UserChannel = `private-user-${string}`;
+
+/** Branded type for auction channel names */
+export type AuctionChannel = `private-auction-${string}`;
+
+/** Union of all valid channel types */
+export type ChannelName = ItemChannel | UserChannel | AuctionChannel;
+
+// =============================================================================
+// Channel Factories (Create type-safe channel names)
 // =============================================================================
 
 export const Channels = {
   /** Private item channel - for bid updates and discussions (members only) */
-  item: (itemId: string) => `private-item-${itemId}`,
+  item: (itemId: string): ItemChannel => `private-item-${itemId}`,
 
   /** Private user channel - for personal notifications (outbid, etc.) */
-  privateUser: (userId: string) => `private-user-${userId}`,
+  privateUser: (userId: string): UserChannel => `private-user-${userId}`,
 
   /** Private auction channel - for auction events (new items, member changes) */
-  privateAuction: (auctionId: string) => `private-auction-${auctionId}`,
+  privateAuction: (auctionId: string): AuctionChannel =>
+    `private-auction-${auctionId}`,
 } as const;
 
 // =============================================================================

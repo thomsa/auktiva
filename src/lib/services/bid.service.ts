@@ -334,7 +334,7 @@ export async function placeBid(
     }),
   ]);
 
-  // Publish realtime event for new bid (public item channel)
+  // Publish realtime event for new bid (private item channel)
   const bidEvent: BidNewEvent = {
     itemId,
     auctionId: item.auction.id,

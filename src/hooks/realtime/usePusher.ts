@@ -11,7 +11,7 @@ import {
   isClientRealtimeEnabled,
 } from "@/lib/realtime/client";
 import { Events, Channels } from "@/lib/realtime/events";
-import type { EventPayloadMap } from "@/lib/realtime/events";
+import type { EventPayloadMap, ChannelName } from "@/lib/realtime/events";
 
 // Debug logging - enabled in development or via localStorage
 // Use a function to avoid SSR/hydration issues with localStorage access
@@ -175,8 +175,9 @@ const channelCache = new Map<string, Channel>();
 
 /**
  * Hook to subscribe to a channel and listen for events
+ * @param channelName - Must be created using Channels.item(), Channels.privateUser(), or Channels.privateAuction()
  */
-export function useChannel(channelName: string | null): Channel | null {
+export function useChannel(channelName: ChannelName | null): Channel | null {
   // Use useMemo to get/create channel - this is derived state based on channelName
   const channel = useMemo(() => {
     if (!channelName) return null;
