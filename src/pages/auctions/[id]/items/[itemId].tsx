@@ -182,6 +182,11 @@ export default function ItemDetailPage({
         (current) => {
           if (!current) return current;
 
+          // Skip if this bid already exists (dedup for own bids)
+          if (current.bids.some((b) => b.id === event.bidId)) {
+            return current;
+          }
+
           // Create new bid entry from event data
           const newBid: Bid = {
             id: event.bidId,
@@ -271,8 +276,33 @@ export default function ItemDetailPage({
       if (!res.ok) {
         setError(result.message || tErrors("bid.placeFailed"));
       } else {
-        // Revalidate SWR data
-        await mutate();
+        // Optimistically update UI with the new bid
+        mutate(
+          (current) => {
+            if (!current) return current;
+
+            const newBid: Bid = {
+              id: result.id,
+              amount: result.amount,
+              createdAt: result.createdAt,
+              isAnonymous: result.isAnonymous,
+              user: result.isAnonymous
+                ? null
+                : { id: user.id, name: user.name },
+            };
+
+            return {
+              ...current,
+              item: {
+                ...current.item,
+                currentBid: result.amount,
+                highestBidderId: user.id,
+              },
+              bids: [newBid, ...current.bids],
+            };
+          },
+          { revalidate: false },
+        );
         setBidAmount("");
       }
     } catch {

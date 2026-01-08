@@ -14,13 +14,17 @@ import { Events, Channels } from "@/lib/realtime/events";
 import type { EventPayloadMap } from "@/lib/realtime/events";
 
 // Debug logging - enabled in development or via localStorage
-const DEBUG =
-  typeof window !== "undefined" &&
-  (process.env.NODE_ENV === "development" ||
-    localStorage.getItem("REALTIME_DEBUG") === "true");
+// Use a function to avoid SSR/hydration issues with localStorage access
+function isDebugEnabled(): boolean {
+  if (typeof window === "undefined") return false;
+  return (
+    process.env.NODE_ENV === "development" ||
+    localStorage.getItem("REALTIME_DEBUG") === "true"
+  );
+}
 
 function log(message: string, data?: unknown) {
-  if (DEBUG) {
+  if (isDebugEnabled()) {
     console.log(
       `%c[Realtime:Client] ${message}`,
       "color: #9333ea",
@@ -186,6 +190,14 @@ export function useChannel(channelName: string | null): Channel | null {
       log(`Subscribing to channel: ${channelName}`);
       ch = pusher.subscribe(channelName);
       channelCache.set(channelName, ch);
+
+      // Log subscription success/failure for private channels
+      ch.bind("pusher:subscription_succeeded", () => {
+        log(`Subscribed to channel: ${channelName}`);
+      });
+      ch.bind("pusher:subscription_error", (error: unknown) => {
+        logError(`Failed to subscribe to channel: ${channelName}`, error);
+      });
     }
 
     return ch;

@@ -19,11 +19,20 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const STORAGE_KEY = "auktiva-theme";
 
+// Get initial theme - only called once on client
+function getInitialTheme(): Theme {
+  if (typeof window === "undefined") return "system";
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored && ["light", "dark", "system"].includes(stored)) {
+    return stored as Theme;
+  }
+  return "system";
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "system";
-    return (localStorage.getItem(STORAGE_KEY) as Theme) || "system";
-  });
+  // Use "system" as initial value to match SSR, actual value loaded via suppressHydrationWarning
+  const [theme, setThemeState] = useState<Theme>(getInitialTheme);
+
   // Derive resolved theme from theme state
   const resolvedTheme = useMemo<"light" | "dark">(() => {
     if (typeof window === "undefined") return "light";
