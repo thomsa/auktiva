@@ -67,15 +67,12 @@ NEXT_PUBLIC_SOKETI_HOST="yourdomain.com"    # Public domain or IP - NOT localhos
 <Callout type="warning">
 **Important: Server vs Client Host**
 
-- `SOKETI_HOST` is for **server-side** connections. The Next.js server connects to Soketi on the same machine, so this should always be `127.0.0.1`.
+`SOKETI_HOST` is for **server-side** connections. The Next.js server connects to Soketi on the same machine, so this should always be `127.0.0.1`.
 
-- `NEXT_PUBLIC_SOKETI_HOST` is for **browser** connections. Users' browsers need to connect from outside, so this must be your **public domain** or **public IP address**.
+`NEXT_PUBLIC_SOKETI_HOST` is for **browser** connections. Users' browsers need to connect from outside, so this must be your **public domain** or **public IP address**.
 
-Example:
-
-- Server: `SOKETI_HOST="127.0.0.1"` → Next.js connects internally
-- Browser: `NEXT_PUBLIC_SOKETI_HOST="auctions.example.com"` → Users connect via internet
-  </Callout>
+Example: Server uses `SOKETI_HOST="127.0.0.1"` (internal), Browser uses `NEXT_PUBLIC_SOKETI_HOST="auctions.example.com"` (public).
+</Callout>
 
 #### Managing Soketi
 
