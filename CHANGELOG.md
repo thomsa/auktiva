@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.16.5] - 2026-01-08
+
+### 📚 Documentation
+
+- Simplify Soketi host configuration callout formatting by @thomsa
+
 ## [1.16.4] - 2026-01-08
 
 ### 🚀 Features
