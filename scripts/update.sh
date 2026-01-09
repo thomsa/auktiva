@@ -49,7 +49,7 @@ git checkout "$LATEST_TAG"
 
 echo ""
 echo "=== Step 3: Installing dependencies ==="
-npm install --production=false
+npm npm ci --silent 2>/dev/null || npm install --silent
 
 echo ""
 echo "=== Step 4: Backing up database ==="
@@ -93,9 +93,12 @@ echo "=== Step 7: Restarting application ==="
 if command -v pm2 &> /dev/null; then
   if [ -f "ecosystem.config.js" ]; then
     echo "Using ecosystem.config.js..."
-    pm2 startOrRestart ecosystem.config.js
+    # Delete existing process to ensure clean state (avoids stale config issues)
+    pm2 delete auktiva 2>/dev/null || true
+    # Start fresh from ecosystem.config.js
+    pm2 start ecosystem.config.js
     pm2 save
-    echo "PM2 process started/restarted successfully"
+    echo "PM2 process started successfully"
   elif pm2 list | grep -q "auktiva"; then
     echo "Restarting PM2 process 'auktiva'..."
     pm2 restart auktiva
