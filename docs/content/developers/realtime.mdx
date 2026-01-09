@@ -254,24 +254,77 @@ Users **cannot**:
 
 ## Troubleshooting
 
+### Soketi container not running
+
+Soketi runs as a Docker container, not via PM2:
+
+```bash
+# Check if Soketi container is running
+docker ps | grep soketi
+
+# If not listed, check if it exists but is stopped
+docker ps -a | grep soketi
+
+# Start a stopped container
+docker start soketi
+
+# If container doesn't exist, create it
+docker run -d --name soketi --restart unless-stopped \
+  -p 6001:6001 \
+  -e SOKETI_DEFAULT_APP_ID=auktiva \
+  -e SOKETI_DEFAULT_APP_KEY=your-key \
+  -e SOKETI_DEFAULT_APP_SECRET=your-secret \
+  -e SOKETI_DEFAULT_APP_HOST=0.0.0.0 \
+  quay.io/soketi/soketi:latest
+```
+
 ### Soketi won't start
 
 ```bash
 # Check if port 6001 is in use
 lsof -i :6001
 
-# Check Soketi logs
-pm2 logs soketi --lines 50
+# Check Soketi container logs
+docker logs soketi
+docker logs -f soketi  # Follow logs in real-time
 
-# Try running manually to see errors
-soketi start
+# Remove and recreate container
+docker stop soketi && docker rm soketi
+# Then run the docker run command above
 ```
 
 ### WebSocket connection fails
 
-1. Check browser console for connection errors
-2. Verify `NEXT_PUBLIC_SOKETI_HOST` matches how users access your server
-3. If using a reverse proxy, ensure WebSocket upgrade headers are passed
+**Symptoms:** Browser console shows WebSocket connection errors, realtime updates don't work.
+
+**Common causes and solutions:**
+
+1. **Soketi not running** - Check with `docker ps | grep soketi`
+
+2. **Wrong host configuration** - `NEXT_PUBLIC_SOKETI_HOST` must be your **public domain or IP**, not `localhost` or `127.0.0.1`
+
+3. **Firewall blocking port 6001** - Ensure port 6001 is open for WebSocket connections
+
+4. **Credentials mismatch** - Verify these match between `.env` and Docker:
+   - `NEXT_PUBLIC_SOKETI_APP_KEY` must match `SOKETI_DEFAULT_APP_KEY`
+   - `SOKETI_APP_SECRET` must match `SOKETI_DEFAULT_APP_SECRET`
+
+5. **TLS mismatch** - If your site uses HTTPS, set `NEXT_PUBLIC_SOKETI_USE_TLS="true"` and configure nginx to proxy WebSocket with TLS
+
+6. **Reverse proxy not configured** - If using nginx, ensure WebSocket upgrade headers are passed (see nginx config above)
+
+### Debug WebSocket connections
+
+Enable debug logging to see connection details:
+
+**Server-side:** Add `REALTIME_DEBUG="true"` to `.env` and restart
+
+**Client-side:** In browser console, run:
+```javascript
+localStorage.setItem('REALTIME_DEBUG', 'true')
+```
+
+Then refresh the page and check console for `[Realtime:Client]` logs.
 
 ### Pusher limit exceeded
 

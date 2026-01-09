@@ -77,6 +77,112 @@ npm run db:push
 - Verify all S3 environment variables are set
 - Check bucket permissions and CORS configuration
 
+## Realtime / WebSocket Issues
+
+### Soketi container not running
+
+Soketi runs as a Docker container, not via PM2. Check if it's running:
+
+```bash
+docker ps | grep soketi
+```
+
+If not running:
+
+```bash
+# Start existing container
+docker start soketi
+
+# Or create new container
+docker run -d --name soketi --restart unless-stopped \
+  -p 6001:6001 \
+  -e SOKETI_DEFAULT_APP_ID=auktiva \
+  -e SOKETI_DEFAULT_APP_KEY=your-key \
+  -e SOKETI_DEFAULT_APP_SECRET=your-secret \
+  -e SOKETI_DEFAULT_APP_HOST=0.0.0.0 \
+  quay.io/soketi/soketi:latest
+```
+
+### WebSocket connection fails in browser
+
+**Common causes:**
+
+1. **Soketi not running** - `docker ps | grep soketi`
+2. **Wrong host** - `NEXT_PUBLIC_SOKETI_HOST` must be your public domain, not `localhost`
+3. **Credentials mismatch** - `.env` values must match Docker environment variables
+4. **Firewall** - Port 6001 must be open
+5. **TLS mismatch** - If using HTTPS, set `NEXT_PUBLIC_SOKETI_USE_TLS="true"`
+
+**Debug:** Enable logging with `REALTIME_DEBUG="true"` in `.env` or `localStorage.setItem('REALTIME_DEBUG', 'true')` in browser console.
+
+See [Realtime Features](/developers/realtime#troubleshooting) for detailed troubleshooting.
+
+## PM2 Issues
+
+### "Cannot find module '/path/to/auktiva'" after update
+
+**Cause:** PM2 caches process configurations. If the app was originally started with a different method (e.g., `pm2 start /path/to/auktiva` instead of using `ecosystem.config.js`), PM2 continues using the old cached configuration even after updates.
+
+**Symptoms:**
+
+```
+Error: Cannot find module '/home/webapp/auktiva'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1420:15)
+    ...
+code: 'MODULE_NOT_FOUND'
+```
+
+**Solution:**
+
+1. Delete the cached PM2 process:
+
+```bash
+pm2 delete auktiva
+```
+
+2. Navigate to your project directory:
+
+```bash
+cd /path/to/auktiva
+```
+
+3. Start fresh using the ecosystem config:
+
+```bash
+pm2 start ecosystem.config.js
+```
+
+4. Save the new configuration:
+
+```bash
+pm2 save
+```
+
+This ensures PM2 uses the correct `ecosystem.config.js` configuration which runs `npm start` instead of trying to load the directory as a module.
+
+### PM2 process keeps restarting
+
+**Cause:** Application crashes during startup.
+
+**Solution:**
+
+1. Check the logs:
+
+```bash
+pm2 logs auktiva --lines 100
+```
+
+2. Common causes:
+   - Missing environment variables
+   - Database connection issues
+   - Port already in use
+
+3. Stop the restart loop while debugging:
+
+```bash
+pm2 stop auktiva
+```
+
 ## Runtime Issues
 
 ### Port 3000 already in use

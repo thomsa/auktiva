@@ -1393,8 +1393,14 @@ async function runPostSetupTasks(config: EnvConfig): Promise<void> {
 
   spinner = ora("Starting with PM2...").start();
   try {
-    // Start main Auktiva app
-    execSync("pm2 startOrRestart ecosystem.config.js --only auktiva", {
+    // Delete existing process to ensure clean state (avoids stale config issues)
+    try {
+      execSync("pm2 delete auktiva", { stdio: "pipe" });
+    } catch {
+      // Process doesn't exist yet, that's fine
+    }
+    // Start fresh from ecosystem.config.js
+    execSync("pm2 start ecosystem.config.js --only auktiva", {
       stdio: "pipe",
     });
 
