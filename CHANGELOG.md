@@ -2,6 +2,30 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.16.8] - 2026-01-09
+
+### 🚀 Features
+
+- Improve PM2 setup reliability and expand troubleshooting documentation by @thomsa
+
+## [1.16.7] - 2026-01-09
+
+### 🐛 Bug Fixes
+
+- Improve update script reliability with npm ci and clean PM2 restart by @thomsa
+
+## [1.16.6] - 2026-01-08
+
+### 📚 Documentation
+
+- Add MDX documentation requirements and clean up bid error logging by @thomsa
+
+## [1.16.5] - 2026-01-08
+
+### 📚 Documentation
+
+- Simplify Soketi host configuration callout formatting by @thomsa
+
 ## [1.16.4] - 2026-01-08
 
 ### 🚀 Features
