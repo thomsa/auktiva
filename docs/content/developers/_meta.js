@@ -9,5 +9,6 @@ export default {
   "deployment-admin": "Deployment Admin",
   architecture: "Architecture",
   deployment: "Deployment",
-  troubleshooting: "Troubleshooting",
+  realtime: "Realtime Features",
+  troubleshooting: "FAQ & Troubleshooting",
 };
