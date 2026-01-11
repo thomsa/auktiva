@@ -151,16 +151,16 @@ MICROSOFT_CLIENT_SECRET="your-client-secret-value"
 
 ### Sessions
 
-- Sessions are stored in the database (`sessions` table)
-- Session token is stored in an HTTP-only cookie
+- Sessions use JWT strategy (token-based, not database-stored)
+- JWT token is stored in an HTTP-only cookie
 - Sessions expire after 30 days by default
 
 ## Security Features
 
-- **Password hashing** with bcrypt
+- **Password hashing** with bcrypt (12 rounds)
 - **CSRF protection** via NextAuth
-- **HTTP-only cookies** for session tokens
-- **Database-stored sessions** for security
+- **HTTP-only cookies** for JWT tokens
+- **JWT-based sessions** for stateless authentication
 
 ## Session Data
 

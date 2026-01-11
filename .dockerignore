@@ -1,0 +1,54 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Build outputs
+.next
+out
+dist
+build
+
+# Development
+.env
+.env.local
+.env.development
+.env.test
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Tests
+__tests__
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+coverage
+
+# Misc
+.DS_Store
+*.log
+logs/*
+!logs/.gitkeep
+
+# Data (will be mounted as volumes)
+data
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Development database
+*.db
+*.db-journal
+dev.db

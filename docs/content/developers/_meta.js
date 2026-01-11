@@ -2,6 +2,7 @@ export default {
   index: "Overview",
   installation: "Installation",
   configuration: "Configuration",
+  "environment-variables": "Environment Variables",
   database: "Database",
   storage: "Storage",
   authentication: "Authentication",

@@ -9,6 +9,8 @@ const withBundleAnalyzer = bundleAnalyzer({
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  // Enable standalone output for Docker deployments
+  output: "standalone",
   i18n: {
     locales: ["en", "pl", "hu", "de", "es"],
     defaultLocale: "en",

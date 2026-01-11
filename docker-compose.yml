@@ -1,0 +1,107 @@
+# =============================================================================
+# Auktiva Docker Compose
+# Production deployment with optional Soketi for realtime features
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Auktiva Application
+  # ---------------------------------------------------------------------------
+  auktiva:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auktiva
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # Database (SQLite - stored in volume)
+      - DATABASE_URL=file:./data/auktiva.db
+      # Authentication (REQUIRED - generate with: openssl rand -base64 32)
+      - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_URL=${AUTH_URL:-http://localhost:3000}
+      # Storage
+      - STORAGE_PROVIDER=${STORAGE_PROVIDER:-local}
+      # Optional: S3 storage
+      - S3_BUCKET=${S3_BUCKET:-}
+      - S3_REGION=${S3_REGION:-}
+      - S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID:-}
+      - S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY:-}
+      - S3_ENDPOINT=${S3_ENDPOINT:-}
+      # Optional: Email
+      - EMAIL_PROVIDER=${EMAIL_PROVIDER:-}
+      - BREVO_API_KEY=${BREVO_API_KEY:-}
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - MAIL_FROM=${MAIL_FROM:-noreply@auktiva.org}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME:-Auktiva}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      - CRON_SECRET=${CRON_SECRET:-}
+      # Optional: OAuth
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - MICROSOFT_CLIENT_ID=${MICROSOFT_CLIENT_ID:-}
+      - MICROSOFT_CLIENT_SECRET=${MICROSOFT_CLIENT_SECRET:-}
+      # Optional: reCAPTCHA
+      - NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${NEXT_PUBLIC_RECAPTCHA_SITE_KEY:-}
+      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY:-}
+      # Optional: Realtime (Soketi)
+      - NEXT_PUBLIC_REALTIME_DRIVER=${NEXT_PUBLIC_REALTIME_DRIVER:-disabled}
+      - NEXT_PUBLIC_SOKETI_APP_KEY=${NEXT_PUBLIC_SOKETI_APP_KEY:-}
+      - NEXT_PUBLIC_SOKETI_HOST=${NEXT_PUBLIC_SOKETI_HOST:-soketi}
+      - NEXT_PUBLIC_SOKETI_PORT=${NEXT_PUBLIC_SOKETI_PORT:-6001}
+      - NEXT_PUBLIC_SOKETI_USE_TLS=${NEXT_PUBLIC_SOKETI_USE_TLS:-false}
+      - SOKETI_APP_ID=${SOKETI_APP_ID:-auktiva}
+      - SOKETI_APP_SECRET=${SOKETI_APP_SECRET:-}
+      - SOKETI_HOST=soketi
+      # Features
+      - ALLOW_OPEN_AUCTIONS=${ALLOW_OPEN_AUCTIONS:-false}
+    volumes:
+      # Persist database and uploads
+      - auktiva-data:/app/data
+      - auktiva-uploads:/app/public/uploads
+      - auktiva-logs:/app/logs
+    depends_on:
+      - soketi
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ---------------------------------------------------------------------------
+  # Soketi - WebSocket Server (Optional, for realtime features)
+  # ---------------------------------------------------------------------------
+  soketi:
+    image: quay.io/soketi/soketi:latest
+    container_name: soketi
+    restart: unless-stopped
+    ports:
+      - "6001:6001"
+    environment:
+      - SOKETI_DEBUG=${SOKETI_DEBUG:-false}
+      - SOKETI_DEFAULT_APP_ID=${SOKETI_APP_ID:-auktiva}
+      - SOKETI_DEFAULT_APP_KEY=${NEXT_PUBLIC_SOKETI_APP_KEY:-}
+      - SOKETI_DEFAULT_APP_SECRET=${SOKETI_APP_SECRET:-}
+      - SOKETI_DEFAULT_APP_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:6001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# -----------------------------------------------------------------------------
+# Volumes for data persistence
+# -----------------------------------------------------------------------------
+volumes:
+  auktiva-data:
+    driver: local
+  auktiva-uploads:
+    driver: local
+  auktiva-logs:
+    driver: local

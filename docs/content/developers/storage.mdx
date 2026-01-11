@@ -14,8 +14,9 @@ Local storage saves files directly to the server's filesystem. Best for:
 
 ```bash
 STORAGE_PROVIDER="local"
-STORAGE_LOCAL_PATH="./uploads"
 ```
+
+Local storage automatically uses `./public/uploads` directory (served at `/uploads`). No path configuration is needed.
 
 ### Advantages
 

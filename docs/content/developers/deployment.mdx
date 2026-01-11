@@ -2,24 +2,114 @@
 
 This guide covers deploying Auktiva to various environments.
 
+import { Callout } from "nextra/components";
+
 ## Deployment Options
 
 | Platform     | Database        | Storage     | Difficulty |
 | ------------ | --------------- | ----------- | ---------- |
 | VPS with PM2 | SQLite or Turso | Local or S3 | Easy       |
-| Docker       | SQLite or Turso | Local or S3 | Medium     |
+| Docker       | SQLite or Turso | Local or S3 | Easy       |
 | Vercel       | Turso only      | S3 only     | Easy       |
-
-import { Callout } from "nextra/components";
 
 <Callout type="warning">
   Serverless platforms (Vercel, Netlify) require Turso database and S3 storage.
-  SQLite and local storage won't work.
+  SQLite and local storage won't work due to ephemeral filesystems.
 </Callout>
 
-## VPS Deployment (Recommended)
+## Docker Deployment (Recommended)
 
-Deploy to any VPS provider (DigitalOcean, Linode, Hetzner, AWS EC2, etc.).
+The easiest way to deploy Auktiva is using Docker with the included `docker-compose.yml`.
+
+### Prerequisites
+
+- Docker and Docker Compose installed
+- A domain name (optional, for HTTPS)
+
+### Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/thomsa/auktiva.git
+cd auktiva
+
+# Create environment file
+cp .env.example .env
+
+# Generate secrets
+AUTH_SECRET=$(openssl rand -base64 32)
+SOKETI_APP_KEY=$(openssl rand -hex 16)
+SOKETI_APP_SECRET=$(openssl rand -hex 32)
+
+# Edit .env with your settings
+nano .env
+```
+
+### Environment Variables
+
+See [Environment Variables](/developers/environment-variables) for a complete reference of all configuration options.
+
+**Minimum required for Docker:**
+
+```bash
+# Authentication (REQUIRED)
+AUTH_SECRET="your-generated-secret"
+AUTH_URL="https://auctions.yourdomain.com"
+
+# Realtime (optional but recommended)
+NEXT_PUBLIC_REALTIME_DRIVER="soketi"
+NEXT_PUBLIC_SOKETI_APP_KEY="your-generated-key"
+SOKETI_APP_SECRET="your-generated-secret"
+NEXT_PUBLIC_SOKETI_HOST="auctions.yourdomain.com"
+```
+
+### Start with Docker Compose
+
+```bash
+# Build and start all services
+docker compose up -d
+
+# View logs
+docker compose logs -f
+
+# Stop services
+docker compose down
+```
+
+This starts:
+- **auktiva** - The main application on port 3000
+- **soketi** - WebSocket server for realtime features on port 6001
+
+### Data Persistence
+
+Docker volumes are used to persist data:
+- `auktiva-data` - SQLite database
+- `auktiva-uploads` - Uploaded images
+- `auktiva-logs` - Application logs
+
+### Building Manually
+
+If you prefer to build the image manually:
+
+```bash
+# Build the image
+docker build -t auktiva .
+
+# Run the container
+docker run -d \
+  --name auktiva \
+  -p 3000:3000 \
+  -e AUTH_SECRET="your-secret" \
+  -e AUTH_URL="http://localhost:3000" \
+  -e DATABASE_URL="file:./data/auktiva.db" \
+  -v auktiva-data:/app/data \
+  -v auktiva-uploads:/app/public/uploads \
+  auktiva
+```
+
+## VPS Deployment (PM2)
+
+Deploy directly to a VPS without Docker using PM2 process manager.
 
 ### Step 1: Install Dependencies
 
@@ -45,12 +135,16 @@ npm run setup
 
 ```bash
 npm run build
-pm2 start npm --name "auktiva" -- start
+pm2 start ecosystem.config.js
 pm2 save
 pm2 startup
 ```
 
-### Step 4: Configure Nginx
+## Nginx Reverse Proxy
+
+For both Docker and PM2 deployments, use Nginx as a reverse proxy.
+
+### Main Application
 
 ```nginx
 server {
@@ -63,16 +157,44 @@ server {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
     }
 }
 ```
 
+### WebSocket Server (Soketi)
+
+Soketi requires a **separate subdomain** for WebSocket connections:
+
+```nginx
+server {
+    listen 80;
+    server_name ws.auctions.yourdomain.com;
+
+    location / {
+        proxy_pass http://localhost:6001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 86400;
+    }
+}
+```
+
+Then set `NEXT_PUBLIC_SOKETI_HOST="ws.auctions.yourdomain.com"` in your `.env`.
+
 ### Enable HTTPS
 
 ```bash
 sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d auctions.yourdomain.com
+sudo certbot --nginx -d auctions.yourdomain.com -d ws.auctions.yourdomain.com
 ```
 
 ## Vercel Deployment
@@ -83,12 +205,26 @@ sudo certbot --nginx -d auctions.yourdomain.com
 
 1. Push your code to GitHub
 2. Import project in Vercel Dashboard
-3. Set environment variables
+3. Set environment variables (see [Configuration](/developers/configuration))
 4. Deploy
+
+<Callout type="warning">
+  Rate limiting uses in-memory storage which doesn't work reliably on Vercel.
+  Consider using Upstash Redis for production rate limiting.
+</Callout>
 
 ## Updates
 
-To update Auktiva:
+### Docker
+
+```bash
+cd /path/to/auktiva
+git pull
+docker compose build
+docker compose up -d
+```
+
+### PM2
 
 ```bash
 cd /path/to/auktiva
@@ -97,3 +233,5 @@ npm ci
 npm run build
 pm2 restart auktiva
 ```
+
+Or use the built-in update system from Settings → Deployment Administration (see [Deployment Admin](/developers/deployment-admin)).

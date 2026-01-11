@@ -58,13 +58,21 @@ Browser → Next.js Server → getServerSideProps
 
 ### Real-Time Updates
 
-Auktiva uses polling for real-time updates:
+Auktiva supports WebSocket-based real-time updates using Soketi (self-hosted) or Pusher (cloud). When realtime is not configured, it falls back to SWR polling.
 
 ```
-Browser → SWR (5s interval) → API Route → Database
+With WebSocket (Soketi/Pusher):
+Browser ← WebSocket ← Soketi/Pusher ← API (on data change)
+                ↓
+         Instant UI update
+
+Fallback (Polling):
+Browser → SWR (interval) → API Route → Database
                 ↓
          Update UI on change
 ```
+
+See [Realtime Features](/developers/realtime) for configuration details.
 
 ## Database Schema
 
