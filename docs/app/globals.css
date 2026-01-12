@@ -1,0 +1,16 @@
+/* Custom theme to match Auktiva main app */
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Code block styling */
+pre {
+  border-radius: 0.75rem !important;
+}
+
+/* Sidebar styling */
+.nextra-sidebar-container {
+  scrollbar-width: thin;
+}
