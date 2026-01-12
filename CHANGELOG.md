@@ -2,6 +2,28 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.17.2] - 2026-01-12
+
+### 📚 Documentation
+
+- Enhance footer with navigation links and add custom favicon by @thomsa
+
+## [1.17.1] - 2026-01-12
+
+### 📚 Documentation
+
+- Rename Admin Panel to Auction Admin for clarity by @thomsa
+
+## [1.17.0] - 2026-01-12
+
+### 📚 Documentation
+
+- Add Docker deployment guide and improve environment documentation by @thomsa
+
+### 🚀 Features
+
+- Add admin item editing feature with permission controls and bulk operations by @thomsa
+
 ## [1.16.9] - 2026-01-09
 
 ### 📚 Documentation
