@@ -26,6 +26,7 @@ export const updateAuctionSchema = z.object({
   bidderVisibility: z.enum(["VISIBLE", "ANONYMOUS", "PER_BID"]).optional(),
   itemEndMode: z.enum(["AUCTION_END", "CUSTOM", "NONE"]).optional(),
   endDate: z.string().nullable().optional(),
+  defaultItemsEditableByAdmin: z.boolean().optional(),
 });
 
 export type CreateAuctionBody = z.infer<typeof createAuctionSchema>;

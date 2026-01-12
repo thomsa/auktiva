@@ -108,7 +108,10 @@
       "updateFailed": "Failed to update auction",
       "success": "Settings saved successfully",
       "deleteSuccess": "Auction deleted successfully",
-      "endedSuccess": "Auction ended successfully"
+      "endedSuccess": "Auction ended successfully",
+      "adminEditingDefaults": "Admin Editing Defaults",
+      "defaultItemsEditableByAdmin": "Allow admins to edit new items by default",
+      "defaultItemsEditableByAdminDescription": "When enabled, new items created in this auction will have admin editing enabled by default. Item owners can still opt out."
     },
     "members": {
       "title": "Members",

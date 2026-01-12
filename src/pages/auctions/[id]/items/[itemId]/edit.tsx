@@ -52,7 +52,9 @@ interface EditItemProps {
     currentBid: number | null;
     isPublished: boolean;
     discussionsEnabled: boolean;
+    isEditableByAdmin: boolean;
   };
+  isItemOwner: boolean;
   currencies: Currency[];
   hasBids: boolean;
   images: ItemImage[];
@@ -65,6 +67,7 @@ export default function EditItemPage({
   currencies,
   hasBids,
   images: initialImages,
+  isItemOwner,
 }: EditItemProps) {
   const router = useRouter();
   const t = useTranslations("item.edit");
@@ -89,6 +92,9 @@ export default function EditItemPage({
   const [discussionsEnabled, setDiscussionsEnabled] = useState(
     item.discussionsEnabled,
   );
+  const [isEditableByAdmin, setIsEditableByAdmin] = useState(
+    item.isEditableByAdmin,
+  );
 
   const isItemEnded = !!(item.endDate && new Date(item.endDate) < new Date());
   const auctionHasEndDate = !!auction.endDate;
@@ -110,6 +116,7 @@ export default function EditItemPage({
       bidderAnonymous: formData.get("bidderAnonymous") === "on",
       endDate: (formData.get("endDate") as string) || null,
       discussionsEnabled,
+      isEditableByAdmin,
     };
 
     try {
@@ -559,6 +566,38 @@ export default function EditItemPage({
               </div>
             </div>
 
+            {/* Admin Editing Settings - Only show to item owner */}
+            {isItemOwner && (
+              <>
+                <div className="divider opacity-50"></div>
+                <div className="space-y-4">
+                  <h2 className="text-lg font-semibold flex items-center gap-2 text-warning">
+                    <span className="icon-[tabler--shield-check] size-5"></span>
+                    {t("adminSettings")}
+                  </h2>
+
+                  <div className="form-control">
+                    <label className="label cursor-pointer justify-start gap-3 p-0">
+                      <input
+                        type="checkbox"
+                        checked={isEditableByAdmin}
+                        onChange={(e) => setIsEditableByAdmin(e.target.checked)}
+                        className="toggle toggle-warning"
+                      />
+                      <div>
+                        <span className="label-text font-medium">
+                          {t("allowAdminEdit")}
+                        </span>
+                        <p className="text-xs text-base-content/60">
+                          {t("allowAdminEditDescription")}
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </>
+            )}
+
             {/* Submit */}
             <div className="divider opacity-50"></div>
             <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
@@ -754,6 +793,7 @@ export const getServerSideProps = withAuth(async (context) => {
         endDate: auction.endDate,
       },
       item: editData.item,
+      isItemOwner: editData.isItemOwner,
       currencies,
       hasBids: editData.hasBids,
       images: editData.images,

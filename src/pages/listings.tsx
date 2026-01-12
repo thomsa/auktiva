@@ -118,13 +118,14 @@ export default function ListingsPage({ user }: ListingsPageProps) {
     return (
       <PageLayout user={user}>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-linear-to-r from-base-content to-base-content/60 bg-clip-text text-transparent mb-2">
-              {t("myListings")}
-            </h1>
-            <p className="text-base-content/60 text-lg">
-              {tListings("subtitle")}
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
+              <span className="icon-[tabler--tag] size-7"></span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">{t("myListings")}</h1>
+              <p className="text-base-content/60">{tListings("subtitle")}</p>
+            </div>
           </div>
         </div>
         <SkeletonListingsPage />
@@ -135,13 +136,14 @@ export default function ListingsPage({ user }: ListingsPageProps) {
   return (
     <PageLayout user={user}>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-linear-to-r from-base-content to-base-content/60 bg-clip-text text-transparent mb-2">
-            {t("myListings")}
-          </h1>
-          <p className="text-base-content/60 text-lg">
-            {tListings("subtitle")}
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
+            <span className="icon-[tabler--tag] size-7"></span>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">{t("myListings")}</h1>
+            <p className="text-base-content/60">{tListings("subtitle")}</p>
+          </div>
         </div>
         <div className="flex gap-2">
           <Link

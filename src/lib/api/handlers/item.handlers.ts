@@ -23,6 +23,8 @@ export const createItemSchema = z.object({
   endDate: z.string().optional(),
   isPublished: z.boolean().optional(),
   commentsEnabled: z.boolean().optional(),
+  discussionsEnabled: z.boolean().optional(),
+  isEditableByAdmin: z.boolean().optional(),
 });
 
 export const updateItemSchema = z.object({
@@ -35,6 +37,8 @@ export const updateItemSchema = z.object({
   endDate: z.string().nullable().optional(),
   isPublished: z.boolean().optional(),
   commentsEnabled: z.boolean().optional(),
+  discussionsEnabled: z.boolean().optional(),
+  isEditableByAdmin: z.boolean().optional(),
 });
 
 export type CreateItemBody = z.infer<typeof createItemSchema>;
@@ -164,6 +168,7 @@ export const updateItem: ApiHandler = async (req, res, ctx) => {
       ctx.session!.user.id,
       item.creatorId,
       ctx.membership!,
+      item.isEditableByAdmin,
     )
   ) {
     throw new ForbiddenError("You don't have permission to edit this item");
@@ -220,6 +225,7 @@ export const updateItem: ApiHandler = async (req, res, ctx) => {
     itemId,
     validatedBody,
     item._count.bids > 0,
+    ctx.session!.user.id,
   );
 
   res.status(200).json({
@@ -251,6 +257,7 @@ export const deleteItem: ApiHandler = async (_req, res, ctx) => {
       ctx.session!.user.id,
       item.creatorId,
       ctx.membership!,
+      item.isEditableByAdmin,
     )
   ) {
     throw new ForbiddenError("You don't have permission to delete this item");

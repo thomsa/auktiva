@@ -52,7 +52,21 @@
     "signedInAs": "Signed in as",
     "features": "Features",
     "howItWorks": "How it Works",
-    "docs": "Docs"
+    "docs": "Docs",
+    "adminPanel": "Admin Panel"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "Manage items across your auctions",
+    "selectAuction": "Select Auction",
+    "selectAuctionPlaceholder": "Choose an auction...",
+    "selectAuctionPrompt": "Select an Auction",
+    "selectAuctionPromptDescription": "Choose an auction from the dropdown above to view and edit items you have permission to manage.",
+    "viewAuction": "View Auction",
+    "auctionSettings": "Settings",
+    "itemCount": "{count, plural, =0 {No items} =1 {1 item} other {# items}} available to edit",
+    "noEditableItems": "No Editable Items",
+    "noEditableItemsDescription": "There are no items in this auction that you can edit. Items must have 'Allow admin editing' enabled by their owner, or you must be the item creator."
   },
   "sort": {
     "newestFirst": "Newest First",

@@ -83,14 +83,17 @@ export default function HistoryPage({ user }: HistoryPageProps) {
   if (isLoading) {
     return (
       <PageLayout user={user}>
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-10">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-linear-to-r from-base-content to-base-content/60 bg-clip-text text-transparent mb-2">
-              {t("bidHistory")}
-            </h1>
-            <p className="text-base-content/60 text-lg">
-              Track your bidding activity and results
-            </p>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+              <span className="icon-[tabler--gavel] size-7"></span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">{t("bidHistory")}</h1>
+              <p className="text-base-content/60">
+                Track your bidding activity and results
+              </p>
+            </div>
           </div>
         </div>
         <SkeletonHistoryPage />
@@ -100,14 +103,17 @@ export default function HistoryPage({ user }: HistoryPageProps) {
 
   return (
     <PageLayout user={user}>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-10">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-linear-to-r from-base-content to-base-content/60 bg-clip-text text-transparent mb-2">
-            {t("bidHistory")}
-          </h1>
-          <p className="text-base-content/60 text-lg">
-            Track your bidding activity and results
-          </p>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+            <span className="icon-[tabler--gavel] size-7"></span>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">{t("bidHistory")}</h1>
+            <p className="text-base-content/60">
+              Track your bidding activity and results
+            </p>
+          </div>
         </div>
       </div>
 

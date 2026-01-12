@@ -8,6 +8,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { useRouter } from "next/router";
 import { UpdateBanner } from "@/components/common";
 import { NotificationProvider } from "@/contexts/NotificationContext";
+import { AppProvider } from "@/contexts/AppContext";
 
 export default function App({
   Component,
@@ -22,15 +23,17 @@ export default function App({
       messages={pageProps.messages}
     >
       <SessionProvider session={session}>
-        <NotificationProvider>
-          <ThemeProvider>
-            <ToastProvider>
-              <UpdateBanner />
-              <Component {...pageProps} />
-              <Analytics />
-            </ToastProvider>
-          </ThemeProvider>
-        </NotificationProvider>
+        <AppProvider>
+          <NotificationProvider>
+            <ThemeProvider>
+              <ToastProvider>
+                <UpdateBanner />
+                <Component {...pageProps} />
+                <Analytics />
+              </ToastProvider>
+            </ThemeProvider>
+          </NotificationProvider>
+        </AppProvider>
       </SessionProvider>
     </NextIntlClientProvider>
   );

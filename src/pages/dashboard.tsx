@@ -279,13 +279,16 @@ export default function DashboardPage({ user }: DashboardProps) {
         <SEO title={t("seo.title")} description={t("seo.description")} />
         <PageLayout user={user}>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-base-content">
-                {t("title")}
-              </h1>
-              <p className="text-base-content/60 mt-1 text-sm sm:text-base">
-                {t("welcome", { name: user.name || user.email })}
-              </p>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                <span className="icon-[tabler--layout-dashboard] size-7"></span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">{t("title")}</h1>
+                <p className="text-base-content/60">
+                  {t("welcome", { name: user.name || user.email })}
+                </p>
+              </div>
             </div>
             <Link
               href="/auctions/create"
@@ -307,13 +310,16 @@ export default function DashboardPage({ user }: DashboardProps) {
       <PageLayout user={user}>
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-base-content">
-              {t("title")}
-            </h1>
-            <p className="text-base-content/60 mt-1 text-sm sm:text-base">
-              {t("welcome", { name: user.name || user.email })}
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+              <span className="icon-[tabler--layout-dashboard] size-7"></span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">{t("title")}</h1>
+              <p className="text-base-content/60">
+                {t("welcome", { name: user.name || user.email })}
+              </p>
+            </div>
           </div>
           <Link
             href="/auctions/create"

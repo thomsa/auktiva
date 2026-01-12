@@ -51,6 +51,7 @@ export interface UpdateAuctionInput {
   bidderVisibility?: "VISIBLE" | "ANONYMOUS" | "PER_BID";
   itemEndMode?: "AUCTION_END" | "CUSTOM" | "NONE";
   endDate?: string | null;
+  defaultItemsEditableByAdmin?: boolean;
 }
 
 export interface AuctionDetailForPage {
@@ -66,6 +67,7 @@ export interface AuctionDetailForPage {
   createdAt: string;
   updatedAt: string;
   thumbnailUrl: string | null;
+  defaultItemsEditableByAdmin: boolean;
   creator: {
     id: string;
     name: string | null;
@@ -334,6 +336,9 @@ export async function updateAuction(
     updateData.itemEndMode = input.itemEndMode;
   if (input.endDate !== undefined) {
     updateData.endDate = input.endDate ? new Date(input.endDate) : null;
+  }
+  if (input.defaultItemsEditableByAdmin !== undefined) {
+    updateData.defaultItemsEditableByAdmin = input.defaultItemsEditableByAdmin;
   }
 
   return prisma.auction.update({

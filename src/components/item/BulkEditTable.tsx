@@ -23,13 +23,26 @@ export interface BulkEditItem {
   minBidIncrement: number;
   isPublished: boolean;
   discussionsEnabled: boolean;
+  isEditableByAdmin: boolean;
   endDate: string | null;
   createdAt: string;
+  updatedAt: string;
+  lastUpdatedById: string | null;
+  lastUpdatedByName: string | null;
   auctionId: string;
   auctionName: string;
   thumbnailUrl: string | null;
   bidCount: number;
   currencySymbol: string;
+  creatorId: string;
+  creatorName: string | null;
+  creatorEmail: string;
+}
+
+export interface BulkUpdateError {
+  itemId: string;
+  itemName: string;
+  errorType: "notOwner" | "hasBids" | "unknown";
 }
 
 interface Currency {
@@ -38,9 +51,17 @@ interface Currency {
   symbol: string;
 }
 
+export interface BulkUpdateResult {
+  updated: number;
+  skipped: number;
+  errors?: BulkUpdateError[];
+}
+
 interface BulkEditTableProps {
   items: BulkEditItem[];
   currencies: Currency[];
+  currentUserId: string;
+  showOwner?: boolean;
   onItemUpdate: (
     itemId: string,
     field: string,
@@ -49,13 +70,15 @@ interface BulkEditTableProps {
   onBulkUpdate: (
     itemIds: string[],
     updates: Record<string, string | number | boolean>,
-  ) => Promise<{ updated: number; skipped: number }>;
+  ) => Promise<BulkUpdateResult>;
   onRefresh: () => void;
 }
 
 export function BulkEditTable({
   items,
   currencies,
+  currentUserId,
+  showOwner = false,
   onItemUpdate,
   onBulkUpdate,
   onRefresh,
@@ -72,6 +95,7 @@ export function BulkEditTable({
   const [localItems, setLocalItems] = useState<BulkEditItem[]>(items);
   const [bulkUpdating, setBulkUpdating] = useState(false);
   const [showBulkSuccess, setShowBulkSuccess] = useState<string | null>(null);
+  const [bulkErrors, setBulkErrors] = useState<BulkUpdateError[]>([]);
 
   // Filter and sort state
   const [bidFilter, setBidFilter] = useState<BidFilter>("all");
@@ -83,6 +107,9 @@ export function BulkEditTable({
   const [bulkStartingBid, setBulkStartingBid] = useState("");
   const [bulkMinIncrement, setBulkMinIncrement] = useState("");
   const [bulkDiscussionsEnabled, setBulkDiscussionsEnabled] = useState<
+    "" | "true" | "false"
+  >("");
+  const [bulkEditableByAdmin, setBulkEditableByAdmin] = useState<
     "" | "true" | "false"
   >("");
 
@@ -178,12 +205,8 @@ export function BulkEditTable({
       setSavingItems((prev) => new Set(prev).add(itemId));
       try {
         await onItemUpdate(itemId, field, value);
-        // Update local state
-        setLocalItems((prev) =>
-          prev.map((item) =>
-            item.id === itemId ? { ...item, [field]: value } : item,
-          ),
-        );
+        // Refresh to get updated timestamps and lastUpdatedBy
+        onRefresh();
       } catch (error) {
         console.error("Failed to save:", error);
       } finally {
@@ -195,7 +218,7 @@ export function BulkEditTable({
         setEditingCell(null);
       }
     },
-    [onItemUpdate],
+    [onItemUpdate, onRefresh],
   );
 
   const handleBulkPublish = useCallback(
@@ -229,22 +252,29 @@ export function BulkEditTable({
       updates.minBidIncrement = parseFloat(bulkMinIncrement);
     if (bulkDiscussionsEnabled)
       updates.discussionsEnabled = bulkDiscussionsEnabled === "true";
+    if (bulkEditableByAdmin)
+      updates.isEditableByAdmin = bulkEditableByAdmin === "true";
 
     if (Object.keys(updates).length === 0) return;
 
     setBulkUpdating(true);
+    setBulkErrors([]);
     try {
       const result = await onBulkUpdate(Array.from(selectedIds), updates);
       setShowBulkSuccess(
         t("bulkResult", { updated: result.updated, skipped: result.skipped }),
       );
-      setTimeout(() => setShowBulkSuccess(null), 3000);
+      setTimeout(() => setShowBulkSuccess(null), 5000);
+      if (result.errors && result.errors.length > 0) {
+        setBulkErrors(result.errors);
+      }
       onRefresh();
       setSelectedIds(new Set());
       setBulkCurrency("");
       setBulkStartingBid("");
       setBulkMinIncrement("");
       setBulkDiscussionsEnabled("");
+      setBulkEditableByAdmin("");
     } finally {
       setBulkUpdating(false);
     }
@@ -254,6 +284,7 @@ export function BulkEditTable({
     bulkStartingBid,
     bulkMinIncrement,
     bulkDiscussionsEnabled,
+    bulkEditableByAdmin,
     onBulkUpdate,
     onRefresh,
     t,
@@ -373,6 +404,22 @@ export function BulkEditTable({
             </select>
           </div>
 
+          {/* Bulk Admin Editable */}
+          <div className="flex items-center gap-2">
+            <select
+              className="select select-bordered select-sm w-40"
+              value={bulkEditableByAdmin}
+              onChange={(e) =>
+                setBulkEditableByAdmin(e.target.value as "" | "true" | "false")
+              }
+              disabled={noneSelected}
+            >
+              <option value="">{t("adminEditable")}</option>
+              <option value="true">{t("adminEditableEnabled")}</option>
+              <option value="false">{t("adminEditableDisabled")}</option>
+            </select>
+          </div>
+
           <div className="flex items-center gap-2 self-end">
             <button
               type="button"
@@ -392,7 +439,8 @@ export function BulkEditTable({
                 (!bulkCurrency &&
                   !bulkStartingBid &&
                   !bulkMinIncrement &&
-                  !bulkDiscussionsEnabled)
+                  !bulkDiscussionsEnabled &&
+                  !bulkEditableByAdmin)
               }
             >
               {bulkUpdating ? (
@@ -405,16 +453,44 @@ export function BulkEditTable({
         </div>
 
         {hasItemsWithBids && !noneSelected && (
-          <div className="text-warning text-sm mt-2">
-            <span className="icon-[tabler--alert-triangle] size-4 inline-block mr-1"></span>
+          <div className="text-warning text-sm mt-2 flex items-center gap-1">
+            <span className="icon-[tabler--alert-triangle] size-4"></span>
             {t("someItemsHaveBids")}
           </div>
         )}
 
         {showBulkSuccess && (
-          <div className="text-success text-sm mt-2">
-            <span className="icon-[tabler--check] size-4 inline-block mr-1"></span>
+          <div className="text-success text-sm mt-2 flex items-center gap-1">
+            <span className="icon-[tabler--check] size-4"></span>
             {showBulkSuccess}
+          </div>
+        )}
+
+        {bulkErrors.length > 0 && (
+          <div className="alert alert-error mt-2">
+            <span className="icon-[tabler--alert-circle] size-5"></span>
+            <div>
+              <div className="font-semibold">{t("bulkErrors")}</div>
+              <ul className="text-sm mt-1 list-disc list-inside">
+                {bulkErrors.map((error) => (
+                  <li key={error.itemId}>
+                    <span className="font-medium">{error.itemName}</span>:{" "}
+                    {error.errorType === "notOwner"
+                      ? t("errorNotOwner")
+                      : error.errorType === "hasBids"
+                        ? t("errorHasBids")
+                        : t("errorUnknown")}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm btn-circle"
+              onClick={() => setBulkErrors([])}
+            >
+              <span className="icon-[tabler--x] size-4"></span>
+            </button>
           </div>
         )}
       </div>
@@ -525,6 +601,18 @@ export function BulkEditTable({
                 onSort={handleSort}
                 className="min-w-32"
               />
+              {showOwner && <th className="min-w-32">{t("owner")}</th>}
+              <th className="w-28">{t("adminEditable")}</th>
+              <SortableHeader
+                field="createdAt"
+                label={t("createdAt")}
+                currentSort={sortField}
+                direction={sortDirection}
+                onSort={handleSort}
+                className="w-36"
+              />
+              <th className="w-36">{t("updatedAt")}</th>
+              <th className="w-32">{t("endsAt")}</th>
               <th className="w-16"></th>
             </tr>
           </thead>
@@ -540,6 +628,8 @@ export function BulkEditTable({
                 setEditingCell={setEditingCell}
                 onCellBlur={handleCellBlur}
                 isSaving={savingItems.has(item.id)}
+                currentUserId={currentUserId}
+                showOwner={showOwner}
               />
             ))}
           </tbody>
@@ -569,6 +659,8 @@ interface BulkEditRowProps {
     originalValue: string | number | boolean | null,
   ) => void;
   isSaving: boolean;
+  currentUserId: string;
+  showOwner: boolean;
 }
 
 function BulkEditRow({
@@ -580,10 +672,14 @@ function BulkEditRow({
   setEditingCell,
   onCellBlur,
   isSaving,
+  currentUserId,
+  showOwner,
 }: BulkEditRowProps) {
   const t = useTranslations("bulkEdit");
   const tItem = useTranslations("item.edit");
+  const tCommon = useTranslations("common");
   const hasBids = item.bidCount > 0;
+  const isOwnItem = item.creatorId === currentUserId;
 
   const isEditing = (field: string) =>
     editingCell?.id === item.id && editingCell?.field === field;
@@ -759,6 +855,110 @@ function BulkEditRow({
         >
           {item.auctionName}
         </Link>
+      </td>
+
+      {/* Owner - only shown when showOwner is true */}
+      {showOwner && (
+        <td>
+          <div className="flex items-center gap-2">
+            {isOwnItem && (
+              <span className="w-1 h-6 rounded-full bg-secondary shrink-0"></span>
+            )}
+            <div className="min-w-0">
+              <div className="text-sm font-medium truncate">
+                {item.creatorName || tCommon("member.noName")}
+              </div>
+              <div className="text-xs text-base-content/50 truncate">
+                {item.creatorEmail}
+              </div>
+            </div>
+          </div>
+        </td>
+      )}
+
+      {/* Admin Editable */}
+      <td>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            className="toggle toggle-sm toggle-warning"
+            checked={item.isEditableByAdmin}
+            onChange={() =>
+              onCellBlur(
+                item.id,
+                "isEditableByAdmin",
+                !item.isEditableByAdmin,
+                item.isEditableByAdmin,
+              )
+            }
+            disabled={isSaving || !isOwnItem}
+            title={!isOwnItem ? t("cannotChangeAdminEditable") : undefined}
+          />
+          <span
+            className={`text-xs ${!isOwnItem ? "text-base-content/40" : ""}`}
+          >
+            {item.isEditableByAdmin ? tCommon("yes") : tCommon("no")}
+          </span>
+        </label>
+      </td>
+
+      {/* Created At */}
+      <td className="whitespace-nowrap">
+        <div className="text-sm">
+          {new Date(item.createdAt).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </div>
+        <div className="text-xs text-base-content/50">
+          {new Date(item.createdAt).toLocaleTimeString(undefined, {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+          {` · ${item.creatorName || tCommon("member.noName")}`}
+        </div>
+      </td>
+
+      {/* Updated At */}
+      <td className="whitespace-nowrap">
+        <div className="text-sm">
+          {new Date(item.updatedAt).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </div>
+        <div className="text-xs text-base-content/50">
+          {new Date(item.updatedAt).toLocaleTimeString(undefined, {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+          {item.lastUpdatedByName && ` · ${item.lastUpdatedByName}`}
+        </div>
+      </td>
+
+      {/* Ends At */}
+      <td className="whitespace-nowrap">
+        {item.endDate ? (
+          <>
+            <div className="text-sm">
+              {new Date(item.endDate).toLocaleDateString(undefined, {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </div>
+            <div className="text-xs text-base-content/50">
+              {new Date(item.endDate).toLocaleTimeString(undefined, {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </div>
+          </>
+        ) : (
+          <span className="text-xs text-base-content/40">—</span>
+        )}
       </td>
 
       {/* Actions */}

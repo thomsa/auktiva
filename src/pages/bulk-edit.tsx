@@ -151,6 +151,8 @@ export default function BulkEditPage({ user, currencies }: BulkEditPageProps) {
           <BulkEditTable
             items={items}
             currencies={currencies}
+            currentUserId={user.id}
+            showOwner={false}
             onItemUpdate={handleItemUpdate}
             onBulkUpdate={handleBulkUpdate}
             onRefresh={handleRefresh}

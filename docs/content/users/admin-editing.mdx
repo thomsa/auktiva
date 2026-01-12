@@ -1,0 +1,86 @@
+# Admin Item Editing
+
+import { Callout } from "nextra/components";
+
+Auction admins can edit items on behalf of item owners, but only when the owner has explicitly allowed it. This feature helps admins assist with item management while respecting owner control.
+
+## How It Works
+
+The admin editing feature is an **opt-in system**. Item owners must enable admin editing for each item they want admins to be able to modify.
+
+### For Item Owners
+
+When creating or editing an item, you'll see an "Admin Editing" section with a toggle:
+
+**Allow auction admins to edit this item** - When enabled, auction admins (and the auction owner) can edit your item's details on your behalf.
+
+<Callout type="info">
+You can change this setting at any time from the item edit page. Disabling it will immediately prevent admins from editing your item.
+</Callout>
+
+#### Enabling Admin Editing for Multiple Items
+
+To quickly enable admin editing for all your items at once:
+
+1. Go to **My Listings** from the navigation bar
+2. Click the **Bulk Edit** button
+3. Select all items using the checkbox in the header row
+4. In the toolbar, find the **Admin Editable** dropdown
+5. Select **Enable Admin Editing**
+6. Click **Apply**
+
+This will allow auction admins to edit all your selected items. You can also use this method to disable admin editing for multiple items at once.
+
+### For Auction Owners
+
+Auction owners can set a **default value** for new items in the auction settings:
+
+1. Go to your auction's **Settings** page
+2. Find the **Admin Editing Defaults** section
+3. Enable "Allow admins to edit new items by default"
+
+When this is enabled, new items created in your auction will have admin editing turned on by default. Item owners can still opt out for individual items.
+
+## Admin Panel
+
+If you're an admin or owner of at least one auction, you'll see an **Admin Panel** link in the navigation bar.
+
+The Admin Panel allows you to:
+
+- Select an auction from a dropdown
+- View all items you have permission to edit
+- Use bulk editing tools to update multiple items at once
+- Quickly access auction settings
+
+### Which Items Can You Edit?
+
+In the Admin Panel, you can edit:
+
+- Items where the owner has enabled "Allow admin editing"
+- Items you created yourself (regardless of the admin editing setting)
+
+### Bulk Editing
+
+The Admin Panel includes the same bulk editing tools available on the My Listings page. You can:
+
+- Select multiple items using checkboxes
+- Apply changes to currency, starting bid, minimum increment
+- Enable or disable discussions
+- Toggle admin editing permission (only for items you own)
+
+<Callout type="warning">
+Some fields cannot be changed for items that have received bids, such as currency and starting bid.
+</Callout>
+
+## Tracking Changes
+
+When an admin edits an item, the system tracks who made the last update. This helps maintain accountability and transparency.
+
+## Permissions Summary
+
+| Action | Owner | Admin (with permission) | Admin (without permission) |
+|--------|-------|------------------------|---------------------------|
+| View item | ✓ | ✓ | ✓ |
+| Edit item | ✓ | ✓ | ✗ |
+| Delete item | ✓ | ✓ | ✗ |
+| Toggle admin editing | ✓ | ✗ | ✗ |

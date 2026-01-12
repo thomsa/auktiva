@@ -30,6 +30,7 @@ interface CreateItemProps {
     bidderVisibility: string;
     itemEndMode: string;
     endDate: string | null;
+    defaultItemsEditableByAdmin: boolean;
   };
   currencies: Currency[];
 }
@@ -101,6 +102,7 @@ export default function CreateItemPage({
       bidderAnonymous: formData.get("bidderAnonymous") === "on",
       endDate: (formData.get("endDate") as string) || undefined,
       discussionsEnabled: formData.get("discussionsEnabled") === "on",
+      isEditableByAdmin: formData.get("isEditableByAdmin") === "on",
     };
 
     try {
@@ -461,6 +463,34 @@ export default function CreateItemPage({
                   </div>
                 </div>
 
+                {/* Admin Editing Settings */}
+                <div className="divider opacity-50"></div>
+                <div className="space-y-4">
+                  <h2 className="text-lg font-semibold flex items-center gap-2 text-warning">
+                    <span className="icon-[tabler--shield-check] size-5"></span>
+                    {t("adminSettings")}
+                  </h2>
+
+                  <div className="form-control">
+                    <label className="label cursor-pointer justify-start gap-3 p-0">
+                      <input
+                        type="checkbox"
+                        name="isEditableByAdmin"
+                        className="toggle toggle-warning"
+                        defaultChecked={auction.defaultItemsEditableByAdmin}
+                      />
+                      <div>
+                        <span className="label-text font-medium">
+                          {t("allowAdminEdit")}
+                        </span>
+                        <p className="text-xs text-base-content/60">
+                          {t("allowAdminEditDescription")}
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
                 {/* Submit */}
                 <div className="divider opacity-50"></div>
                 <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
@@ -690,6 +720,7 @@ export const getServerSideProps = withAuth(async (context) => {
         bidderVisibility: auction.bidderVisibility,
         itemEndMode: auction.itemEndMode,
         endDate: auction.endDate,
+        defaultItemsEditableByAdmin: auction.defaultItemsEditableByAdmin,
       },
       currencies,
       messages: await getMessages(context.locale as Locale),

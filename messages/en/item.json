@@ -57,7 +57,10 @@
       "publishNow": "Publish",
       "dontPublishYet": "Not yet",
       "publishSuccess": "Item published successfully",
-      "createAnother": "Create Another"
+      "createAnother": "Create Another",
+      "adminSettings": "Admin Editing",
+      "allowAdminEdit": "Allow auction admins to edit this item",
+      "allowAdminEditDescription": "When enabled, auction admins can edit this item's details on your behalf."
     },
     "edit": {
       "title": "Edit Item",
@@ -96,7 +99,10 @@
       "unpublish": "Unpublish",
       "publishSuccess": "Item published successfully",
       "unpublishSuccess": "Item unpublished successfully",
-      "cannotUnpublishWithBids": "Cannot unpublish an item that has received bids"
+      "cannotUnpublishWithBids": "Cannot unpublish an item that has received bids",
+      "adminSettings": "Admin Editing",
+      "allowAdminEdit": "Allow auction admins to edit this item",
+      "allowAdminEditDescription": "When enabled, auction admins can edit this item's details on your behalf."
     },
     "yourListing": "Your Listing",
     "listedBy": "Listed by",

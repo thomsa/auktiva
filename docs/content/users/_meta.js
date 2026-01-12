@@ -5,6 +5,7 @@ export default {
   items: "Items",
   bidding: "Bidding",
   roles: "Roles & Permissions",
+  "admin-editing": "Admin Item Editing",
   invitations: "Invitations",
   notifications: "Notifications",
   realtime: "Real-Time Updates",

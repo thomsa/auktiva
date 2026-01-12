@@ -18,6 +18,7 @@ export interface SidebarItem {
   thumbnailUrl: string | null;
   endDate: string | null;
   createdAt: string;
+  creatorId: string;
   highestBidderId: string | null;
   userHasBid: boolean;
   currency: {
@@ -119,6 +120,7 @@ function SidebarItemCard({
   const isEnded = item.endDate && new Date(item.endDate) < new Date();
   const isWinning = item.highestBidderId === userId;
   const isOutbid = item.userHasBid && !isWinning;
+  const isOwnItem = item.creatorId === userId;
 
   return (
     <Link
@@ -126,7 +128,9 @@ function SidebarItemCard({
       className={`block p-3 rounded-xl transition-all border ${
         isActive
           ? "bg-primary/5 border-primary/20 shadow-sm"
-          : "bg-base-100/50 border-transparent hover:bg-base-100 hover:border-base-content/10"
+          : isOwnItem
+            ? "bg-base-100/50 border-secondary/40 hover:bg-base-100 hover:border-secondary/60"
+            : "bg-base-100/50 border-transparent hover:bg-base-100 hover:border-base-content/10"
       } ${isEnded ? "opacity-60" : ""}`}
     >
       <div className="flex gap-3">

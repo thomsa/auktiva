@@ -29,6 +29,7 @@ model User {
   auctionMemberships        AuctionMember[]
   createdAuctions           Auction[]                  @relation("AuctionCreator")
   createdItems              AuctionItem[]              @relation("ItemCreator")
+  updatedItems              AuctionItem[]              @relation("ItemUpdater")
   bids                      Bid[]
   itemDiscussions           ItemDiscussion[]
   sentInvites               AuctionInvite[]            @relation("InviteSender")
@@ -129,6 +130,9 @@ model Auction {
   
   // Thumbnail image
   thumbnailUrl      String?           // Path to thumbnail image
+  
+  // Admin editing default for new items
+  defaultItemsEditableByAdmin  Boolean  @default(false)
   
   // Metadata
   createdAt         DateTime          @default(now())
@@ -248,6 +252,9 @@ model AuctionItem {
   // Publishing state
   isPublished     Boolean   @default(false) // Draft items are not visible to other users
   
+  // Admin editing permission (opt-in by item owner)
+  isEditableByAdmin Boolean @default(false)
+  
   // Timing
   endDate         DateTime? // null = follows auction end or no end
   
@@ -261,6 +268,10 @@ model AuctionItem {
   // Creator
   creatorId       String
   creator         User      @relation("ItemCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  // Last updater (for audit trail)
+  lastUpdatedById String?
+  lastUpdatedBy   User?     @relation("ItemUpdater", fields: [lastUpdatedById], references: [id], onDelete: SetNull)
   
   // Discussions
   discussionsEnabled Boolean   @default(true)  // Admin/creator can toggle

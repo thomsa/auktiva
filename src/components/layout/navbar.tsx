@@ -8,6 +8,7 @@ import packageJson from "../../../package.json";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useNotifications } from "@/contexts/NotificationContext";
+import { useAppContext } from "@/contexts/AppContext";
 
 interface NavbarProps {
   user: {
@@ -26,6 +27,7 @@ export function Navbar({ user }: NavbarProps) {
   const [mobileNotificationsOpen, setMobileNotificationsOpen] = useState(false);
 
   const { unreadCount } = useNotifications();
+  const { isUserAuctionAdmin } = useAppContext();
 
   useEffect(() => {
     // This is an intentional hydration pattern to prevent SSR mismatch
@@ -85,6 +87,15 @@ export function Navbar({ user }: NavbarProps) {
               <span className="icon-[tabler--gavel] size-4"></span>
               {t("myBids")}
             </Link>
+            {isUserAuctionAdmin && (
+              <Link
+                href="/auctions/admin"
+                className="btn btn-ghost btn-sm font-medium text-warning hover:text-warning hover:bg-warning/10 gap-1.5"
+              >
+                <span className="icon-[tabler--shield-check] size-4"></span>
+                {t("adminPanel")}
+              </Link>
+            )}
           </div>
         </div>
 
@@ -175,6 +186,17 @@ export function Navbar({ user }: NavbarProps) {
                   {t("settings")}
                 </Link>
               </li>
+              {isUserAuctionAdmin && (
+                <li>
+                  <Link
+                    href="/auctions/admin"
+                    className="text-warning active:bg-warning/10 active:text-warning"
+                  >
+                    <span className="icon-[tabler--shield-check] size-4"></span>
+                    {t("adminPanel")}
+                  </Link>
+                </li>
+              )}
               <div className="divider my-1 opacity-50"></div>
               <li>
                 <a

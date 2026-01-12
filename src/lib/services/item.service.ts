@@ -56,6 +56,7 @@ export interface CreateItemInput {
   endDate?: string | null;
   isPublished?: boolean;
   discussionsEnabled?: boolean;
+  isEditableByAdmin?: boolean;
 }
 
 export interface UpdateItemInput {
@@ -68,6 +69,7 @@ export interface UpdateItemInput {
   endDate?: string | null;
   isPublished?: boolean;
   discussionsEnabled?: boolean;
+  isEditableByAdmin?: boolean;
 }
 
 export interface ItemWithDetails extends AuctionItem {
@@ -354,7 +356,7 @@ export async function getItemDetailPageData(
   );
 
   const isHighestBidder = item.highestBidderId === viewerId;
-  const canEdit = isItemOwner || isViewerAdmin;
+  const canEdit = isItemOwner || (isViewerAdmin && item.isEditableByAdmin);
   const canBid = !isItemOwner && !isItemEnded;
 
   return {
@@ -414,7 +416,8 @@ export async function getItemForEditPage(
   if (!item || item.auctionId !== auctionId) return null;
 
   const isCreator = item.creatorId === viewerId;
-  const canEdit = isCreator || isViewerAdmin;
+  const canEdit =
+    isCreator || (isViewerAdmin && item.isEditableByAdmin);
 
   // Get item images
   const images = await prisma.auctionItemImage.findMany({
@@ -435,9 +438,11 @@ export async function getItemForEditPage(
       currentBid: item.currentBid,
       isPublished: item.isPublished,
       discussionsEnabled: item.discussionsEnabled,
+      isEditableByAdmin: item.isEditableByAdmin,
     },
     hasBids: item._count.bids > 0,
     canEdit,
+    isItemOwner: isCreator,
     images: images.map((img) => ({
       id: img.id,
       url: img.url,
@@ -549,6 +554,7 @@ export async function getAuctionItemsForSidebar(
       startingBid: true,
       endDate: true,
       createdAt: true,
+      creatorId: true,
       highestBidderId: true,
       currency: {
         select: { symbol: true },
@@ -581,6 +587,7 @@ export async function getAuctionItemsForSidebar(
     startingBid: item.startingBid,
     endDate: item.endDate?.toISOString() || null,
     createdAt: item.createdAt.toISOString(),
+    creatorId: item.creatorId,
     highestBidderId: item.highestBidderId,
     thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
     userHasBid: userBidItemIds.has(item.id),
@@ -740,7 +747,9 @@ export async function createItem(
       bidderAnonymous: input.bidderAnonymous || false,
       endDate: input.endDate ? new Date(input.endDate) : null,
       isPublished: input.isPublished ?? false,
+      isEditableByAdmin: input.isEditableByAdmin ?? false,
       creatorId,
+      lastUpdatedById: creatorId,
     },
     include: {
       currency: true,
@@ -852,8 +861,11 @@ export async function updateItem(
   itemId: string,
   input: UpdateItemInput,
   hasBids: boolean,
+  updatedById: string,
 ) {
-  const updateData: Record<string, unknown> = {};
+  const updateData: Record<string, unknown> = {
+    lastUpdatedById: updatedById,
+  };
 
   // Always allowed updates
   if (input.name !== undefined) updateData.name = input.name;
@@ -865,6 +877,12 @@ export async function updateItem(
     updateData.bidderAnonymous = input.bidderAnonymous;
   if (input.endDate !== undefined) {
     updateData.endDate = input.endDate ? new Date(input.endDate) : null;
+  }
+  if (input.discussionsEnabled !== undefined) {
+    updateData.discussionsEnabled = input.discussionsEnabled;
+  }
+  if (input.isEditableByAdmin !== undefined) {
+    updateData.isEditableByAdmin = input.isEditableByAdmin;
   }
 
   // Only allow these if no bids
@@ -911,15 +929,20 @@ export async function deleteItem(itemId: string): Promise<void> {
 
 /**
  * Check if user can edit an item
+ * - Creator can always edit their own items
+ * - Admins can only edit items where isEditableByAdmin is true OR they created the item
  */
 export function canEditItem(
   userId: string,
   itemCreatorId: string,
   membership: AuctionMember | null,
+  isEditableByAdmin: boolean = false,
 ): boolean {
   const isCreator = itemCreatorId === userId;
+  if (isCreator) return true;
+
   const isAdmin = ["OWNER", "ADMIN"].includes(membership?.role || "");
-  return isCreator || isAdmin;
+  return isAdmin && isEditableByAdmin;
 }
 
 /**
@@ -954,13 +977,20 @@ export interface BulkEditItem {
   minBidIncrement: number;
   isPublished: boolean;
   discussionsEnabled: boolean;
+  isEditableByAdmin: boolean;
   endDate: string | null;
   createdAt: string;
+  updatedAt: string;
+  lastUpdatedById: string | null;
+  lastUpdatedByName: string | null;
   auctionId: string;
   auctionName: string;
   thumbnailUrl: string | null;
   bidCount: number;
   currencySymbol: string;
+  creatorId: string;
+  creatorName: string | null;
+  creatorEmail: string;
 }
 
 export async function getUserItemsForBulkEdit(
@@ -987,6 +1017,19 @@ export async function getUserItemsForBulkEdit(
           symbol: true,
         },
       },
+      creator: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      lastUpdatedBy: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       images: {
         orderBy: { order: "asc" },
         take: 1,
@@ -1007,13 +1050,20 @@ export async function getUserItemsForBulkEdit(
     minBidIncrement: item.minBidIncrement,
     isPublished: item.isPublished,
     discussionsEnabled: item.discussionsEnabled,
+    isEditableByAdmin: item.isEditableByAdmin,
     endDate: item.endDate?.toISOString() ?? null,
     createdAt: item.createdAt.toISOString(),
+    updatedAt: item.updatedAt.toISOString(),
+    lastUpdatedById: item.lastUpdatedById,
+    lastUpdatedByName: item.lastUpdatedBy?.name ?? null,
     auctionId: item.auction.id,
     auctionName: item.auction.name,
     thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
     bidCount: item._count.bids,
     currencySymbol: item.currency.symbol,
+    creatorId: item.creator.id,
+    creatorName: item.creator.name,
+    creatorEmail: item.creator.email,
   }));
 }
 
@@ -1026,13 +1076,26 @@ export interface BulkUpdateInput {
   minBidIncrement?: number;
   isPublished?: boolean;
   discussionsEnabled?: boolean;
+  isEditableByAdmin?: boolean;
+}
+
+export interface BulkUpdateError {
+  itemId: string;
+  itemName: string;
+  errorType: "notOwner" | "hasBids" | "unknown";
+}
+
+export interface BulkUpdateResult {
+  updated: number;
+  skipped: number;
+  errors?: BulkUpdateError[];
 }
 
 export async function bulkUpdateItems(
   itemIds: string[],
   userId: string,
   input: BulkUpdateInput,
-): Promise<{ updated: number; skipped: number }> {
+): Promise<BulkUpdateResult> {
   // Get items that belong to this user and check bid counts
   const items = await prisma.auctionItem.findMany({
     where: {
@@ -1041,6 +1104,7 @@ export async function bulkUpdateItems(
     },
     select: {
       id: true,
+      name: true,
       _count: { select: { bids: true } },
     },
   });
@@ -1048,6 +1112,7 @@ export async function bulkUpdateItems(
   const updateData: Record<string, unknown> = {};
   let updated = 0;
   let skipped = 0;
+  const errors: BulkUpdateError[] = [];
 
   // Build update data based on what's allowed
   if (input.minBidIncrement !== undefined) {
@@ -1055,6 +1120,9 @@ export async function bulkUpdateItems(
   }
   if (input.discussionsEnabled !== undefined) {
     updateData.discussionsEnabled = input.discussionsEnabled;
+  }
+  if (input.isEditableByAdmin !== undefined) {
+    updateData.isEditableByAdmin = input.isEditableByAdmin;
   }
 
   // For each item, apply updates based on whether it has bids
@@ -1084,6 +1152,11 @@ export async function bulkUpdateItems(
         input.startingBid !== undefined ||
         input.isPublished === false
       ) {
+        errors.push({
+          itemId: item.id,
+          itemName: item.name,
+          errorType: "hasBids",
+        });
         skipped++;
         continue;
       }
@@ -1098,7 +1171,82 @@ export async function bulkUpdateItems(
     }
   }
 
-  return { updated, skipped };
+  return { updated, skipped, errors: errors.length > 0 ? errors : undefined };
+}
+
+/**
+ * Get items that an admin can edit in a specific auction
+ * Returns items where isEditableByAdmin=true OR creatorId=userId
+ */
+export async function getAdminEditableItems(
+  auctionId: string,
+  userId: string,
+): Promise<BulkEditItem[]> {
+  const items = await prisma.auctionItem.findMany({
+    where: {
+      auctionId,
+      OR: [{ isEditableByAdmin: true }, { creatorId: userId }],
+    },
+    include: {
+      auction: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      currency: {
+        select: {
+          symbol: true,
+        },
+      },
+      creator: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      lastUpdatedBy: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      images: {
+        orderBy: { order: "asc" },
+        take: 1,
+      },
+      _count: {
+        select: { bids: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    description: item.description,
+    currencyCode: item.currencyCode,
+    startingBid: item.startingBid,
+    minBidIncrement: item.minBidIncrement,
+    isPublished: item.isPublished,
+    discussionsEnabled: item.discussionsEnabled,
+    isEditableByAdmin: item.isEditableByAdmin,
+    endDate: item.endDate?.toISOString() ?? null,
+    createdAt: item.createdAt.toISOString(),
+    updatedAt: item.updatedAt.toISOString(),
+    lastUpdatedById: item.lastUpdatedById,
+    lastUpdatedByName: item.lastUpdatedBy?.name ?? null,
+    auctionId: item.auction.id,
+    auctionName: item.auction.name,
+    thumbnailUrl: item.images[0]?.url ? getPublicUrl(item.images[0].url) : null,
+    bidCount: item._count.bids,
+    currencySymbol: item.currency.symbol,
+    creatorId: item.creator.id,
+    creatorName: item.creator.name,
+    creatorEmail: item.creator.email,
+  }));
 }
 
 /**

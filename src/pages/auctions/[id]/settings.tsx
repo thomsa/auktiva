@@ -28,6 +28,7 @@ interface AuctionSettingsProps {
     endDate: string | null;
     isEnded: boolean;
     thumbnailUrl: string | null;
+    defaultItemsEditableByAdmin: boolean;
   };
   allowOpenAuctions: boolean;
 }
@@ -52,6 +53,7 @@ export default function AuctionSettingsPage({
     bidderVisibility: auction.bidderVisibility,
     itemEndMode: auction.itemEndMode,
     endDate: auction.endDate ? auction.endDate.slice(0, 16) : "",
+    defaultItemsEditableByAdmin: auction.defaultItemsEditableByAdmin,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -400,6 +402,35 @@ export default function AuctionSettingsPage({
               </div>
             </div>
 
+            {/* Admin Editing Defaults */}
+            <div className="divider opacity-50"></div>
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-warning">
+                <span className="icon-[tabler--shield-check] size-5"></span>
+                {t("adminEditingDefaults")}
+              </h2>
+
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-3 p-0">
+                  <input
+                    type="checkbox"
+                    name="defaultItemsEditableByAdmin"
+                    checked={formData.defaultItemsEditableByAdmin}
+                    onChange={handleChange}
+                    className="toggle toggle-warning"
+                  />
+                  <div>
+                    <span className="label-text font-medium">
+                      {t("defaultItemsEditableByAdmin")}
+                    </span>
+                    <p className="text-xs text-base-content/60 text-wrap">
+                      {t("defaultItemsEditableByAdminDescription")}
+                    </p>
+                  </div>
+                </label>
+              </div>
+            </div>
+
             {/* Save Button */}
             <div className="divider opacity-50"></div>
             <Button
@@ -578,6 +609,7 @@ export const getServerSideProps = withAuth(async (context) => {
           ? new Date(auction.endDate) < new Date()
           : false,
         thumbnailUrl: auction.thumbnailUrl,
+        defaultItemsEditableByAdmin: auction.defaultItemsEditableByAdmin,
       },
       allowOpenAuctions: process.env.ALLOW_OPEN_AUCTIONS === "true",
       messages: await getMessages(context.locale as Locale),
