@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import { PageLayout } from "@/components/common";
 import { BulkEditTable, BulkEditItem } from "@/components/item/BulkEditTable";
+import { SkeletonBulkEditTable } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
@@ -53,17 +54,17 @@ export default function AdminPage({
   );
 
   // Fetch items for selected auction
-  const { data: itemsData, mutate: mutateItems } = useSWR<{
+  const {
+    data: itemsData,
+    mutate: mutateItems,
+    isLoading,
+  } = useSWR<{
     items: BulkEditItem[];
   }>(
-    selectedAuctionId
-      ? `/api/auctions/${selectedAuctionId}/admin-items`
-      : null,
+    selectedAuctionId ? `/api/auctions/${selectedAuctionId}/admin-items` : null,
     fetcher,
     {
-      fallbackData: initialAuctionId
-        ? { items: initialItems }
-        : undefined,
+      fallbackData: initialAuctionId ? { items: initialItems } : undefined,
       revalidateOnFocus: false,
     },
   );
@@ -123,9 +124,7 @@ export default function AdminPage({
     mutateItems();
   }, [mutateItems]);
 
-  const selectedAuction = adminAuctions.find(
-    (a) => a.id === selectedAuctionId,
-  );
+  const selectedAuction = adminAuctions.find((a) => a.id === selectedAuctionId);
 
   const handleItemUpdate = useCallback(
     async (
@@ -242,7 +241,9 @@ export default function AdminPage({
 
       {/* Items Table */}
       {selectedAuctionId ? (
-        items.length > 0 ? (
+        isLoading ? (
+          <SkeletonBulkEditTable />
+        ) : items.length > 0 ? (
           <BulkEditTable
             items={items}
             currencies={currencies}

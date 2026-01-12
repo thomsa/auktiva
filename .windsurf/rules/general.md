@@ -285,25 +285,33 @@ export function MyComponent() {
 ```
 
 ## Documentation Requirements
+
 When implementing new features, always include documentation:
+
 ### Documentation Checklist
+
 1. **User docs** (`docs/content/users/`) - End-user facing documentation explaining how to use the feature
 2. **Developer docs** (`docs/content/developers/`) - Technical documentation for developers/admins
 3. **Update `_meta.js`** - Add new pages to navigation in the appropriate directory
+
 ### MDX File Requirements
+
 - **Always import components before using them:**
   ```mdx
   import { Callout } from "nextra/components";
-Available components: Callout, Cards, Steps, Tabs, FileTree
-Callout types: info, warning, error
-Don't use markdown lists inside JSX components like <Callout> - they cause parsing errors
-Example MDX Structure
-mdx
+  Available components: Callout, Cards, Steps, Tabs, FileTree
+  Callout types: info, warning, error
+  Don't use markdown lists inside JSX components like <Callout> - they cause parsing errors
+  Example MDX Structure
+  mdx
+  ```
+
 # Feature Title
+
 import { Callout } from "nextra/components";
- 
+
 Feature description...
- 
+
 <Callout type="info">
 Important note - avoid list items inside Callout components.
 </Callout>

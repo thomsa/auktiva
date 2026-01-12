@@ -74,6 +74,7 @@ NEXT_PUBLIC_SOKETI_HOST="yourdomain.com"    # Public domain or IP - NOT localhos
 `NEXT_PUBLIC_SOKETI_HOST` is for **browser** connections. Users' browsers need to connect from outside, so this must be your **public domain** or **public IP address**.
 
 Example: Server uses `SOKETI_HOST="127.0.0.1"` (internal), Browser uses `NEXT_PUBLIC_SOKETI_HOST="auctions.example.com"` (public).
+
 </Callout>
 
 #### Managing Soketi
@@ -320,8 +321,9 @@ Enable debug logging to see connection details:
 **Server-side:** Add `REALTIME_DEBUG="true"` to `.env` and restart
 
 **Client-side:** In browser console, run:
+
 ```javascript
-localStorage.setItem('REALTIME_DEBUG', 'true')
+localStorage.setItem("REALTIME_DEBUG", "true");
 ```
 
 Then refresh the page and check console for `[Realtime:Client]` logs.

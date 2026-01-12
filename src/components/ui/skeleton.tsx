@@ -596,3 +596,149 @@ export function SkeletonItemPage() {
     </div>
   );
 }
+
+export function SkeletonBulkEditTable() {
+  return (
+    <div className="space-y-4">
+      {/* Toolbar skeleton */}
+      <div className="card p-4 bg-base-200/50 border border-base-300">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="skeleton h-5 w-32" />
+          <div className="divider divider-horizontal mx-0 h-6"></div>
+          <div className="flex gap-2">
+            <div className="skeleton h-8 w-24 rounded-lg" />
+            <div className="skeleton h-8 w-28 rounded-lg" />
+          </div>
+          <div className="divider divider-horizontal mx-0 h-6"></div>
+          <div className="skeleton h-8 w-28 rounded-lg" />
+          <div className="skeleton h-8 w-24 rounded-lg" />
+          <div className="skeleton h-8 w-24 rounded-lg" />
+          <div className="skeleton h-8 w-20 rounded-lg" />
+        </div>
+      </div>
+
+      {/* Filter bar skeleton */}
+      <div className="flex items-center gap-4 flex-wrap">
+        <div className="skeleton h-4 w-12" />
+        <div className="flex gap-0">
+          <div className="skeleton h-8 w-20 rounded-l-lg rounded-r-none" />
+          <div className="skeleton h-8 w-24 rounded-none" />
+          <div className="skeleton h-8 w-24 rounded-r-lg rounded-l-none" />
+        </div>
+        <div className="skeleton h-4 w-32 ml-auto" />
+      </div>
+
+      {/* Table skeleton */}
+      <div className="overflow-x-auto">
+        <table className="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th className="w-12">
+                <div className="skeleton h-4 w-4" />
+              </th>
+              <th className="w-16">
+                <div className="skeleton h-4 w-8" />
+              </th>
+              <th className="min-w-48">
+                <div className="skeleton h-4 w-16" />
+              </th>
+              <th className="min-w-64">
+                <div className="skeleton h-4 w-24" />
+              </th>
+              <th className="w-24">
+                <div className="skeleton h-4 w-16" />
+              </th>
+              <th className="w-28">
+                <div className="skeleton h-4 w-20" />
+              </th>
+              <th className="w-28">
+                <div className="skeleton h-4 w-20" />
+              </th>
+              <th className="w-24">
+                <div className="skeleton h-4 w-14" />
+              </th>
+              <th className="w-20">
+                <div className="skeleton h-4 w-10" />
+              </th>
+              <th className="min-w-32">
+                <div className="skeleton h-4 w-16" />
+              </th>
+              <th className="min-w-32">
+                <div className="skeleton h-4 w-14" />
+              </th>
+              <th className="w-28">
+                <div className="skeleton h-4 w-20" />
+              </th>
+              <th className="w-36">
+                <div className="skeleton h-4 w-20" />
+              </th>
+              <th className="w-36">
+                <div className="skeleton h-4 w-20" />
+              </th>
+              <th className="w-32">
+                <div className="skeleton h-4 w-16" />
+              </th>
+              <th className="w-16">
+                <div className="skeleton h-4 w-8" />
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <tr key={i}>
+                <td>
+                  <div className="skeleton h-4 w-4" />
+                </td>
+                <td>
+                  <div className="skeleton h-10 w-10 rounded-lg" />
+                </td>
+                <td>
+                  <div className="skeleton h-4 w-32" />
+                </td>
+                <td>
+                  <div className="skeleton h-4 w-48" />
+                </td>
+                <td>
+                  <div className="skeleton h-4 w-12" />
+                </td>
+                <td>
+                  <div className="skeleton h-4 w-16" />
+                </td>
+                <td>
+                  <div className="skeleton h-4 w-14" />
+                </td>
+                <td>
+                  <div className="skeleton h-5 w-16 rounded-full" />
+                </td>
+                <td>
+                  <div className="skeleton h-4 w-8" />
+                </td>
+                <td>
+                  <div className="skeleton h-4 w-24" />
+                </td>
+                <td>
+                  <div className="skeleton h-4 w-20" />
+                </td>
+                <td>
+                  <div className="skeleton h-4 w-12" />
+                </td>
+                <td>
+                  <div className="skeleton h-4 w-24" />
+                </td>
+                <td>
+                  <div className="skeleton h-4 w-24" />
+                </td>
+                <td>
+                  <div className="skeleton h-4 w-20" />
+                </td>
+                <td>
+                  <div className="skeleton h-6 w-6 rounded" />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

@@ -416,8 +416,7 @@ export async function getItemForEditPage(
   if (!item || item.auctionId !== auctionId) return null;
 
   const isCreator = item.creatorId === viewerId;
-  const canEdit =
-    isCreator || (isViewerAdmin && item.isEditableByAdmin);
+  const canEdit = isCreator || (isViewerAdmin && item.isEditableByAdmin);
 
   // Get item images
   const images = await prisma.auctionItemImage.findMany({

@@ -68,7 +68,15 @@ services:
     depends_on:
       - soketi
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000/api/health",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -90,7 +98,15 @@ services:
       - SOKETI_DEFAULT_APP_SECRET=${SOKETI_APP_SECRET:-}
       - SOKETI_DEFAULT_APP_HOST=0.0.0.0
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:6001"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:6001",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3

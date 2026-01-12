@@ -12,25 +12,27 @@ cp .env.example .env
 
 These variables must be set for Auktiva to function.
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE_URL` | Database connection string | `file:./data/auktiva.db` or `libsql://mydb.turso.io` |
-| `AUTH_SECRET` | Secret key for encrypting sessions. Generate with `openssl rand -base64 32` | `K7gNz...` (32+ chars) |
-| `AUTH_URL` | Base URL of your application | `https://auctions.example.com` |
+| Variable       | Description                                                                 | Example                                              |
+| -------------- | --------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `DATABASE_URL` | Database connection string                                                  | `file:./data/auktiva.db` or `libsql://mydb.turso.io` |
+| `AUTH_SECRET`  | Secret key for encrypting sessions. Generate with `openssl rand -base64 32` | `K7gNz...` (32+ chars)                               |
+| `AUTH_URL`     | Base URL of your application                                                | `https://auctions.example.com`                       |
 
 ## Database
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `DATABASE_URL` | Yes | SQLite file path or Turso URL | `file:./data/auktiva.db` |
-| `DATABASE_AUTH_TOKEN` | Turso only | Turso authentication token | `eyJhbGci...` |
+| Variable              | Required   | Description                   | Example                  |
+| --------------------- | ---------- | ----------------------------- | ------------------------ |
+| `DATABASE_URL`        | Yes        | SQLite file path or Turso URL | `file:./data/auktiva.db` |
+| `DATABASE_AUTH_TOKEN` | Turso only | Turso authentication token    | `eyJhbGci...`            |
 
 **SQLite (local):**
+
 ```bash
 DATABASE_URL="file:./data/auktiva.db"
 ```
 
 **Turso (cloud):**
+
 ```bash
 DATABASE_URL="libsql://your-database.turso.io"
 DATABASE_AUTH_TOKEN="your-turso-auth-token"
@@ -38,10 +40,10 @@ DATABASE_AUTH_TOKEN="your-turso-auth-token"
 
 ## Authentication
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `AUTH_SECRET` | Yes | Session encryption key | `openssl rand -base64 32` |
-| `AUTH_URL` | Yes | Application base URL | `https://auctions.example.com` |
+| Variable      | Required | Description            | Example                        |
+| ------------- | -------- | ---------------------- | ------------------------------ |
+| `AUTH_SECRET` | Yes      | Session encryption key | `openssl rand -base64 32`      |
+| `AUTH_URL`    | Yes      | Application base URL   | `https://auctions.example.com` |
 
 <Callout type="warning">
   Always generate a unique AUTH_SECRET for production. Never use example values.
@@ -49,22 +51,24 @@ DATABASE_AUTH_TOKEN="your-turso-auth-token"
 
 ## Storage
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `STORAGE_PROVIDER` | No | Storage backend: `local` or `s3` | `local` |
-| `S3_BUCKET` | S3 only | S3 bucket name | `my-auktiva-uploads` |
-| `S3_REGION` | S3 only | AWS region | `us-east-1` |
-| `S3_ACCESS_KEY_ID` | S3 only | AWS access key | `AKIA...` |
-| `S3_SECRET_ACCESS_KEY` | S3 only | AWS secret key | `wJalr...` |
-| `S3_ENDPOINT` | No | Custom S3 endpoint (MinIO, R2) | `https://s3.example.com` |
-| `S3_PUBLIC_URL` | No | Custom public URL for files | `https://cdn.example.com` |
+| Variable               | Required | Description                      | Example                   |
+| ---------------------- | -------- | -------------------------------- | ------------------------- |
+| `STORAGE_PROVIDER`     | No       | Storage backend: `local` or `s3` | `local`                   |
+| `S3_BUCKET`            | S3 only  | S3 bucket name                   | `my-auktiva-uploads`      |
+| `S3_REGION`            | S3 only  | AWS region                       | `us-east-1`               |
+| `S3_ACCESS_KEY_ID`     | S3 only  | AWS access key                   | `AKIA...`                 |
+| `S3_SECRET_ACCESS_KEY` | S3 only  | AWS secret key                   | `wJalr...`                |
+| `S3_ENDPOINT`          | No       | Custom S3 endpoint (MinIO, R2)   | `https://s3.example.com`  |
+| `S3_PUBLIC_URL`        | No       | Custom public URL for files      | `https://cdn.example.com` |
 
 **Local storage (default):**
+
 ```bash
 STORAGE_PROVIDER="local"
 ```
 
 **S3 storage:**
+
 ```bash
 STORAGE_PROVIDER="s3"
 S3_BUCKET="my-auktiva-uploads"
@@ -74,6 +78,7 @@ S3_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 ```
 
 **Cloudflare R2:**
+
 ```bash
 STORAGE_PROVIDER="s3"
 S3_BUCKET="my-bucket"
@@ -85,18 +90,18 @@ S3_ENDPOINT="https://ACCOUNT_ID.r2.cloudflarestorage.com"
 
 ## Email
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `EMAIL_PROVIDER` | No | Email provider: `brevo` or `smtp` | `brevo` |
-| `MAIL_FROM` | No | Sender email address | `noreply@example.com` |
-| `MAIL_FROM_NAME` | No | Sender display name | `Auktiva` |
-| `NEXT_PUBLIC_APP_URL` | No | App URL for email links | `https://auctions.example.com` |
-| `CRON_SECRET` | Production | Secret for cron job authentication | `openssl rand -base64 32` |
+| Variable              | Required   | Description                        | Example                        |
+| --------------------- | ---------- | ---------------------------------- | ------------------------------ |
+| `EMAIL_PROVIDER`      | No         | Email provider: `brevo` or `smtp`  | `brevo`                        |
+| `MAIL_FROM`           | No         | Sender email address               | `noreply@example.com`          |
+| `MAIL_FROM_NAME`      | No         | Sender display name                | `Auktiva`                      |
+| `NEXT_PUBLIC_APP_URL` | No         | App URL for email links            | `https://auctions.example.com` |
+| `CRON_SECRET`         | Production | Secret for cron job authentication | `openssl rand -base64 32`      |
 
 ### Brevo Provider
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
+| Variable        | Required   | Description                                                                 | Example       |
+| --------------- | ---------- | --------------------------------------------------------------------------- | ------------- |
 | `BREVO_API_KEY` | Brevo only | Brevo API key from [app.brevo.com](https://app.brevo.com/settings/keys/api) | `xkeysib-...` |
 
 ```bash
@@ -108,13 +113,13 @@ MAIL_FROM_NAME="Auktiva"
 
 ### SMTP Provider
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `SMTP_HOST` | SMTP only | SMTP server hostname | `smtp.gmail.com` |
-| `SMTP_PORT` | SMTP only | SMTP server port | `587` |
-| `SMTP_SECURE` | No | Use implicit TLS (port 465) | `false` |
-| `SMTP_USER` | No | SMTP username | `user@example.com` |
-| `SMTP_PASSWORD` | No | SMTP password | `app-password` |
+| Variable        | Required  | Description                 | Example            |
+| --------------- | --------- | --------------------------- | ------------------ |
+| `SMTP_HOST`     | SMTP only | SMTP server hostname        | `smtp.gmail.com`   |
+| `SMTP_PORT`     | SMTP only | SMTP server port            | `587`              |
+| `SMTP_SECURE`   | No        | Use implicit TLS (port 465) | `false`            |
+| `SMTP_USER`     | No        | SMTP username               | `user@example.com` |
+| `SMTP_PASSWORD` | No        | SMTP password               | `app-password`     |
 
 ```bash
 EMAIL_PROVIDER="smtp"
@@ -130,10 +135,10 @@ MAIL_FROM="noreply@example.com"
 
 ### Google OAuth
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `GOOGLE_CLIENT_ID` | No | Google OAuth client ID | `123456.apps.googleusercontent.com` |
-| `GOOGLE_CLIENT_SECRET` | No | Google OAuth client secret | `GOCSPX-...` |
+| Variable               | Required | Description                | Example                             |
+| ---------------------- | -------- | -------------------------- | ----------------------------------- |
+| `GOOGLE_CLIENT_ID`     | No       | Google OAuth client ID     | `123456.apps.googleusercontent.com` |
+| `GOOGLE_CLIENT_SECRET` | No       | Google OAuth client secret | `GOCSPX-...`                        |
 
 Get credentials from [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
 
@@ -141,10 +146,10 @@ Redirect URI: `https://yourdomain.com/api/auth/callback/google`
 
 ### Microsoft OAuth
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `MICROSOFT_CLIENT_ID` | No | Azure AD application ID | `12345678-1234-...` |
-| `MICROSOFT_CLIENT_SECRET` | No | Azure AD client secret | `abc123...` |
+| Variable                  | Required | Description             | Example             |
+| ------------------------- | -------- | ----------------------- | ------------------- |
+| `MICROSOFT_CLIENT_ID`     | No       | Azure AD application ID | `12345678-1234-...` |
+| `MICROSOFT_CLIENT_SECRET` | No       | Azure AD client secret  | `abc123...`         |
 
 Get credentials from [Azure Portal](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps).
 
@@ -152,10 +157,10 @@ Redirect URI: `https://yourdomain.com/api/auth/callback/azure-ad`
 
 ## reCAPTCHA (Optional)
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | No | reCAPTCHA v2 site key (public) | `6Lc...` |
-| `RECAPTCHA_SECRET_KEY` | No | reCAPTCHA v2 secret key | `6Lc...` |
+| Variable                         | Required | Description                    | Example  |
+| -------------------------------- | -------- | ------------------------------ | -------- |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | No       | reCAPTCHA v2 site key (public) | `6Lc...` |
+| `RECAPTCHA_SECRET_KEY`           | No       | reCAPTCHA v2 secret key        | `6Lc...` |
 
 Get keys from [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin).
 
@@ -163,16 +168,16 @@ Get keys from [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin).
 
 ### Soketi (Self-Hosted)
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `NEXT_PUBLIC_REALTIME_DRIVER` | No | Realtime driver | `soketi` |
-| `NEXT_PUBLIC_SOKETI_APP_KEY` | Soketi | Public app key | `openssl rand -hex 16` |
-| `NEXT_PUBLIC_SOKETI_HOST` | Soketi | Public hostname for browser connections | `auctions.example.com` |
-| `NEXT_PUBLIC_SOKETI_PORT` | No | WebSocket port | `6001` |
-| `NEXT_PUBLIC_SOKETI_USE_TLS` | No | Use WSS (secure WebSocket) | `true` |
-| `SOKETI_APP_ID` | Soketi | App ID for server | `auktiva` |
-| `SOKETI_APP_SECRET` | Soketi | Secret for signing (server-only) | `openssl rand -hex 32` |
-| `SOKETI_HOST` | No | Internal host for server connections | `127.0.0.1` |
+| Variable                      | Required | Description                             | Example                |
+| ----------------------------- | -------- | --------------------------------------- | ---------------------- |
+| `NEXT_PUBLIC_REALTIME_DRIVER` | No       | Realtime driver                         | `soketi`               |
+| `NEXT_PUBLIC_SOKETI_APP_KEY`  | Soketi   | Public app key                          | `openssl rand -hex 16` |
+| `NEXT_PUBLIC_SOKETI_HOST`     | Soketi   | Public hostname for browser connections | `auctions.example.com` |
+| `NEXT_PUBLIC_SOKETI_PORT`     | No       | WebSocket port                          | `6001`                 |
+| `NEXT_PUBLIC_SOKETI_USE_TLS`  | No       | Use WSS (secure WebSocket)              | `true`                 |
+| `SOKETI_APP_ID`               | Soketi   | App ID for server                       | `auktiva`              |
+| `SOKETI_APP_SECRET`           | Soketi   | Secret for signing (server-only)        | `openssl rand -hex 32` |
+| `SOKETI_HOST`                 | No       | Internal host for server connections    | `127.0.0.1`            |
 
 ```bash
 NEXT_PUBLIC_REALTIME_DRIVER="soketi"
@@ -186,18 +191,19 @@ SOKETI_HOST="127.0.0.1"
 ```
 
 <Callout type="info">
-  SOKETI_HOST is for server-side connections (internal). NEXT_PUBLIC_SOKETI_HOST is for browser connections (must be publicly accessible).
+  SOKETI_HOST is for server-side connections (internal). NEXT_PUBLIC_SOKETI_HOST
+  is for browser connections (must be publicly accessible).
 </Callout>
 
 ### Pusher (Cloud)
 
-| Variable | Required | Description | Example |
-|----------|----------|-------------|---------|
-| `NEXT_PUBLIC_REALTIME_DRIVER` | No | Realtime driver | `pusher` |
-| `NEXT_PUBLIC_PUSHER_KEY` | Pusher | Pusher app key | `abc123...` |
-| `NEXT_PUBLIC_PUSHER_CLUSTER` | Pusher | Pusher cluster | `eu` |
-| `PUSHER_APP_ID` | Pusher | Pusher app ID | `123456` |
-| `PUSHER_SECRET` | Pusher | Pusher secret | `xyz789...` |
+| Variable                      | Required | Description     | Example     |
+| ----------------------------- | -------- | --------------- | ----------- |
+| `NEXT_PUBLIC_REALTIME_DRIVER` | No       | Realtime driver | `pusher`    |
+| `NEXT_PUBLIC_PUSHER_KEY`      | Pusher   | Pusher app key  | `abc123...` |
+| `NEXT_PUBLIC_PUSHER_CLUSTER`  | Pusher   | Pusher cluster  | `eu`        |
+| `PUSHER_APP_ID`               | Pusher   | Pusher app ID   | `123456`    |
+| `PUSHER_SECRET`               | Pusher   | Pusher secret   | `xyz789...` |
 
 ```bash
 NEXT_PUBLIC_REALTIME_DRIVER="pusher"
@@ -211,10 +217,10 @@ Get credentials from [Pusher Dashboard](https://dashboard.pusher.com/).
 
 ## Feature Flags
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `ALLOW_OPEN_AUCTIONS` | No | `false` | Allow users to create public auctions |
-| `MAINTENANCE_MODE` | No | `false` | Show maintenance page to all users |
+| Variable              | Required | Default | Description                           |
+| --------------------- | -------- | ------- | ------------------------------------- |
+| `ALLOW_OPEN_AUCTIONS` | No       | `false` | Allow users to create public auctions |
+| `MAINTENANCE_MODE`    | No       | `false` | Show maintenance page to all users    |
 
 ```bash
 ALLOW_OPEN_AUCTIONS="true"

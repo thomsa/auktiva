@@ -77,12 +77,14 @@ docker compose down
 ```
 
 This starts:
+
 - **auktiva** - The main application on port 3000
 - **soketi** - WebSocket server for realtime features on port 6001
 
 ### Data Persistence
 
 Docker volumes are used to persist data:
+
 - `auktiva-data` - SQLite database
 - `auktiva-uploads` - Uploaded images
 - `auktiva-logs` - Application logs
