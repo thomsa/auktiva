@@ -53,10 +53,10 @@
     "features": "Features",
     "howItWorks": "How it Works",
     "docs": "Docs",
-    "adminPanel": "Admin Panel"
+    "adminPanel": "Auction Admin"
   },
   "admin": {
-    "title": "Admin Panel",
+    "title": "Auction Admin",
     "subtitle": "Manage items across your auctions",
     "selectAuction": "Select Auction",
     "selectAuctionPlaceholder": "Choose an auction...",
