@@ -17,7 +17,10 @@
       "anonymousTooltip": "Your name will be hidden from other bidders. The item owner will still see your details.",
       "minIncrement": "Min Increment",
       "minimumBidError": "Minimum bid is {symbol}{amount}",
-      "currency": "Currency"
+      "currency": "Currency",
+      "antiSnipeInfo": "Bids placed in the last {minutes, plural, =1 {1 minute} other {# minutes}} will extend the deadline by {extension, plural, =1 {1 minute} other {# minutes}}.",
+      "antiSnipeInfoSeconds": "Bids placed in the last {seconds} seconds will extend the deadline by {extension} seconds.",
+      "antiSnipeExtended": "Deadline extended!"
     },
     "card": {
       "noBids": "No bids yet",
@@ -60,7 +63,17 @@
       "createAnother": "Create Another",
       "adminSettings": "Admin Editing",
       "allowAdminEdit": "Allow auction admins to edit this item",
-      "allowAdminEditDescription": "When enabled, auction admins can edit this item's details on your behalf."
+      "allowAdminEditDescription": "When enabled, auction admins can edit this item's details on your behalf.",
+      "antiSnipe": "Bid Extension Protection",
+      "antiSnipeEnable": "Extend time when late bids arrive",
+      "antiSnipeEnableDescription": "Automatically extends the end time if a bid is placed close to the deadline, giving other bidders a chance to respond.",
+      "antiSnipeThreshold": "Trigger window",
+      "antiSnipeThresholdHint": "A bid placed within this time before the end will trigger an extension. Between 1 and 60 minutes.",
+      "antiSnipeExtension": "Extension amount",
+      "antiSnipeExtensionHint": "How much time to add to the end when triggered. Between 5 seconds and 60 minutes.",
+      "antiSnipeRequiresEndDate": "Set an end date above to enable bid extension protection.",
+      "seconds": "seconds",
+      "minutes": "minutes"
     },
     "edit": {
       "title": "Edit Item",
@@ -102,7 +115,16 @@
       "cannotUnpublishWithBids": "Cannot unpublish an item that has received bids",
       "adminSettings": "Admin Editing",
       "allowAdminEdit": "Allow auction admins to edit this item",
-      "allowAdminEditDescription": "When enabled, auction admins can edit this item's details on your behalf."
+      "allowAdminEditDescription": "When enabled, auction admins can edit this item's details on your behalf.",
+      "antiSnipe": "Bid Extension Protection",
+      "antiSnipeEnable": "Extend time when late bids arrive",
+      "antiSnipeEnableDescription": "Automatically extends the end time if a bid is placed close to the deadline, giving other bidders a chance to respond.",
+      "antiSnipeThreshold": "Trigger window",
+      "antiSnipeThresholdHint": "A bid placed within this time before the end will trigger an extension. Between 1 and 60 minutes.",
+      "antiSnipeExtension": "Extension amount",
+      "antiSnipeExtensionHint": "How much time to add to the end when triggered. Between 5 seconds and 60 minutes.",
+      "seconds": "seconds",
+      "minutes": "minutes"
     },
     "yourListing": "Your Listing",
     "listedBy": "Listed by",

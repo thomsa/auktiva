@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { PageLayout, BackLink } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { DurationInput } from "@/components/ui/duration-input";
 import { useToast } from "@/components/ui/toast";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
@@ -29,6 +30,9 @@ export default function CreateAuctionPage({
   const { showToast } = useToast();
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [antiSnipeEnabled, setAntiSnipeEnabled] = useState(false);
+  const [antiSnipeThreshold, setAntiSnipeThreshold] = useState(300);
+  const [antiSnipeExtension, setAntiSnipeExtension] = useState(300);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,6 +48,9 @@ export default function CreateAuctionPage({
       bidderVisibility: formData.get("bidderVisibility") as string,
       endDate: (formData.get("endDate") as string) || undefined,
       itemEndMode: formData.get("itemEndMode") as string,
+      defaultAntiSnipe: antiSnipeEnabled,
+      defaultAntiSnipeThreshold: antiSnipeThreshold,
+      defaultAntiSnipeExtension: antiSnipeExtension,
     };
 
     try {
@@ -249,6 +256,64 @@ export default function CreateAuctionPage({
                   <option value="NONE">{t("itemEndNone")}</option>
                 </select>
               </div>
+            </div>
+
+            {/* Anti-Snipe Defaults */}
+            <div className="divider opacity-50"></div>
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-warning">
+                <span className="icon-[tabler--shield] size-5"></span>
+                {t("antiSnipeDefaults")}
+              </h2>
+              <p className="text-sm text-base-content/60">
+                {t("antiSnipeDefaultsDescription")}
+              </p>
+
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-3 p-0">
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-warning"
+                    checked={antiSnipeEnabled}
+                    onChange={(e) => setAntiSnipeEnabled(e.target.checked)}
+                  />
+                  <div>
+                    <span className="label-text font-medium">
+                      {t("defaultAntiSnipe")}
+                    </span>
+                    <p className="text-xs text-base-content/50 mt-0.5">
+                      {t("defaultAntiSnipeDescription")}
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              {antiSnipeEnabled && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <DurationInput
+                    id="antiSnipeThreshold"
+                    label={t("defaultAntiSnipeThreshold")}
+                    hint={t("defaultAntiSnipeThresholdHint")}
+                    value={antiSnipeThreshold}
+                    onChange={setAntiSnipeThreshold}
+                    minSeconds={60}
+                    maxSeconds={3600}
+                    secondsLabel={t("seconds")}
+                    minutesLabel={t("minutes")}
+                  />
+                  <DurationInput
+                    id="antiSnipeExtension"
+                    label={t("defaultAntiSnipeExtension")}
+                    hint={t("defaultAntiSnipeExtensionHint")}
+                    value={antiSnipeExtension}
+                    onChange={setAntiSnipeExtension}
+                    minSeconds={5}
+                    maxSeconds={3600}
+                    secondsLabel={t("seconds")}
+                    minutesLabel={t("minutes")}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Submit */}

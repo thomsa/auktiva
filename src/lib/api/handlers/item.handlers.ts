@@ -25,6 +25,9 @@ export const createItemSchema = z.object({
   commentsEnabled: z.boolean().optional(),
   discussionsEnabled: z.boolean().optional(),
   isEditableByAdmin: z.boolean().optional(),
+  antiSnipeEnabled: z.boolean().optional(),
+  antiSnipeThresholdSeconds: z.number().int().min(60).max(3600).optional(),
+  antiSnipeExtensionSeconds: z.number().int().min(5).max(3600).optional(),
 });
 
 export const updateItemSchema = z.object({
@@ -39,6 +42,9 @@ export const updateItemSchema = z.object({
   commentsEnabled: z.boolean().optional(),
   discussionsEnabled: z.boolean().optional(),
   isEditableByAdmin: z.boolean().optional(),
+  antiSnipeEnabled: z.boolean().optional(),
+  antiSnipeThresholdSeconds: z.number().int().min(60).max(3600).optional(),
+  antiSnipeExtensionSeconds: z.number().int().min(5).max(3600).optional(),
 });
 
 export type CreateItemBody = z.infer<typeof createItemSchema>;

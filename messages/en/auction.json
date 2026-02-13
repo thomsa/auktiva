@@ -30,7 +30,17 @@
       "itemEndNone": "No End - Items have no end date",
       "submitButton": "Create Auction",
       "submitting": "Creating...",
-      "createSuccess": "Auction created successfully"
+      "createSuccess": "Auction created successfully",
+      "antiSnipeDefaults": "Bid Extension Protection",
+      "antiSnipeDefaultsDescription": "Automatically extend item deadlines when bids arrive close to the end, preventing last-second sniping.",
+      "defaultAntiSnipe": "Enable bid extension for new items by default",
+      "defaultAntiSnipeDescription": "New items will automatically have bid extension protection enabled.",
+      "defaultAntiSnipeThreshold": "Trigger window",
+      "defaultAntiSnipeThresholdHint": "A bid placed within this time before the end will trigger an extension. Between 1 and 60 minutes.",
+      "defaultAntiSnipeExtension": "Extension amount",
+      "defaultAntiSnipeExtensionHint": "How much time to add to the end when triggered. Between 5 seconds and 60 minutes.",
+      "seconds": "seconds",
+      "minutes": "minutes"
     },
     "card": {
       "ended": "Ended",
@@ -111,7 +121,17 @@
       "endedSuccess": "Auction ended successfully",
       "adminEditingDefaults": "Admin Editing Defaults",
       "defaultItemsEditableByAdmin": "Allow admins to edit new items by default",
-      "defaultItemsEditableByAdminDescription": "When enabled, new items created in this auction will have admin editing enabled by default. Item owners can still opt out."
+      "defaultItemsEditableByAdminDescription": "When enabled, new items created in this auction will have admin editing enabled by default. Item owners can still opt out.",
+      "antiSnipeDefaults": "Bid Extension Defaults",
+      "antiSnipeDefaultsDescription": "Set default bid extension protection for new items in this auction. Item owners can override these per item.",
+      "defaultAntiSnipe": "Enable bid extension for new items by default",
+      "defaultAntiSnipeDescription": "New items will automatically have bid extension protection enabled.",
+      "defaultAntiSnipeThreshold": "Default trigger window",
+      "defaultAntiSnipeThresholdHint": "A bid placed within this time before the end will trigger an extension. Between 1 and 60 minutes.",
+      "defaultAntiSnipeExtension": "Default extension amount",
+      "defaultAntiSnipeExtensionHint": "How much time to add to the end when triggered. Between 5 seconds and 60 minutes.",
+      "seconds": "seconds",
+      "minutes": "minutes"
     },
     "members": {
       "title": "Members",

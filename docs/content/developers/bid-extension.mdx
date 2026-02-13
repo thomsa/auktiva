@@ -1,0 +1,130 @@
+# Bid Extension (Anti-Sniping)
+
+Technical documentation for the bid extension protection feature that automatically extends auction item deadlines when late bids arrive.
+
+import { Callout } from "nextra/components";
+
+## Database Schema
+
+### Auction Model (defaults)
+
+```prisma
+model Auction {
+  defaultAntiSnipe             Boolean  @default(false)
+  defaultAntiSnipeThreshold    Int      @default(300)  // 60-3600 seconds
+  defaultAntiSnipeExtension    Int      @default(300)  // 5-3600 seconds
+}
+```
+
+### AuctionItem Model (per-item)
+
+```prisma
+model AuctionItem {
+  antiSnipeEnabled          Boolean   @default(false)
+  antiSnipeThresholdSeconds Int       @default(300)  // 60-3600 seconds
+  antiSnipeExtensionSeconds Int       @default(300)  // 5-3600 seconds
+}
+```
+
+## Validation Rules
+
+Both frontend and backend enforce these ranges via Zod schemas:
+
+| Field                              | Min | Max  | Default |
+| ---------------------------------- | --- | ---- | ------- |
+| **Threshold** (seconds before end) | 60  | 3600 | 300     |
+| **Extension** (seconds to add)     | 5   | 3600 | 300     |
+
+## Backend Logic
+
+The core anti-snipe logic lives in `src/lib/services/bid.service.ts` inside the `placeBid()` function:
+
+1. After creating a bid, check if `item.antiSnipeEnabled` is true and `item.endDate` exists
+2. Calculate milliseconds until end: `endTime - now`
+3. If the bid is within the threshold window (`msUntilEnd > 0 && msUntilEnd <= thresholdMs`), compute a new end date
+4. Update the item's `endDate` in the database
+5. Include `newEndDate` in the `BidNewEvent` realtime event
+
+```typescript
+if (item.antiSnipeEnabled && item.endDate) {
+  const now = new Date();
+  const endTime = new Date(item.endDate);
+  const msUntilEnd = endTime.getTime() - now.getTime();
+  const thresholdMs = item.antiSnipeThresholdSeconds * 1000;
+
+  if (msUntilEnd > 0 && msUntilEnd <= thresholdMs) {
+    newEndDate = new Date(
+      endTime.getTime() + item.antiSnipeExtensionSeconds * 1000,
+    );
+  }
+}
+```
+
+<Callout type="info">
+  There is no cap on the number of extensions. Each qualifying bid extends the
+  deadline further.
+</Callout>
+
+## Realtime Events
+
+The `BidNewEvent` interface includes an optional `newEndDate` field:
+
+```typescript
+interface BidNewEvent {
+  // ... existing fields
+  newEndDate?: string; // ISO string, set when anti-snipe extends end time
+}
+```
+
+The item detail page listens for this field and updates the displayed end date in real-time via SWR mutation.
+
+## API Endpoints
+
+### Item Create/Update
+
+Anti-snipe fields are optional in both create and update payloads:
+
+```json
+{
+  "antiSnipeEnabled": true,
+  "antiSnipeThresholdSeconds": 300,
+  "antiSnipeExtensionSeconds": 300
+}
+```
+
+### Auction Update
+
+Auction-level defaults use different field names:
+
+```json
+{
+  "defaultAntiSnipe": true,
+  "defaultAntiSnipeThreshold": 300,
+  "defaultAntiSnipeExtension": 300
+}
+```
+
+## Inheritance Flow
+
+1. Auction owner sets defaults in auction settings
+2. When creating a new item, the create form pre-fills with auction defaults
+3. Item owner can override per-item
+4. At bid time, only the item-level values are checked
+
+## Files Modified
+
+| File                                              | Changes                                                   |
+| ------------------------------------------------- | --------------------------------------------------------- |
+| `prisma/schema.prisma`                            | Added anti-snipe fields to Auction and AuctionItem models |
+| `src/lib/services/item.service.ts`                | Updated types, create/update/detail functions             |
+| `src/lib/services/auction.service.ts`             | Updated types, create/update functions for defaults       |
+| `src/lib/services/bid.service.ts`                 | Core anti-snipe logic in `placeBid()`                     |
+| `src/lib/api/handlers/item.handlers.ts`           | Zod validation for item anti-snipe fields                 |
+| `src/lib/api/handlers/auction.handlers.ts`        | Zod validation for auction default fields                 |
+| `src/lib/realtime/events.ts`                      | Added `newEndDate` to `BidNewEvent`                       |
+| `src/pages/auctions/[id]/items/create.tsx`        | Anti-snipe UI section                                     |
+| `src/pages/auctions/[id]/items/[itemId]/edit.tsx` | Anti-snipe UI section                                     |
+| `src/pages/auctions/[id]/settings.tsx`            | Auction-level defaults UI                                 |
+| `src/pages/auctions/[id]/items/[itemId].tsx`      | Display anti-snipe info, handle realtime endDate updates  |
+| `messages/*/item.json`                            | Translation keys for all 5 locales                        |
+| `messages/*/auction.json`                         | Translation keys for all 5 locales                        |

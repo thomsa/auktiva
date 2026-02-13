@@ -17,7 +17,10 @@
       "anonymousTooltip": "Twoje imię będzie ukryte przed innymi licytującymi. Właściciel przedmiotu nadal zobaczy Twoje dane.",
       "minIncrement": "Min. przyrost",
       "minimumBidError": "Minimalna oferta to {symbol}{amount}",
-      "currency": "Waluta"
+      "currency": "Waluta",
+      "antiSnipeInfo": "Oferty złożone w ostatnich {minutes, plural, one {1 minucie} few {# minutach} many {# minutach} other {# minutach}} przedłużą termin o {extension, plural, one {1 minutę} few {# minuty} many {# minut} other {# minut}}.",
+      "antiSnipeInfoSeconds": "Oferty złożone w ostatnich {seconds} sekundach przedłużą termin o {extension} sekund.",
+      "antiSnipeExtended": "Termin przedłużony!"
     },
     "card": {
       "noBids": "Brak ofert",
@@ -57,7 +60,17 @@
       "publishNow": "Opublikuj",
       "dontPublishYet": "Jeszcze nie",
       "publishSuccess": "Przedmiot opublikowany pomyślnie",
-      "createAnother": "Utwórz kolejny"
+      "createAnother": "Utwórz kolejny",
+      "antiSnipe": "Ochrona przed snipingiem",
+      "antiSnipeEnable": "Przedłuż czas przy późnych ofertach",
+      "antiSnipeEnableDescription": "Automatycznie przedłuża czas zakończenia, jeśli oferta zostanie złożona blisko terminu, dając innym licytującym szansę na reakcję.",
+      "antiSnipeThreshold": "Okno aktywacji",
+      "antiSnipeThresholdHint": "Oferta złożona w tym czasie przed końcem uruchomi przedłużenie. Od 1 do 60 minut.",
+      "antiSnipeExtension": "Czas przedłużenia",
+      "antiSnipeExtensionHint": "Ile czasu dodać po aktywacji. Od 5 sekund do 60 minut.",
+      "antiSnipeRequiresEndDate": "Ustaw datę zakończenia powyżej, aby włączyć ochronę przed snipingiem.",
+      "seconds": "sekundy",
+      "minutes": "minuty"
     },
     "edit": {
       "title": "Edytuj przedmiot",
@@ -96,7 +109,16 @@
       "unpublish": "Wycofaj",
       "publishSuccess": "Przedmiot opublikowany pomyślnie",
       "unpublishSuccess": "Przedmiot wycofany pomyślnie",
-      "cannotUnpublishWithBids": "Nie można wycofać przedmiotu, który otrzymał oferty"
+      "cannotUnpublishWithBids": "Nie można wycofać przedmiotu, który otrzymał oferty",
+      "antiSnipe": "Ochrona przed snipingiem",
+      "antiSnipeEnable": "Przedłuż czas przy późnych ofertach",
+      "antiSnipeEnableDescription": "Automatycznie przedłuża czas zakończenia, jeśli oferta zostanie złożona blisko terminu, dając innym licytującym szansę na reakcję.",
+      "antiSnipeThreshold": "Okno aktywacji",
+      "antiSnipeThresholdHint": "Oferta złożona w tym czasie przed końcem uruchomi przedłużenie. Od 1 do 60 minut.",
+      "antiSnipeExtension": "Czas przedłużenia",
+      "antiSnipeExtensionHint": "Ile czasu dodać po aktywacji. Od 5 sekund do 60 minut.",
+      "seconds": "sekundy",
+      "minutes": "minuty"
     },
     "yourListing": "Twój przedmiot",
     "listedBy": "Wystawione przez",

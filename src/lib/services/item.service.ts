@@ -57,6 +57,9 @@ export interface CreateItemInput {
   isPublished?: boolean;
   discussionsEnabled?: boolean;
   isEditableByAdmin?: boolean;
+  antiSnipeEnabled?: boolean;
+  antiSnipeThresholdSeconds?: number;
+  antiSnipeExtensionSeconds?: number;
 }
 
 export interface UpdateItemInput {
@@ -70,6 +73,9 @@ export interface UpdateItemInput {
   isPublished?: boolean;
   discussionsEnabled?: boolean;
   isEditableByAdmin?: boolean;
+  antiSnipeEnabled?: boolean;
+  antiSnipeThresholdSeconds?: number;
+  antiSnipeExtensionSeconds?: number;
 }
 
 export interface ItemWithDetails extends AuctionItem {
@@ -103,6 +109,9 @@ export interface ItemDetailForPage {
   endDate: string | null;
   createdAt: string;
   isPublished: boolean;
+  antiSnipeEnabled: boolean;
+  antiSnipeThresholdSeconds: number;
+  antiSnipeExtensionSeconds: number;
   creator: {
     id: string;
     name: string | null;
@@ -205,6 +214,9 @@ export async function getItemForDetailPage(
     endDate: item.endDate?.toISOString() || null,
     createdAt: item.createdAt.toISOString(),
     isPublished: item.isPublished,
+    antiSnipeEnabled: item.antiSnipeEnabled,
+    antiSnipeThresholdSeconds: item.antiSnipeThresholdSeconds,
+    antiSnipeExtensionSeconds: item.antiSnipeExtensionSeconds,
     creator: item.creator,
   };
 }
@@ -375,6 +387,9 @@ export async function getItemDetailPageData(
       createdAt: item.createdAt.toISOString(),
       updatedAt: item.updatedAt.toISOString(),
       isPublished: item.isPublished,
+      antiSnipeEnabled: item.antiSnipeEnabled,
+      antiSnipeThresholdSeconds: item.antiSnipeThresholdSeconds,
+      antiSnipeExtensionSeconds: item.antiSnipeExtensionSeconds,
       creatorId: item.creatorId,
       creator: item.creator,
       discussionsEnabled: item.discussionsEnabled,
@@ -438,6 +453,9 @@ export async function getItemForEditPage(
       isPublished: item.isPublished,
       discussionsEnabled: item.discussionsEnabled,
       isEditableByAdmin: item.isEditableByAdmin,
+      antiSnipeEnabled: item.antiSnipeEnabled,
+      antiSnipeThresholdSeconds: item.antiSnipeThresholdSeconds,
+      antiSnipeExtensionSeconds: item.antiSnipeExtensionSeconds,
     },
     hasBids: item._count.bids > 0,
     canEdit,
@@ -747,6 +765,9 @@ export async function createItem(
       endDate: input.endDate ? new Date(input.endDate) : null,
       isPublished: input.isPublished ?? false,
       isEditableByAdmin: input.isEditableByAdmin ?? false,
+      antiSnipeEnabled: input.antiSnipeEnabled ?? false,
+      antiSnipeThresholdSeconds: input.antiSnipeThresholdSeconds ?? 300,
+      antiSnipeExtensionSeconds: input.antiSnipeExtensionSeconds ?? 300,
       creatorId,
       lastUpdatedById: creatorId,
     },
@@ -882,6 +903,15 @@ export async function updateItem(
   }
   if (input.isEditableByAdmin !== undefined) {
     updateData.isEditableByAdmin = input.isEditableByAdmin;
+  }
+  if (input.antiSnipeEnabled !== undefined) {
+    updateData.antiSnipeEnabled = input.antiSnipeEnabled;
+  }
+  if (input.antiSnipeThresholdSeconds !== undefined) {
+    updateData.antiSnipeThresholdSeconds = input.antiSnipeThresholdSeconds;
+  }
+  if (input.antiSnipeExtensionSeconds !== undefined) {
+    updateData.antiSnipeExtensionSeconds = input.antiSnipeExtensionSeconds;
   }
 
   // Only allow these if no bids

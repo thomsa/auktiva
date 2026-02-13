@@ -12,5 +12,6 @@ export default {
   deployment: "Deployment",
   upgrading: "Upgrading",
   realtime: "Realtime Features",
+  "bid-extension": "Bid Extension (Anti-Sniping)",
   troubleshooting: "FAQ & Troubleshooting",
 };

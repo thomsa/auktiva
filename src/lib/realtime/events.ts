@@ -85,6 +85,7 @@ export interface BidNewEvent {
   isAnonymous: boolean;
   timestamp: string;
   highestBid: number;
+  newEndDate?: string; // Set when anti-snipe extends the end time
 }
 
 /** User was outbid (private channel) */

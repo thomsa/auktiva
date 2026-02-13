@@ -30,7 +30,17 @@
       "itemEndNone": "Sin fin - Los artículos no tienen fecha de fin",
       "submitButton": "Crear subasta",
       "submitting": "Creando...",
-      "createSuccess": "Subasta creada con éxito"
+      "createSuccess": "Subasta creada con éxito",
+      "antiSnipeDefaults": "Protección contra pujas de último momento",
+      "antiSnipeDefaultsDescription": "Extiende automáticamente los plazos de los artículos cuando las pujas llegan cerca del final, previniendo pujas de último segundo.",
+      "defaultAntiSnipe": "Activar protección por defecto para nuevos artículos",
+      "defaultAntiSnipeDescription": "Los nuevos artículos tendrán automáticamente la protección activada.",
+      "defaultAntiSnipeThreshold": "Ventana de activación",
+      "defaultAntiSnipeThresholdHint": "Una puja dentro de este tiempo antes del fin activará la extensión. Entre 1 y 60 minutos.",
+      "defaultAntiSnipeExtension": "Duración de la extensión",
+      "defaultAntiSnipeExtensionHint": "Cuánto tiempo añadir al fin. Entre 5 segundos y 60 minutos.",
+      "seconds": "segundos",
+      "minutes": "minutos"
     },
     "card": {
       "ended": "Finalizada",
@@ -108,7 +118,17 @@
       "updateFailed": "Error al actualizar la subasta",
       "success": "Configuración guardada con éxito",
       "deleteSuccess": "Subasta eliminada con éxito",
-      "endedSuccess": "Subasta finalizada con éxito"
+      "endedSuccess": "Subasta finalizada con éxito",
+      "antiSnipeDefaults": "Protección contra pujas de último momento",
+      "antiSnipeDefaultsDescription": "Establece la protección predeterminada contra pujas de último momento para nuevos artículos en esta subasta. Los propietarios de artículos pueden cambiarlo individualmente.",
+      "defaultAntiSnipe": "Activar protección por defecto para nuevos artículos",
+      "defaultAntiSnipeDescription": "Los nuevos artículos tendrán automáticamente la protección activada.",
+      "defaultAntiSnipeThreshold": "Ventana de activación predeterminada",
+      "defaultAntiSnipeThresholdHint": "Una puja dentro de este tiempo antes del fin activará la extensión. Entre 1 y 60 minutos.",
+      "defaultAntiSnipeExtension": "Duración de extensión predeterminada",
+      "defaultAntiSnipeExtensionHint": "Cuánto tiempo añadir al fin. Entre 5 segundos y 60 minutos.",
+      "seconds": "segundos",
+      "minutes": "minutos"
     },
     "members": {
       "title": "Miembros",

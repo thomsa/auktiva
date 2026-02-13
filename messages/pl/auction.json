@@ -30,7 +30,17 @@
       "itemEndNone": "Bez końca - Przedmioty nie mają daty zakończenia",
       "submitButton": "Utwórz aukcję",
       "submitting": "Tworzenie...",
-      "createSuccess": "Aukcja utworzona pomyślnie"
+      "createSuccess": "Aukcja utworzona pomyślnie",
+      "antiSnipeDefaults": "Ochrona przed snipingiem",
+      "antiSnipeDefaultsDescription": "Automatycznie przedłuża terminy przedmiotów, gdy oferty pojawiają się blisko końca, zapobiegając licytowaniu w ostatniej chwili.",
+      "defaultAntiSnipe": "Włącz ochronę przed snipingiem domyślnie dla nowych przedmiotów",
+      "defaultAntiSnipeDescription": "Nowe przedmioty będą automatycznie miały włączoną ochronę przed snipingiem.",
+      "defaultAntiSnipeThreshold": "Okno aktywacji",
+      "defaultAntiSnipeThresholdHint": "Oferta złożona w tym czasie przed końcem uruchomi przedłużenie. Od 1 do 60 minut.",
+      "defaultAntiSnipeExtension": "Czas przedłużenia",
+      "defaultAntiSnipeExtensionHint": "Ile czasu dodać po aktywacji. Od 5 sekund do 60 minut.",
+      "seconds": "sekundy",
+      "minutes": "minuty"
     },
     "card": {
       "ended": "Zakończona",
@@ -108,7 +118,17 @@
       "updateFailed": "Nie udało się zaktualizować aukcji",
       "success": "Ustawienia zapisane pomyślnie",
       "deleteSuccess": "Aukcja usunięta pomyślnie",
-      "endedSuccess": "Aukcja zakończona pomyślnie"
+      "endedSuccess": "Aukcja zakończona pomyślnie",
+      "antiSnipeDefaults": "Domyślna ochrona przed snipingiem",
+      "antiSnipeDefaultsDescription": "Ustaw domyślną ochronę przed snipingiem dla nowych przedmiotów w tej aukcji. Właściciele przedmiotów mogą to zmienić indywidualnie.",
+      "defaultAntiSnipe": "Włącz ochronę przed snipingiem domyślnie dla nowych przedmiotów",
+      "defaultAntiSnipeDescription": "Nowe przedmioty będą automatycznie miały włączoną ochronę przed snipingiem.",
+      "defaultAntiSnipeThreshold": "Domyślne okno aktywacji",
+      "defaultAntiSnipeThresholdHint": "Oferta złożona w tym czasie przed końcem uruchomi przedłużenie. Od 1 do 60 minut.",
+      "defaultAntiSnipeExtension": "Domyślny czas przedłużenia",
+      "defaultAntiSnipeExtensionHint": "Ile czasu dodać po aktywacji. Od 5 sekund do 60 minut.",
+      "seconds": "sekundy",
+      "minutes": "minuty"
     },
     "members": {
       "title": "Członkowie",

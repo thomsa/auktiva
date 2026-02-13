@@ -17,7 +17,10 @@
       "anonymousTooltip": "Tu nombre se ocultará a otros pujadores. El propietario del artículo verá tus detalles.",
       "minIncrement": "Incremento Mín",
       "minimumBidError": "La puja mínima es {symbol}{amount}",
-      "currency": "Moneda"
+      "currency": "Moneda",
+      "antiSnipeInfo": "Las pujas en los últimos {minutes, plural, =1 {1 minuto} other {# minutos}} extenderán el plazo {extension, plural, =1 {1 minuto} other {# minutos}}.",
+      "antiSnipeInfoSeconds": "Las pujas en los últimos {seconds} segundos extenderán el plazo {extension} segundos.",
+      "antiSnipeExtended": "¡Plazo extendido!"
     },
     "card": {
       "noBids": "Sin pujas aún",
@@ -57,7 +60,17 @@
       "publishNow": "Publicar",
       "dontPublishYet": "Todavía no",
       "publishSuccess": "Artículo publicado con éxito",
-      "createAnother": "Crear otro"
+      "createAnother": "Crear otro",
+      "antiSnipe": "Protección contra pujas de último momento",
+      "antiSnipeEnable": "Extender tiempo con pujas tardías",
+      "antiSnipeEnableDescription": "Extiende automáticamente el tiempo de finalización si se realiza una puja cerca del plazo, dando a otros pujadores la oportunidad de responder.",
+      "antiSnipeThreshold": "Ventana de activación",
+      "antiSnipeThresholdHint": "Una puja dentro de este tiempo antes del fin activará la extensión. Entre 1 y 60 minutos.",
+      "antiSnipeExtension": "Duración de la extensión",
+      "antiSnipeExtensionHint": "Cuánto tiempo añadir al fin. Entre 5 segundos y 60 minutos.",
+      "antiSnipeRequiresEndDate": "Establece una fecha de fin arriba para habilitar la protección.",
+      "seconds": "segundos",
+      "minutes": "minutos"
     },
     "edit": {
       "title": "Editar Artículo",
@@ -96,7 +109,16 @@
       "unpublish": "Despublicar",
       "publishSuccess": "Artículo publicado con éxito",
       "unpublishSuccess": "Artículo despublicado con éxito",
-      "cannotUnpublishWithBids": "No se puede despublicar un artículo que ha recibido pujas"
+      "cannotUnpublishWithBids": "No se puede despublicar un artículo que ha recibido pujas",
+      "antiSnipe": "Protección contra pujas de último momento",
+      "antiSnipeEnable": "Extender tiempo con pujas tardías",
+      "antiSnipeEnableDescription": "Extiende automáticamente el tiempo de finalización si se realiza una puja cerca del plazo, dando a otros pujadores la oportunidad de responder.",
+      "antiSnipeThreshold": "Ventana de activación",
+      "antiSnipeThresholdHint": "Una puja dentro de este tiempo antes del fin activará la extensión. Entre 1 y 60 minutos.",
+      "antiSnipeExtension": "Duración de la extensión",
+      "antiSnipeExtensionHint": "Cuánto tiempo añadir al fin. Entre 5 segundos y 60 minutos.",
+      "seconds": "segundos",
+      "minutes": "minutos"
     },
     "yourListing": "Tu artículo",
     "listedBy": "Listado por",

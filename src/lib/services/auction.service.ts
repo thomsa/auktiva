@@ -41,6 +41,9 @@ export interface CreateAuctionInput {
   bidderVisibility?: "VISIBLE" | "ANONYMOUS" | "PER_BID";
   endDate?: string | null;
   itemEndMode?: "AUCTION_END" | "CUSTOM" | "NONE";
+  defaultAntiSnipe?: boolean;
+  defaultAntiSnipeThreshold?: number;
+  defaultAntiSnipeExtension?: number;
 }
 
 export interface UpdateAuctionInput {
@@ -52,6 +55,9 @@ export interface UpdateAuctionInput {
   itemEndMode?: "AUCTION_END" | "CUSTOM" | "NONE";
   endDate?: string | null;
   defaultItemsEditableByAdmin?: boolean;
+  defaultAntiSnipe?: boolean;
+  defaultAntiSnipeThreshold?: number;
+  defaultAntiSnipeExtension?: number;
 }
 
 export interface AuctionDetailForPage {
@@ -68,6 +74,9 @@ export interface AuctionDetailForPage {
   updatedAt: string;
   thumbnailUrl: string | null;
   defaultItemsEditableByAdmin: boolean;
+  defaultAntiSnipe: boolean;
+  defaultAntiSnipeThreshold: number;
+  defaultAntiSnipeExtension: number;
   creator: {
     id: string;
     name: string | null;
@@ -293,6 +302,9 @@ export async function createAuction(
       bidderVisibility: input.bidderVisibility || "VISIBLE",
       endDate: input.endDate ? new Date(input.endDate) : null,
       itemEndMode: input.itemEndMode || "CUSTOM",
+      defaultAntiSnipe: input.defaultAntiSnipe ?? false,
+      defaultAntiSnipeThreshold: input.defaultAntiSnipeThreshold ?? 300,
+      defaultAntiSnipeExtension: input.defaultAntiSnipeExtension ?? 300,
       creatorId,
       members: {
         create: {
@@ -339,6 +351,15 @@ export async function updateAuction(
   }
   if (input.defaultItemsEditableByAdmin !== undefined) {
     updateData.defaultItemsEditableByAdmin = input.defaultItemsEditableByAdmin;
+  }
+  if (input.defaultAntiSnipe !== undefined) {
+    updateData.defaultAntiSnipe = input.defaultAntiSnipe;
+  }
+  if (input.defaultAntiSnipeThreshold !== undefined) {
+    updateData.defaultAntiSnipeThreshold = input.defaultAntiSnipeThreshold;
+  }
+  if (input.defaultAntiSnipeExtension !== undefined) {
+    updateData.defaultAntiSnipeExtension = input.defaultAntiSnipeExtension;
   }
 
   return prisma.auction.update({

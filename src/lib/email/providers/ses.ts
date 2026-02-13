@@ -99,13 +99,9 @@ export class SesProvider implements EmailProvider {
       };
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      const errorName =
-        err instanceof Error ? err.name : "UnknownError";
+      const errorName = err instanceof Error ? err.name : "UnknownError";
 
-      logger.error(
-        { to, error: errorMessage, errorName },
-        "SES send failed",
-      );
+      logger.error({ to, error: errorMessage, errorName }, "SES send failed");
 
       return {
         success: false,

@@ -17,7 +17,10 @@
       "anonymousTooltip": "A neved rejtve marad a többi licitáló elől. A tétel tulajdonosa továbbra is látja az adataidat.",
       "minIncrement": "Licitlépcső",
       "minimumBidError": "Minimális licit: {symbol}{amount}",
-      "currency": "Pénznem"
+      "currency": "Pénznem",
+      "antiSnipeInfo": "Az utolsó {minutes, plural, =1 {1 percben} other {# percben}} leadott licitek {extension, plural, =1 {1 perccel} other {# perccel}} meghosszabbítják a határidőt.",
+      "antiSnipeInfoSeconds": "Az utolsó {seconds} másodpercben leadott licitek {extension} másodperccel meghosszabbítják a határidőt.",
+      "antiSnipeExtended": "Határidő meghosszabbítva!"
     },
     "card": {
       "noBids": "Még nincs licit",
@@ -57,7 +60,17 @@
       "publishNow": "Közzététel",
       "dontPublishYet": "Még nem",
       "publishSuccess": "Tétel sikeresen közzétéve",
-      "createAnother": "Új tétel"
+      "createAnother": "Új tétel",
+      "antiSnipe": "Licitvédelem",
+      "antiSnipeEnable": "Idő meghosszabbítása késői licitnél",
+      "antiSnipeEnableDescription": "Automatikusan meghosszabbítja a záró időt, ha a határidő közelében érkezik licit, így más licitálóknak is van idejük reagálni.",
+      "antiSnipeThreshold": "Aktiválási ablak",
+      "antiSnipeThresholdHint": "Az ennyi idővel a zárás előtt leadott licit aktiválja a hosszabbítást. 1 és 60 perc között.",
+      "antiSnipeExtension": "Hosszabbítás mértéke",
+      "antiSnipeExtensionHint": "Ennyi idővel hosszabbodik meg a záró idő aktiváláskor. 5 másodperc és 60 perc között.",
+      "antiSnipeRequiresEndDate": "Állíts be záró dátumot a licitvédelem engedélyezéséhez.",
+      "seconds": "másodperc",
+      "minutes": "perc"
     },
     "edit": {
       "title": "Tétel szerkesztése",
@@ -96,7 +109,16 @@
       "unpublish": "Visszavonás",
       "publishSuccess": "Tétel sikeresen közzétéve",
       "unpublishSuccess": "Tétel sikeresen visszavonva",
-      "cannotUnpublishWithBids": "Nem vonható vissza olyan tétel, amelyre már licitáltak"
+      "cannotUnpublishWithBids": "Nem vonható vissza olyan tétel, amelyre már licitáltak",
+      "antiSnipe": "Licitvédelem",
+      "antiSnipeEnable": "Idő meghosszabbítása késői licitnél",
+      "antiSnipeEnableDescription": "Automatikusan meghosszabbítja a záró időt, ha a határidő közelében érkezik licit, így más licitálóknak is van idejük reagálni.",
+      "antiSnipeThreshold": "Aktiválási ablak",
+      "antiSnipeThresholdHint": "Az ennyi idővel a zárás előtt leadott licit aktiválja a hosszabbítást. 1 és 60 perc között.",
+      "antiSnipeExtension": "Hosszabbítás mértéke",
+      "antiSnipeExtensionHint": "Ennyi idővel hosszabbodik meg a záró idő aktiváláskor. 5 másodperc és 60 perc között.",
+      "seconds": "másodperc",
+      "minutes": "perc"
     },
     "yourListing": "Saját tétel",
     "listedBy": "Listázta",

@@ -17,7 +17,10 @@
       "anonymousTooltip": "Dein Name wird vor anderen Bietern verborgen. Der Artikelbesitzer sieht deine Details trotzdem.",
       "minIncrement": "Min. Erhöhung",
       "minimumBidError": "Mindestgebot ist {symbol}{amount}",
-      "currency": "Währung"
+      "currency": "Währung",
+      "antiSnipeInfo": "Gebote in den letzten {minutes, plural, =1 {1 Minute} other {# Minuten}} verlängern die Frist um {extension, plural, =1 {1 Minute} other {# Minuten}}.",
+      "antiSnipeInfoSeconds": "Gebote in den letzten {seconds} Sekunden verlängern die Frist um {extension} Sekunden.",
+      "antiSnipeExtended": "Frist verlängert!"
     },
     "card": {
       "noBids": "Noch keine Gebote",
@@ -57,7 +60,17 @@
       "publishNow": "Veröffentlichen",
       "dontPublishYet": "Noch nicht",
       "publishSuccess": "Artikel erfolgreich veröffentlicht",
-      "createAnother": "Weiteren erstellen"
+      "createAnother": "Weiteren erstellen",
+      "antiSnipe": "Gebotsschutz",
+      "antiSnipeEnable": "Zeit bei späten Geboten verlängern",
+      "antiSnipeEnableDescription": "Verlängert automatisch die Endzeit, wenn ein Gebot kurz vor Ablauf eingeht, damit andere Bieter reagieren können.",
+      "antiSnipeThreshold": "Auslösefenster",
+      "antiSnipeThresholdHint": "Ein Gebot innerhalb dieser Zeit vor Ende löst die Verlängerung aus. Zwischen 1 und 60 Minuten.",
+      "antiSnipeExtension": "Verlängerungsdauer",
+      "antiSnipeExtensionHint": "Wie viel Zeit zur Endzeit hinzugefügt wird. Zwischen 5 Sekunden und 60 Minuten.",
+      "antiSnipeRequiresEndDate": "Lege oben ein Enddatum fest, um den Gebotsschutz zu aktivieren.",
+      "seconds": "Sekunden",
+      "minutes": "Minuten"
     },
     "edit": {
       "title": "Artikel bearbeiten",
@@ -96,7 +109,16 @@
       "unpublish": "Zurückziehen",
       "publishSuccess": "Artikel erfolgreich veröffentlicht",
       "unpublishSuccess": "Artikel erfolgreich zurückgezogen",
-      "cannotUnpublishWithBids": "Ein Artikel mit Geboten kann nicht zurückgezogen werden"
+      "cannotUnpublishWithBids": "Ein Artikel mit Geboten kann nicht zurückgezogen werden",
+      "antiSnipe": "Gebotsschutz",
+      "antiSnipeEnable": "Zeit bei späten Geboten verlängern",
+      "antiSnipeEnableDescription": "Verlängert automatisch die Endzeit, wenn ein Gebot kurz vor Ablauf eingeht, damit andere Bieter reagieren können.",
+      "antiSnipeThreshold": "Auslösefenster",
+      "antiSnipeThresholdHint": "Ein Gebot innerhalb dieser Zeit vor Ende löst die Verlängerung aus. Zwischen 1 und 60 Minuten.",
+      "antiSnipeExtension": "Verlängerungsdauer",
+      "antiSnipeExtensionHint": "Wie viel Zeit zur Endzeit hinzugefügt wird. Zwischen 5 Sekunden und 60 Minuten.",
+      "seconds": "Sekunden",
+      "minutes": "Minuten"
     },
     "yourListing": "Dein Artikel",
     "listedBy": "Eingestellt von",

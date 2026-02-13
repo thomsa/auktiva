@@ -30,7 +30,17 @@
       "itemEndNone": "Kein Ende - Artikel haben kein Enddatum",
       "submitButton": "Auktion erstellen",
       "submitting": "Erstelle...",
-      "createSuccess": "Auktion erfolgreich erstellt"
+      "createSuccess": "Auktion erfolgreich erstellt",
+      "antiSnipeDefaults": "Gebotsschutz",
+      "antiSnipeDefaultsDescription": "Verlängert automatisch die Fristen von Artikeln, wenn Gebote kurz vor Ende eingehen, um Last-Second-Bieten zu verhindern.",
+      "defaultAntiSnipe": "Gebotsschutz für neue Artikel standardmäßig aktivieren",
+      "defaultAntiSnipeDescription": "Neue Artikel werden automatisch mit Gebotsschutz erstellt.",
+      "defaultAntiSnipeThreshold": "Auslösefenster",
+      "defaultAntiSnipeThresholdHint": "Ein Gebot innerhalb dieser Zeit vor Ende löst die Verlängerung aus. Zwischen 1 und 60 Minuten.",
+      "defaultAntiSnipeExtension": "Verlängerungsdauer",
+      "defaultAntiSnipeExtensionHint": "Wie viel Zeit zur Endzeit hinzugefügt wird. Zwischen 5 Sekunden und 60 Minuten.",
+      "seconds": "Sekunden",
+      "minutes": "Minuten"
     },
     "card": {
       "ended": "Beendet",
@@ -108,7 +118,17 @@
       "updateFailed": "Auktion konnte nicht aktualisiert werden",
       "success": "Einstellungen erfolgreich gespeichert",
       "deleteSuccess": "Auktion erfolgreich gelöscht",
-      "endedSuccess": "Auktion erfolgreich beendet"
+      "endedSuccess": "Auktion erfolgreich beendet",
+      "antiSnipeDefaults": "Gebotsschutz-Standardwerte",
+      "antiSnipeDefaultsDescription": "Lege Standard-Gebotsschutz für neue Artikel in dieser Auktion fest. Artikelbesitzer können dies pro Artikel ändern.",
+      "defaultAntiSnipe": "Gebotsschutz für neue Artikel standardmäßig aktivieren",
+      "defaultAntiSnipeDescription": "Neue Artikel werden automatisch mit Gebotsschutz erstellt.",
+      "defaultAntiSnipeThreshold": "Standard-Auslösefenster",
+      "defaultAntiSnipeThresholdHint": "Ein Gebot innerhalb dieser Zeit vor Ende löst die Verlängerung aus. Zwischen 1 und 60 Minuten.",
+      "defaultAntiSnipeExtension": "Standard-Verlängerungsdauer",
+      "defaultAntiSnipeExtensionHint": "Wie viel Zeit zur Endzeit hinzugefügt wird. Zwischen 5 Sekunden und 60 Minuten.",
+      "seconds": "Sekunden",
+      "minutes": "Minuten"
     },
     "members": {
       "title": "Mitglieder",

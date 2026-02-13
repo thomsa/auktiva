@@ -315,7 +315,31 @@ export async function placeBid(
   const shouldBeAnonymous =
     bidderVisibility === "PER_BID" ? (input.isAnonymous ?? false) : false;
 
+  // Anti-snipe: check if we need to extend the end date
+  let newEndDate: Date | null = null;
+  if (item.antiSnipeEnabled && item.endDate) {
+    const now = new Date();
+    const endTime = new Date(item.endDate);
+    const msUntilEnd = endTime.getTime() - now.getTime();
+    const thresholdMs = item.antiSnipeThresholdSeconds * 1000;
+
+    // If bid arrives within the threshold window before end, extend
+    if (msUntilEnd > 0 && msUntilEnd <= thresholdMs) {
+      newEndDate = new Date(
+        endTime.getTime() + item.antiSnipeExtensionSeconds * 1000,
+      );
+    }
+  }
+
   // Create bid and update item in transaction
+  const itemUpdateData: Record<string, unknown> = {
+    currentBid: input.amount,
+    highestBidderId: userId,
+  };
+  if (newEndDate) {
+    itemUpdateData.endDate = newEndDate;
+  }
+
   const [bid] = await prisma.$transaction([
     prisma.bid.create({
       data: {
@@ -327,10 +351,7 @@ export async function placeBid(
     }),
     prisma.auctionItem.update({
       where: { id: itemId },
-      data: {
-        currentBid: input.amount,
-        highestBidderId: userId,
-      },
+      data: itemUpdateData,
     }),
   ]);
 
@@ -346,6 +367,7 @@ export async function placeBid(
     isAnonymous: shouldBeAnonymous,
     timestamp: bid.createdAt.toISOString(),
     highestBid: input.amount,
+    newEndDate: newEndDate?.toISOString() || undefined,
   };
   publish(Channels.item(itemId), Events.BID_NEW, bidEvent);
 

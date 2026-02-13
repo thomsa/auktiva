@@ -5,6 +5,7 @@ import * as auctionService from "@/lib/services/auction.service";
 import { prisma } from "@/lib/prisma";
 import { PageLayout, BackLink } from "@/components/common";
 import { Button } from "@/components/ui/button";
+import { DurationInput } from "@/components/ui/duration-input";
 import { useToast } from "@/components/ui/toast";
 import { ImageUpload } from "@/components/upload/image-upload";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
@@ -31,6 +32,9 @@ interface CreateItemProps {
     itemEndMode: string;
     endDate: string | null;
     defaultItemsEditableByAdmin: boolean;
+    defaultAntiSnipe: boolean;
+    defaultAntiSnipeThreshold: number;
+    defaultAntiSnipeExtension: number;
   };
   currencies: Currency[];
 }
@@ -80,6 +84,12 @@ export default function CreateItemPage({
   const [showEndDate, setShowEndDate] = useState(
     auction.itemEndMode === "CUSTOM",
   );
+  const [antiSnipeThreshold, setAntiSnipeThreshold] = useState(
+    auction.defaultAntiSnipeThreshold,
+  );
+  const [antiSnipeExtension, setAntiSnipeExtension] = useState(
+    auction.defaultAntiSnipeExtension,
+  );
 
   useEffect(() => {
     setShowEndDate(auction.itemEndMode === "CUSTOM");
@@ -103,6 +113,9 @@ export default function CreateItemPage({
       endDate: (formData.get("endDate") as string) || undefined,
       discussionsEnabled: formData.get("discussionsEnabled") === "on",
       isEditableByAdmin: formData.get("isEditableByAdmin") === "on",
+      antiSnipeEnabled: formData.get("antiSnipeEnabled") === "on",
+      antiSnipeThresholdSeconds: antiSnipeThreshold,
+      antiSnipeExtensionSeconds: antiSnipeExtension,
     };
 
     try {
@@ -463,6 +476,63 @@ export default function CreateItemPage({
                   </div>
                 </div>
 
+                {/* Anti-Snipe Protection */}
+                {showEndDate && (
+                  <>
+                    <div className="divider opacity-50"></div>
+                    <div className="space-y-4">
+                      <h2 className="text-lg font-semibold flex items-center gap-2 text-warning">
+                        <span className="icon-[tabler--shield] size-5"></span>
+                        {t("antiSnipe")}
+                      </h2>
+
+                      <div className="form-control">
+                        <label className="label cursor-pointer justify-start gap-3 p-0">
+                          <input
+                            type="checkbox"
+                            name="antiSnipeEnabled"
+                            className="toggle toggle-warning"
+                            defaultChecked={auction.defaultAntiSnipe}
+                          />
+                          <div className="text-wrap">
+                            <span className="label-text font-medium">
+                              {t("antiSnipeEnable")}
+                            </span>
+                            <p className="text-xs text-base-content/60">
+                              {t("antiSnipeEnableDescription")}
+                            </p>
+                          </div>
+                        </label>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <DurationInput
+                          id="antiSnipeThresholdSeconds"
+                          label={t("antiSnipeThreshold")}
+                          hint={t("antiSnipeThresholdHint")}
+                          value={antiSnipeThreshold}
+                          onChange={setAntiSnipeThreshold}
+                          minSeconds={60}
+                          maxSeconds={3600}
+                          secondsLabel={t("seconds")}
+                          minutesLabel={t("minutes")}
+                        />
+                        <DurationInput
+                          id="antiSnipeExtensionSeconds"
+                          label={t("antiSnipeExtension")}
+                          hint={t("antiSnipeExtensionHint")}
+                          value={antiSnipeExtension}
+                          onChange={setAntiSnipeExtension}
+                          minSeconds={5}
+                          maxSeconds={3600}
+                          secondsLabel={t("seconds")}
+                          minutesLabel={t("minutes")}
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 {/* Admin Editing Settings */}
                 <div className="divider opacity-50"></div>
                 <div className="space-y-4">
@@ -721,6 +791,9 @@ export const getServerSideProps = withAuth(async (context) => {
         itemEndMode: auction.itemEndMode,
         endDate: auction.endDate,
         defaultItemsEditableByAdmin: auction.defaultItemsEditableByAdmin,
+        defaultAntiSnipe: auction.defaultAntiSnipe,
+        defaultAntiSnipeThreshold: auction.defaultAntiSnipeThreshold,
+        defaultAntiSnipeExtension: auction.defaultAntiSnipeExtension,
       },
       currencies,
       messages: await getMessages(context.locale as Locale),

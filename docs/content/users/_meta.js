@@ -4,6 +4,7 @@ export default {
   auctions: "Auctions",
   items: "Items",
   bidding: "Bidding",
+  "bid-extension": "Bid Extension Protection",
   roles: "Roles & Permissions",
   "admin-editing": "Admin Item Editing",
   invitations: "Invitations",

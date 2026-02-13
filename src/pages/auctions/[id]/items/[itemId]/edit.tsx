@@ -8,6 +8,7 @@ import { PageLayout, BackLink, ConfirmDialog } from "@/components/common";
 import { ImageUpload } from "@/components/upload/image-upload";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Button } from "@/components/ui/button";
+import { DurationInput } from "@/components/ui/duration-input";
 import { useConfirmDialog } from "@/hooks/ui";
 import { useToast } from "@/components/ui/toast";
 import { getMessages, Locale } from "@/i18n";
@@ -53,6 +54,9 @@ interface EditItemProps {
     isPublished: boolean;
     discussionsEnabled: boolean;
     isEditableByAdmin: boolean;
+    antiSnipeEnabled: boolean;
+    antiSnipeThresholdSeconds: number;
+    antiSnipeExtensionSeconds: number;
   };
   isItemOwner: boolean;
   currencies: Currency[];
@@ -95,6 +99,15 @@ export default function EditItemPage({
   const [isEditableByAdmin, setIsEditableByAdmin] = useState(
     item.isEditableByAdmin,
   );
+  const [antiSnipeEnabled, setAntiSnipeEnabled] = useState(
+    item.antiSnipeEnabled,
+  );
+  const [antiSnipeThreshold, setAntiSnipeThreshold] = useState(
+    item.antiSnipeThresholdSeconds,
+  );
+  const [antiSnipeExtension, setAntiSnipeExtension] = useState(
+    item.antiSnipeExtensionSeconds,
+  );
 
   const isItemEnded = !!(item.endDate && new Date(item.endDate) < new Date());
   const auctionHasEndDate = !!auction.endDate;
@@ -117,6 +130,9 @@ export default function EditItemPage({
       endDate: (formData.get("endDate") as string) || null,
       discussionsEnabled,
       isEditableByAdmin,
+      antiSnipeEnabled,
+      antiSnipeThresholdSeconds: antiSnipeThreshold,
+      antiSnipeExtensionSeconds: antiSnipeExtension,
     };
 
     try {
@@ -565,6 +581,74 @@ export default function EditItemPage({
                 </label>
               </div>
             </div>
+
+            {/* Anti-Snipe Protection */}
+            {canSetCustomEndDate && (
+              <>
+                <div className="divider opacity-50"></div>
+                <div className="space-y-4">
+                  <h2 className="text-lg font-semibold flex items-center gap-2 text-warning">
+                    <span className="icon-[tabler--shield] size-5"></span>
+                    {t("antiSnipe")}
+                  </h2>
+
+                  {itemEndDate ? (
+                    <>
+                      <div className="form-control">
+                        <label className="label cursor-pointer justify-start gap-3 p-0">
+                          <input
+                            type="checkbox"
+                            checked={antiSnipeEnabled}
+                            onChange={(e) =>
+                              setAntiSnipeEnabled(e.target.checked)
+                            }
+                            className="toggle toggle-warning"
+                          />
+                          <div className="text-wrap">
+                            <span className="label-text font-medium">
+                              {t("antiSnipeEnable")}
+                            </span>
+                            <p className="text-xs text-base-content/60">
+                              {t("antiSnipeEnableDescription")}
+                            </p>
+                          </div>
+                        </label>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <DurationInput
+                          id="antiSnipeThresholdSeconds"
+                          label={t("antiSnipeThreshold")}
+                          hint={t("antiSnipeThresholdHint")}
+                          value={antiSnipeThreshold}
+                          onChange={setAntiSnipeThreshold}
+                          minSeconds={60}
+                          maxSeconds={3600}
+                          secondsLabel={t("seconds")}
+                          minutesLabel={t("minutes")}
+                        />
+                        <DurationInput
+                          id="antiSnipeExtensionSeconds"
+                          label={t("antiSnipeExtension")}
+                          hint={t("antiSnipeExtensionHint")}
+                          value={antiSnipeExtension}
+                          onChange={setAntiSnipeExtension}
+                          minSeconds={5}
+                          maxSeconds={3600}
+                          secondsLabel={t("seconds")}
+                          minutesLabel={t("minutes")}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-sm text-base-content/60 flex items-center gap-1.5">
+                      <span className="icon-[tabler--info-circle] size-4"></span>
+                      {tCreate("antiSnipeRequiresEndDate")}
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
 
             {/* Admin Editing Settings - Only show to item owner */}
             {isItemOwner && (

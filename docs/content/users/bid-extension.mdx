@@ -1,0 +1,60 @@
+# Bid Extension Protection
+
+Bid Extension Protection (also known as anti-sniping) prevents last-second bidding by automatically extending an item's deadline when a bid arrives close to the end time.
+
+import { Callout } from "nextra/components";
+
+## How It Works
+
+When enabled on an item with an end date, the system monitors incoming bids. If a bid is placed within the **trigger window** (a configurable number of seconds before the end), the item's deadline is automatically extended by the **extension amount**.
+
+For example, with a 5-minute trigger window and 5-minute extension:
+
+1. Item ends at 3:00 PM
+2. A bid arrives at 2:57 PM (within the 5-minute window)
+3. The deadline is extended to 3:05 PM
+4. If another bid arrives at 3:03 PM, it extends again to 3:10 PM
+
+There is no limit on how many times the deadline can be extended.
+
+<Callout type="info">
+  All watchers of the item will see the updated deadline in real-time via
+  WebSocket notifications.
+</Callout>
+
+## Configuring Bid Extension on Items
+
+When creating or editing an item (with a custom end date), you'll see a **Bid Extension Protection** section:
+
+- **Enable toggle** — Turn bid extension on or off for this item
+- **Trigger window** — How many seconds before the end a bid must arrive to trigger an extension (60–3600 seconds, i.e. 1–60 minutes)
+- **Extension amount** — How many seconds to add to the end time when triggered (5–3600 seconds)
+
+<Callout type="warning">
+  Bid extension only works on items that have an end date set. Items without an
+  end date cannot use this feature.
+</Callout>
+
+## Auction-Level Defaults
+
+Auction owners can set default bid extension values in **Auction Settings**. When new items are created, they inherit these defaults:
+
+- Whether bid extension is enabled by default
+- Default trigger window
+- Default extension amount
+
+Item owners can always override these defaults on a per-item basis.
+
+## Viewing Bid Extension Info
+
+On the item detail page, if bid extension is enabled, you'll see a small shield icon with a message like:
+
+> Bids placed in the last 5 minutes will extend the deadline by 5 minutes.
+
+This helps all bidders understand the rules before placing their bids.
+
+## Tips
+
+- **For auction owners**: Enable bid extension as a default if your auction has timed items — it creates a fairer bidding environment.
+- **For bidders**: Don't wait until the last second! With bid extension enabled, last-moment bids will simply extend the auction rather than snipe a win.
+- **Recommended settings**: A 5-minute trigger window with a 5-minute extension (300 seconds each) works well for most auctions.

@@ -16,6 +16,9 @@ export const createAuctionSchema = z.object({
   bidderVisibility: z.enum(["VISIBLE", "ANONYMOUS", "PER_BID"]).optional(),
   endDate: z.string().optional(),
   itemEndMode: z.enum(["AUCTION_END", "CUSTOM", "NONE"]).optional(),
+  defaultAntiSnipe: z.boolean().optional(),
+  defaultAntiSnipeThreshold: z.number().int().min(60).max(3600).optional(),
+  defaultAntiSnipeExtension: z.number().int().min(5).max(3600).optional(),
 });
 
 export const updateAuctionSchema = z.object({
@@ -27,6 +30,9 @@ export const updateAuctionSchema = z.object({
   itemEndMode: z.enum(["AUCTION_END", "CUSTOM", "NONE"]).optional(),
   endDate: z.string().nullable().optional(),
   defaultItemsEditableByAdmin: z.boolean().optional(),
+  defaultAntiSnipe: z.boolean().optional(),
+  defaultAntiSnipeThreshold: z.number().int().min(60).max(3600).optional(),
+  defaultAntiSnipeExtension: z.number().int().min(5).max(3600).optional(),
 });
 
 export type CreateAuctionBody = z.infer<typeof createAuctionSchema>;

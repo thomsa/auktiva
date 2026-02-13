@@ -134,6 +134,11 @@ model Auction {
   // Admin editing default for new items
   defaultItemsEditableByAdmin  Boolean  @default(false)
   
+  // Anti-snipe defaults for new items
+  defaultAntiSnipe             Boolean  @default(false)   // Whether new items get anti-snipe by default
+  defaultAntiSnipeThreshold    Int      @default(300)     // Seconds before end that triggers extension (60-3600)
+  defaultAntiSnipeExtension    Int      @default(300)     // Seconds to extend by (5-3600)
+  
   // Metadata
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
@@ -257,6 +262,11 @@ model AuctionItem {
   
   // Timing
   endDate         DateTime? // null = follows auction end or no end
+  
+  // Anti-snipe protection
+  antiSnipeEnabled          Boolean   @default(false)
+  antiSnipeThresholdSeconds Int       @default(300)  // Seconds before end that triggers extension (60-3600)
+  antiSnipeExtensionSeconds Int       @default(300)  // Seconds to extend by (5-3600)
   
   // Notification tracking
   winnerNotified  Boolean   @default(false) // Track if winner notification sent

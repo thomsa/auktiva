@@ -30,7 +30,17 @@
       "itemEndNone": "Nincs vége - A tételeknek nincs záró dátuma",
       "submitButton": "Aukció létrehozása",
       "submitting": "Létrehozás...",
-      "createSuccess": "Aukció sikeresen létrehozva"
+      "createSuccess": "Aukció sikeresen létrehozva",
+      "antiSnipeDefaults": "Licitvédelem",
+      "antiSnipeDefaultsDescription": "Automatikusan meghosszabbítja a tételek határidejét, ha a záró idő közelében érkezik licit, megakadályozva az utolsó pillanatos liciteket.",
+      "defaultAntiSnipe": "Licitvédelem engedélyezése új tételeknél alapértelmezésként",
+      "defaultAntiSnipeDescription": "Az új tételek automatikusan licitvédelemmel jönnek létre.",
+      "defaultAntiSnipeThreshold": "Aktiválási ablak",
+      "defaultAntiSnipeThresholdHint": "Az ennyi idővel a zárás előtt leadott licit aktiválja a hosszabbítást. 1 és 60 perc között.",
+      "defaultAntiSnipeExtension": "Hosszabbítás mértéke",
+      "defaultAntiSnipeExtensionHint": "Ennyi idővel hosszabbodik meg a záró idő aktiváláskor. 5 másodperc és 60 perc között.",
+      "seconds": "másodperc",
+      "minutes": "perc"
     },
     "card": {
       "ended": "Lezárult",
@@ -108,7 +118,17 @@
       "updateFailed": "Nem sikerült frissíteni az aukciót",
       "success": "Beállítások sikeresen mentve",
       "deleteSuccess": "Aukció sikeresen törölve",
-      "endedSuccess": "Aukció sikeresen lezárva"
+      "endedSuccess": "Aukció sikeresen lezárva",
+      "antiSnipeDefaults": "Licitvédelem alapértelmezések",
+      "antiSnipeDefaultsDescription": "Állítsd be az alapértelmezett licitvédelmet az új tételekhez ebben az aukcióban. A tétel tulajdonosok tételenként felülírhatják.",
+      "defaultAntiSnipe": "Licitvédelem engedélyezése új tételeknél alapértelmezésként",
+      "defaultAntiSnipeDescription": "Az új tételek automatikusan licitvédelemmel jönnek létre.",
+      "defaultAntiSnipeThreshold": "Alapértelmezett aktiválási ablak",
+      "defaultAntiSnipeThresholdHint": "Az ennyi idővel a zárás előtt leadott licit aktiválja a hosszabbítást. 1 és 60 perc között.",
+      "defaultAntiSnipeExtension": "Alapértelmezett hosszabbítás mértéke",
+      "defaultAntiSnipeExtensionHint": "Ennyi idővel hosszabbodik meg a záró idő aktiváláskor. 5 másodperc és 60 perc között.",
+      "seconds": "másodperc",
+      "minutes": "perc"
     },
     "members": {
       "title": "Tagok",

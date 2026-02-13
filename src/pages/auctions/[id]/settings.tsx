@@ -5,6 +5,7 @@ import { PageLayout, BackLink, ConfirmDialog } from "@/components/common";
 import { ThumbnailUpload } from "@/components/upload/thumbnail-upload";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
+import { DurationInput } from "@/components/ui/duration-input";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { getMessages, Locale } from "@/i18n";
 import { useConfirmDialog } from "@/hooks/ui";
@@ -29,6 +30,9 @@ interface AuctionSettingsProps {
     isEnded: boolean;
     thumbnailUrl: string | null;
     defaultItemsEditableByAdmin: boolean;
+    defaultAntiSnipe: boolean;
+    defaultAntiSnipeThreshold: number;
+    defaultAntiSnipeExtension: number;
   };
   allowOpenAuctions: boolean;
 }
@@ -54,6 +58,9 @@ export default function AuctionSettingsPage({
     itemEndMode: auction.itemEndMode,
     endDate: auction.endDate ? auction.endDate.slice(0, 16) : "",
     defaultItemsEditableByAdmin: auction.defaultItemsEditableByAdmin,
+    defaultAntiSnipe: auction.defaultAntiSnipe,
+    defaultAntiSnipeThreshold: auction.defaultAntiSnipeThreshold,
+    defaultAntiSnipeExtension: auction.defaultAntiSnipeExtension,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -431,6 +438,73 @@ export default function AuctionSettingsPage({
               </div>
             </div>
 
+            {/* Anti-Snipe Defaults */}
+            <div className="divider opacity-50"></div>
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-warning">
+                <span className="icon-[tabler--shield] size-5"></span>
+                {t("antiSnipeDefaults")}
+              </h2>
+              <p className="text-sm text-base-content/60">
+                {t("antiSnipeDefaultsDescription")}
+              </p>
+
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-3 p-0">
+                  <input
+                    type="checkbox"
+                    name="defaultAntiSnipe"
+                    checked={formData.defaultAntiSnipe}
+                    onChange={handleChange}
+                    className="toggle toggle-warning"
+                  />
+                  <div>
+                    <span className="label-text font-medium">
+                      {t("defaultAntiSnipe")}
+                    </span>
+                    <p className="text-xs text-base-content/60 text-wrap">
+                      {t("defaultAntiSnipeDescription")}
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <DurationInput
+                  id="defaultAntiSnipeThreshold"
+                  label={t("defaultAntiSnipeThreshold")}
+                  hint={t("defaultAntiSnipeThresholdHint")}
+                  value={formData.defaultAntiSnipeThreshold}
+                  onChange={(v) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      defaultAntiSnipeThreshold: v,
+                    }))
+                  }
+                  minSeconds={60}
+                  maxSeconds={3600}
+                  secondsLabel={t("seconds")}
+                  minutesLabel={t("minutes")}
+                />
+                <DurationInput
+                  id="defaultAntiSnipeExtension"
+                  label={t("defaultAntiSnipeExtension")}
+                  hint={t("defaultAntiSnipeExtensionHint")}
+                  value={formData.defaultAntiSnipeExtension}
+                  onChange={(v) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      defaultAntiSnipeExtension: v,
+                    }))
+                  }
+                  minSeconds={5}
+                  maxSeconds={3600}
+                  secondsLabel={t("seconds")}
+                  minutesLabel={t("minutes")}
+                />
+              </div>
+            </div>
+
             {/* Save Button */}
             <div className="divider opacity-50"></div>
             <Button
@@ -610,6 +684,9 @@ export const getServerSideProps = withAuth(async (context) => {
           : false,
         thumbnailUrl: auction.thumbnailUrl,
         defaultItemsEditableByAdmin: auction.defaultItemsEditableByAdmin,
+        defaultAntiSnipe: auction.defaultAntiSnipe,
+        defaultAntiSnipeThreshold: auction.defaultAntiSnipeThreshold,
+        defaultAntiSnipeExtension: auction.defaultAntiSnipeExtension,
       },
       allowOpenAuctions: process.env.ALLOW_OPEN_AUCTIONS === "true",
       messages: await getMessages(context.locale as Locale),

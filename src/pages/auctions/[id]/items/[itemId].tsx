@@ -82,6 +82,9 @@ interface ItemDetailProps {
     createdAt: string;
     isPublished: boolean;
     discussionsEnabled: boolean;
+    antiSnipeEnabled: boolean;
+    antiSnipeThresholdSeconds: number;
+    antiSnipeExtensionSeconds: number;
     creator: {
       id: string;
       name: string | null;
@@ -204,6 +207,8 @@ export default function ItemDetailPage({
               ...current.item,
               currentBid: event.highestBid,
               highestBidderId: event.bidderId,
+              // Update endDate if anti-snipe extended it
+              ...(event.newEndDate ? { endDate: event.newEndDate } : {}),
             },
             bids: [newBid, ...current.bids],
           };
@@ -688,23 +693,49 @@ export default function ItemDetailPage({
 
                       {item.endDate && (
                         <div
-                          className={`flex items-center gap-2 text-sm mb-6 p-3 rounded-lg ${
+                          className={`flex flex-col gap-2 text-sm mb-6 p-3 rounded-lg ${
                             isEnded
                               ? "bg-error/10 text-error"
                               : "bg-base-200/50 text-base-content/70"
                           }`}
                         >
-                          <span
-                            className={`icon-[tabler--${
-                              isEnded ? "flag-filled" : "clock"
-                            }] size-5`}
-                          ></span>
-                          <span className="font-medium">
-                            {isEnded ? t("bid.biddingEnded") : tTime("endsAt")}:
-                          </span>
-                          <span className="font-mono">
-                            {formatDate(item.endDate)}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`icon-[tabler--${
+                                isEnded ? "flag-filled" : "clock"
+                              }] size-5`}
+                            ></span>
+                            <span className="font-medium">
+                              {isEnded
+                                ? t("bid.biddingEnded")
+                                : tTime("endsAt")}
+                              :
+                            </span>
+                            <span className="font-mono">
+                              {formatDate(item.endDate)}
+                            </span>
+                          </div>
+                          {item.antiSnipeEnabled && !isEnded && (
+                            <div className="flex items-center gap-1.5 text-xs text-warning">
+                              <span className="icon-[tabler--shield] size-3.5"></span>
+                              <span>
+                                {item.antiSnipeThresholdSeconds >= 60 &&
+                                item.antiSnipeExtensionSeconds >= 60
+                                  ? t("bid.antiSnipeInfo", {
+                                      minutes: Math.round(
+                                        item.antiSnipeThresholdSeconds / 60,
+                                      ),
+                                      extension: Math.round(
+                                        item.antiSnipeExtensionSeconds / 60,
+                                      ),
+                                    })
+                                  : t("bid.antiSnipeInfoSeconds", {
+                                      seconds: item.antiSnipeThresholdSeconds,
+                                      extension: item.antiSnipeExtensionSeconds,
+                                    })}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       )}
 
