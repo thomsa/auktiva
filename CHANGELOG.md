@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.18.0] - 2026-02-13
+
+### 🚀 Features
+
+- Add Amazon SES email provider with native AWS SDK integration by @thomsa
+
 ## [1.17.3] - 2026-01-12
 
 ### 📚 Documentation
