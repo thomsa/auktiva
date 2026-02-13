@@ -29,4 +29,4 @@ export interface EmailProvider {
   getName(): string;
 }
 
-export type EmailProviderType = "brevo" | "smtp";
+export type EmailProviderType = "brevo" | "smtp" | "ses";

@@ -90,13 +90,13 @@ S3_ENDPOINT="https://ACCOUNT_ID.r2.cloudflarestorage.com"
 
 ## Email
 
-| Variable              | Required   | Description                        | Example                        |
-| --------------------- | ---------- | ---------------------------------- | ------------------------------ |
-| `EMAIL_PROVIDER`      | No         | Email provider: `brevo` or `smtp`  | `brevo`                        |
-| `MAIL_FROM`           | No         | Sender email address               | `noreply@example.com`          |
-| `MAIL_FROM_NAME`      | No         | Sender display name                | `Auktiva`                      |
-| `NEXT_PUBLIC_APP_URL` | No         | App URL for email links            | `https://auctions.example.com` |
-| `CRON_SECRET`         | Production | Secret for cron job authentication | `openssl rand -base64 32`      |
+| Variable              | Required   | Description                               | Example                        |
+| --------------------- | ---------- | ----------------------------------------- | ------------------------------ |
+| `EMAIL_PROVIDER`      | No         | Email provider: `brevo`, `smtp`, or `ses` | `ses`                          |
+| `MAIL_FROM`           | No         | Sender email address                      | `noreply@example.com`          |
+| `MAIL_FROM_NAME`      | No         | Sender display name                       | `Auktiva`                      |
+| `NEXT_PUBLIC_APP_URL` | No         | App URL for email links                   | `https://auctions.example.com` |
+| `CRON_SECRET`         | Production | Secret for cron job authentication        | `openssl rand -base64 32`      |
 
 ### Brevo Provider
 
@@ -130,6 +130,28 @@ SMTP_USER="your-email@gmail.com"
 SMTP_PASSWORD="your-app-password"
 MAIL_FROM="noreply@example.com"
 ```
+
+### Amazon SES Provider
+
+| Variable                    | Required | Description                               | Example     |
+| --------------------------- | -------- | ----------------------------------------- | ----------- |
+| `AWS_SES_REGION`            | SES only | AWS region where SES is configured        | `us-east-1` |
+| `AWS_SES_ACCESS_KEY_ID`     | No       | AWS access key (uses IAM role if omitted) | `AKIA...`   |
+| `AWS_SES_SECRET_ACCESS_KEY` | No       | AWS secret key (uses IAM role if omitted) | `wJalr...`  |
+| `AWS_SES_CONFIGURATION_SET` | No       | SES configuration set for tracking        | `my-config` |
+
+```bash
+EMAIL_PROVIDER="ses"
+AWS_SES_REGION="us-east-1"
+AWS_SES_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"
+AWS_SES_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+MAIL_FROM="noreply@example.com"
+```
+
+<Callout type="info">
+  On EC2/Lambda/ECS, you can omit the access key and secret to use IAM roles
+  automatically.
+</Callout>
 
 ## OAuth Providers (Optional)
 

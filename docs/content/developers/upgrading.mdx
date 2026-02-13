@@ -1,0 +1,224 @@
+# Upgrading Auktiva
+
+import { Callout } from "nextra/components";
+
+This guide covers how to upgrade your Auktiva installation to the latest version.
+
+## Automatic Updates (Recommended)
+
+If you have a Deployment Admin configured, you can update directly from the Settings page:
+
+1. Go to **Settings** → **Deployment Administration**
+2. If an update is available, you'll see an "Install Update" button
+3. Click the button to start the update process
+
+The system will automatically:
+
+- Fetch the latest release
+- Back up your database (SQLite only)
+- Install dependencies
+- Run database migrations
+- Rebuild the application
+- Restart the server (if PM2 is configured)
+
+<Callout type="info">
+  See [Deployment Administration](/developers/deployment-admin) for details on
+  setting up the Deployment Admin role.
+</Callout>
+
+## Manual Upgrade
+
+If you prefer to upgrade manually or the automatic update isn't available, follow these steps.
+
+### Step 1: Handle Local Changes
+
+If you installed Auktiva using the automated installer script, your working directory may have local changes (like the generated `.env` file). You need to stash these before pulling updates:
+
+```bash
+cd /path/to/auktiva
+
+# Check for local changes
+git status
+
+# Stash any local changes
+git stash
+
+# Fetch the latest tags
+git fetch --tags origin
+```
+
+<Callout type="warning">
+  Always stash or commit your local changes before upgrading. The update process
+  checks out a specific release tag, which will fail if you have uncommitted
+  changes.
+</Callout>
+
+### Step 2: Checkout the Latest Release
+
+```bash
+# Get the latest release tag
+LATEST_TAG=$(curl -fsSL "https://api.github.com/repos/thomsa/auktiva/releases/latest" | \
+  grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
+echo "Latest version: $LATEST_TAG"
+
+# Checkout the release
+git checkout "$LATEST_TAG"
+```
+
+### Step 3: Restore Your Local Changes
+
+After checking out the new version, restore your stashed changes:
+
+```bash
+# Restore stashed changes
+git stash pop
+```
+
+If there are conflicts (rare, but possible if configuration files changed), resolve them manually:
+
+```bash
+# If conflicts occur, check the status
+git status
+
+# Edit conflicting files to resolve, then:
+git checkout --theirs <file>  # Keep the new version
+# or
+git checkout --ours <file>    # Keep your version
+```
+
+### Step 4: Install Dependencies
+
+```bash
+npm ci --silent 2>/dev/null || npm install
+```
+
+### Step 5: Back Up Your Database
+
+For SQLite databases, create a backup before migrating:
+
+```bash
+# Check your DATABASE_URL in .env
+# If using SQLite (file:./dev.db), back it up:
+cp dev.db backups/backup_$(date +%Y%m%d_%H%M%S).db
+```
+
+<Callout type="info">
+  For Turso databases, use Turso's built-in backup features instead.
+</Callout>
+
+### Step 6: Run Database Migrations
+
+```bash
+# Generate the Prisma client
+npm run db:generate
+
+# Apply schema changes
+npm run db:push
+```
+
+### Step 7: Rebuild and Restart
+
+```bash
+# Build the application
+npm run build
+
+# Restart your server
+pm2 restart auktiva  # If using PM2
+# or
+systemctl restart auktiva  # If using systemd
+```
+
+## Using the Update Script
+
+You can also run the update script directly:
+
+```bash
+./scripts/update.sh
+```
+
+This script performs all the steps above automatically. However, it expects a clean working directory, so you still need to stash local changes first:
+
+```bash
+git stash
+./scripts/update.sh
+git stash pop
+```
+
+## Troubleshooting
+
+### "Your local changes would be overwritten"
+
+This error occurs when you have uncommitted changes. Stash them first:
+
+```bash
+git stash
+git checkout <tag>
+git stash pop
+```
+
+### Merge Conflicts After Stash Pop
+
+If `git stash pop` results in conflicts:
+
+1. Check which files have conflicts: `git status`
+2. For `.env` files, your local version is usually correct—keep it
+3. For other files, review the changes and merge manually
+4. After resolving, mark as resolved: `git add <file>`
+
+### Database Migration Errors
+
+If `npm run db:push` fails:
+
+1. Check the error message for specific issues
+2. Ensure your database is accessible
+3. For SQLite, verify the file exists and has correct permissions
+4. For Turso, check your connection credentials
+
+### Build Failures
+
+If `npm run build` fails:
+
+1. Clear the Next.js cache: `rm -rf .next`
+2. Clear node_modules and reinstall: `rm -rf node_modules && npm install`
+3. Check for TypeScript errors in the build output
+
+### PM2 Process Not Found
+
+If PM2 can't find the process:
+
+```bash
+# Check running processes
+pm2 list
+
+# If 'auktiva' doesn't exist, start it fresh
+pm2 start ecosystem.config.js
+pm2 save
+```
+
+## Version Checking
+
+To check your current version:
+
+```bash
+# From package.json
+node -p "require('./package.json').version"
+
+# Or check the git tag
+git describe --tags --exact-match 2>/dev/null || echo "Not on a release tag"
+```
+
+To check the latest available version:
+
+```bash
+curl -fsSL "https://api.github.com/repos/thomsa/auktiva/releases/latest" | \
+  grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'
+```
+
+## Best Practices
+
+- **Back up before upgrading** — Always back up your database before major upgrades
+- **Read release notes** — Check the [GitHub releases](https://github.com/thomsa/auktiva/releases) for breaking changes
+- **Test in staging** — If possible, test upgrades in a staging environment first
+- **Keep your .env safe** — Your `.env` file contains sensitive configuration; ensure it's preserved during upgrades
+- **Stay current** — Auktiva follows a rolling release model; only the latest version is supported

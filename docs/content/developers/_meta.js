@@ -10,6 +10,7 @@ export default {
   "deployment-admin": "Deployment Admin",
   architecture: "Architecture",
   deployment: "Deployment",
+  upgrading: "Upgrading",
   realtime: "Realtime Features",
   troubleshooting: "FAQ & Troubleshooting",
 };

@@ -8,6 +8,7 @@ import { createLogger } from "@/lib/logger";
 import type { EmailProvider, EmailProviderType } from "./types";
 import { BrevoProvider } from "./brevo";
 import { SmtpProvider } from "./smtp";
+import { SesProvider } from "./ses";
 
 export type {
   EmailProvider,
@@ -16,6 +17,7 @@ export type {
   EmailProviderType,
 } from "./types";
 export { testSmtpConnection } from "./smtp";
+export { testSesConnection } from "./ses";
 
 const logger = createLogger("email:provider");
 
@@ -28,7 +30,7 @@ export function getEmailProviderType(): EmailProviderType | null {
   const provider = process.env.EMAIL_PROVIDER as EmailProviderType | undefined;
 
   if (provider) {
-    if (provider !== "brevo" && provider !== "smtp") {
+    if (provider !== "brevo" && provider !== "smtp" && provider !== "ses") {
       logger.warn({ provider }, "Unknown EMAIL_PROVIDER value, email disabled");
       return null;
     }
@@ -66,6 +68,10 @@ export function isEmailEnabled(): boolean {
     return false;
   }
 
+  if (providerType === "ses" && !process.env.AWS_SES_REGION) {
+    return false;
+  }
+
   return true;
 }
 
@@ -92,6 +98,9 @@ export function getEmailProvider(): EmailProvider | null {
         break;
       case "smtp":
         providerInstance = new SmtpProvider();
+        break;
+      case "ses":
+        providerInstance = new SesProvider();
         break;
       default:
         logger.error({ providerType }, "Unknown email provider type");

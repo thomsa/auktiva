@@ -42,6 +42,7 @@
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.982.0",
     "@getbrevo/brevo": "^3.0.1",
     "@hookform/resolvers": "^5.2.2",
     "@inquirer/prompts": "^7.10.1",

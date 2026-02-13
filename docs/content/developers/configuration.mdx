@@ -72,12 +72,12 @@ See [Storage Configuration](/developers/storage) for detailed setup instructions
 
 ## Email Configuration (Optional)
 
-Auktiva supports two email providers: **Brevo** (cloud service) and **SMTP** (any SMTP server).
+Auktiva supports three email providers: **Brevo** (cloud service), **SMTP** (any SMTP server), and **Amazon SES** (AWS native).
 
 ### Common Settings
 
 ```bash
-# Provider selection: "brevo" or "smtp"
+# Provider selection: "brevo", "smtp", or "ses"
 EMAIL_PROVIDER="brevo"
 
 # Sender email and name
@@ -102,7 +102,7 @@ BREVO_API_KEY="your-brevo-api-key"  # Get from https://app.brevo.com/settings/ke
 
 ### Option 2: SMTP
 
-Use any SMTP server (Gmail, Mailgun, Amazon SES, self-hosted, etc.).
+Use any SMTP server (Gmail, Mailgun, Amazon SES SMTP, self-hosted, etc.).
 
 ```bash
 EMAIL_PROVIDER="smtp"
@@ -127,6 +127,42 @@ SMTP_PASSWORD="your-password"  # Optional
   For local development, you can use [Mailpit](https://mailpit.axllent.org/) or
   similar tools to capture emails without authentication.
 </Callout>
+
+### Option 3: Amazon SES (API)
+
+Use the AWS SDK for native SES integration. This is the recommended approach for AWS deployments.
+
+```bash
+EMAIL_PROVIDER="ses"
+AWS_SES_REGION="us-east-1"
+AWS_SES_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"  # Optional with IAM roles
+AWS_SES_SECRET_ACCESS_KEY="wJalrXUtnFEMI/..."  # Optional with IAM roles
+AWS_SES_CONFIGURATION_SET="my-tracking-set"  # Optional
+```
+
+<Callout type="info">
+  On EC2, Lambda, or ECS with an IAM role attached, you can omit the access key
+  and secret. The SDK will automatically use the instance/task role credentials.
+</Callout>
+
+### Amazon SES: API vs SMTP
+
+Amazon SES can be used in two ways with Auktiva. Here's a comparison to help you choose:
+
+| Feature                | SES API (`EMAIL_PROVIDER="ses"`)    | SES SMTP (`EMAIL_PROVIDER="smtp"`)         |
+| ---------------------- | ----------------------------------- | ------------------------------------------ |
+| **Setup complexity**   | Simpler (just region + credentials) | Requires SMTP credentials from SES console |
+| **IAM role support**   | Yes (automatic on EC2/Lambda/ECS)   | No (always needs explicit credentials)     |
+| **Performance**        | Faster (direct API call)            | Slightly slower (SMTP handshake overhead)  |
+| **Configuration sets** | Native support                      | Not supported                              |
+| **Error messages**     | Detailed AWS error codes            | Generic SMTP errors                        |
+| **Dependencies**       | Requires `@aws-sdk/client-ses`      | Uses existing `nodemailer`                 |
+| **Portability**        | AWS-specific                        | Can switch to any SMTP provider            |
+
+**Recommendation:**
+
+- Use **SES API** (`EMAIL_PROVIDER="ses"`) if you're committed to AWS and want the best performance, IAM role support, or need configuration sets for tracking.
+- Use **SES SMTP** (`EMAIL_PROVIDER="smtp"`) if you want flexibility to switch providers later or prefer a simpler, provider-agnostic setup.
 
 ### Email Types
 
@@ -187,35 +223,39 @@ ALLOW_OPEN_AUCTIONS="true"
 
 ## All Environment Variables
 
-| Variable                  | Required   | Default               | Description                        |
-| ------------------------- | ---------- | --------------------- | ---------------------------------- |
-| `DATABASE_URL`            | Yes        | -                     | Database connection string         |
-| `DATABASE_AUTH_TOKEN`     | Turso only | -                     | Turso authentication token         |
-| `AUTH_SECRET`             | Yes        | -                     | Session encryption secret          |
-| `AUTH_URL`                | Yes        | -                     | Application base URL               |
-| `GOOGLE_CLIENT_ID`        | No         | -                     | Google OAuth client ID             |
-| `GOOGLE_CLIENT_SECRET`    | No         | -                     | Google OAuth client secret         |
-| `MICROSOFT_CLIENT_ID`     | No         | -                     | Microsoft OAuth client ID          |
-| `MICROSOFT_CLIENT_SECRET` | No         | -                     | Microsoft OAuth client secret      |
-| `STORAGE_PROVIDER`        | No         | `local`               | Storage provider (`local` or `s3`) |
-| `S3_BUCKET`               | S3 only    | -                     | S3 bucket name                     |
-| `S3_REGION`               | S3 only    | -                     | S3 region                          |
-| `S3_ACCESS_KEY_ID`        | S3 only    | -                     | S3 access key                      |
-| `S3_SECRET_ACCESS_KEY`    | S3 only    | -                     | S3 secret key                      |
-| `S3_ENDPOINT`             | No         | -                     | Custom S3 endpoint                 |
-| `S3_PUBLIC_URL`           | No         | -                     | Custom public URL for files        |
-| `EMAIL_PROVIDER`          | No         | -                     | Email provider (`brevo` or `smtp`) |
-| `BREVO_API_KEY`           | Brevo only | -                     | Brevo API key for emails           |
-| `SMTP_HOST`               | SMTP only  | -                     | SMTP server hostname               |
-| `SMTP_PORT`               | SMTP only  | `587`                 | SMTP server port                   |
-| `SMTP_SECURE`             | SMTP only  | `false`               | Use implicit TLS (port 465)        |
-| `SMTP_USER`               | No         | -                     | SMTP username (optional)           |
-| `SMTP_PASSWORD`           | No         | -                     | SMTP password (optional)           |
-| `MAIL_FROM`               | No         | `noreply@auktiva.org` | Sender email address               |
-| `MAIL_FROM_NAME`          | No         | `Auktiva.org`         | Sender display name                |
-| `NEXT_PUBLIC_APP_URL`     | No         | -                     | App URL for email links            |
-| `CRON_SECRET`             | No         | -                     | Secret for cron endpoint auth      |
-| `ALLOW_OPEN_AUCTIONS`     | No         | `false`               | Enable open auction creation       |
+| Variable                    | Required   | Default               | Description                                |
+| --------------------------- | ---------- | --------------------- | ------------------------------------------ |
+| `DATABASE_URL`              | Yes        | -                     | Database connection string                 |
+| `DATABASE_AUTH_TOKEN`       | Turso only | -                     | Turso authentication token                 |
+| `AUTH_SECRET`               | Yes        | -                     | Session encryption secret                  |
+| `AUTH_URL`                  | Yes        | -                     | Application base URL                       |
+| `GOOGLE_CLIENT_ID`          | No         | -                     | Google OAuth client ID                     |
+| `GOOGLE_CLIENT_SECRET`      | No         | -                     | Google OAuth client secret                 |
+| `MICROSOFT_CLIENT_ID`       | No         | -                     | Microsoft OAuth client ID                  |
+| `MICROSOFT_CLIENT_SECRET`   | No         | -                     | Microsoft OAuth client secret              |
+| `STORAGE_PROVIDER`          | No         | `local`               | Storage provider (`local` or `s3`)         |
+| `S3_BUCKET`                 | S3 only    | -                     | S3 bucket name                             |
+| `S3_REGION`                 | S3 only    | -                     | S3 region                                  |
+| `S3_ACCESS_KEY_ID`          | S3 only    | -                     | S3 access key                              |
+| `S3_SECRET_ACCESS_KEY`      | S3 only    | -                     | S3 secret key                              |
+| `S3_ENDPOINT`               | No         | -                     | Custom S3 endpoint                         |
+| `S3_PUBLIC_URL`             | No         | -                     | Custom public URL for files                |
+| `EMAIL_PROVIDER`            | No         | -                     | Email provider (`brevo`, `smtp`, or `ses`) |
+| `BREVO_API_KEY`             | Brevo only | -                     | Brevo API key for emails                   |
+| `SMTP_HOST`                 | SMTP only  | -                     | SMTP server hostname                       |
+| `SMTP_PORT`                 | SMTP only  | `587`                 | SMTP server port                           |
+| `SMTP_SECURE`               | SMTP only  | `false`               | Use implicit TLS (port 465)                |
+| `SMTP_USER`                 | No         | -                     | SMTP username (optional)                   |
+| `SMTP_PASSWORD`             | No         | -                     | SMTP password (optional)                   |
+| `AWS_SES_REGION`            | SES only   | -                     | AWS region for SES                         |
+| `AWS_SES_ACCESS_KEY_ID`     | No         | -                     | AWS access key (optional with IAM)         |
+| `AWS_SES_SECRET_ACCESS_KEY` | No         | -                     | AWS secret key (optional with IAM)         |
+| `AWS_SES_CONFIGURATION_SET` | No         | -                     | SES configuration set name                 |
+| `MAIL_FROM`                 | No         | `noreply@auktiva.org` | Sender email address                       |
+| `MAIL_FROM_NAME`            | No         | `Auktiva.org`         | Sender display name                        |
+| `NEXT_PUBLIC_APP_URL`       | No         | -                     | App URL for email links                    |
+| `CRON_SECRET`               | No         | -                     | Secret for cron endpoint auth              |
+| `ALLOW_OPEN_AUCTIONS`       | No         | `false`               | Enable open auction creation               |
 
 ## Example Configurations
 
