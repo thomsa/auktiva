@@ -237,7 +237,7 @@ export async function acceptInvite(
     return { auctionId: invite.auctionId, alreadyMember: true };
   }
 
-  // Create membership and mark invite as used
+  // Create membership, mark invite as used, and clear any prior leave record
   await prisma.$transaction([
     prisma.auctionMember.create({
       data: {
@@ -250,6 +250,9 @@ export async function acceptInvite(
     prisma.auctionInvite.update({
       where: { token },
       data: { usedAt: new Date() },
+    }),
+    prisma.auctionLeave.deleteMany({
+      where: { auctionId: invite.auctionId, userId },
     }),
   ]);
 

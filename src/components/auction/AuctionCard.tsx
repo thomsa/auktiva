@@ -30,9 +30,17 @@ export function AuctionCard({ auction }: AuctionCardProps) {
 
   const roleKey = auction.role.toLowerCase();
   // Fallback to the role string if translation is missing (e.g. OWNER might assume admin rights/translation)
-  const roleLabel = ["admin", "creator", "bidder", "owner"].includes(roleKey)
+  const roleLabel = [
+    "admin",
+    "creator",
+    "bidder",
+    "owner",
+    "open",
+    "left",
+  ].includes(roleKey)
     ? tRoles(roleKey === "owner" ? "admin" : roleKey)
     : auction.role;
+  const isLeft = roleKey === "left";
 
   return (
     <Link
@@ -61,7 +69,14 @@ export function AuctionCard({ auction }: AuctionCardProps) {
           </div>
         )}
         <div className="absolute top-3 left-3">
-          <div className="badge badge-sm font-semibold bg-base-100/90 backdrop-blur border-none shadow-sm">
+          <div
+            className={`badge badge-sm font-semibold backdrop-blur shadow-sm ${
+              isLeft
+                ? "badge-warning border-none"
+                : "bg-base-100/90 border-none"
+            }`}
+          >
+            {isLeft && <span className="icon-[tabler--logout] size-3"></span>}
             {roleLabel}
           </div>
         </div>

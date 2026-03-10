@@ -83,7 +83,8 @@
       "admin": "Admin",
       "creator": "Creador",
       "bidder": "Pujador",
-      "open": "Abierto"
+      "open": "Abierto",
+      "left": "Abandonada"
     },
     "empty": {
       "title": "No hay subastas aún",
@@ -183,6 +184,26 @@
       "invalid": "Invitación Inválida",
       "joining": "Uniéndose a la Subasta...",
       "success": "¡Invitación aceptada!"
+    },
+    "leave": {
+      "quitButton": "Abandonar subasta",
+      "modalTitle": "Abandonar subasta",
+      "confirmMessage": "¿Estás seguro de que quieres abandonar esta subasta? Esta acción no se puede deshacer.",
+      "bidsWarning": "Tienes {count, plural, one {# puja activa} other {# pujas activas}} en esta subasta. Todas tus pujas serán eliminadas y los pujadores anteriores serán restaurados.",
+      "ownerCannotLeave": "Como propietario de la subasta, no puedes abandonarla.",
+      "hasActiveItems": "No puedes abandonar esta subasta porque tienes {count, plural, one {# artículo activo} other {# artículos activos}} que aún no han terminado. Puedes irte una vez que todos tus artículos hayan finalizado.",
+      "activeItemsLabel": "Tus artículos activos",
+      "confirmButton": "Abandonar subasta",
+      "leaving": "Abandonando...",
+      "success": "Has abandonado la subasta"
+    },
+    "rejoin": {
+      "title": "¿Volver a unirse?",
+      "message": "Anteriormente abandonaste \"{name}\". ¿Te gustaría volver a unirte?",
+      "thisAuction": "esta subasta",
+      "button": "Volver a unirse",
+      "rejoining": "Uniéndose...",
+      "error": "No se pudo volver a unirse a la subasta. Inténtalo de nuevo."
     },
     "public": {
       "defaultDescription": "Únete a esta subasta y comienza a pujar",

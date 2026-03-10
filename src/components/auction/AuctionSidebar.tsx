@@ -5,6 +5,7 @@ import { isAuctionEnded } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
 import { useToast } from "@/components/ui/toast";
+import { QuitAuctionModal } from "@/components/auction/QuitAuctionModal";
 
 interface AuctionSidebarProps {
   auction: {
@@ -32,6 +33,7 @@ interface AuctionSidebarProps {
 
 export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
   const [copied, setCopied] = useState(false);
+  const [showQuitModal, setShowQuitModal] = useState(false);
   const { showToast } = useToast();
   const t = useTranslations("auction");
   const tRoles = useTranslations("auction.roles");
@@ -233,6 +235,15 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
               <span className="icon-[tabler--trophy] size-4"></span>
               {t("sidebar.results")}
             </Link>
+            {!isOwner && (
+              <button
+                onClick={() => setShowQuitModal(true)}
+                className="btn btn-outline btn-warning btn-sm btn-block justify-start"
+              >
+                <span className="icon-[tabler--logout] size-4"></span>
+                {t("leave.quitButton")}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -286,6 +297,14 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
             </div>
           </div>
         </div>
+      )}
+      {/* Quit Auction Modal */}
+      {!isOwner && (
+        <QuitAuctionModal
+          isOpen={showQuitModal}
+          auctionId={auction.id}
+          onClose={() => setShowQuitModal(false)}
+        />
       )}
     </div>
   );

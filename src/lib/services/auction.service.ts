@@ -211,15 +211,24 @@ export async function getUserAuctions(
 export async function getOpenAuctionsForUser(
   userId: string,
 ): Promise<AuctionListItem[]> {
-  const memberAuctionIds = await prisma.auctionMember.findMany({
-    where: { userId },
-    select: { auctionId: true },
-  });
+  const [memberAuctionIds, leftAuctionIds] = await Promise.all([
+    prisma.auctionMember.findMany({
+      where: { userId },
+      select: { auctionId: true },
+    }),
+    prisma.auctionLeave.findMany({
+      where: { userId },
+      select: { auctionId: true },
+    }),
+  ]);
+
+  const memberIds = new Set(memberAuctionIds.map((m) => m.auctionId));
+  const leftIds = new Set(leftAuctionIds.map((l) => l.auctionId));
 
   const openAuctions = await prisma.auction.findMany({
     where: {
       joinMode: "FREE",
-      id: { notIn: memberAuctionIds.map((m) => m.auctionId) },
+      id: { notIn: [...memberIds] },
     },
     include: {
       _count: {
@@ -237,7 +246,7 @@ export async function getOpenAuctionsForUser(
     description: auction.description,
     endDate: auction.endDate?.toISOString() || null,
     createdAt: auction.createdAt.toISOString(),
-    role: "Open",
+    role: leftIds.has(auction.id) ? "Left" : "Open",
     thumbnailUrl: auction.thumbnailUrl
       ? getPublicUrl(auction.thumbnailUrl)
       : null,
@@ -443,18 +452,90 @@ export async function closeAuction(
 }
 
 /**
- * Auto-join user to an open/link auction
+ * Check if a user has previously left an auction voluntarily
+ */
+export async function hasUserLeftAuction(
+  auctionId: string,
+  userId: string,
+): Promise<boolean> {
+  const leave = await prisma.auctionLeave.findUnique({
+    where: { auctionId_userId: { auctionId, userId } },
+  });
+  return !!leave;
+}
+
+/**
+ * Auto-join user to an open/link auction.
+ * Returns null if the user previously left this auction voluntarily.
  */
 export async function autoJoinAuction(
   auctionId: string,
   userId: string,
-): Promise<AuctionMember> {
+): Promise<AuctionMember | null> {
+  // Don't auto-rejoin if the user previously left voluntarily
+  const hasLeft = await hasUserLeftAuction(auctionId, userId);
+  if (hasLeft) {
+    return null;
+  }
+
   return prisma.auctionMember.create({
     data: {
       auctionId,
       userId,
       role: MemberRole.BIDDER,
     },
+  });
+}
+
+/**
+ * Rejoin a public auction the user previously left.
+ * Clears the AuctionLeave record and creates a new membership atomically.
+ */
+export async function rejoinAuction(
+  auctionId: string,
+  userId: string,
+): Promise<AuctionMember> {
+  return prisma.$transaction(async (tx) => {
+    // Verify the auction exists and is joinable
+    const auction = await tx.auction.findUnique({
+      where: { id: auctionId },
+      select: { joinMode: true },
+    });
+    if (!auction) {
+      throw new Error("AUCTION_NOT_FOUND");
+    }
+    if (auction.joinMode !== "FREE" && auction.joinMode !== "LINK") {
+      throw new Error("NOT_PUBLIC_AUCTION");
+    }
+
+    // Verify user actually has a leave record
+    const leave = await tx.auctionLeave.findUnique({
+      where: { auctionId_userId: { auctionId, userId } },
+    });
+    if (!leave) {
+      throw new Error("NOT_LEFT");
+    }
+
+    // Verify not already a member
+    const existing = await tx.auctionMember.findUnique({
+      where: { auctionId_userId: { auctionId, userId } },
+    });
+    if (existing) {
+      throw new Error("ALREADY_MEMBER");
+    }
+
+    // Clear leave record and create membership
+    await tx.auctionLeave.delete({
+      where: { auctionId_userId: { auctionId, userId } },
+    });
+
+    return tx.auctionMember.create({
+      data: {
+        auctionId,
+        userId,
+        role: MemberRole.BIDDER,
+      },
+    });
   });
 }
 

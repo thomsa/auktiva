@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import useSWR from "swr";
@@ -72,15 +72,19 @@ interface AuctionDetailProps {
     email: string;
   };
   auctionId: string;
+  auctionName: string | null;
   membership: {
     role: string;
-  };
+  } | null;
+  hasLeft: boolean;
 }
 
 export default function AuctionDetailPage({
   user,
   auctionId,
+  auctionName,
   membership,
+  hasLeft,
 }: AuctionDetailProps) {
   const router = useRouter();
   const t = useTranslations("auction");
@@ -88,13 +92,15 @@ export default function AuctionDetailPage({
   const tItem = useTranslations("item");
   const { currentSort } = useSortFilter("sort", "date-desc");
   const viewMode = (router.query.view as "grid" | "list") || "grid";
+  const [rejoining, setRejoining] = useState(false);
+  const [rejoinError, setRejoinError] = useState<string | null>(null);
 
   // Use high priority for auction detail page, pauses when tab hidden
   const refreshInterval = usePollingInterval({ priority: "high" });
 
   // Client-side data fetching with polling for live bid updates
   const { data, isLoading } = useSWR<AuctionDetailsData>(
-    `/api/auctions/${auctionId}/details`,
+    hasLeft ? null : `/api/auctions/${auctionId}/details`,
     fetcher,
     {
       refreshInterval,
@@ -118,8 +124,75 @@ export default function AuctionDetailPage({
     );
   };
 
-  const isAdmin = isUserAdmin(membership.role);
-  const canCreate = canUserCreateItems(membership.role);
+  const handleRejoin = async () => {
+    setRejoining(true);
+    setRejoinError(null);
+    try {
+      const res = await fetch(`/api/auctions/${auctionId}/rejoin`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setRejoinError(data.message || t("rejoin.error"));
+        return;
+      }
+      router.reload();
+    } catch {
+      setRejoinError(t("rejoin.error"));
+    } finally {
+      setRejoining(false);
+    }
+  };
+
+  // Show rejoin prompt if user previously left
+  if (hasLeft) {
+    return (
+      <PageLayout user={user}>
+        <BackLink href="/dashboard" label={t("create.backToDashboard")} />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="card bg-base-100 shadow-xl border border-base-content/10 max-w-md w-full">
+            <div className="card-body items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-warning/10 flex items-center justify-center mb-2">
+                <span className="icon-[tabler--door-enter] size-8 text-warning"></span>
+              </div>
+              <h2 className="card-title text-lg">{t("rejoin.title")}</h2>
+              <p className="text-base-content/60 text-sm">
+                {t("rejoin.message", {
+                  name: auctionName || t("rejoin.thisAuction"),
+                })}
+              </p>
+              {rejoinError && (
+                <div className="alert alert-error text-sm w-full">
+                  <span className="icon-[tabler--alert-circle] size-5"></span>
+                  {rejoinError}
+                </div>
+              )}
+              <div className="card-actions mt-4 w-full flex-col gap-2">
+                <button
+                  className="btn btn-primary w-full"
+                  onClick={handleRejoin}
+                  disabled={rejoining}
+                >
+                  {rejoining ? (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  ) : (
+                    <span className="icon-[tabler--door-enter] size-5"></span>
+                  )}
+                  {rejoining ? t("rejoin.rejoining") : t("rejoin.button")}
+                </button>
+                <Link href="/dashboard" className="btn btn-ghost w-full">
+                  {t("create.backToDashboard")}
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </PageLayout>
+    );
+  }
+
+  const isAdmin = isUserAdmin(membership!.role);
+  const canCreate = canUserCreateItems(membership!.role);
 
   // Show skeleton while loading
   if (isLoading || !auction) {
@@ -259,7 +332,7 @@ export default function AuctionDetailPage({
 
         {/* Sidebar */}
         <div className="lg:w-80 shrink-0">
-          <AuctionSidebar auction={auction} membership={membership} />
+          <AuctionSidebar auction={auction} membership={membership!} />
         </div>
       </div>
     </PageLayout>
@@ -290,13 +363,39 @@ export const getServerSideProps = withAuth(async (context) => {
   // If not a member, check if this is an OPEN or LINK auction
   if (!membership) {
     if (auction.joinMode === "FREE" || auction.joinMode === "LINK") {
-      // Auto-join the user to the open/link auction
+      // Check if user previously left voluntarily
+      const hasLeft = await auctionService.hasUserLeftAuction(
+        auctionId,
+        context.session.user.id,
+      );
+
+      if (hasLeft) {
+        // Show rejoin prompt instead of auto-joining
+        return {
+          props: {
+            user: {
+              id: context.session.user.id,
+              name: context.session.user.name || null,
+              email: context.session.user.email || "",
+            },
+            auctionId,
+            auctionName: auction.name,
+            membership: null,
+            hasLeft: true,
+            messages: await getMessages(context.locale as Locale),
+          },
+        };
+      }
+
+      // Auto-join new users
       membership = await auctionService.autoJoinAuction(
         auctionId,
         context.session.user.id,
       );
-    } else {
-      // Not a member and not an open/link auction - redirect
+    }
+
+    // Not a member and not a public auction - redirect
+    if (!membership) {
       return {
         redirect: {
           destination: "/dashboard",
@@ -314,9 +413,11 @@ export const getServerSideProps = withAuth(async (context) => {
         email: context.session.user.email || "",
       },
       auctionId,
+      auctionName: null,
       membership: {
         role: membership.role,
       },
+      hasLeft: false,
       messages: await getMessages(context.locale as Locale),
     },
   };

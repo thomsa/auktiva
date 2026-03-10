@@ -83,7 +83,8 @@
       "admin": "Administrator",
       "creator": "Twórca",
       "bidder": "Licytujący",
-      "open": "Otwarta"
+      "open": "Otwarta",
+      "left": "Opuszczona"
     },
     "empty": {
       "title": "Brak aukcji",
@@ -183,6 +184,26 @@
       "invalid": "Nieprawidłowe zaproszenie",
       "joining": "Dołączanie...",
       "success": "Zaproszenie zaakceptowane!"
+    },
+    "leave": {
+      "quitButton": "Opuść aukcję",
+      "modalTitle": "Opuść aukcję",
+      "confirmMessage": "Czy na pewno chcesz opuścić tę aukcję? Tej akcji nie można cofnąć.",
+      "bidsWarning": "Masz {count, plural, one {# aktywną ofertę} few {# aktywne oferty} other {# aktywnych ofert}} w tej aukcji. Wszystkie twoje oferty zostaną usunięte, a poprzedni najwyżsi licytujący zostaną przywróceni.",
+      "ownerCannotLeave": "Jako właściciel aukcji nie możesz jej opuścić.",
+      "hasActiveItems": "Nie możesz opuścić tej aukcji, ponieważ masz {count, plural, one {# aktywny przedmiot} few {# aktywne przedmioty} other {# aktywnych przedmiotów}}, które się jeszcze nie zakończyły. Możesz opuścić aukcję po zakończeniu wszystkich twoich przedmiotów.",
+      "activeItemsLabel": "Twoje aktywne przedmioty",
+      "confirmButton": "Opuść aukcję",
+      "leaving": "Opuszczanie...",
+      "success": "Opuściłeś aukcję"
+    },
+    "rejoin": {
+      "title": "Dołączyć ponownie?",
+      "message": "Wcześniej opuściłeś \"{name}\". Czy chcesz dołączyć ponownie?",
+      "thisAuction": "tę aukcję",
+      "button": "Dołącz ponownie",
+      "rejoining": "Dołączanie...",
+      "error": "Nie udało się ponownie dołączyć do aukcji. Spróbuj ponownie."
     },
     "public": {
       "defaultDescription": "Dołącz do tej aukcji i zacznij licytować",

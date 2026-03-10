@@ -83,7 +83,8 @@
       "admin": "Adminisztrátor",
       "creator": "Szervező",
       "bidder": "Licitáló",
-      "open": "Nyílt"
+      "open": "Nyílt",
+      "left": "Kilépett"
     },
     "empty": {
       "title": "Még nincsenek aukciók",
@@ -183,6 +184,26 @@
       "invalid": "Érvénytelen meghívó",
       "joining": "Csatlakozás...",
       "success": "Meghívó elfogadva!"
+    },
+    "leave": {
+      "quitButton": "Kilépés az aukcióból",
+      "modalTitle": "Kilépés az aukcióból",
+      "confirmMessage": "Biztosan ki szeretnél lépni ebből az aukcióból? Ez a művelet nem vonható vissza.",
+      "bidsWarning": "{count, plural, one {# aktív licited} other {# aktív licited}} van ebben az aukcióban. Minden licited eltávolításra kerül, és az előző legmagasabb licitálók visszaállításra kerülnek.",
+      "ownerCannotLeave": "Az aukció tulajdonosaként nem hagyhatsz el ezt az aukciót.",
+      "hasActiveItems": "Nem léphetsz ki ebből az aukcióból, mert {count, plural, one {# aktív tételed} other {# aktív tételed}} van, amely még nem zárult le. Kiléphetsz, ha minden tételed lezárult.",
+      "activeItemsLabel": "Aktív tételeid",
+      "confirmButton": "Kilépés az aukcióból",
+      "leaving": "Kilépés...",
+      "success": "Kiléptél az aukcióból"
+    },
+    "rejoin": {
+      "title": "Újracsatlakozás az aukcióhoz?",
+      "message": "Korábban kiléptél a(z) \"{name}\" aukcióból. Szeretnél újra csatlakozni?",
+      "thisAuction": "ez az aukció",
+      "button": "Újracsatlakozás",
+      "rejoining": "Csatlakozás...",
+      "error": "Nem sikerült újracsatlakozni az aukcióhoz. Kérjük, próbáld újra."
     },
     "public": {
       "defaultDescription": "Csatlakozz ehhez az aukcióhoz és kezdj el licitálni",

@@ -83,7 +83,8 @@
       "admin": "Admin",
       "creator": "Ersteller",
       "bidder": "Bieter",
-      "open": "Offen"
+      "open": "Offen",
+      "left": "Verlassen"
     },
     "empty": {
       "title": "Noch keine Auktionen",
@@ -183,6 +184,26 @@
       "invalid": "Ungültige Einladung",
       "joining": "Trete Auktion bei...",
       "success": "Einladung akzeptiert!"
+    },
+    "leave": {
+      "quitButton": "Auktion verlassen",
+      "modalTitle": "Auktion verlassen",
+      "confirmMessage": "Bist du sicher, dass du diese Auktion verlassen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "bidsWarning": "Du hast {count, plural, one {# aktives Gebot} other {# aktive Gebote}} in dieser Auktion. Alle deine Gebote werden entfernt und die vorherigen Höchstbieter werden wiederhergestellt.",
+      "ownerCannotLeave": "Als Auktionsbesitzer kannst du diese Auktion nicht verlassen.",
+      "hasActiveItems": "Du kannst diese Auktion nicht verlassen, da du {count, plural, one {# aktiven Artikel} other {# aktive Artikel}} hast, die noch nicht beendet sind. Du kannst die Auktion verlassen, sobald alle deine Artikel beendet sind.",
+      "activeItemsLabel": "Deine aktiven Artikel",
+      "confirmButton": "Auktion verlassen",
+      "leaving": "Verlasse...",
+      "success": "Du hast die Auktion verlassen"
+    },
+    "rejoin": {
+      "title": "Auktion erneut beitreten?",
+      "message": "Du hast \"{name}\" zuvor verlassen. Möchtest du erneut beitreten?",
+      "thisAuction": "diese Auktion",
+      "button": "Erneut beitreten",
+      "rejoining": "Beitritt...",
+      "error": "Erneuter Beitritt zur Auktion fehlgeschlagen. Bitte versuche es erneut."
     },
     "public": {
       "defaultDescription": "Tritt dieser Auktion bei und beginne zu bieten",

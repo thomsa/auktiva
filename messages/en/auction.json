@@ -83,7 +83,8 @@
       "admin": "Admin",
       "creator": "Creator",
       "bidder": "Bidder",
-      "open": "Open"
+      "open": "Open",
+      "left": "Left"
     },
     "empty": {
       "title": "No auctions yet",
@@ -186,6 +187,26 @@
       "invalid": "Invalid Invite",
       "joining": "Joining Auction...",
       "success": "Invite accepted!"
+    },
+    "leave": {
+      "quitButton": "Quit Auction",
+      "modalTitle": "Quit Auction",
+      "confirmMessage": "Are you sure you want to leave this auction? This action cannot be undone.",
+      "bidsWarning": "You have {count, plural, one {# active bid} other {# active bids}} in this auction. All your bids will be removed and the previous highest bidders will be restored.",
+      "ownerCannotLeave": "As the auction owner, you cannot leave this auction.",
+      "hasActiveItems": "You cannot leave this auction because you have {count, plural, one {# active item} other {# active items}} that haven't ended yet. You can leave once all your items have ended.",
+      "activeItemsLabel": "Your active items",
+      "confirmButton": "Quit Auction",
+      "leaving": "Leaving...",
+      "success": "You have left the auction"
+    },
+    "rejoin": {
+      "title": "Rejoin Auction?",
+      "message": "You previously left \"{name}\". Would you like to rejoin?",
+      "thisAuction": "this auction",
+      "button": "Rejoin Auction",
+      "rejoining": "Rejoining...",
+      "error": "Failed to rejoin auction. Please try again."
     },
     "public": {
       "defaultDescription": "Join this auction and start bidding on items",

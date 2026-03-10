@@ -37,6 +37,7 @@ model User {
   settings                  UserSettings?
   passwordResetTokens       PasswordResetToken[]
   emailVerificationTokens   EmailVerificationToken[]
+  auctionLeaves             AuctionLeave[]
 
   @@map("users")
 }
@@ -151,6 +152,7 @@ model Auction {
   members           AuctionMember[]
   items             AuctionItem[]
   invites           AuctionInvite[]
+  leaves            AuctionLeave[]
 
   @@map("auctions")
 }
@@ -182,6 +184,25 @@ model AuctionMember {
 
   @@unique([auctionId, userId])
   @@map("auction_members")
+}
+
+// ============================================
+// AUCTION LEAVES (tracks voluntary departures to prevent auto-rejoin)
+// ============================================
+
+model AuctionLeave {
+  id          String      @id @default(cuid())
+  
+  auctionId   String
+  auction     Auction     @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  leftAt      DateTime    @default(now())
+
+  @@unique([auctionId, userId])
+  @@map("auction_leaves")
 }
 
 // ============================================
