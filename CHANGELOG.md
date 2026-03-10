@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.20.0] - 2026-03-10
+
+### 🚀 Features
+
+- Add auction leave/rejoin functionality with multi-language support by @thomsa
+
 ## [1.19.0] - 2026-02-13
 
 ### 📚 Documentation
