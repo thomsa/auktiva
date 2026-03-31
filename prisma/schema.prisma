@@ -112,6 +112,22 @@ enum ItemEndMode {
   NONE          // No end date for items
 }
 
+enum AuctionCurrencyFractionMode {
+  INTEGER_ONLY
+  DECIMAL
+}
+
+enum AuctionCurrencyInputMode {
+  SCALAR
+  DENOMINATION
+}
+
+enum AuctionCurrencyRuleType {
+  MIN_INCREMENT
+  MIN_COMPONENT_RATIO
+  REQUIRED_DENOMINATION
+}
+
 model Auction {
   id                String            @id @default(cuid())
   name              String
@@ -153,6 +169,7 @@ model Auction {
   items             AuctionItem[]
   invites           AuctionInvite[]
   leaves            AuctionLeave[]
+  customCurrencies  AuctionCurrencyProfile[]
 
   @@map("auctions")
 }
@@ -248,6 +265,53 @@ model Currency {
   @@map("currencies")
 }
 
+model AuctionCurrencyProfile {
+  id                        String                     @id @default(cuid())
+
+  auctionId                 String
+  auction                   Auction                    @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  code                      String
+  name                      String
+  symbol                    String
+
+  conversionRateToBase      Float                      @default(1)
+  fractionMode              AuctionCurrencyFractionMode @default(DECIMAL)
+  precision                 Int                        @default(2)
+  inputMode                 AuctionCurrencyInputMode   @default(SCALAR)
+  denominationConfig        Json?
+  isBase                    Boolean                    @default(false)
+  isArchived                Boolean                    @default(false)
+  sortOrder                 Int                        @default(0)
+
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+
+  rules                     AuctionCurrencyRule[]
+  bids                      Bid[]
+
+  @@unique([auctionId, code])
+  @@index([auctionId, isArchived])
+  @@map("auction_currency_profiles")
+}
+
+model AuctionCurrencyRule {
+  id                String                  @id @default(cuid())
+
+  currencyProfileId String
+  currencyProfile   AuctionCurrencyProfile  @relation(fields: [currencyProfileId], references: [id], onDelete: Cascade)
+
+  type              AuctionCurrencyRuleType
+  isEnabled         Boolean                 @default(true)
+  config            Json
+
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  @@unique([currencyProfileId, type])
+  @@map("auction_currency_rules")
+}
+
 // ============================================
 // AUCTION ITEMS
 // ============================================
@@ -267,6 +331,9 @@ model AuctionItem {
   currency        Currency  @relation(fields: [currencyCode], references: [code])
   startingBid     Float     @default(0)
   minBidIncrement Float     @default(1)
+  minBidConstraint Json?
+  minBidNormalized Float?
+  minIncrementNormalized Float?
   
   // Current state
   currentBid      Float?    // null if no bids yet
@@ -347,6 +414,11 @@ model Bid {
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   amount        Float
+  normalizedAmount Float?
+  enteredRepresentation Json?
+
+  currencyProfileId String?
+  currencyProfile   AuctionCurrencyProfile? @relation(fields: [currencyProfileId], references: [id], onDelete: SetNull)
   
   // Per-bid anonymity (only used when auction.bidderVisibility = PER_BID)
   isAnonymous   Boolean     @default(false)
@@ -354,6 +426,7 @@ model Bid {
   createdAt     DateTime    @default(now())
 
   @@index([auctionItemId, amount])
+  @@index([auctionItemId, normalizedAmount])
   @@map("bids")
 }
 

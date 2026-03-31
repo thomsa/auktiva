@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import * as auctionService from "@/lib/services/auction.service";
+import * as auctionCurrencyService from "@/lib/services/auction-currency.service";
 import { prisma } from "@/lib/prisma";
 import { PageLayout, BackLink } from "@/components/common";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,13 @@ interface CreateItemProps {
     defaultAntiSnipeExtension: number;
   };
   currencies: Currency[];
+  auctionCurrencyProfiles: Array<{
+    id: string;
+    name: string;
+    symbol: string;
+    inputMode: "SCALAR" | "DENOMINATION";
+    fractionMode: "INTEGER_ONLY" | "DECIMAL";
+  }>;
 }
 
 interface UploadedImage {
@@ -50,6 +58,7 @@ export default function CreateItemPage({
   user,
   auction,
   currencies,
+  auctionCurrencyProfiles,
 }: CreateItemProps) {
   const router = useRouter();
   const t = useTranslations("item.create");
@@ -109,6 +118,19 @@ export default function CreateItemPage({
       startingBid: parseFloat(formData.get("startingBid") as string) || 0,
       minBidIncrement:
         parseFloat(formData.get("minBidIncrement") as string) || 1,
+      minBidNormalized:
+        parseFloat(formData.get("minBidNormalized") as string) || undefined,
+      minIncrementNormalized:
+        parseFloat(formData.get("minIncrementNormalized") as string) || undefined,
+      minBidConstraint: (() => {
+        const raw = formData.get("minBidConstraint") as string;
+        if (!raw) return undefined;
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return undefined;
+        }
+      })(),
       bidderAnonymous: formData.get("bidderAnonymous") === "on",
       endDate: (formData.get("endDate") as string) || undefined,
       discussionsEnabled: formData.get("discussionsEnabled") === "on",
@@ -308,6 +330,62 @@ export default function CreateItemPage({
                       placeholder={t("descriptionPlaceholder")}
                     />
                   </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="form-control">
+                      <label className="label" htmlFor="minBidNormalized">
+                        <span className="label-text font-medium">
+                          Minimum Bid (Auction Currency)
+                        </span>
+                      </label>
+                      <input
+                        id="minBidNormalized"
+                        name="minBidNormalized"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                      />
+                    </div>
+
+                    <div className="form-control">
+                      <label className="label" htmlFor="minIncrementNormalized">
+                        <span className="label-text font-medium">
+                          Minimum Increment (Auction Currency)
+                        </span>
+                      </label>
+                      <input
+                        id="minIncrementNormalized"
+                        name="minIncrementNormalized"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  {auctionCurrencyProfiles.length > 0 && (
+                    <div className="form-control">
+                      <label className="label" htmlFor="minBidConstraint">
+                        <span className="label-text font-medium">
+                          Minimum Constraint (JSON)
+                        </span>
+                      </label>
+                      <textarea
+                        id="minBidConstraint"
+                        name="minBidConstraint"
+                        rows={3}
+                        placeholder='e.g. {"currencyProfileId":"...","components":{"gold":1}}'
+                        className="textarea textarea-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                      />
+                      <label className="label">
+                        <span className="label-text-alt text-base-content/60">
+                          Currency profiles: {auctionCurrencyProfiles.map((p) => `${p.name} (${p.symbol})`).join(", ")}
+                        </span>
+                      </label>
+                    </div>
+                  )}
                 </div>
 
                 {/* Pricing */}
@@ -777,6 +855,10 @@ export const getServerSideProps = withAuth(async (context) => {
     orderBy: { code: "asc" },
   });
 
+  const currencyContext = await auctionCurrencyService.getAuctionCurrencyContext(
+    auctionId,
+  );
+
   return {
     props: {
       user: {
@@ -796,6 +878,15 @@ export const getServerSideProps = withAuth(async (context) => {
         defaultAntiSnipeExtension: auction.defaultAntiSnipeExtension,
       },
       currencies,
+      auctionCurrencyProfiles: currencyContext.currencies
+        .filter((profile) => !profile.isArchived)
+        .map((profile) => ({
+          id: profile.id,
+          name: profile.name,
+          symbol: profile.symbol,
+          inputMode: profile.inputMode,
+          fractionMode: profile.fractionMode,
+        })),
       messages: await getMessages(context.locale as Locale),
     },
   };

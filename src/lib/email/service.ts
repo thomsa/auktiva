@@ -258,6 +258,7 @@ export async function queueOutbidEmail(params: {
   auctionName: string;
   newAmount: number;
   currencySymbol: string;
+  normalizedAmount?: number;
 }): Promise<boolean> {
   const {
     previousBidderId,
@@ -269,6 +270,7 @@ export async function queueOutbidEmail(params: {
     auctionName,
     newAmount,
     currencySymbol,
+    normalizedAmount,
   } = params;
 
   emailServiceLogger.info(
@@ -299,6 +301,7 @@ export async function queueOutbidEmail(params: {
       itemId,
       newAmount,
       currencySymbol,
+      normalizedAmount,
       appUrl: APP_URL,
     });
 
@@ -338,6 +341,7 @@ export async function queueItemWonEmail(params: {
   auctionName: string;
   winningAmount: number;
   currencySymbol: string;
+  normalizedAmount?: number;
 }): Promise<boolean> {
   const {
     winnerId,
@@ -349,6 +353,7 @@ export async function queueItemWonEmail(params: {
     auctionName,
     winningAmount,
     currencySymbol,
+    normalizedAmount,
   } = params;
 
   emailServiceLogger.info(
@@ -379,6 +384,7 @@ export async function queueItemWonEmail(params: {
       itemId,
       winningAmount,
       currencySymbol,
+      normalizedAmount,
       appUrl: APP_URL,
     });
 

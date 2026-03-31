@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import * as auctionService from "@/lib/services/auction.service";
+import * as auctionCurrencyService from "@/lib/services/auction-currency.service";
 import * as itemService from "@/lib/services/item.service";
 import { PageLayout, BackLink, ConfirmDialog } from "@/components/common";
 import { ImageUpload } from "@/components/upload/image-upload";
@@ -57,9 +58,19 @@ interface EditItemProps {
     antiSnipeEnabled: boolean;
     antiSnipeThresholdSeconds: number;
     antiSnipeExtensionSeconds: number;
+    minBidConstraint?: Record<string, unknown> | null;
+    minBidNormalized?: number | null;
+    minIncrementNormalized?: number | null;
   };
   isItemOwner: boolean;
   currencies: Currency[];
+  auctionCurrencyProfiles: Array<{
+    id: string;
+    name: string;
+    symbol: string;
+    inputMode: "SCALAR" | "DENOMINATION";
+    fractionMode: "INTEGER_ONLY" | "DECIMAL";
+  }>;
   hasBids: boolean;
   images: ItemImage[];
 }
@@ -69,6 +80,7 @@ export default function EditItemPage({
   auction,
   item,
   currencies,
+  auctionCurrencyProfiles,
   hasBids,
   images: initialImages,
   isItemOwner,
@@ -126,6 +138,19 @@ export default function EditItemPage({
       startingBid: parseFloat(formData.get("startingBid") as string) || 0,
       minBidIncrement:
         parseFloat(formData.get("minBidIncrement") as string) || 1,
+      minBidNormalized:
+        parseFloat(formData.get("minBidNormalized") as string) || undefined,
+      minIncrementNormalized:
+        parseFloat(formData.get("minIncrementNormalized") as string) || undefined,
+      minBidConstraint: (() => {
+        const raw = formData.get("minBidConstraint") as string;
+        if (!raw) return undefined;
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return undefined;
+        }
+      })(),
       bidderAnonymous: formData.get("bidderAnonymous") === "on",
       endDate: (formData.get("endDate") as string) || null,
       discussionsEnabled,
@@ -371,6 +396,69 @@ export default function EditItemPage({
                   placeholder={tCreate("descriptionPlaceholder")}
                 />
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="form-control">
+                  <label className="label" htmlFor="minBidNormalized">
+                    <span className="label-text font-medium">
+                      Minimum Bid (Auction Currency)
+                    </span>
+                  </label>
+                  <input
+                    id="minBidNormalized"
+                    name="minBidNormalized"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    defaultValue={item.minBidNormalized ?? ""}
+                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  />
+                </div>
+
+                <div className="form-control">
+                  <label className="label" htmlFor="minIncrementNormalized">
+                    <span className="label-text font-medium">
+                      Minimum Increment (Auction Currency)
+                    </span>
+                  </label>
+                  <input
+                    id="minIncrementNormalized"
+                    name="minIncrementNormalized"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    defaultValue={item.minIncrementNormalized ?? ""}
+                    className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  />
+                </div>
+              </div>
+
+              {auctionCurrencyProfiles.length > 0 && (
+                <div className="form-control">
+                  <label className="label" htmlFor="minBidConstraint">
+                    <span className="label-text font-medium">
+                      Minimum Constraint (JSON)
+                    </span>
+                  </label>
+                  <textarea
+                    id="minBidConstraint"
+                    name="minBidConstraint"
+                    rows={3}
+                    defaultValue={
+                      item.minBidConstraint
+                        ? JSON.stringify(item.minBidConstraint, null, 2)
+                        : ""
+                    }
+                    placeholder='e.g. {"currencyProfileId":"...","components":{"gold":1}}'
+                    className="textarea textarea-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
+                  />
+                  <label className="label">
+                    <span className="label-text-alt text-base-content/60">
+                      Currency profiles: {auctionCurrencyProfiles.map((p) => `${p.name} (${p.symbol})`).join(", ")}
+                    </span>
+                  </label>
+                </div>
+              )}
             </div>
 
             {/* Images */}
@@ -862,6 +950,10 @@ export const getServerSideProps = withAuth(async (context) => {
     orderBy: { code: "asc" },
   });
 
+  const currencyContext = await auctionCurrencyService.getAuctionCurrencyContext(
+    auctionId,
+  );
+
   return {
     props: {
       user: {
@@ -879,6 +971,15 @@ export const getServerSideProps = withAuth(async (context) => {
       item: editData.item,
       isItemOwner: editData.isItemOwner,
       currencies,
+      auctionCurrencyProfiles: currencyContext.currencies
+        .filter((profile) => !profile.isArchived)
+        .map((profile) => ({
+          id: profile.id,
+          name: profile.name,
+          symbol: profile.symbol,
+          inputMode: profile.inputMode,
+          fractionMode: profile.fractionMode,
+        })),
       hasBids: editData.hasBids,
       images: editData.images,
       messages: await getMessages(context.locale as Locale),

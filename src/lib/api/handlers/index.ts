@@ -2,6 +2,7 @@
 // These handlers use the service layer for business logic
 
 export * as auctionHandlers from "./auction.handlers";
+export * as auctionCurrencyHandlers from "./auction-currency.handlers";
 export * as itemHandlers from "./item.handlers";
 export * as bidHandlers from "./bid.handlers";
 export * as memberHandlers from "./member.handlers";
@@ -18,6 +19,13 @@ export {
   type CreateAuctionBody,
   type UpdateAuctionBody,
 } from "./auction.handlers";
+
+export {
+  createAuctionCurrencySchema,
+  updateAuctionCurrencySchema,
+  type CreateAuctionCurrencyBody,
+  type UpdateAuctionCurrencyBody,
+} from "./auction-currency.handlers";
 
 export {
   createItemSchema,

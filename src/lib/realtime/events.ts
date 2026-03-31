@@ -80,6 +80,9 @@ export interface BidNewEvent {
   bidId: string;
   amount: number;
   currencyCode: string;
+  normalizedAmount?: number;
+  enteredRepresentation?: unknown;
+  currencyProfileId?: string;
   bidderId: string;
   bidderName: string | null; // null if anonymous
   isAnonymous: boolean;

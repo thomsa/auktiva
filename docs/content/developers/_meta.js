@@ -1,4 +1,4 @@
-export default {
+const meta = {
   index: "Overview",
   installation: "Installation",
   configuration: "Configuration",
@@ -12,6 +12,9 @@ export default {
   deployment: "Deployment",
   upgrading: "Upgrading",
   realtime: "Realtime Features",
+  "custom-currencies-and-rules": "Custom Currencies & Rules",
   "bid-extension": "Bid Extension (Anti-Sniping)",
   troubleshooting: "FAQ & Troubleshooting",
 };
+
+export default meta;

@@ -394,9 +394,9 @@ async function main() {
     console.log(`  📦 Creating: "${scenario.name}"`);
 
     const endDate = getEndDate(scenario.endDateType);
+    const auctionIndex = auctionScenarios.indexOf(scenario);
 
     // Generate a unique placeholder thumbnail for each auction
-    const auctionIndex = auctionScenarios.indexOf(scenario);
     const thumbnailUrl = `https://picsum.photos/seed/auction-${auctionIndex}/800/400`;
 
     const auction = await prisma.auction.create({
@@ -416,6 +416,76 @@ async function main() {
         creatorId: mainUser.id,
       },
     });
+
+    if (auctionIndex % 3 === 0) {
+      await prisma.auctionCurrencyProfile.createMany({
+        data: [
+          {
+            auctionId: auction.id,
+            code: "BASE_CROWN",
+            name: "Crown",
+            symbol: "Cr",
+            conversionRateToBase: 1,
+            fractionMode: "INTEGER_ONLY",
+            precision: 0,
+            inputMode: "DENOMINATION",
+            denominationConfig: {
+              components: [
+                { key: "gold", label: "Gold", factor: 100 },
+                { key: "silver", label: "Silver", factor: 10 },
+                { key: "copper", label: "Copper", factor: 1 },
+              ],
+            },
+            isBase: true,
+            isArchived: false,
+            sortOrder: 0,
+          },
+          {
+            auctionId: auction.id,
+            code: "MARK",
+            name: "Mark",
+            symbol: "Mk",
+            conversionRateToBase: 10,
+            fractionMode: "DECIMAL",
+            precision: 2,
+            inputMode: "SCALAR",
+            denominationConfig: null,
+            isBase: false,
+            isArchived: false,
+            sortOrder: 1,
+          },
+        ],
+      });
+
+      const baseProfile = await prisma.auctionCurrencyProfile.findUnique({
+        where: {
+          auctionId_code: {
+            auctionId: auction.id,
+            code: "BASE_CROWN",
+          },
+        },
+        select: { id: true },
+      });
+
+      if (baseProfile) {
+        await prisma.auctionCurrencyRule.createMany({
+          data: [
+            {
+              currencyProfileId: baseProfile.id,
+              type: "MIN_INCREMENT",
+              isEnabled: true,
+              config: { minIncrementBaseUnits: 5 },
+            },
+            {
+              currencyProfileId: baseProfile.id,
+              type: "MIN_COMPONENT_RATIO",
+              isEnabled: true,
+              config: { componentKey: "copper", minRatio: 0.1 },
+            },
+          ],
+        });
+      }
+    }
 
     // Add owner membership
     await prisma.auctionMember.create({

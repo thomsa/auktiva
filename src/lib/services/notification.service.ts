@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NotificationType } from "@/generated/prisma/client";
 import type { Notification } from "@/generated/prisma/client";
 import { publish, Events, Channels } from "@/lib/realtime";
+import { formatAuctionAmount } from "@/lib/currency-display";
 import type {
   NotificationNewEvent,
   NotificationCountEvent,
@@ -185,12 +186,23 @@ export async function notifyOutbid(
   itemId: string,
   newAmount: number,
   currencySymbol: string,
+  normalizedAmount?: number,
 ): Promise<Notification> {
+  const displayAmount = formatAuctionAmount(newAmount, {
+    symbol: currencySymbol,
+    precision: 2,
+    fractionMode: "DECIMAL",
+  });
+
   return createNotification({
     userId: previousBidderId,
     type: "OUTBID",
     title: "You've been outbid!",
-    message: `Someone placed a higher bid of ${currencySymbol}${newAmount.toFixed(2)} on "${itemName}"`,
+    message: `Someone placed a higher bid of ${displayAmount} on "${itemName}"${
+      typeof normalizedAmount === "number"
+        ? ` (normalized: ${normalizedAmount})`
+        : ""
+    }`,
     auctionId,
     itemId,
   });
@@ -206,12 +218,23 @@ export async function notifyAuctionWon(
   itemId: string,
   amount: number,
   currencySymbol: string,
+  normalizedAmount?: number,
 ): Promise<Notification> {
+  const displayAmount = formatAuctionAmount(amount, {
+    symbol: currencySymbol,
+    precision: 2,
+    fractionMode: "DECIMAL",
+  });
+
   return createNotification({
     userId: winnerId,
     type: "AUCTION_WON",
     title: "Congratulations! You won!",
-    message: `You won "${itemName}" with a bid of ${currencySymbol}${amount.toFixed(2)}`,
+    message: `You won "${itemName}" with a bid of ${displayAmount}${
+      typeof normalizedAmount === "number"
+        ? ` (normalized: ${normalizedAmount})`
+        : ""
+    }`,
     auctionId,
     itemId,
   });

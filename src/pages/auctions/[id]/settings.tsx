@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import * as auctionService from "@/lib/services/auction.service";
 import { PageLayout, BackLink, ConfirmDialog } from "@/components/common";
@@ -37,6 +37,56 @@ interface AuctionSettingsProps {
   allowOpenAuctions: boolean;
 }
 
+interface CurrencyRuleForm {
+  type: "MIN_INCREMENT" | "MIN_COMPONENT_RATIO" | "REQUIRED_DENOMINATION";
+  isEnabled: boolean;
+  configText: string;
+}
+
+interface AuctionCurrencyProfileForm {
+  name: string;
+  code: string;
+  symbol: string;
+  conversionRate: string;
+  fractionMode: "INTEGER_ONLY" | "DECIMAL";
+  inputMode: "SCALAR" | "DENOMINATION";
+  precision: string;
+  denominationConfigText: string;
+  rules: CurrencyRuleForm[];
+}
+
+interface AuctionCurrencyProfileListItem {
+  id: string;
+  name: string;
+  code: string;
+  symbol: string;
+  conversionRate: number;
+  fractionMode: "INTEGER_ONLY" | "DECIMAL";
+  inputMode: "SCALAR" | "DENOMINATION";
+  precision: number;
+  denominationConfig: unknown;
+  isBase: boolean;
+  isArchived: boolean;
+  rules: Array<{
+    id: string;
+    type: "MIN_INCREMENT" | "MIN_COMPONENT_RATIO" | "REQUIRED_DENOMINATION";
+    isEnabled: boolean;
+    config: unknown;
+  }>;
+}
+
+const EMPTY_CURRENCY_FORM: AuctionCurrencyProfileForm = {
+  name: "",
+  code: "",
+  symbol: "",
+  conversionRate: "1",
+  fractionMode: "DECIMAL",
+  inputMode: "SCALAR",
+  precision: "2",
+  denominationConfigText: "",
+  rules: [],
+};
+
 export default function AuctionSettingsPage({
   user,
   auction,
@@ -71,6 +121,141 @@ export default function AuctionSettingsPage({
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(
     auction.thumbnailUrl,
   );
+  const [currencyProfiles, setCurrencyProfiles] = useState<
+    AuctionCurrencyProfileListItem[]
+  >([]);
+  const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
+  const [isSavingCurrency, setIsSavingCurrency] = useState(false);
+  const [editingCurrencyId, setEditingCurrencyId] = useState<string | null>(null);
+  const [currencyForm, setCurrencyForm] =
+    useState<AuctionCurrencyProfileForm>(EMPTY_CURRENCY_FORM);
+
+  const loadCurrencyProfiles = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/auctions/${auction.id}/currencies`);
+      if (!res.ok) return;
+      const data = (await res.json()) as {
+        currencies: AuctionCurrencyProfileListItem[];
+      };
+      setCurrencyProfiles(data.currencies.filter((c) => !c.isArchived));
+    } catch {
+      showToast(tErrors("generic"), "error");
+    }
+  }, [auction.id, showToast, tErrors]);
+
+  useEffect(() => {
+    void loadCurrencyProfiles();
+  }, [loadCurrencyProfiles]);
+
+  const openCreateCurrencyModal = () => {
+    setEditingCurrencyId(null);
+    setCurrencyForm(EMPTY_CURRENCY_FORM);
+    setIsCurrencyModalOpen(true);
+  };
+
+  const openEditCurrencyModal = (profile: AuctionCurrencyProfileListItem) => {
+    setEditingCurrencyId(profile.id);
+    setCurrencyForm({
+      name: profile.name,
+      code: profile.code,
+      symbol: profile.symbol,
+      conversionRate: profile.conversionRate.toString(),
+      fractionMode: profile.fractionMode,
+      inputMode: profile.inputMode,
+      precision: profile.precision.toString(),
+      denominationConfigText: profile.denominationConfig
+        ? JSON.stringify(profile.denominationConfig, null, 2)
+        : "",
+      rules: profile.rules.map((rule) => ({
+        type: rule.type,
+        isEnabled: rule.isEnabled,
+        configText: JSON.stringify(rule.config ?? {}, null, 2),
+      })),
+    });
+    setIsCurrencyModalOpen(true);
+  };
+
+  const addRule = () => {
+    setCurrencyForm((prev) => ({
+      ...prev,
+      rules: [
+        ...prev.rules,
+        {
+          type: "MIN_INCREMENT",
+          isEnabled: true,
+          configText: "{}",
+        },
+      ],
+    }));
+  };
+
+  const handleCurrencySave = async () => {
+    setIsSavingCurrency(true);
+    try {
+      const rules = currencyForm.rules.map((rule) => ({
+        type: rule.type,
+        isEnabled: rule.isEnabled,
+        config: rule.configText ? JSON.parse(rule.configText) : {},
+      }));
+
+      const payload = {
+        name: currencyForm.name,
+        code: currencyForm.code,
+        symbol: currencyForm.symbol,
+        conversionRate: Number(currencyForm.conversionRate || 1),
+        fractionMode: currencyForm.fractionMode,
+        inputMode: currencyForm.inputMode,
+        precision: Number(currencyForm.precision || 2),
+        denominationConfig: currencyForm.denominationConfigText
+          ? JSON.parse(currencyForm.denominationConfigText)
+          : undefined,
+        rules,
+      };
+
+      const url = editingCurrencyId
+        ? `/api/auctions/${auction.id}/currencies/${editingCurrencyId}`
+        : `/api/auctions/${auction.id}/currencies`;
+
+      const res = await fetch(url, {
+        method: editingCurrencyId ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const result = await res.json();
+        showToast(result.message || tErrors("auction.updateFailed"), "error");
+        return;
+      }
+
+      showToast("Currency profile saved", "success");
+      setIsCurrencyModalOpen(false);
+      setCurrencyForm(EMPTY_CURRENCY_FORM);
+      setEditingCurrencyId(null);
+      await loadCurrencyProfiles();
+    } catch {
+      showToast(tErrors("generic"), "error");
+    } finally {
+      setIsSavingCurrency(false);
+    }
+  };
+
+  const archiveCurrency = async (currencyId: string) => {
+    try {
+      const res = await fetch(`/api/auctions/${auction.id}/currencies/${currencyId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const result = await res.json();
+        showToast(result.message || tErrors("auction.updateFailed"), "error");
+        return;
+      }
+      showToast("Currency archived", "success");
+      await loadCurrencyProfiles();
+    } catch {
+      showToast(tErrors("generic"), "error");
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -336,6 +521,66 @@ export default function AuctionSettingsPage({
             {/* Timing */}
             <div className="divider opacity-50"></div>
             <div className="space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold flex items-center gap-2 text-success">
+                  <span className="icon-[tabler--coins] size-5"></span>
+                  Auction Currency Profiles
+                </h2>
+                <button
+                  type="button"
+                  onClick={openCreateCurrencyModal}
+                  className="btn btn-sm btn-outline btn-success"
+                >
+                  <span className="icon-[tabler--plus] size-4"></span>
+                  Add Currency
+                </button>
+              </div>
+
+              {currencyProfiles.length === 0 ? (
+                <div className="alert alert-info">
+                  <span className="icon-[tabler--info-circle] size-5"></span>
+                  <span>No custom currency profile yet. Base currency rules apply.</span>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {currencyProfiles.map((profile) => (
+                    <div
+                      key={profile.id}
+                      className="p-3 rounded-xl border border-base-content/10 bg-base-100 flex items-center justify-between gap-3"
+                    >
+                      <div>
+                        <div className="font-medium">
+                          {profile.name} ({profile.symbol})
+                        </div>
+                        <div className="text-xs text-base-content/60">
+                          {profile.code} · {profile.inputMode.toLowerCase()} · {profile.fractionMode.toLowerCase()} · rate {profile.conversionRate}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => openEditCurrencyModal(profile)}
+                        >
+                          Edit
+                        </button>
+                        {!profile.isBase && (
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm text-error"
+                            onClick={() => archiveCurrency(profile.id)}
+                          >
+                            Archive
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2 text-info">
                 <span className="icon-[tabler--clock] size-5"></span>
                 {tCreate("timing")}
@@ -596,6 +841,230 @@ export default function AuctionSettingsPage({
               {t("viewResults")}
             </a>
           </span>
+        </div>
+      )}
+
+      {isCurrencyModalOpen && (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-2xl">
+            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+              <span className="icon-[tabler--coins] size-5"></span>
+              {editingCurrencyId ? "Edit Currency Profile" : "New Currency Profile"}
+            </h3>
+
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <input
+                  className="input input-bordered"
+                  placeholder="Name"
+                  value={currencyForm.name}
+                  onChange={(e) =>
+                    setCurrencyForm((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                />
+                <input
+                  className="input input-bordered"
+                  placeholder="Code"
+                  value={currencyForm.code}
+                  onChange={(e) =>
+                    setCurrencyForm((prev) => ({ ...prev, code: e.target.value }))
+                  }
+                />
+                <input
+                  className="input input-bordered"
+                  placeholder="Symbol"
+                  value={currencyForm.symbol}
+                  onChange={(e) =>
+                    setCurrencyForm((prev) => ({ ...prev, symbol: e.target.value }))
+                  }
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <input
+                  className="input input-bordered"
+                  type="number"
+                  min="0.000001"
+                  step="0.000001"
+                  placeholder="Conversion rate"
+                  value={currencyForm.conversionRate}
+                  onChange={(e) =>
+                    setCurrencyForm((prev) => ({
+                      ...prev,
+                      conversionRate: e.target.value,
+                    }))
+                  }
+                />
+                <select
+                  className="select select-bordered"
+                  value={currencyForm.fractionMode}
+                  onChange={(e) =>
+                    setCurrencyForm((prev) => ({
+                      ...prev,
+                      fractionMode: e.target.value as "INTEGER_ONLY" | "DECIMAL",
+                    }))
+                  }
+                >
+                  <option value="DECIMAL">Decimal</option>
+                  <option value="INTEGER_ONLY">Integer only</option>
+                </select>
+                <select
+                  className="select select-bordered"
+                  value={currencyForm.inputMode}
+                  onChange={(e) =>
+                    setCurrencyForm((prev) => ({
+                      ...prev,
+                      inputMode: e.target.value as "SCALAR" | "DENOMINATION",
+                    }))
+                  }
+                >
+                  <option value="SCALAR">Scalar input</option>
+                  <option value="DENOMINATION">Denomination input</option>
+                </select>
+              </div>
+
+              <input
+                className="input input-bordered w-full"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="Precision"
+                value={currencyForm.precision}
+                onChange={(e) =>
+                  setCurrencyForm((prev) => ({ ...prev, precision: e.target.value }))
+                }
+              />
+
+              <textarea
+                className="textarea textarea-bordered w-full"
+                rows={4}
+                placeholder='Denomination config JSON (e.g. {"components":[{"key":"gold","label":"Gold"}]})'
+                value={currencyForm.denominationConfigText}
+                onChange={(e) =>
+                  setCurrencyForm((prev) => ({
+                    ...prev,
+                    denominationConfigText: e.target.value,
+                  }))
+                }
+              />
+
+              <div className="rounded-lg border border-base-content/10 p-3 bg-base-200/40">
+                <div className="text-sm font-medium mb-2">Rules</div>
+                <div className="space-y-2">
+                  {currencyForm.rules.map((rule, index) => (
+                    <div
+                      key={`${rule.type}-${index}`}
+                      className="p-2 rounded border border-base-content/10 bg-base-100 space-y-2"
+                    >
+                      <div className="flex items-center gap-2">
+                        <select
+                          className="select select-bordered select-sm"
+                          value={rule.type}
+                          onChange={(e) =>
+                            setCurrencyForm((prev) => ({
+                              ...prev,
+                              rules: prev.rules.map((r, i) =>
+                                i === index
+                                  ? {
+                                      ...r,
+                                      type: e.target.value as CurrencyRuleForm["type"],
+                                    }
+                                  : r,
+                              ),
+                            }))
+                          }
+                        >
+                          <option value="MIN_INCREMENT">Minimum increment</option>
+                          <option value="MIN_COMPONENT_RATIO">Minimum component ratio</option>
+                          <option value="REQUIRED_DENOMINATION">Required denomination</option>
+                        </select>
+                        <label className="label cursor-pointer gap-2">
+                          <input
+                            type="checkbox"
+                            className="checkbox checkbox-sm"
+                            checked={rule.isEnabled}
+                            onChange={(e) =>
+                              setCurrencyForm((prev) => ({
+                                ...prev,
+                                rules: prev.rules.map((r, i) =>
+                                  i === index
+                                    ? { ...r, isEnabled: e.target.checked }
+                                    : r,
+                                ),
+                              }))
+                            }
+                          />
+                          <span className="text-xs">Enabled</span>
+                        </label>
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-xs text-error ml-auto"
+                          onClick={() =>
+                            setCurrencyForm((prev) => ({
+                              ...prev,
+                              rules: prev.rules.filter((_, i) => i !== index),
+                            }))
+                          }
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <textarea
+                        className="textarea textarea-bordered w-full text-xs"
+                        rows={3}
+                        value={rule.configText}
+                        onChange={(e) =>
+                          setCurrencyForm((prev) => ({
+                            ...prev,
+                            rules: prev.rules.map((r, i) =>
+                              i === index
+                                ? { ...r, configText: e.target.value }
+                                : r,
+                            ),
+                          }))
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+                <button type="button" className="btn btn-xs mt-2" onClick={addRule}>
+                  Add Rule
+                </button>
+              </div>
+
+              <div className="alert alert-info text-sm">
+                <span className="icon-[tabler--sparkles] size-5"></span>
+                <span>
+                  Preview: {currencyForm.symbol || "$"}
+                  {currencyForm.fractionMode === "INTEGER_ONLY" ? "123" : "123.45"}
+                </span>
+              </div>
+            </div>
+
+            <div className="modal-action">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setIsCurrencyModalOpen(false)}
+                disabled={isSavingCurrency}
+              >
+                {tCommon("cancel")}
+              </button>
+              <Button
+                type="button"
+                variant="primary"
+                onClick={handleCurrencySave}
+                isLoading={isSavingCurrency}
+                loadingText={tCommon("loading")}
+              >
+                Save Currency
+              </Button>
+            </div>
+          </div>
+          <div
+            className="modal-backdrop"
+            onClick={() => !isSavingCurrency && setIsCurrencyModalOpen(false)}
+          ></div>
         </div>
       )}
 

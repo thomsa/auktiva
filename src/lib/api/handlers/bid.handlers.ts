@@ -7,6 +7,11 @@ import {
 } from "@/lib/api/errors";
 import * as bidService from "@/lib/services/bid.service";
 import * as itemService from "@/lib/services/item.service";
+import * as auctionCurrencyService from "@/lib/services/auction-currency.service";
+import {
+  normalizeBidValue,
+  evaluateBidRules,
+} from "@/lib/services/auction-currency-rule.service";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
@@ -14,10 +19,25 @@ import { z } from "zod";
 // Schemas
 // ============================================================================
 
-export const createBidSchema = z.object({
-  amount: z.number().positive("Bid amount must be positive"),
-  isAnonymous: z.boolean().optional(),
-});
+export const createBidSchema = z
+  .object({
+    amount: z.number().positive("Bid amount must be positive").optional(),
+    enteredRepresentation: z.record(z.string(), z.unknown()).optional(),
+    currencyProfileId: z.string().optional(),
+    isAnonymous: z.boolean().optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (
+      value.amount === undefined &&
+      value.enteredRepresentation === undefined
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["amount"],
+        message: "Either amount or entered representation is required",
+      });
+    }
+  });
 
 export type CreateBidBody = z.infer<typeof createBidSchema>;
 
@@ -70,9 +90,40 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
     throw new BadRequestError("Bidding has ended for this item");
   }
 
-  // Validate bid amount
+  const currencyProfile =
+    await auctionCurrencyService.resolveAuctionCurrencyForBid(
+      auctionId,
+      validatedBody.currencyProfileId,
+    );
+
+  const normalizedAmount = normalizeBidValue(currencyProfile, {
+    amount: validatedBody.amount,
+    enteredRepresentation: validatedBody.enteredRepresentation,
+  });
+
+  if (normalizedAmount === null) {
+    throw new BadRequestError("Invalid bid representation", {
+      type: "INVALID_BID_REPRESENTATION",
+    });
+  }
+
+  const ruleViolations = evaluateBidRules({
+    normalizedAmount,
+    currentHighestNormalized: item.currentBid,
+    rules: currencyProfile?.rules ?? [],
+    enteredRepresentation: validatedBody.enteredRepresentation,
+  });
+
+  if (ruleViolations.length > 0) {
+    throw new BadRequestError("Bid violates auction currency rules", {
+      type: "RULE_VIOLATION",
+      violations: ruleViolations,
+    });
+  }
+
+  // Backward-compatible minimum check for auctions without custom rule configs
   const { valid, minBid } = bidService.validateBidAmount(
-    validatedBody.amount,
+    normalizedAmount,
     item.currentBid,
     item.startingBid,
     item.minBidIncrement,
@@ -85,7 +136,13 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
   const bid = await bidService.placeBid(
     itemId,
     ctx.session!.user.id,
-    validatedBody,
+    {
+      amount: validatedBody.amount ?? normalizedAmount,
+      normalizedAmount,
+      enteredRepresentation: validatedBody.enteredRepresentation,
+      currencyProfileId: currencyProfile?.id,
+      isAnonymous: validatedBody.isAnonymous,
+    },
     item.auction.bidderVisibility,
   );
 

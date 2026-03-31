@@ -11,6 +11,9 @@ import type { Bid } from "@/generated/prisma/client";
 
 export interface CreateBidInput {
   amount: number;
+  normalizedAmount?: number;
+  enteredRepresentation?: unknown;
+  currencyProfileId?: string;
   isAnonymous?: boolean;
 }
 
@@ -346,6 +349,9 @@ export async function placeBid(
         auctionItemId: itemId,
         userId,
         amount: input.amount,
+        normalizedAmount: input.normalizedAmount ?? input.amount,
+        enteredRepresentation: input.enteredRepresentation as never,
+        currencyProfileId: input.currencyProfileId,
         isAnonymous: shouldBeAnonymous,
       },
     }),
@@ -362,6 +368,9 @@ export async function placeBid(
     bidId: bid.id,
     amount: input.amount,
     currencyCode: item.currency.code,
+    normalizedAmount: input.normalizedAmount ?? input.amount,
+    enteredRepresentation: input.enteredRepresentation,
+    currencyProfileId: input.currencyProfileId,
     bidderId: userId,
     bidderName: shouldBeAnonymous ? null : bidder?.name || null,
     isAnonymous: shouldBeAnonymous,
@@ -379,6 +388,7 @@ export async function placeBid(
       item.auction.id,
       itemId,
       input.amount,
+      input.normalizedAmount ?? input.amount,
       item.currency.symbol,
       item.auction.name,
       item.currency.code,
@@ -397,6 +407,7 @@ async function notifyOutbidUser(
   auctionId: string,
   itemId: string,
   newAmount: number,
+  normalizedAmount: number,
   currencySymbol: string,
   auctionName: string,
   currencyCode: string,
@@ -432,6 +443,7 @@ async function notifyOutbidUser(
       itemId,
       newAmount,
       currencySymbol,
+      normalizedAmount,
     );
 
     // Get previous bidder info for email
@@ -452,6 +464,7 @@ async function notifyOutbidUser(
         auctionName,
         newAmount,
         currencySymbol,
+        normalizedAmount,
       });
     }
   } catch (err) {

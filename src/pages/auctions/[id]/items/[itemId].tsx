@@ -23,10 +23,21 @@ import { useTranslations } from "next-intl";
 import * as auctionService from "@/lib/services/auction.service";
 import * as itemService from "@/lib/services/item.service";
 import * as userService from "@/lib/services/user.service";
+import { formatAuctionBidDisplay } from "@/lib/currency-display";
 
 interface Bid {
   id: string;
   amount: number;
+  normalizedAmount: number | null;
+  enteredRepresentation: unknown;
+  currencyProfile: {
+    id: string;
+    symbol: string;
+    inputMode: "SCALAR" | "DENOMINATION";
+    fractionMode: "INTEGER_ONLY" | "DECIMAL";
+    precision: number;
+    denominationConfig: unknown;
+  } | null;
   createdAt: string;
   isAnonymous: boolean;
   user: {
@@ -112,6 +123,24 @@ interface ItemResponse {
   bids: Bid[];
 }
 
+interface AuctionCurrencyProfile {
+  id: string;
+  code: string;
+  name: string;
+  symbol: string;
+  inputMode: "SCALAR" | "DENOMINATION";
+  fractionMode: "INTEGER_ONLY" | "DECIMAL";
+  precision: number;
+  denominationConfig: unknown;
+  isBase: boolean;
+  isArchived: boolean;
+}
+
+interface AuctionCurrencyContextResponse {
+  currencies: AuctionCurrencyProfile[];
+  baseCurrency: AuctionCurrencyProfile | null;
+}
+
 export default function ItemDetailPage({
   user,
   auction,
@@ -137,6 +166,11 @@ export default function ItemDetailPage({
   const { showToast } = useToast();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [bidAmount, setBidAmount] = useState("");
+  const [selectedCurrencyProfileId, setSelectedCurrencyProfileId] =
+    useState<string>("");
+  const [denominationBid, setDenominationBid] = useState<
+    Record<string, string>
+  >({});
   const [bidAsAnonymous, setBidAsAnonymous] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -174,6 +208,15 @@ export default function ItemDetailPage({
     },
   );
 
+  const { data: currencyContext } = useSWR<AuctionCurrencyContextResponse>(
+    `/api/auctions/${auction.id}/currencies`,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 30000,
+    },
+  );
+
   // Subscribe to item channel for realtime bid updates
   const itemChannel = useItemChannel(initialItem.id);
 
@@ -194,6 +237,9 @@ export default function ItemDetailPage({
           const newBid: Bid = {
             id: event.bidId,
             amount: event.amount,
+            normalizedAmount: event.normalizedAmount ?? null,
+            enteredRepresentation: event.enteredRepresentation,
+            currencyProfile: null,
             createdAt: event.timestamp,
             isAnonymous: event.isAnonymous,
             user: event.isAnonymous
@@ -223,6 +269,57 @@ export default function ItemDetailPage({
 
   const item = data?.item ?? initialItem;
   const bids: Bid[] = data?.bids ?? initialBids;
+  const availableCurrencyProfiles =
+    currencyContext?.currencies.filter((profile) => !profile.isArchived) ?? [];
+
+  const selectedCurrencyProfile =
+    availableCurrencyProfiles.find(
+      (profile) => profile.id === selectedCurrencyProfileId,
+    ) ??
+    currencyContext?.baseCurrency ??
+    availableCurrencyProfiles[0] ??
+    null;
+
+  const denominationComponents = (() => {
+    if (
+      !selectedCurrencyProfile ||
+      selectedCurrencyProfile.inputMode !== "DENOMINATION"
+    ) {
+      return [] as Array<{ key: string; label: string }>;
+    }
+
+    const rawConfig = selectedCurrencyProfile.denominationConfig;
+    let parsedConfig: unknown = rawConfig;
+    if (typeof rawConfig === "string") {
+      try {
+        parsedConfig = JSON.parse(rawConfig);
+      } catch {
+        parsedConfig = null;
+      }
+    }
+
+    const components =
+      parsedConfig && typeof parsedConfig === "object"
+        ? (parsedConfig as { components?: unknown }).components
+        : null;
+
+    if (!Array.isArray(components)) {
+      return [] as Array<{ key: string; label: string }>;
+    }
+
+    return components
+      .filter(
+        (component): component is { key: string; label?: string } =>
+          typeof component === "object" &&
+          component !== null &&
+          typeof (component as { key?: unknown }).key === "string",
+      )
+      .map((component) => ({
+        key: component.key,
+        label: component.label || component.key,
+      }));
+  })();
+
   const isHighestBidder = item.highestBidderId === user.id;
 
   // Use item from SWR data so it updates after ending
@@ -248,8 +345,36 @@ export default function ItemDetailPage({
     setError(null);
     setIsLoading(true);
 
-    const amount = parseFloat(bidAmount);
-    if (isNaN(amount) || amount < minBid) {
+    const isDenominationMode =
+      selectedCurrencyProfile?.inputMode === "DENOMINATION" &&
+      denominationComponents.length > 0;
+
+    const amount = isDenominationMode ? NaN : parseFloat(bidAmount);
+
+    const enteredRepresentation = isDenominationMode
+      ? {
+          components: denominationComponents.reduce<Record<string, number>>(
+            (acc, component) => {
+              const raw = denominationBid[component.key];
+              const parsed = raw ? Number(raw) : 0;
+              acc[component.key] = Number.isFinite(parsed) ? parsed : 0;
+              return acc;
+            },
+            {},
+          ),
+        }
+      : undefined;
+
+    if (isDenominationMode) {
+      const totalInput = Object.values(
+        enteredRepresentation?.components ?? {},
+      ).reduce((sum, value) => sum + value, 0);
+      if (totalInput <= 0) {
+        setError(tErrors("bid.placeFailed"));
+        setIsLoading(false);
+        return;
+      }
+    } else if (isNaN(amount) || amount < minBid) {
       setError(
         tErrors("validation.minBid", {
           symbol: item.currency.symbol,
@@ -267,7 +392,9 @@ export default function ItemDetailPage({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            amount,
+            amount: isDenominationMode ? undefined : amount,
+            enteredRepresentation,
+            currencyProfileId: selectedCurrencyProfile?.id,
             isAnonymous:
               auction.bidderVisibility === "PER_BID"
                 ? bidAsAnonymous
@@ -279,14 +406,41 @@ export default function ItemDetailPage({
       const result = await res.json();
 
       if (!res.ok) {
-        setError(result.message || tErrors("bid.placeFailed"));
+        const ruleViolations =
+          result?.details?.type === "RULE_VIOLATION" &&
+          Array.isArray(result?.details?.violations)
+            ? (result.details.violations as Array<{ message?: string }>)
+            : [];
+
+        if (ruleViolations.length > 0) {
+          setError(
+            ruleViolations
+              .map((violation) => violation.message)
+              .filter((msg): msg is string => typeof msg === "string")
+              .join(" • "),
+          );
+        } else {
+          setError(result.message || tErrors("bid.placeFailed"));
+        }
       } else {
         // Optimistically update UI with the new bid
         const isAnon =
           auction.bidderVisibility === "PER_BID" ? bidAsAnonymous : false;
+        const effectiveBidAmount =
+          typeof result.amount === "number"
+            ? result.amount
+            : isDenominationMode
+              ? minBid
+              : amount;
         const newBid: Bid = {
           id: result.id,
-          amount,
+          amount: effectiveBidAmount,
+          normalizedAmount:
+            typeof result.normalizedAmount === "number"
+              ? result.normalizedAmount
+              : null,
+          enteredRepresentation: result.enteredRepresentation ?? null,
+          currencyProfile: null,
           createdAt: new Date().toISOString(),
           isAnonymous: isAnon,
           user: isAnon ? null : { id: user.id, name: user.name },
@@ -300,7 +454,7 @@ export default function ItemDetailPage({
               ...current,
               item: {
                 ...current.item,
-                currentBid: amount,
+                currentBid: effectiveBidAmount,
                 highestBidderId: user.id,
               },
               bids: [newBid, ...current.bids],
@@ -309,6 +463,7 @@ export default function ItemDetailPage({
           { revalidate: false },
         );
         setBidAmount("");
+        setDenominationBid({});
       }
     } catch {
       setError(tErrors("generic"));
@@ -624,8 +779,13 @@ export default function ItemDetailPage({
                                 </div>
                                 <div className="text-right">
                                   <div className="font-bold font-mono text-lg">
-                                    {item.currency.symbol}
-                                    {bid.amount.toFixed(2)}
+                                    {formatAuctionBidDisplay({
+                                      amount: bid.amount,
+                                      enteredRepresentation:
+                                        bid.enteredRepresentation,
+                                      profile: bid.currencyProfile,
+                                      fallbackSymbol: item.currency.symbol,
+                                    })}
                                   </div>
                                 </div>
                               </div>
@@ -758,21 +918,76 @@ export default function ItemDetailPage({
                                 {minBid.toFixed(2)}
                               </span>
                             </label>
-                            <div className="join w-full shadow-sm">
-                              <span className="join-item btn btn-active cursor-default bg-base-200 border-base-300">
-                                {item.currency.symbol}
-                              </span>
-                              <input
-                                type="number"
-                                value={bidAmount}
-                                onChange={(e) => setBidAmount(e.target.value)}
-                                placeholder={minBid.toFixed(2)}
-                                min={minBid}
-                                step="0.01"
-                                required
-                                className="join-item input input-bordered w-full focus:outline-none"
-                              />
-                            </div>
+
+                            {availableCurrencyProfiles.length > 0 && (
+                              <select
+                                className="select select-bordered w-full mb-3"
+                                value={selectedCurrencyProfile?.id || ""}
+                                onChange={(e) =>
+                                  setSelectedCurrencyProfileId(e.target.value)
+                                }
+                              >
+                                {availableCurrencyProfiles.map((profile) => (
+                                  <option key={profile.id} value={profile.id}>
+                                    {profile.name} ({profile.symbol})
+                                  </option>
+                                ))}
+                              </select>
+                            )}
+
+                            {selectedCurrencyProfile?.inputMode ===
+                              "DENOMINATION" &&
+                            denominationComponents.length > 0 ? (
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                {denominationComponents.map((component) => (
+                                  <label
+                                    key={component.key}
+                                    className="form-control"
+                                  >
+                                    <span className="label-text text-xs mb-1">
+                                      {component.label}
+                                    </span>
+                                    <input
+                                      type="number"
+                                      min={0}
+                                      step={1}
+                                      value={
+                                        denominationBid[component.key] ?? ""
+                                      }
+                                      onChange={(e) =>
+                                        setDenominationBid((prev) => ({
+                                          ...prev,
+                                          [component.key]: e.target.value,
+                                        }))
+                                      }
+                                      className="input input-bordered input-sm w-full"
+                                    />
+                                  </label>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="join w-full shadow-sm">
+                                <span className="join-item btn btn-active cursor-default bg-base-200 border-base-300">
+                                  {selectedCurrencyProfile?.symbol ||
+                                    item.currency.symbol}
+                                </span>
+                                <input
+                                  type="number"
+                                  value={bidAmount}
+                                  onChange={(e) => setBidAmount(e.target.value)}
+                                  placeholder={minBid.toFixed(2)}
+                                  min={minBid}
+                                  step={
+                                    selectedCurrencyProfile?.fractionMode ===
+                                    "INTEGER_ONLY"
+                                      ? "1"
+                                      : "0.01"
+                                  }
+                                  required
+                                  className="join-item input input-bordered w-full focus:outline-none"
+                                />
+                              </div>
+                            )}
                           </div>
 
                           {auction.bidderVisibility === "PER_BID" && (

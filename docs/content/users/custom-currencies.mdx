@@ -1,0 +1,44 @@
+# Custom Auction Currencies
+
+import { Callout } from "nextra/components";
+
+Auction owners and admins can configure auction-specific currencies, including denomination-based systems like Gold/Silver/Copper.
+
+## What this enables
+
+- Multiple currencies per auction with conversion rates to a shared base unit
+- Integer-only or decimal input behavior per currency
+- Rule-based bid validation (minimum increment, denomination ratio rules)
+- Consistent bid ordering using normalized values
+
+<Callout type="info">
+  Items cannot override auction currency behavior. Items can only define minimum
+  constraints inside the auction currency system.
+</Callout>
+
+## Configure currencies
+
+1. Open the auction and go to `Settings`.
+2. Open the currencies section.
+3. Add a currency profile with:
+   - Name, code, symbol
+   - Conversion rate to base currency
+   - Fraction mode (`integer-only` or `decimal`)
+   - Input mode (`scalar` or `denomination`)
+4. Optionally set rules like minimum increment or minimum component ratio.
+
+## Bidding behavior
+
+- Scalar currency mode: bidders enter one numeric value.
+- Denomination mode: bidders enter values per configured component.
+- All bids are normalized to base units for comparison.
+- Equal normalized bids are rejected as not higher.
+
+## Validation messages
+
+If a bid fails rules, the bid form shows explicit violation feedback, such as:
+
+- Bid must be strictly higher than current highest bid
+- Minimum increment not met
+- Minimum component ratio not met
+- Required denomination component missing

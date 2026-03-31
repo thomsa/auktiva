@@ -6,6 +6,7 @@ import {
 } from "@/lib/api";
 import type { ApiHandler } from "@/lib/api";
 import { prisma } from "@/lib/prisma";
+import { formatAuctionBidDisplay } from "@/lib/currency-display";
 
 const exportAuction: ApiHandler = async (req, res, ctx) => {
   const auctionId = ctx.params.id;
@@ -20,6 +21,16 @@ const exportAuction: ApiHandler = async (req, res, ctx) => {
           bids: {
             orderBy: { amount: "desc" },
             include: {
+              currencyProfile: {
+                select: {
+                  id: true,
+                  symbol: true,
+                  inputMode: true,
+                  fractionMode: true,
+                  precision: true,
+                  denominationConfig: true,
+                },
+              },
               user: {
                 select: { id: true, name: true, email: true },
               },
@@ -74,6 +85,13 @@ const exportAuction: ApiHandler = async (req, res, ctx) => {
             name: item.bids[0].user.name,
             email: item.bids[0].user.email,
             amount: item.bids[0].amount,
+            normalizedAmount: item.bids[0].normalizedAmount,
+            displayRepresentation: formatAuctionBidDisplay({
+              amount: item.bids[0].amount,
+              enteredRepresentation: item.bids[0].enteredRepresentation,
+              profile: item.bids[0].currencyProfile,
+              fallbackSymbol: item.currency.symbol,
+            }),
           }
         : null,
       endDate: item.endDate?.toISOString() || null,
@@ -94,6 +112,8 @@ const exportAuction: ApiHandler = async (req, res, ctx) => {
         "Currency",
         "Starting Bid",
         "Winning Bid",
+        "Winning Bid Display",
+        "Winning Bid Normalized",
         "Winner Name",
         "Winner Email",
         "Bid Count",
@@ -102,8 +122,10 @@ const exportAuction: ApiHandler = async (req, res, ctx) => {
         [
           `"${item.name.replace(/"/g, '""')}"`,
           item.currency,
-          item.startingBid.toFixed(2),
-          item.currentBid?.toFixed(2) || "0.00",
+          item.startingBid,
+          item.currentBid || 0,
+          item.winner ? `"${item.winner.displayRepresentation}"` : "",
+          item.winner?.normalizedAmount ?? "",
           item.winner
             ? `"${(item.winner.name || "").replace(/"/g, '""')}"`
             : "",

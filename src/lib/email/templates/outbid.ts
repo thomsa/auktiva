@@ -40,6 +40,7 @@ export function getOutbidTemplateData(data: {
   itemId: string;
   newAmount: number;
   currencySymbol: string;
+  normalizedAmount?: number;
   appUrl: string;
 }) {
   return {
@@ -49,7 +50,11 @@ export function getOutbidTemplateData(data: {
       "{{ITEM_NAME}}": escapeHtml(data.itemName),
       "{{AUCTION_NAME}}": escapeHtml(data.auctionName),
       "{{CURRENCY_SYMBOL}}": escapeHtml(data.currencySymbol),
-      "{{NEW_AMOUNT}}": data.newAmount.toFixed(2),
+      "{{NEW_AMOUNT}}": `${data.newAmount.toFixed(2)}${
+        typeof data.normalizedAmount === "number"
+          ? ` (normalized: ${data.normalizedAmount})`
+          : ""
+      }`,
       "{{ITEM_URL}}": `${data.appUrl}/auctions/${encodeURIComponent(
         data.auctionId,
       )}/items/${encodeURIComponent(data.itemId)}`,

@@ -400,6 +400,16 @@ export async function closeAuction(
         orderBy: { amount: "desc" },
         take: 1,
         include: {
+          currencyProfile: {
+            select: {
+              id: true,
+              symbol: true,
+              inputMode: true,
+              fractionMode: true,
+              precision: true,
+              denominationConfig: true,
+            },
+          },
           user: {
             select: { id: true, name: true, email: true },
           },
@@ -569,6 +579,16 @@ export async function getAuctionResultsData(
         orderBy: { amount: "desc" },
         take: 1,
         include: {
+          currencyProfile: {
+            select: {
+              id: true,
+              symbol: true,
+              inputMode: true,
+              fractionMode: true,
+              precision: true,
+              denominationConfig: true,
+            },
+          },
           user: {
             select: { id: true, name: true, email: true },
           },
@@ -595,8 +615,11 @@ export async function getAuctionResultsData(
           ? getPublicUrl(item.images[0].url)
           : null,
         winningBid: item.bids[0].amount,
+        normalizedWinningBid: item.bids[0].normalizedAmount,
+        enteredRepresentation: item.bids[0].enteredRepresentation,
         currencyCode: item.currencyCode,
         currencySymbol: item.currency.symbol,
+        currencyProfile: item.bids[0].currencyProfile,
         winner: canSeeWinner ? item.bids[0].user : null,
         isCurrentUser: item.bids[0].userId === userId,
         isItemCreator,

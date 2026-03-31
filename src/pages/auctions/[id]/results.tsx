@@ -5,14 +5,25 @@ import { StatsCard } from "@/components/ui/stats-card";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { withAuth } from "@/lib/auth/withAuth";
+import { formatAuctionBidDisplay } from "@/lib/currency-display";
 
 interface Winner {
   itemId: string;
   itemName: string;
   thumbnailUrl: string | null;
   winningBid: number;
+  normalizedWinningBid: number | null;
+  enteredRepresentation: unknown;
   currencyCode: string;
   currencySymbol: string;
+  currencyProfile: {
+    id: string;
+    symbol: string;
+    inputMode: "SCALAR" | "DENOMINATION";
+    fractionMode: "INTEGER_ONLY" | "DECIMAL";
+    precision: number;
+    denominationConfig: unknown;
+  } | null;
   winner: {
     id: string;
     name: string | null;
@@ -220,8 +231,12 @@ export default function ResultsPage({
                           {win.itemName}
                         </div>
                         <div className="text-primary font-bold font-mono mt-1">
-                          {win.currencySymbol}
-                          {win.winningBid.toFixed(2)}
+                          {formatAuctionBidDisplay({
+                            amount: win.winningBid,
+                            enteredRepresentation: win.enteredRepresentation,
+                            profile: win.currencyProfile,
+                            fallbackSymbol: win.currencySymbol,
+                          })}
                         </div>
                       </div>
                     </div>
@@ -378,8 +393,12 @@ export default function ResultsPage({
                           </td>
                           <td className="text-right pr-4 sm:pr-8">
                             <span className="font-bold font-mono text-sm sm:text-lg">
-                              {win.currencySymbol}
-                              {win.winningBid.toFixed(2)}
+                              {formatAuctionBidDisplay({
+                                amount: win.winningBid,
+                                enteredRepresentation: win.enteredRepresentation,
+                                profile: win.currencyProfile,
+                                fallbackSymbol: win.currencySymbol,
+                              })}
                             </span>
                           </td>
                         </tr>

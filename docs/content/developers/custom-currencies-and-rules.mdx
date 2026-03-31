@@ -1,0 +1,76 @@
+# Custom Currencies and Rules
+
+import { Callout } from "nextra/components";
+
+This document describes the custom auction currency architecture, normalization model, and rule evaluation behavior.
+
+## Data model summary
+
+Core schema additions:
+
+- `AuctionCurrencyProfile`
+  - Auction-scoped currency definitions
+  - Conversion rate to base unit
+  - Fraction policy and precision
+  - Input mode (`SCALAR` or `DENOMINATION`)
+  - Optional denomination config
+- `AuctionCurrencyRule`
+  - Structured, typed rule configs
+  - No executable user code
+- `Bid`
+  - `normalizedAmount`
+  - `enteredRepresentation`
+  - `currencyProfileId`
+- `AuctionItem`
+  - `minBidConstraint`
+  - `minBidNormalized`
+  - `minIncrementNormalized`
+
+## Rule engine behavior
+
+Rule evaluator is implemented in `src/lib/services/auction-currency-rule.service.ts`.
+
+Supported rule types:
+
+- `MIN_INCREMENT`
+- `MIN_COMPONENT_RATIO`
+- `REQUIRED_DENOMINATION`
+- implicit `EQUAL_NOT_HIGHER` rejection
+
+Evaluation returns deterministic violation payloads consumed by API and UI.
+
+## Normalization strategy
+
+- Every bid is normalized to base units before comparison.
+- Scalar mode normalizes from entered numeric amount.
+- Denomination mode normalizes by configured denomination factors.
+- Highest-bid ordering must always use normalized values.
+
+<Callout type="warning">
+  Do not introduce free-form formula execution for bid evaluation. Keep rule
+  logic structured and typed.
+</Callout>
+
+## API endpoints
+
+Auction currency management endpoints:
+
+- `GET /api/auctions/[id]/currencies`
+- `POST /api/auctions/[id]/currencies`
+- `PATCH /api/auctions/[id]/currencies/[currencyId]`
+- `DELETE /api/auctions/[id]/currencies/[currencyId]`
+
+Bid placement accepts profile-aware payloads:
+
+- `amount` (scalar mode)
+- `enteredRepresentation` (denomination mode)
+- `currencyProfileId`
+
+Rule failures return structured details in `details.violations`.
+
+## Migration notes
+
+- Migration is additive and preserves legacy amount fields.
+- Existing auctions without custom profiles continue to behave with legacy paths.
+- Run `npm run db:generate` after schema changes.
+- For local development seed data, representative currency profiles and rules are created in `prisma/seed.ts`.

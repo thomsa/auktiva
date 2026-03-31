@@ -52,6 +52,9 @@ export interface CreateItemInput {
   currencyCode: string;
   startingBid?: number;
   minBidIncrement?: number;
+  minBidConstraint?: Record<string, unknown>;
+  minBidNormalized?: number;
+  minIncrementNormalized?: number;
   bidderAnonymous?: boolean;
   endDate?: string | null;
   isPublished?: boolean;
@@ -68,6 +71,9 @@ export interface UpdateItemInput {
   currencyCode?: string | null;
   startingBid?: number;
   minBidIncrement?: number;
+  minBidConstraint?: Record<string, unknown> | null;
+  minBidNormalized?: number | null;
+  minIncrementNormalized?: number | null;
   bidderAnonymous?: boolean;
   endDate?: string | null;
   isPublished?: boolean;
@@ -122,6 +128,16 @@ export interface ItemDetailForPage {
 export interface BidForDisplay {
   id: string;
   amount: number;
+  normalizedAmount: number | null;
+  enteredRepresentation: unknown;
+  currencyProfile: {
+    id: string;
+    symbol: string;
+    inputMode: "SCALAR" | "DENOMINATION";
+    fractionMode: "INTEGER_ONLY" | "DECIMAL";
+    precision: number;
+    denominationConfig: unknown;
+  } | null;
   createdAt: string;
   isAnonymous: boolean;
   user: {
@@ -252,6 +268,16 @@ export async function getItemDetailPageData(
   const bidsRaw = await prisma.bid.findMany({
     where: { auctionItemId: itemId },
     include: {
+      currencyProfile: {
+        select: {
+          id: true,
+          symbol: true,
+          inputMode: true,
+          fractionMode: true,
+          precision: true,
+          denominationConfig: true,
+        },
+      },
       user: {
         select: { id: true, name: true },
       },
@@ -280,6 +306,9 @@ export async function getItemDetailPageData(
       return {
         id: bid.id,
         amount: bid.amount,
+        normalizedAmount: bid.normalizedAmount,
+        enteredRepresentation: bid.enteredRepresentation,
+        currencyProfile: bid.currencyProfile,
         createdAt: bid.createdAt.toISOString(),
         isAnonymous: bid.isAnonymous,
         user: bid.user,
@@ -290,6 +319,9 @@ export async function getItemDetailPageData(
       return {
         id: bid.id,
         amount: bid.amount,
+        normalizedAmount: bid.normalizedAmount,
+        enteredRepresentation: bid.enteredRepresentation,
+        currencyProfile: bid.currencyProfile,
         createdAt: bid.createdAt.toISOString(),
         isAnonymous: false,
         user: bid.user,
@@ -300,6 +332,9 @@ export async function getItemDetailPageData(
       return {
         id: bid.id,
         amount: bid.amount,
+        normalizedAmount: bid.normalizedAmount,
+        enteredRepresentation: bid.enteredRepresentation,
+        currencyProfile: bid.currencyProfile,
         createdAt: bid.createdAt.toISOString(),
         isAnonymous: true,
         user: null,
@@ -310,6 +345,9 @@ export async function getItemDetailPageData(
     return {
       id: bid.id,
       amount: bid.amount,
+      normalizedAmount: bid.normalizedAmount,
+      enteredRepresentation: bid.enteredRepresentation,
+      currencyProfile: bid.currencyProfile,
       createdAt: bid.createdAt.toISOString(),
       isAnonymous: bid.isAnonymous,
       user: bid.isAnonymous ? null : bid.user,
@@ -624,6 +662,16 @@ export async function getItemBidsForDisplay(
   const bidsRaw = await prisma.bid.findMany({
     where: { auctionItemId: itemId },
     include: {
+      currencyProfile: {
+        select: {
+          id: true,
+          symbol: true,
+          inputMode: true,
+          fractionMode: true,
+          precision: true,
+          denominationConfig: true,
+        },
+      },
       user: {
         select: { id: true, name: true },
       },
@@ -639,6 +687,9 @@ export async function getItemBidsForDisplay(
       return {
         id: bid.id,
         amount: bid.amount,
+        normalizedAmount: bid.normalizedAmount,
+        enteredRepresentation: bid.enteredRepresentation,
+        currencyProfile: bid.currencyProfile,
         createdAt: bid.createdAt.toISOString(),
         isAnonymous: bid.isAnonymous,
         user: bid.user,
@@ -650,6 +701,9 @@ export async function getItemBidsForDisplay(
       return {
         id: bid.id,
         amount: bid.amount,
+        normalizedAmount: bid.normalizedAmount,
+        enteredRepresentation: bid.enteredRepresentation,
+        currencyProfile: bid.currencyProfile,
         createdAt: bid.createdAt.toISOString(),
         isAnonymous: false,
         user: bid.user,
@@ -661,6 +715,9 @@ export async function getItemBidsForDisplay(
       return {
         id: bid.id,
         amount: bid.amount,
+        normalizedAmount: bid.normalizedAmount,
+        enteredRepresentation: bid.enteredRepresentation,
+        currencyProfile: bid.currencyProfile,
         createdAt: bid.createdAt.toISOString(),
         isAnonymous: true,
         user: null,
@@ -672,6 +729,9 @@ export async function getItemBidsForDisplay(
       return {
         id: bid.id,
         amount: bid.amount,
+        normalizedAmount: bid.normalizedAmount,
+        enteredRepresentation: bid.enteredRepresentation,
+        currencyProfile: bid.currencyProfile,
         createdAt: bid.createdAt.toISOString(),
         isAnonymous: true,
         user: null,
@@ -681,6 +741,9 @@ export async function getItemBidsForDisplay(
     return {
       id: bid.id,
       amount: bid.amount,
+      normalizedAmount: bid.normalizedAmount,
+      enteredRepresentation: bid.enteredRepresentation,
+      currencyProfile: bid.currencyProfile,
       createdAt: bid.createdAt.toISOString(),
       isAnonymous: false,
       user: bid.user,
@@ -761,6 +824,9 @@ export async function createItem(
       currencyCode: input.currencyCode,
       startingBid: input.startingBid || 0,
       minBidIncrement: input.minBidIncrement || 1,
+      minBidConstraint: (input.minBidConstraint ?? null) as never,
+      minBidNormalized: input.minBidNormalized ?? null,
+      minIncrementNormalized: input.minIncrementNormalized ?? null,
       bidderAnonymous: input.bidderAnonymous || false,
       endDate: input.endDate ? new Date(input.endDate) : null,
       isPublished: input.isPublished ?? false,
@@ -893,6 +959,15 @@ export async function updateItem(
     updateData.description = input.description;
   if (input.minBidIncrement !== undefined)
     updateData.minBidIncrement = input.minBidIncrement;
+  if (input.minBidConstraint !== undefined) {
+    updateData.minBidConstraint = input.minBidConstraint as never;
+  }
+  if (input.minBidNormalized !== undefined) {
+    updateData.minBidNormalized = input.minBidNormalized;
+  }
+  if (input.minIncrementNormalized !== undefined) {
+    updateData.minIncrementNormalized = input.minIncrementNormalized;
+  }
   if (input.bidderAnonymous !== undefined)
     updateData.bidderAnonymous = input.bidderAnonymous;
   if (input.endDate !== undefined) {

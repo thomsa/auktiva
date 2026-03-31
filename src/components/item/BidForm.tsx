@@ -11,6 +11,11 @@ interface BidFormData {
   isAnonymous?: boolean;
 }
 
+interface BidRuleViolation {
+  code: string;
+  message: string;
+}
+
 interface BidFormProps {
   item: {
     id: string;
@@ -91,6 +96,20 @@ export function BidForm({
       const result = await res.json();
 
       if (!res.ok) {
+        const ruleViolations =
+          result?.details?.type === "RULE_VIOLATION" &&
+          Array.isArray(result?.details?.violations)
+            ? (result.details.violations as BidRuleViolation[])
+            : [];
+
+        if (ruleViolations.length > 0) {
+          setError("root", {
+            message: ruleViolations
+              .map((violation) => violation.message)
+              .join(" • "),
+          });
+        }
+
         showToast(result.message || tErrors("bid.placeFailed"), "error");
       } else {
         await onBidPlaced();
