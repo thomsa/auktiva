@@ -1,0 +1,49 @@
+{
+  "csvImport": {
+    "seo": {
+      "title": "Импорт CSV",
+      "description": "Импорт нескольких лотов из CSV-файла"
+    },
+    "title": "Импорт CSV",
+    "subtitle": "Импорт нескольких лотов из CSV-файла",
+    "selectAuction": "Выберите целевой аукцион",
+    "selectAuctionPlaceholder": "Выберите аукцион...",
+    "noAuctions": "У вас нет аукционов, в которые можно добавлять лоты. Сначала создайте аукцион.",
+    "uploadCSV": "Загрузить CSV-файл",
+    "downloadTemplate": "Скачать шаблон",
+    "csvFormat": "Формат CSV",
+    "csvFormatDesc": "CSV-файл должен содержать заголовки в первой строке. Поддерживаемые столбцы:",
+    "previewAndEdit": "Просмотр и редактирование",
+    "importAll": "Импортировать {count} лотов",
+    "importing": "Импорт...",
+    "importingTo": "Лоты будут импортированы в: {auction}",
+    "parseSuccess": "{count} лотов успешно проанализировано",
+    "parseWarnings": "Обнаружено {count} предупреждений",
+    "parseError": "Не удалось проанализировать CSV-файл",
+    "importSuccess": "Успешно импортировано {count} лотов",
+    "importPartial": "Импортировано: {success}, не удалось: {failed}",
+    "importResult": "Импортировано: {success}, ошибок: {failed}",
+    "fixErrorsFirst": "Исправьте все ошибки перед импортом",
+    "errorsFound": "{count} лотов содержат ошибки",
+    "fixErrorsBeforeImport": "Исправьте ошибки перед импортом",
+    "selectItems": "Выберите лоты для редактирования",
+    "selected": "Выбрано: {count}",
+    "publishAll": "Опубликовать все",
+    "unpublishAll": "Снять с публикации все",
+    "applyToSelected": "Применить",
+    "removeSelected": "Удалить выбранные",
+    "removeItem": "Удалить лот",
+    "name": "Название",
+    "description": "Описание",
+    "currency": "Валюта",
+    "startingBid": "Стартовая ставка",
+    "minIncrement": "Мин. шаг",
+    "status": "Статус",
+    "noItems": "Нет лотов для импорта. Загрузите CSV-файл.",
+    "cannotSelectWithErrors": "Исправьте ошибки перед выбором",
+    "validation": {
+      "required": "Это поле обязательно",
+      "invalid": "Неверное значение"
+    }
+  }
+}

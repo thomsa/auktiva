@@ -1,0 +1,123 @@
+{
+  "settings": {
+    "title": "Настройки",
+    "subtitle": "Управление настройками учётной записи и профилем",
+    "profile": {
+      "title": "Профиль",
+      "email": "Эл. почта",
+      "emailCannotChange": "Адрес электронной почты нельзя изменить",
+      "displayName": "Отображаемое имя",
+      "displayNamePlaceholder": "Ваше имя",
+      "saveProfile": "Сохранить профиль",
+      "saving": "Сохранение...",
+      "profileUpdated": "Профиль успешно обновлён"
+    },
+    "password": {
+      "title": "Сменить пароль",
+      "currentPassword": "Текущий пароль",
+      "newPassword": "Новый пароль",
+      "newPasswordPlaceholder": "Не менее 8 символов",
+      "confirmNewPassword": "Подтвердите новый пароль",
+      "changePassword": "Сменить пароль",
+      "changing": "Смена...",
+      "passwordChanged": "Пароль успешно изменён",
+      "passwordsDoNotMatch": "Новые пароли не совпадают",
+      "passwordTooShort": "Пароль должен содержать не менее 8 символов"
+    },
+    "emailNotifications": {
+      "title": "Email-уведомления",
+      "settingsSaved": "Настройки сохранены",
+      "newItemNotifications": "Новые лоты",
+      "newItemDescription": "Получать письма, когда в аукцион добавляют новый лот",
+      "outbidNotifications": "Перебивание ставки",
+      "outbidDescription": "Получать письма, когда вашу ставку перебивают",
+      "itemWonNotifications": "Выигрыш лота",
+      "itemWonDescription": "Получать письма, когда вы выигрываете лот"
+    },
+    "appearance": {
+      "title": "Внешний вид",
+      "themePreference": "Тема оформления",
+      "light": "Светлая",
+      "dark": "Тёмная",
+      "system": "Системная"
+    },
+    "language": {
+      "title": "Язык",
+      "selectLanguage": "Выберите язык",
+      "languageDescription": "Выберите предпочитаемый язык интерфейса"
+    },
+    "connectedAccounts": {
+      "title": "Подключённые учётные записи",
+      "connected": "Подключено",
+      "notConnected": "Не подключено"
+    },
+    "deploymentAdmin": {
+      "title": "Администрирование инстанса",
+      "description": "Управление обновлениями и администрирование этого инстанса.",
+      "youAreAdmin": "Вы администратор инстанса",
+      "adminDescription": "Вы можете устанавливать обновления из уведомления.",
+      "noAdminSet": "Администратор не назначен",
+      "claimAdminDescription": "Станьте первым администратором этого инстанса.",
+      "becomeAdmin": "Стать администратором",
+      "claiming": "Назначение...",
+      "becameAdmin": "Теперь вы администратор инстанса",
+      "removeAdmin": "Снять права администратора",
+      "removing": "Снятие...",
+      "removedAdmin": "Администратор удалён",
+      "adminAlreadySet": "Другой пользователь является администратором",
+      "contactCurrentAdmin": "Свяжитесь с текущим администратором для передачи прав.",
+      "transferTitle": "Передача прав",
+      "transferDescription": "Передать права администратора другому зарегистрированному пользователю.",
+      "emailPlaceholder": "Введите email пользователя",
+      "transfer": "Передать",
+      "transferring": "Передача...",
+      "transferred": "Права администратора успешно переданы",
+      "enterEmail": "Пожалуйста, введите адрес электронной почты",
+      "versionTitle": "Информация о версии",
+      "currentVersion": "Текущая версия",
+      "latestVersion": "Последняя версия",
+      "viewChangelog": "Список изменений",
+      "updateNow": "Обновить сейчас",
+      "updating": "Обновление..."
+    },
+    "seo": {
+      "title": "Настройки",
+      "description": "Управление настройками учётной записи"
+    },
+    "deleteAccount": {
+      "title": "Удалить учётную запись",
+      "description": "Безвозвратно удалить учётную запись и все связанные данные.",
+      "warning": "Это действие необратимо",
+      "warningDescription": "После удаления учётную запись и данные невозможно восстановить.",
+      "deleteButton": "Удалить мою учётную запись",
+      "modalTitle": "Удаление учётной записи",
+      "modalDescription": "Это приведёт к безвозвратному удалению вашей учётной записи, включая все ставки, созданные лоты и членства в аукционах. Это действие нельзя отменить.",
+      "ownedAuctionsTitle": "Вы являетесь владельцем следующих аукционов",
+      "ownedAuctionsDescription": "Выберите, что делать с каждым аукционом перед удалением учётной записи.",
+      "deleteAuction": "Удалить аукцион",
+      "transferOwnership": "Передать владение",
+      "newOwnerEmail": "Email нового владельца",
+      "enterTransferEmail": "Введите email для аукциона {auction}",
+      "enterPassword": "Введите пароль для подтверждения",
+      "enterEmail": "Введите email для подтверждения",
+      "passwordPlaceholder": "Ваш текущий пароль",
+      "passwordHint": "Введите пароль для подтверждения личности",
+      "emailHint": "Введите ваш email точно как указано для подтверждения",
+      "passwordRequired": "Требуется пароль",
+      "emailRequired": "Требуется подтверждение email",
+      "incorrectPassword": "Неверный пароль",
+      "incorrectEmail": "Email не совпадает",
+      "mustTransferAdmin": "Перед удалением учётной записи необходимо передать права администратора инстанса",
+      "cancel": "Отмена",
+      "confirmDelete": "Удалить учётную запись",
+      "deleting": "Удаление...",
+      "accountDeleted": "Ваша учётная запись удалена"
+    },
+    "quickLinks": {
+      "title": "Быстрые ссылки",
+      "documentation": "Документация",
+      "feedback": "Отправить отзыв",
+      "signOut": "Выйти"
+    }
+  }
+}
