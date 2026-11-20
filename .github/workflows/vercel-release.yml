@@ -21,17 +21,17 @@ jobs:
 
       - name: Ensure tag is on main
         run: |
-          TAG_COMMIT=$(git rev-list -n 1 $GITHUB_REF)
-          MAIN_COMMIT=$(git rev-parse origin/main)
-
-          if ! git branch --contains "$TAG_COMMIT" | grep -q "main"; then
-            echo "Tag is not on main. Skipping deploy."
-            exit 0
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo "::error::The release tag must point to a commit on origin/main."
+            exit 1
           fi
 
       - name: Trigger Vercel Deploy Hook
         run: |
-          curl -X POST "$VERCEL_DEPLOY_HOOK_URL"
+          response=$(curl --fail --silent --show-error --max-time 90 \
+            --request POST "$VERCEL_DEPLOY_HOOK_URL")
+          job_id=$(jq -er '.job.id | strings | select(length > 0)' <<< "$response")
+          echo "Vercel accepted deployment job $job_id."
         env:
           VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
 
