@@ -1,7 +1,9 @@
+import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { getPublicUrl } from "@/lib/storage";
-import { MemberRole } from "@/generated/prisma/enums";
+import { JoinMode, MemberRole } from "@/generated/prisma/enums";
 import type { Auction, AuctionMember } from "@/generated/prisma/client";
+import { canAutoJoin } from "@/utils/auction-helpers";
 
 // ============================================================================
 // Types
@@ -482,19 +484,22 @@ export async function autoJoinAuction(
   auctionId: string,
   userId: string,
 ): Promise<AuctionMember | null> {
-  // Don't auto-rejoin if the user previously left voluntarily
-  const hasLeft = await hasUserLeftAuction(auctionId, userId);
-  if (hasLeft) {
-    return null;
-  }
+  // Check join mode and voluntary departures in the same write that joins the
+  // user. The unique pair keeps concurrent arrivals from creating duplicates.
+  await prisma.$executeRaw`
+    INSERT INTO "auction_members" ("id", "auctionId", "userId", "role")
+    SELECT ${randomUUID()}, "id", ${userId}, ${MemberRole.BIDDER}
+    FROM "auctions"
+    WHERE "id" = ${auctionId}
+      AND "joinMode" IN (${JoinMode.FREE}, ${JoinMode.LINK})
+      AND NOT EXISTS (
+        SELECT 1 FROM "auction_leaves"
+        WHERE "auctionId" = ${auctionId} AND "userId" = ${userId}
+      )
+    ON CONFLICT ("auctionId", "userId") DO NOTHING
+  `;
 
-  return prisma.auctionMember.create({
-    data: {
-      auctionId,
-      userId,
-      role: MemberRole.BIDDER,
-    },
-  });
+  return getUserMembership(auctionId, userId);
 }
 
 /**
@@ -514,7 +519,7 @@ export async function rejoinAuction(
     if (!auction) {
       throw new Error("AUCTION_NOT_FOUND");
     }
-    if (auction.joinMode !== "FREE" && auction.joinMode !== "LINK") {
+    if (!canAutoJoin(auction)) {
       throw new Error("NOT_PUBLIC_AUCTION");
     }
 
@@ -672,13 +677,6 @@ export function canCreateItems(membership: AuctionMember | null): boolean {
   return ["OWNER", "ADMIN", "CREATOR"].includes(membership?.role || "");
 }
 
-/**
- * Check if auction allows open join
- */
-export function canAutoJoin(auction: Auction): boolean {
-  return auction.joinMode === "FREE" || auction.joinMode === "LINK";
-}
-
 // ============================================================================
 // Public Access Functions (for OG tags / social sharing)
 // ============================================================================
@@ -720,10 +718,7 @@ export async function getPublicAuctionData(
   });
 
   // Only return data for publicly accessible auctions
-  if (
-    !auction ||
-    (auction.joinMode !== "FREE" && auction.joinMode !== "LINK")
-  ) {
+  if (!auction || !canAutoJoin(auction)) {
     return null;
   }
 

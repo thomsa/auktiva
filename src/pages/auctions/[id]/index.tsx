@@ -5,6 +5,11 @@ import useSWR from "swr";
 import { getMessages, Locale } from "@/i18n";
 import { fetcher } from "@/lib/fetcher";
 import * as auctionService from "@/lib/services/auction.service";
+import {
+  consumePendingAuctionDestination,
+  getPendingAuctionArrival,
+  PENDING_AUCTION_ARRIVAL_PARAM,
+} from "@/lib/services/pending-auction.service";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { AuctionSidebar } from "@/components/auction";
 import { ItemCard, ItemListItem } from "@/components/item";
@@ -16,7 +21,11 @@ import {
 } from "@/components/ui/sort-dropdown";
 import { useSortFilter, usePollingInterval } from "@/hooks/ui";
 import { withAuth } from "@/lib/auth/withAuth";
-import { isUserAdmin, canUserCreateItems } from "@/utils/auction-helpers";
+import {
+  canAutoJoin,
+  isUserAdmin,
+  canUserCreateItems,
+} from "@/utils/auction-helpers";
 import { useTranslations } from "next-intl";
 
 interface Auction {
@@ -341,6 +350,12 @@ export default function AuctionDetailPage({
 
 export const getServerSideProps = withAuth(async (context) => {
   const auctionId = context.params?.id as string;
+  const userId = context.session.user.id;
+  const pending = await getPendingAuctionArrival(
+    userId,
+    auctionId,
+    context.query[PENDING_AUCTION_ARRIVAL_PARAM],
+  );
 
   // Get auction details
   const auction = await auctionService.getAuctionForDetailPage(auctionId);
@@ -355,18 +370,15 @@ export const getServerSideProps = withAuth(async (context) => {
   }
 
   // Get membership check
-  let membership = await auctionService.getUserMembership(
-    auctionId,
-    context.session.user.id,
-  );
+  let membership = await auctionService.getUserMembership(auctionId, userId);
 
   // If not a member, check if this is an OPEN or LINK auction
   if (!membership) {
-    if (auction.joinMode === "FREE" || auction.joinMode === "LINK") {
+    if (canAutoJoin(auction)) {
       // Check if user previously left voluntarily
       const hasLeft = await auctionService.hasUserLeftAuction(
         auctionId,
-        context.session.user.id,
+        userId,
       );
 
       if (hasLeft) {
@@ -388,10 +400,7 @@ export const getServerSideProps = withAuth(async (context) => {
       }
 
       // Auto-join new users
-      membership = await auctionService.autoJoinAuction(
-        auctionId,
-        context.session.user.id,
-      );
+      membership = await auctionService.autoJoinAuction(auctionId, userId);
     }
 
     // Not a member and not a public auction - redirect
@@ -403,6 +412,11 @@ export const getServerSideProps = withAuth(async (context) => {
         },
       };
     }
+  }
+
+  const messages = await getMessages(context.locale as Locale);
+  if (pending) {
+    await consumePendingAuctionDestination(pending.id, userId, auctionId);
   }
 
   return {
@@ -418,7 +432,7 @@ export const getServerSideProps = withAuth(async (context) => {
         role: membership.role,
       },
       hasLeft: false,
-      messages: await getMessages(context.locale as Locale),
+      messages,
     },
   };
 });

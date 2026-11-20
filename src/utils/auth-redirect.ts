@@ -78,11 +78,22 @@ export function getSafeRedirectUrl(
   return redirectUrl.startsWith("/") ? redirectUrl : decoded;
 }
 
-export function getAuthRedirectUrl(query: {
-  redirectUrl?: string | string[];
-  callbackUrl?: string | string[];
-}): string {
-  return getSafeRedirectUrl(query.redirectUrl ?? query.callbackUrl);
+export function getAuthRedirectUrl(
+  query: {
+    redirectUrl?: string | string[];
+    callbackUrl?: string | string[];
+  },
+  defaultUrl = "/dashboard",
+): string {
+  return getSafeRedirectUrl(query.redirectUrl ?? query.callbackUrl, defaultUrl);
+}
+
+export function getAuctionIdFromAuthRedirect(
+  redirectUrl?: string,
+): string | null {
+  const redirect = getSafeRedirectUrl(redirectUrl, "");
+  const match = /^\/auctions\/([a-zA-Z0-9_-]+)\/?(?:[?#]|$)/.exec(redirect);
+  return match?.[1] ?? null;
 }
 
 export function authPageHref(path: string, redirectUrl: string): string {

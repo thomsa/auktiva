@@ -38,6 +38,7 @@ model User {
   passwordResetTokens       PasswordResetToken[]
   emailVerificationTokens   EmailVerificationToken[]
   auctionLeaves             AuctionLeave[]
+  pendingAuctionDestination PendingAuctionDestination?
 
   @@map("users")
 }
@@ -170,8 +171,21 @@ model Auction {
   invites           AuctionInvite[]
   leaves            AuctionLeave[]
   customCurrencies  AuctionCurrencyProfile[]
+  pendingDestinations PendingAuctionDestination[]
 
   @@map("auctions")
+}
+
+model PendingAuctionDestination {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  auctionId String
+  auction   Auction  @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+
+  @@index([auctionId])
+  @@map("pending_auction_destinations")
 }
 
 // ============================================

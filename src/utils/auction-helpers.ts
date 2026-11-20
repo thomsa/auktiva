@@ -2,6 +2,10 @@
  * Auction and item business logic helpers
  */
 
+export function canAutoJoin(auction: { joinMode: string }): boolean {
+  return auction.joinMode === "FREE" || auction.joinMode === "LINK";
+}
+
 export function isAuctionEnded(endDate: string | null): boolean {
   if (!endDate) return false;
   return new Date(endDate) < new Date();

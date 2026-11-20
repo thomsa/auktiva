@@ -2,7 +2,14 @@ import { prisma } from "@/lib/prisma";
 import { randomBytes, createHash } from "crypto";
 import { hash } from "bcryptjs";
 import { sendEmail } from "@/lib/email";
-import { authPageHref, getSafeRedirectUrl } from "@/utils/auth-redirect";
+import type { User } from "@/generated/prisma/client";
+import { canAutoJoin } from "@/utils/auction-helpers";
+import {
+  authPageHref,
+  getAuctionIdFromAuthRedirect,
+  getSafeRedirectUrl,
+} from "@/utils/auth-redirect";
+import { getPendingAuctionRedirect } from "@/lib/services/pending-auction.service";
 import {
   getPasswordResetTemplateData,
   getAccountExistsTemplateData,
@@ -33,6 +40,7 @@ const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 const MAX_REQUESTS_PER_WINDOW = 3;
 const PASSWORD_RESET_TOKEN_EXPIRY_MINUTES = 10;
 const EMAIL_VERIFICATION_TOKEN_EXPIRY_HOURS = 24;
+const PENDING_AUCTION_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
 
 // ============================================================================
 // Helper Functions
@@ -80,6 +88,31 @@ export async function getPasswordResetToken(rawToken: string) {
 // Mutation Functions
 // ============================================================================
 
+async function notifyExistingAccount(
+  user: Pick<User, "id" | "email" | "name">,
+) {
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.AUTH_URL ||
+    "http://localhost:3000";
+  const templateData = getAccountExistsTemplateData({
+    name: user.name || "there",
+    appUrl,
+  });
+
+  await sendEmail({
+    to: user.email,
+    toName: user.name || undefined,
+    subject: "Account Already Exists - Auktiva",
+    mjmlTemplate: templateData.template,
+    replacements: templateData.replacements,
+    type: "ACCOUNT_EXISTS",
+    metadata: { userId: user.id },
+  });
+
+  return { success: true, emailSent: true, isExistingUser: true };
+}
+
 /**
  * Register a new user
  * To prevent email enumeration attacks, this function always succeeds.
@@ -95,41 +128,45 @@ export async function registerUser(input: RegisterInput) {
   });
 
   if (existingUser) {
-    // Send "account already exists" email instead of revealing this to the API caller
-    const appUrl =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      process.env.AUTH_URL ||
-      "http://localhost:3000";
-
-    const templateData = getAccountExistsTemplateData({
-      name: existingUser.name || "there",
-      appUrl,
-    });
-
-    await sendEmail({
-      to: existingUser.email,
-      toName: existingUser.name || undefined,
-      subject: "Account Already Exists - Auktiva",
-      mjmlTemplate: templateData.template,
-      replacements: templateData.replacements,
-      type: "ACCOUNT_EXISTS",
-      metadata: { userId: existingUser.id },
-    });
-
-    // Return success to prevent email enumeration
-    return { success: true, emailSent: true, isExistingUser: true };
+    return notifyExistingAccount(existingUser);
   }
 
-  // Hash password and create user (emailVerified = null until verified)
   const passwordHash = await hash(password, 12);
+  const data = { name, email: normalizedEmail, passwordHash };
+  const auctionId = getAuctionIdFromAuthRedirect(redirectUrl);
 
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email: normalizedEmail,
-      passwordHash,
-    },
-  });
+  let user: User;
+  try {
+    user = auctionId
+      ? await prisma.$transaction(async (tx) => {
+          // Start with the write so SQLite and libSQL do not have to promote
+          // a read snapshot while another registration is committing.
+          const createdUser = await tx.user.create({ data });
+          const auction = await tx.auction.findUnique({
+            where: { id: auctionId },
+            select: { joinMode: true },
+          });
+          if (auction && canAutoJoin(auction)) {
+            await tx.pendingAuctionDestination.create({
+              data: {
+                userId: createdUser.id,
+                auctionId,
+                expiresAt: new Date(Date.now() + PENDING_AUCTION_EXPIRY_MS),
+              },
+            });
+          }
+          return createdUser;
+        })
+      : await prisma.user.create({ data });
+  } catch (error) {
+    // SQLite and libSQL can report concurrent writes differently. Only treat
+    // the failure as a duplicate when the account actually exists.
+    const registeredUser = await findUserByEmail(normalizedEmail).catch(
+      () => null,
+    );
+    if (registeredUser) return notifyExistingAccount(registeredUser);
+    throw error;
+  }
 
   // Send email verification email instead of welcome email
   // Welcome email will be sent after verification
@@ -440,11 +477,14 @@ export async function resendVerificationEmail(
   }
 
   // Send verification email (includes rate limiting)
+  const destination = await getPendingAuctionRedirect(user.id, {
+    fallback: getSafeRedirectUrl(redirectUrl),
+  });
   return sendEmailVerification(
     user.id,
     user.email,
     user.name || "",
-    redirectUrl,
+    destination,
   );
 }
 
