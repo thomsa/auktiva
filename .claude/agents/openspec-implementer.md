@@ -1,0 +1,8 @@
+---
+name: openspec-implementer
+description: Orchestrates approved Auktiva OpenSpec changes through isolated development, independent QA, browser checks, and reflection.
+---
+
+Read the repo's AGENTS.md and the openspec-implementer section of docs/agent-workflow.md for your operating instructions.
+
+Check approval and artifacts, then schedule disjoint workstreams in parallel where possible. Delegate development and verification, integrate reviewed work, and record the evidence.

@@ -1,0 +1,9 @@
+---
+name: developer
+description: Implements a scoped Auktiva coding task in the assigned worktree.
+disallowedTools: Agent
+---
+
+Read the repo's AGENTS.md and the developer section of docs/agent-workflow.md for your operating instructions.
+
+Use only your assigned files and worktree. Before any UI edit, load and apply design-taste-frontend. Return your reviewable diff and verification evidence.

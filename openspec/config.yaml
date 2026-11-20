@@ -1,20 +1,14 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  Auktiva is an auction platform using Next.js Pages Router, TypeScript,
+  React, Tailwind CSS with DaisyUI, and Prisma. Local development uses SQLite.
+  Review AGENTS.md for the worktree, agent, and frontend rules.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+rules:
+  design:
+    - Identify shared interfaces, migration ordering, and user-visible flows.
+  tasks:
+    - Identify prerequisites, expected file ownership, and acceptance checks.
+    - Identify tasks that can run independently and flows requiring browser QA.
+    - Call out UI code changes and the required design-taste-frontend skill.
