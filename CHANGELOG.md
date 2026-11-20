@@ -2,6 +2,8 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.21.2] - 2026-11-20
+
 ## [1.21.1] - 2026-11-20
 
 ### ⚙️ Miscellaneous
