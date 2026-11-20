@@ -2,6 +2,12 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.21.1] - 2026-11-20
+
+### ⚙️ Miscellaneous
+
+- **filestate**: Checkpoint auction share fix by @thomsa
+
 ## [1.21.0] - 2026-03-31
 
 ### 📚 Documentation
