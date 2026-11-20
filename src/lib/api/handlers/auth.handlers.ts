@@ -11,6 +11,7 @@ const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  redirectUrl: z.string().optional(),
 });
 
 const forgotPasswordSchema = z.object({
@@ -28,6 +29,7 @@ const verifyEmailSchema = z.object({
 
 const resendVerificationSchema = z.object({
   email: z.string().email("Invalid email address"),
+  redirectUrl: z.string().optional(),
 });
 
 // ============================================================================
@@ -162,7 +164,10 @@ export const resendVerification: ApiHandler = async (req, res) => {
     throw new BadRequestError("Email is required");
   }
 
-  const result = await authService.resendVerificationEmail(parsed.data.email);
+  const result = await authService.resendVerificationEmail(
+    parsed.data.email,
+    parsed.data.redirectUrl,
+  );
 
   // Always return success to prevent email enumeration
   // Include rate limit info if applicable

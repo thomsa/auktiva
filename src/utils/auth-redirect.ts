@@ -66,10 +66,27 @@ export function getSafeRedirectUrl(
     return defaultUrl;
   }
 
-  // Prevent javascript: or other protocol URLs
-  if (decoded.includes(":")) {
+  // Reject characters browsers can normalize when resolving a URL.
+  if (
+    decoded.includes(":") ||
+    decoded.includes("\\") ||
+    [...decoded].some((char) => char.charCodeAt(0) < 32)
+  ) {
     return defaultUrl;
   }
 
-  return decoded;
+  return redirectUrl.startsWith("/") ? redirectUrl : decoded;
+}
+
+export function getAuthRedirectUrl(query: {
+  redirectUrl?: string | string[];
+  callbackUrl?: string | string[];
+}): string {
+  return getSafeRedirectUrl(query.redirectUrl ?? query.callbackUrl);
+}
+
+export function authPageHref(path: string, redirectUrl: string): string {
+  if (redirectUrl === "/dashboard") return path;
+  const separator = path.includes("?") ? "&" : "?";
+  return `${path}${separator}redirectUrl=${encodeURIComponent(redirectUrl)}`;
 }

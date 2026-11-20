@@ -1,0 +1,15 @@
+[Email Verification] Email sent to bidder@example.test
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ null
+- '/auctions/auction-123'
+
+    at run (/home/tamas/src/auktiva-share-fix/browser-check.cjs:113:12) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: null,
+  expected: '/auctions/auction-123',
+  operator: 'strictEqual',
+  diff: 'simple'
+}

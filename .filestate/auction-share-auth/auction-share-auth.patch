@@ -1,0 +1,432 @@
+diff --git a/src/lib/api/handlers/auth.handlers.ts b/src/lib/api/handlers/auth.handlers.ts
+index 46cb3b2..9221abe 100644
+--- a/src/lib/api/handlers/auth.handlers.ts
++++ b/src/lib/api/handlers/auth.handlers.ts
+@@ -11,6 +11,7 @@ const registerSchema = z.object({
+   name: z.string().min(2, "Name must be at least 2 characters"),
+   email: z.string().email("Invalid email address"),
+   password: z.string().min(6, "Password must be at least 6 characters"),
++  redirectUrl: z.string().optional(),
+ });
+ 
+ const forgotPasswordSchema = z.object({
+@@ -28,6 +29,7 @@ const verifyEmailSchema = z.object({
+ 
+ const resendVerificationSchema = z.object({
+   email: z.string().email("Invalid email address"),
++  redirectUrl: z.string().optional(),
+ });
+ 
+ // ============================================================================
+@@ -162,7 +164,10 @@ export const resendVerification: ApiHandler = async (req, res) => {
+     throw new BadRequestError("Email is required");
+   }
+ 
+-  const result = await authService.resendVerificationEmail(parsed.data.email);
++  const result = await authService.resendVerificationEmail(
++    parsed.data.email,
++    parsed.data.redirectUrl,
++  );
+ 
+   // Always return success to prevent email enumeration
+   // Include rate limit info if applicable
+diff --git a/src/lib/services/auth.service.ts b/src/lib/services/auth.service.ts
+index 2727b91..b4c97e7 100644
+--- a/src/lib/services/auth.service.ts
++++ b/src/lib/services/auth.service.ts
+@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
+ import { randomBytes, createHash } from "crypto";
+ import { hash } from "bcryptjs";
+ import { sendEmail } from "@/lib/email";
++import { authPageHref, getSafeRedirectUrl } from "@/utils/auth-redirect";
+ import {
+   getPasswordResetTemplateData,
+   getAccountExistsTemplateData,
+@@ -16,6 +17,7 @@ export interface RegisterInput {
+   name: string;
+   email: string;
+   password: string;
++  redirectUrl?: string;
+ }
+ 
+ export interface ResetPasswordInput {
+@@ -84,7 +86,7 @@ export async function getPasswordResetToken(rawToken: string) {
+  * If the email already exists, we send an "account exists" email instead.
+  */
+ export async function registerUser(input: RegisterInput) {
+-  const { name, email, password } = input;
++  const { name, email, password, redirectUrl } = input;
+   const normalizedEmail = email.toLowerCase();
+ 
+   // Check if user already exists
+@@ -131,7 +133,12 @@ export async function registerUser(input: RegisterInput) {
+ 
+   // Send email verification email instead of welcome email
+   // Welcome email will be sent after verification
+-  await sendEmailVerification(user.id, user.email, user.name || "");
++  await sendEmailVerification(
++    user.id,
++    user.email,
++    user.name || "",
++    redirectUrl,
++  );
+ 
+   return { success: true, user, emailSent: true };
+ }
+@@ -285,6 +292,7 @@ export async function sendEmailVerification(
+   userId: string,
+   email: string,
+   name: string,
++  redirectUrl?: string,
+ ): Promise<{ success: boolean; rateLimited?: boolean }> {
+   // Rate limiting: check how many tokens were created in the last hour
+   const oneHourAgo = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+@@ -327,7 +335,11 @@ export async function sendEmailVerification(
+     process.env.NEXT_PUBLIC_APP_URL ||
+     process.env.AUTH_URL ||
+     "http://localhost:3000";
+-  const verificationUrl = `${appUrl}/verify-email?token=${rawToken}`;
++  const verificationPath = authPageHref(
++    `/verify-email?token=${rawToken}`,
++    getSafeRedirectUrl(redirectUrl),
++  );
++  const verificationUrl = `${appUrl}${verificationPath}`;
+ 
+   // Send email
+   const templateData = getEmailVerificationTemplateData({
+@@ -403,7 +415,10 @@ export async function verifyEmail(rawToken: string): Promise<{
+  * Resend verification email
+  * Returns success regardless of whether user exists (security)
+  */
+-export async function resendVerificationEmail(email: string): Promise<{
++export async function resendVerificationEmail(
++  email: string,
++  redirectUrl?: string,
++): Promise<{
+   success: boolean;
+   rateLimited?: boolean;
+ }> {
+@@ -425,7 +440,12 @@ export async function resendVerificationEmail(email: string): Promise<{
+   }
+ 
+   // Send verification email (includes rate limiting)
+-  return sendEmailVerification(user.id, user.email, user.name || "");
++  return sendEmailVerification(
++    user.id,
++    user.email,
++    user.name || "",
++    redirectUrl,
++  );
+ }
+ 
+ /**
+diff --git a/src/pages/login.tsx b/src/pages/login.tsx
+index 8e85817..8ec7762 100644
+--- a/src/pages/login.tsx
++++ b/src/pages/login.tsx
+@@ -11,14 +11,16 @@ import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
+ import { MicrosoftSignInButton } from "@/components/auth/microsoft-sign-in-button";
+ import { getMessages, Locale } from "@/i18n";
+ import { useTranslations } from "next-intl";
+-import { getSafeRedirectUrl } from "@/utils/auth-redirect";
++import { authPageHref, getAuthRedirectUrl } from "@/utils/auth-redirect";
+ 
+ interface LoginPageProps {
++  redirectUrl: string;
+   googleOAuthEnabled: boolean;
+   microsoftOAuthEnabled: boolean;
+ }
+ 
+ export default function LoginPage({
++  redirectUrl,
+   googleOAuthEnabled,
+   microsoftOAuthEnabled,
+ }: LoginPageProps) {
+@@ -61,8 +63,6 @@ export default function LoginPage({
+           setError(tErrors("auth.invalidCredentials"));
+         }
+       } else {
+-        // Redirect to callback URL or dashboard
+-        const redirectUrl = getSafeRedirectUrl(router.query.redirectUrl);
+         router.push(redirectUrl);
+       }
+     } catch {
+@@ -167,7 +167,10 @@ export default function LoginPage({
+                               {
+                                 method: "POST",
+                                 headers: { "Content-Type": "application/json" },
+-                                body: JSON.stringify({ email: loginEmail }),
++                                body: JSON.stringify({
++                                  email: loginEmail,
++                                  redirectUrl,
++                                }),
+                               },
+                             );
+                             if (res.ok) {
+@@ -269,8 +272,12 @@ export default function LoginPage({
+                   {t("orContinueWith")}
+                 </div>
+                 <div className="flex flex-col gap-3">
+-                  {googleOAuthEnabled && <GoogleSignInButton />}
+-                  {microsoftOAuthEnabled && <MicrosoftSignInButton />}
++                  {googleOAuthEnabled && (
++                    <GoogleSignInButton callbackUrl={redirectUrl} />
++                  )}
++                  {microsoftOAuthEnabled && (
++                    <MicrosoftSignInButton callbackUrl={redirectUrl} />
++                  )}
+                 </div>
+                 <p className="text-xs text-base-content/50 text-center mt-4">
+                   {t("oauthTermsAgreement")}{" "}
+@@ -289,7 +296,7 @@ export default function LoginPage({
+               <p className="text-sm text-base-content/60">
+                 {t("noAccount")}{" "}
+                 <Link
+-                  href="/register"
++                  href={authPageHref("/register", redirectUrl)}
+                   className="link link-primary font-bold hover:text-primary/80 transition-colors"
+                 >
+                   {t("createAccount")}
+@@ -304,12 +311,13 @@ export default function LoginPage({
+ }
+ 
+ export const getServerSideProps: GetServerSideProps = async (context) => {
++  const redirectUrl = getAuthRedirectUrl(context.query);
+   const session = await getServerSession(context.req, context.res, authOptions);
+ 
+   if (session) {
+     return {
+       redirect: {
+-        destination: "/dashboard",
++        destination: redirectUrl,
+         permanent: false,
+       },
+     };
+@@ -327,6 +335,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
+ 
+   return {
+     props: {
++      redirectUrl,
+       messages,
+       googleOAuthEnabled,
+       microsoftOAuthEnabled,
+diff --git a/src/pages/register.tsx b/src/pages/register.tsx
+index 7da0e23..5fbbcbd 100644
+--- a/src/pages/register.tsx
++++ b/src/pages/register.tsx
+@@ -10,20 +10,24 @@ import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
+ import { MicrosoftSignInButton } from "@/components/auth/microsoft-sign-in-button";
+ import { getMessages, Locale } from "@/i18n";
+ import { useTranslations } from "next-intl";
++import { authPageHref, getAuthRedirectUrl } from "@/utils/auth-redirect";
+ 
+ const LazyReCAPTCHA = lazy(() => import("react-google-recaptcha"));
+ 
+ interface RegisterPageProps {
++  redirectUrl: string;
+   recaptchaSiteKey: string | null;
+   googleOAuthEnabled: boolean;
+   microsoftOAuthEnabled: boolean;
+ }
+ 
+ export default function RegisterPage({
++  redirectUrl,
+   recaptchaSiteKey,
+   googleOAuthEnabled,
+   microsoftOAuthEnabled,
+ }: RegisterPageProps) {
++  const loginHref = authPageHref("/login", redirectUrl);
+   const t = useTranslations("auth.register");
+   const tCommon = useTranslations("common");
+   const tErrors = useTranslations("errors");
+@@ -120,7 +124,7 @@ export default function RegisterPage({
+       const res = await fetch("/api/auth/register", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+-        body: JSON.stringify({ name, email, password }),
++        body: JSON.stringify({ name, email, password, redirectUrl }),
+       });
+ 
+       const data = await res.json();
+@@ -208,7 +212,7 @@ export default function RegisterPage({
+                 </div>
+                 <div className="pt-4">
+                   <Link
+-                    href="/login"
++                    href={loginHref}
+                     className="btn btn-outline btn-primary w-full"
+                   >
+                     {t("backToLogin")}
+@@ -405,8 +409,12 @@ export default function RegisterPage({
+                       {t("orContinueWith")}
+                     </div>
+                     <div className="flex flex-col gap-3">
+-                      {googleOAuthEnabled && <GoogleSignInButton />}
+-                      {microsoftOAuthEnabled && <MicrosoftSignInButton />}
++                      {googleOAuthEnabled && (
++                        <GoogleSignInButton callbackUrl={redirectUrl} />
++                      )}
++                      {microsoftOAuthEnabled && (
++                        <MicrosoftSignInButton callbackUrl={redirectUrl} />
++                      )}
+                     </div>
+                   </>
+                 )}
+@@ -415,7 +423,7 @@ export default function RegisterPage({
+                   <p className="text-sm text-base-content/60">
+                     {t("hasAccount")}{" "}
+                     <Link
+-                      href="/login"
++                      href={loginHref}
+                       className="link link-primary font-bold hover:text-primary/80 transition-colors"
+                     >
+                       {t("signIn")}
+@@ -434,12 +442,13 @@ export default function RegisterPage({
+ export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async (
+   context,
+ ) => {
++  const redirectUrl = getAuthRedirectUrl(context.query);
+   const session = await getServerSession(context.req, context.res, authOptions);
+ 
+   if (session) {
+     return {
+       redirect: {
+-        destination: "/dashboard",
++        destination: redirectUrl,
+         permanent: false,
+       },
+     };
+@@ -460,6 +469,7 @@ export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async (
+   return {
+     props: {
+       recaptchaSiteKey,
++      redirectUrl,
+       messages,
+       googleOAuthEnabled,
+       microsoftOAuthEnabled,
+diff --git a/src/pages/verify-email.tsx b/src/pages/verify-email.tsx
+index ff64482..de5fa73 100644
+--- a/src/pages/verify-email.tsx
++++ b/src/pages/verify-email.tsx
+@@ -7,12 +7,19 @@ import { authOptions } from "@/lib/auth";
+ import { SEO } from "@/components/common";
+ import { getMessages, Locale } from "@/i18n";
+ import { useTranslations } from "next-intl";
++import { authPageHref, getAuthRedirectUrl } from "@/utils/auth-redirect";
+ 
+ interface VerifyEmailPageProps {
+   token: string | null;
++  redirectUrl: string;
+ }
+ 
+-export default function VerifyEmailPage({ token }: VerifyEmailPageProps) {
++export default function VerifyEmailPage({
++  token,
++  redirectUrl,
++}: VerifyEmailPageProps) {
++  const loginHref = authPageHref("/login", redirectUrl);
++  const verifiedLoginHref = authPageHref("/login?verified=true", redirectUrl);
+   const router = useRouter();
+   const t = useTranslations("auth.verifyEmail");
+   const tErrors = useTranslations("errors");
+@@ -44,14 +51,14 @@ export default function VerifyEmailPage({ token }: VerifyEmailPageProps) {
+         setStatus("success");
+         // Redirect to login after 3 seconds
+         setTimeout(() => {
+-          router.push("/login?verified=true");
++          router.push(verifiedLoginHref);
+         }, 3000);
+       }
+     } catch {
+       setStatus("error");
+       setErrorMessage(tErrors("generic"));
+     }
+-  }, [token, router, tErrors]);
++  }, [token, router, tErrors, verifiedLoginHref]);
+ 
+   useEffect(() => {
+     void verifyEmail();
+@@ -99,7 +106,7 @@ export default function VerifyEmailPage({ token }: VerifyEmailPageProps) {
+               </p>
+               <p className="text-base-content/40 mb-8">{t("redirecting")}</p>
+               <Link
+-                href="/login"
++                href={verifiedLoginHref}
+                 className="btn btn-primary btn-lg shadow-lg shadow-primary/20"
+               >
+                 {t("signInNow")}
+@@ -122,14 +129,14 @@ export default function VerifyEmailPage({ token }: VerifyEmailPageProps) {
+               </p>
+               <div className="space-y-3">
+                 <Link
+-                  href="/login"
++                  href={loginHref}
+                   className="btn btn-primary btn-lg w-full shadow-lg shadow-primary/20"
+                 >
+                   {t("backToLogin")}
+                 </Link>
+                 <p className="text-base-content/40 text-sm">
+                   {t("needNewLink")}{" "}
+-                  <Link href="/login" className="link link-primary">
++                  <Link href={loginHref} className="link link-primary">
+                     {t("requestNewLink")}
+                   </Link>
+                 </p>
+@@ -145,12 +152,13 @@ export default function VerifyEmailPage({ token }: VerifyEmailPageProps) {
+ export const getServerSideProps: GetServerSideProps<
+   VerifyEmailPageProps
+ > = async (context) => {
++  const redirectUrl = getAuthRedirectUrl(context.query);
+   const session = await getServerSession(context.req, context.res, authOptions);
+ 
+   if (session) {
+     return {
+       redirect: {
+-        destination: "/dashboard",
++        destination: redirectUrl,
+         permanent: false,
+       },
+     };
+@@ -162,6 +170,7 @@ export const getServerSideProps: GetServerSideProps<
+   return {
+     props: {
+       token,
++      redirectUrl,
+       messages,
+     },
+   };
+diff --git a/src/utils/auth-redirect.ts b/src/utils/auth-redirect.ts
+index 22bbbd2..ac80c21 100644
+--- a/src/utils/auth-redirect.ts
++++ b/src/utils/auth-redirect.ts
+@@ -66,10 +66,27 @@ export function getSafeRedirectUrl(
+     return defaultUrl;
+   }
+ 
+-  // Prevent javascript: or other protocol URLs
+-  if (decoded.includes(":")) {
++  // Reject characters browsers can normalize when resolving a URL.
++  if (
++    decoded.includes(":") ||
++    decoded.includes("\\") ||
++    [...decoded].some((char) => char.charCodeAt(0) < 32)
++  ) {
+     return defaultUrl;
+   }
+ 
+-  return decoded;
++  return redirectUrl.startsWith("/") ? redirectUrl : decoded;
++}
++
++export function getAuthRedirectUrl(query: {
++  redirectUrl?: string | string[];
++  callbackUrl?: string | string[];
++}): string {
++  return getSafeRedirectUrl(query.redirectUrl ?? query.callbackUrl);
++}
++
++export function authPageHref(path: string, redirectUrl: string): string {
++  if (redirectUrl === "/dashboard") return path;
++  const separator = path.includes("?") ? "&" : "?";
++  return `${path}${separator}redirectUrl=${encodeURIComponent(redirectUrl)}`;
+ }

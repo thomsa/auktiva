@@ -11,14 +11,16 @@ import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { MicrosoftSignInButton } from "@/components/auth/microsoft-sign-in-button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
-import { getSafeRedirectUrl } from "@/utils/auth-redirect";
+import { authPageHref, getAuthRedirectUrl } from "@/utils/auth-redirect";
 
 interface LoginPageProps {
+  redirectUrl: string;
   googleOAuthEnabled: boolean;
   microsoftOAuthEnabled: boolean;
 }
 
 export default function LoginPage({
+  redirectUrl,
   googleOAuthEnabled,
   microsoftOAuthEnabled,
 }: LoginPageProps) {
@@ -61,8 +63,6 @@ export default function LoginPage({
           setError(tErrors("auth.invalidCredentials"));
         }
       } else {
-        // Redirect to callback URL or dashboard
-        const redirectUrl = getSafeRedirectUrl(router.query.redirectUrl);
         router.push(redirectUrl);
       }
     } catch {
@@ -167,7 +167,10 @@ export default function LoginPage({
                               {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ email: loginEmail }),
+                                body: JSON.stringify({
+                                  email: loginEmail,
+                                  redirectUrl,
+                                }),
                               },
                             );
                             if (res.ok) {
@@ -269,8 +272,12 @@ export default function LoginPage({
                   {t("orContinueWith")}
                 </div>
                 <div className="flex flex-col gap-3">
-                  {googleOAuthEnabled && <GoogleSignInButton />}
-                  {microsoftOAuthEnabled && <MicrosoftSignInButton />}
+                  {googleOAuthEnabled && (
+                    <GoogleSignInButton callbackUrl={redirectUrl} />
+                  )}
+                  {microsoftOAuthEnabled && (
+                    <MicrosoftSignInButton callbackUrl={redirectUrl} />
+                  )}
                 </div>
                 <p className="text-xs text-base-content/50 text-center mt-4">
                   {t("oauthTermsAgreement")}{" "}
@@ -289,7 +296,7 @@ export default function LoginPage({
               <p className="text-sm text-base-content/60">
                 {t("noAccount")}{" "}
                 <Link
-                  href="/register"
+                  href={authPageHref("/register", redirectUrl)}
                   className="link link-primary font-bold hover:text-primary/80 transition-colors"
                 >
                   {t("createAccount")}
@@ -304,12 +311,13 @@ export default function LoginPage({
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const redirectUrl = getAuthRedirectUrl(context.query);
   const session = await getServerSession(context.req, context.res, authOptions);
 
   if (session) {
     return {
       redirect: {
-        destination: "/dashboard",
+        destination: redirectUrl,
         permanent: false,
       },
     };
@@ -327,6 +335,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
+      redirectUrl,
       messages,
       googleOAuthEnabled,
       microsoftOAuthEnabled,

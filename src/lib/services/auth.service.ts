@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { randomBytes, createHash } from "crypto";
 import { hash } from "bcryptjs";
 import { sendEmail } from "@/lib/email";
+import { authPageHref, getSafeRedirectUrl } from "@/utils/auth-redirect";
 import {
   getPasswordResetTemplateData,
   getAccountExistsTemplateData,
@@ -16,6 +17,7 @@ export interface RegisterInput {
   name: string;
   email: string;
   password: string;
+  redirectUrl?: string;
 }
 
 export interface ResetPasswordInput {
@@ -84,7 +86,7 @@ export async function getPasswordResetToken(rawToken: string) {
  * If the email already exists, we send an "account exists" email instead.
  */
 export async function registerUser(input: RegisterInput) {
-  const { name, email, password } = input;
+  const { name, email, password, redirectUrl } = input;
   const normalizedEmail = email.toLowerCase();
 
   // Check if user already exists
@@ -131,7 +133,12 @@ export async function registerUser(input: RegisterInput) {
 
   // Send email verification email instead of welcome email
   // Welcome email will be sent after verification
-  await sendEmailVerification(user.id, user.email, user.name || "");
+  await sendEmailVerification(
+    user.id,
+    user.email,
+    user.name || "",
+    redirectUrl,
+  );
 
   return { success: true, user, emailSent: true };
 }
@@ -285,6 +292,7 @@ export async function sendEmailVerification(
   userId: string,
   email: string,
   name: string,
+  redirectUrl?: string,
 ): Promise<{ success: boolean; rateLimited?: boolean }> {
   // Rate limiting: check how many tokens were created in the last hour
   const oneHourAgo = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
@@ -327,7 +335,11 @@ export async function sendEmailVerification(
     process.env.NEXT_PUBLIC_APP_URL ||
     process.env.AUTH_URL ||
     "http://localhost:3000";
-  const verificationUrl = `${appUrl}/verify-email?token=${rawToken}`;
+  const verificationPath = authPageHref(
+    `/verify-email?token=${rawToken}`,
+    getSafeRedirectUrl(redirectUrl),
+  );
+  const verificationUrl = `${appUrl}${verificationPath}`;
 
   // Send email
   const templateData = getEmailVerificationTemplateData({
@@ -403,7 +415,10 @@ export async function verifyEmail(rawToken: string): Promise<{
  * Resend verification email
  * Returns success regardless of whether user exists (security)
  */
-export async function resendVerificationEmail(email: string): Promise<{
+export async function resendVerificationEmail(
+  email: string,
+  redirectUrl?: string,
+): Promise<{
   success: boolean;
   rateLimited?: boolean;
 }> {
@@ -425,7 +440,12 @@ export async function resendVerificationEmail(email: string): Promise<{
   }
 
   // Send verification email (includes rate limiting)
-  return sendEmailVerification(user.id, user.email, user.name || "");
+  return sendEmailVerification(
+    user.id,
+    user.email,
+    user.name || "",
+    redirectUrl,
+  );
 }
 
 /**

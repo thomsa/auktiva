@@ -10,20 +10,24 @@ import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { MicrosoftSignInButton } from "@/components/auth/microsoft-sign-in-button";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { authPageHref, getAuthRedirectUrl } from "@/utils/auth-redirect";
 
 const LazyReCAPTCHA = lazy(() => import("react-google-recaptcha"));
 
 interface RegisterPageProps {
+  redirectUrl: string;
   recaptchaSiteKey: string | null;
   googleOAuthEnabled: boolean;
   microsoftOAuthEnabled: boolean;
 }
 
 export default function RegisterPage({
+  redirectUrl,
   recaptchaSiteKey,
   googleOAuthEnabled,
   microsoftOAuthEnabled,
 }: RegisterPageProps) {
+  const loginHref = authPageHref("/login", redirectUrl);
   const t = useTranslations("auth.register");
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
@@ -120,7 +124,7 @@ export default function RegisterPage({
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, redirectUrl }),
       });
 
       const data = await res.json();
@@ -208,7 +212,7 @@ export default function RegisterPage({
                 </div>
                 <div className="pt-4">
                   <Link
-                    href="/login"
+                    href={loginHref}
                     className="btn btn-outline btn-primary w-full"
                   >
                     {t("backToLogin")}
@@ -405,8 +409,12 @@ export default function RegisterPage({
                       {t("orContinueWith")}
                     </div>
                     <div className="flex flex-col gap-3">
-                      {googleOAuthEnabled && <GoogleSignInButton />}
-                      {microsoftOAuthEnabled && <MicrosoftSignInButton />}
+                      {googleOAuthEnabled && (
+                        <GoogleSignInButton callbackUrl={redirectUrl} />
+                      )}
+                      {microsoftOAuthEnabled && (
+                        <MicrosoftSignInButton callbackUrl={redirectUrl} />
+                      )}
                     </div>
                   </>
                 )}
@@ -415,7 +423,7 @@ export default function RegisterPage({
                   <p className="text-sm text-base-content/60">
                     {t("hasAccount")}{" "}
                     <Link
-                      href="/login"
+                      href={loginHref}
                       className="link link-primary font-bold hover:text-primary/80 transition-colors"
                     >
                       {t("signIn")}
@@ -434,12 +442,13 @@ export default function RegisterPage({
 export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async (
   context,
 ) => {
+  const redirectUrl = getAuthRedirectUrl(context.query);
   const session = await getServerSession(context.req, context.res, authOptions);
 
   if (session) {
     return {
       redirect: {
-        destination: "/dashboard",
+        destination: redirectUrl,
         permanent: false,
       },
     };
@@ -460,6 +469,7 @@ export const getServerSideProps: GetServerSideProps<RegisterPageProps> = async (
   return {
     props: {
       recaptchaSiteKey,
+      redirectUrl,
       messages,
       googleOAuthEnabled,
       microsoftOAuthEnabled,

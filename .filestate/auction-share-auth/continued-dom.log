@@ -1,0 +1,2 @@
+[Email Verification] Email sent to bidder@example.test
+DOM regression passed: registration, verification in a fresh context, email login, encoded destination, invalid destination, and dashboard fallback.

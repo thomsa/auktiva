@@ -7,12 +7,19 @@ import { authOptions } from "@/lib/auth";
 import { SEO } from "@/components/common";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
+import { authPageHref, getAuthRedirectUrl } from "@/utils/auth-redirect";
 
 interface VerifyEmailPageProps {
   token: string | null;
+  redirectUrl: string;
 }
 
-export default function VerifyEmailPage({ token }: VerifyEmailPageProps) {
+export default function VerifyEmailPage({
+  token,
+  redirectUrl,
+}: VerifyEmailPageProps) {
+  const loginHref = authPageHref("/login", redirectUrl);
+  const verifiedLoginHref = authPageHref("/login?verified=true", redirectUrl);
   const router = useRouter();
   const t = useTranslations("auth.verifyEmail");
   const tErrors = useTranslations("errors");
@@ -44,14 +51,14 @@ export default function VerifyEmailPage({ token }: VerifyEmailPageProps) {
         setStatus("success");
         // Redirect to login after 3 seconds
         setTimeout(() => {
-          router.push("/login?verified=true");
+          router.push(verifiedLoginHref);
         }, 3000);
       }
     } catch {
       setStatus("error");
       setErrorMessage(tErrors("generic"));
     }
-  }, [token, router, tErrors]);
+  }, [token, router, tErrors, verifiedLoginHref]);
 
   useEffect(() => {
     void verifyEmail();
@@ -99,7 +106,7 @@ export default function VerifyEmailPage({ token }: VerifyEmailPageProps) {
               </p>
               <p className="text-base-content/40 mb-8">{t("redirecting")}</p>
               <Link
-                href="/login"
+                href={verifiedLoginHref}
                 className="btn btn-primary btn-lg shadow-lg shadow-primary/20"
               >
                 {t("signInNow")}
@@ -122,14 +129,14 @@ export default function VerifyEmailPage({ token }: VerifyEmailPageProps) {
               </p>
               <div className="space-y-3">
                 <Link
-                  href="/login"
+                  href={loginHref}
                   className="btn btn-primary btn-lg w-full shadow-lg shadow-primary/20"
                 >
                   {t("backToLogin")}
                 </Link>
                 <p className="text-base-content/40 text-sm">
                   {t("needNewLink")}{" "}
-                  <Link href="/login" className="link link-primary">
+                  <Link href={loginHref} className="link link-primary">
                     {t("requestNewLink")}
                   </Link>
                 </p>
@@ -145,12 +152,13 @@ export default function VerifyEmailPage({ token }: VerifyEmailPageProps) {
 export const getServerSideProps: GetServerSideProps<
   VerifyEmailPageProps
 > = async (context) => {
+  const redirectUrl = getAuthRedirectUrl(context.query);
   const session = await getServerSession(context.req, context.res, authOptions);
 
   if (session) {
     return {
       redirect: {
-        destination: "/dashboard",
+        destination: redirectUrl,
         permanent: false,
       },
     };
@@ -162,6 +170,7 @@ export const getServerSideProps: GetServerSideProps<
   return {
     props: {
       token,
+      redirectUrl,
       messages,
     },
   };
