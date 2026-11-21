@@ -454,6 +454,12 @@
   }
 }
 
+@media (width <= 360px) {
+  [data-season="christmas"] .christmas-dashboard-header .christmas-header-icon {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   [data-season="christmas"]
     :is(.christmas-scene--dashboard, .christmas-scene--landing[data-in-view])
