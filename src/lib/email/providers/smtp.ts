@@ -21,6 +21,7 @@ export class SmtpProvider implements EmailProvider {
     const host = process.env.SMTP_HOST;
     const port = parseInt(process.env.SMTP_PORT || "587", 10);
     const secure = process.env.SMTP_SECURE === "true";
+    const requireTLS = process.env.SMTP_REQUIRE_TLS === "true";
     const user = process.env.SMTP_USER;
     const pass = process.env.SMTP_PASSWORD;
 
@@ -35,6 +36,7 @@ export class SmtpProvider implements EmailProvider {
       host,
       port,
       secure,
+      requireTLS,
       auth,
       // Connection timeout settings
       connectionTimeout: 10000,
@@ -47,6 +49,7 @@ export class SmtpProvider implements EmailProvider {
         host,
         port,
         secure,
+        requireTLS,
         hasAuth: !!auth,
       },
       "SMTP provider initialized",
@@ -119,10 +122,11 @@ export async function testSmtpConnection(config: {
   host: string;
   port: number;
   secure: boolean;
+  requireTLS?: boolean;
   user?: string;
   password?: string;
 }): Promise<{ success: boolean; error?: string }> {
-  const { host, port, secure, user, password } = config;
+  const { host, port, secure, requireTLS, user, password } = config;
 
   const auth = user ? { user, pass: password || "" } : undefined;
 
@@ -130,6 +134,7 @@ export async function testSmtpConnection(config: {
     host,
     port,
     secure,
+    requireTLS,
     auth,
     connectionTimeout: 10000,
     greetingTimeout: 10000,

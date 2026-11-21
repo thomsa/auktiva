@@ -109,6 +109,7 @@ EMAIL_PROVIDER="smtp"
 SMTP_HOST="smtp.example.com"
 SMTP_PORT="587"
 SMTP_SECURE="false"  # true for port 465 (implicit TLS), false for STARTTLS
+SMTP_REQUIRE_TLS="true"  # Optional, fail when STARTTLS is unavailable
 SMTP_USER="your-username"  # Optional, omit for no authentication
 SMTP_PASSWORD="your-password"  # Optional
 ```
@@ -245,6 +246,7 @@ ALLOW_OPEN_AUCTIONS="true"
 | `SMTP_HOST`                 | SMTP only  | -                     | SMTP server hostname                       |
 | `SMTP_PORT`                 | SMTP only  | `587`                 | SMTP server port                           |
 | `SMTP_SECURE`               | SMTP only  | `false`               | Use implicit TLS (port 465)                |
+| `SMTP_REQUIRE_TLS`          | No         | `false`               | Require STARTTLS if implicit TLS is off    |
 | `SMTP_USER`                 | No         | -                     | SMTP username (optional)                   |
 | `SMTP_PASSWORD`             | No         | -                     | SMTP password (optional)                   |
 | `AWS_SES_REGION`            | SES only   | -                     | AWS region for SES                         |

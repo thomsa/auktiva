@@ -35,6 +35,7 @@ services:
       - BREVO_API_KEY=${BREVO_API_KEY:-}
       - SMTP_HOST=${SMTP_HOST:-}
       - SMTP_PORT=${SMTP_PORT:-}
+      - SMTP_REQUIRE_TLS=${SMTP_REQUIRE_TLS:-}
       - SMTP_USER=${SMTP_USER:-}
       - SMTP_PASSWORD=${SMTP_PASSWORD:-}
       - MAIL_FROM=${MAIL_FROM:-noreply@auktiva.org}

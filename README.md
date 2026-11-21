@@ -244,6 +244,7 @@ STORAGE_PROVIDER="local"  # or "s3" (local uses ./public/uploads)
 # SMTP_HOST="smtp.example.com"
 # SMTP_PORT="587"
 # SMTP_SECURE="false"
+# SMTP_REQUIRE_TLS="true"  # Optional, require STARTTLS
 # SMTP_USER="your-username"
 # SMTP_PASSWORD="your-password"
 
@@ -294,6 +295,7 @@ EMAIL_PROVIDER="smtp"
 SMTP_HOST="smtp.example.com"
 SMTP_PORT="587"
 SMTP_SECURE="false"  # true for port 465, false for STARTTLS (port 587)
+SMTP_REQUIRE_TLS="true"  # Optional, fail when STARTTLS is unavailable
 SMTP_USER="your-username"  # Optional, omit for no authentication
 SMTP_PASSWORD="your-password"  # Optional
 MAIL_FROM="noreply@yourdomain.com"

@@ -113,19 +113,21 @@ MAIL_FROM_NAME="Auktiva"
 
 ### SMTP Provider
 
-| Variable        | Required  | Description                 | Example            |
-| --------------- | --------- | --------------------------- | ------------------ |
-| `SMTP_HOST`     | SMTP only | SMTP server hostname        | `smtp.gmail.com`   |
-| `SMTP_PORT`     | SMTP only | SMTP server port            | `587`              |
-| `SMTP_SECURE`   | No        | Use implicit TLS (port 465) | `false`            |
-| `SMTP_USER`     | No        | SMTP username               | `user@example.com` |
-| `SMTP_PASSWORD` | No        | SMTP password               | `app-password`     |
+| Variable           | Required  | Description                                       | Example            |
+| ------------------ | --------- | ------------------------------------------------- | ------------------ |
+| `SMTP_HOST`        | SMTP only | SMTP server hostname                              | `smtp.gmail.com`   |
+| `SMTP_PORT`        | SMTP only | SMTP server port                                  | `587`              |
+| `SMTP_SECURE`      | No        | Use implicit TLS (port 465)                         | `false`            |
+| `SMTP_REQUIRE_TLS` | No        | Require STARTTLS when `SMTP_SECURE=false`           | `true`             |
+| `SMTP_USER`        | No        | SMTP username                                     | `user@example.com` |
+| `SMTP_PASSWORD`    | No        | SMTP password                                     | `app-password`     |
 
 ```bash
 EMAIL_PROVIDER="smtp"
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT="587"
 SMTP_SECURE="false"
+SMTP_REQUIRE_TLS="true"
 SMTP_USER="your-email@gmail.com"
 SMTP_PASSWORD="your-app-password"
 MAIL_FROM="noreply@example.com"
