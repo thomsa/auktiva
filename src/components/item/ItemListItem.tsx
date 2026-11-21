@@ -47,7 +47,7 @@ export function ItemListItem({
 
   return (
     <div
-      className={`flex items-center gap-4 p-3 bg-base-100/50 hover:bg-base-100 border rounded-xl transition-all duration-200 group ${
+      className={`christmas-item-row flex items-center gap-4 p-3 bg-base-100/50 hover:bg-base-100 border rounded-xl transition-all duration-200 group ${
         ended ? "opacity-75" : ""
       } ${
         isOwnItem

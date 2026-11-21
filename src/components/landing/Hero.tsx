@@ -1,14 +1,19 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
+import { ChristmasScene } from "@/components/seasonal/ChristmasDecor";
 import packageJson from "../../../package.json";
 
 export function Hero() {
   const t = useTranslations("landing.hero");
   const modalRef = useRef<HTMLDialogElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const openModal = () => {
     modalRef.current?.showModal();
+    void videoRef.current?.play().catch(() => {
+      // The controls let viewers start playback when autoplay is unavailable.
+    });
   };
 
   const closeModal = () => {
@@ -16,7 +21,7 @@ export function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+    <section className="christmas-landing relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse"></div>
@@ -27,7 +32,7 @@ export function Hero() {
       <div className="container mx-auto px-4 text-center relative z-10">
         <div className="animate-fade-in-up">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-base-200/50 border border-base-content/10 backdrop-blur-sm mb-8 hover:border-primary/50 transition-colors cursor-default">
-            <span className="relative flex h-3 w-3">
+            <span aria-hidden="true" className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
             </span>
@@ -118,36 +123,47 @@ export function Hero() {
           </div>
 
           {/* Fullscreen Demo Modal */}
-          <dialog ref={modalRef} className="modal">
-            <div className="modal-box w-full max-w-7xl h-[90vh] p-0 bg-base-300">
+          <dialog
+            ref={modalRef}
+            className="modal"
+            aria-labelledby="landing-demo-title"
+            onClose={() => videoRef.current?.pause()}
+          >
+            <div className="modal-box w-full max-w-7xl p-0 bg-base-300">
               <div className="sticky top-0 z-10 flex justify-between items-center p-4 bg-base-300/80 backdrop-blur-sm border-b border-base-content/10">
-                <h3 className="font-bold text-lg">{t("demoTitle")}</h3>
+                <h3 id="landing-demo-title" className="font-bold text-lg">
+                  {t("demoTitle")}
+                </h3>
                 <button
                   onClick={closeModal}
                   className="btn btn-sm btn-circle btn-ghost"
+                  aria-label={t("close")}
                 >
                   <span className="icon-[tabler--x] size-5"></span>
                 </button>
               </div>
-              <div className="p-4 h-[calc(100%-4rem)] flex items-center justify-center">
+              <div className="p-4 flex items-center justify-center">
                 <video
-                  className="max-w-full max-h-full rounded-lg shadow-2xl"
+                  ref={videoRef}
+                  src="/pictures/auktiva-demo.mp4"
+                  className="w-full max-h-[75vh] rounded-lg shadow-2xl"
                   controls
-                  autoPlay
-                  loop
+                  playsInline
+                  preload="none"
                 >
-                  <source src="/pictures/demo.mov" type="video/quicktime" />
-                  <source src="/pictures/recording.gif" type="image/gif" />
                   {t("videoNotSupported")}
                 </video>
               </div>
             </div>
             <form method="dialog" className="modal-backdrop">
-              <button>{t("close")}</button>
+              <button aria-hidden="true" tabIndex={-1}>
+                {t("close")}
+              </button>
             </form>
           </dialog>
         </div>
       </div>
+      <ChristmasScene placement="landing" />
     </section>
   );
 }

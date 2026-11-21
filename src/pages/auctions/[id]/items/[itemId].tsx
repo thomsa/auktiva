@@ -3,6 +3,10 @@ import Link from "next/link";
 import { getMessages, Locale } from "@/i18n";
 import { Navbar } from "@/components/layout/navbar";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
+import {
+  ChristmasFlake,
+  ChristmasScene,
+} from "@/components/seasonal/ChristmasDecor";
 import { ItemsSidebar, SidebarItem } from "@/components/item/ItemsSidebar";
 import { DiscussionSection } from "@/components/item/DiscussionSection";
 import { Button } from "@/components/ui/button";
@@ -534,8 +538,8 @@ export default function ItemDetailPage({
           />
 
           {/* Main Content Area */}
-          <main className="flex-1 overflow-y-auto bg-base-200/30">
-            <div className="container mx-auto px-4 py-8 pb-20 max-w-6xl">
+          <main className="christmas-item-page flex-1 overflow-y-auto bg-base-200/30">
+            <div className="christmas-item-content container mx-auto px-4 py-8 pb-20 max-w-6xl">
               <div className="mb-6 flex items-center justify-between ">
                 <Link
                   href={`/auctions/${auction.id}`}
@@ -566,10 +570,11 @@ export default function ItemDetailPage({
                 </div>
               )}
 
-              <div className="flex flex-col xl:flex-row gap-8 items-start">
+              <div className="christmas-detail-columns flex flex-col xl:flex-row gap-8 items-start">
                 {/* Main Content */}
-                <div className="flex-1 w-full min-w-0">
-                  <div className="card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl">
+                <div className="christmas-detail-main flex-1 w-full min-w-0">
+                  <div className="christmas-detail-card card bg-base-100/80 backdrop-blur-sm border border-base-content/5 shadow-xl">
+                    <ChristmasFlake />
                     <div className="card-body p-6 sm:p-8">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
                         <div className="w-full">
@@ -1109,6 +1114,9 @@ export default function ItemDetailPage({
                       </div>
                     </div>
                   </div>
+                </div>
+                <div className="christmas-scene-slot">
+                  <ChristmasScene placement="sidebar" />
                 </div>
               </div>
             </div>

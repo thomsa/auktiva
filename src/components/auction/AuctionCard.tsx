@@ -45,7 +45,7 @@ export function AuctionCard({ auction }: AuctionCardProps) {
   return (
     <Link
       href={href}
-      className={`card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group ${
+      className={`christmas-item-card card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group ${
         ended ? "opacity-70" : ""
       }`}
     >

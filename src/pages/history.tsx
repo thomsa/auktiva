@@ -83,9 +83,9 @@ export default function HistoryPage({ user }: HistoryPageProps) {
   if (isLoading) {
     return (
       <PageLayout user={user}>
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+        <div className="christmas-overview-header flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+            <div className="christmas-header-icon w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
               <span className="icon-[tabler--gavel] size-7"></span>
             </div>
             <div>
@@ -103,9 +103,9 @@ export default function HistoryPage({ user }: HistoryPageProps) {
 
   return (
     <PageLayout user={user}>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+      <div className="christmas-overview-header flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+          <div className="christmas-header-icon w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
             <span className="icon-[tabler--gavel] size-7"></span>
           </div>
           <div>

@@ -13,6 +13,7 @@ import {
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { AuctionSidebar } from "@/components/auction";
 import { ItemCard, ItemListItem } from "@/components/item";
+import { ChristmasScene } from "@/components/seasonal/ChristmasDecor";
 import { SkeletonAuctionPage } from "@/components/ui/skeleton";
 import {
   SortDropdown,
@@ -214,27 +215,27 @@ export default function AuctionDetailPage({
   }
 
   return (
-    <PageLayout user={user}>
+    <PageLayout user={user} className="christmas-auction-page">
       {/* Header */}
-      <div className="mb-8">
+      <div className="christmas-overview-header mb-8">
         <BackLink
           href="/dashboard"
           label={t("create.backToDashboard")}
           shortLabel={tCommon("back")}
         />
         <div className="flex items-center gap-3 mt-4">
-          <div className="w-12 h-12 shrink-0 rounded-xl bg-linear-to-br from-primary to-secondary flex items-center justify-center text-primary-content shadow-lg shadow-primary/20">
+          <div className="christmas-header-icon w-12 h-12 shrink-0 rounded-xl bg-linear-to-br from-primary to-secondary flex items-center justify-center text-primary-content shadow-lg shadow-primary/20">
             <span className="icon-[tabler--gavel] size-7"></span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <h1 className="min-w-0 wrap-anywhere text-2xl sm:text-3xl font-extrabold tracking-tight">
             {auction.name}
           </h1>
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="christmas-detail-columns flex flex-col lg:flex-row gap-8">
         {/* Main Content - Items */}
-        <div className="flex-1 min-w-0">
+        <div className="christmas-detail-main flex-1 min-w-0">
           <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl">
             <div className="card-body p-6">
               {/* Items Header */}
@@ -342,6 +343,9 @@ export default function AuctionDetailPage({
         {/* Sidebar */}
         <div className="lg:w-80 shrink-0">
           <AuctionSidebar auction={auction} membership={membership!} />
+        </div>
+        <div className="christmas-scene-slot">
+          <ChristmasScene placement="sidebar" />
         </div>
       </div>
     </PageLayout>

@@ -1,0 +1,14 @@
+{
+  "name": "auktiva-demo",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/index.jsx --no-open",
+    "render": "remotion render src/index.jsx AuktivaDemo ../public/pictures/auktiva-demo.mp4 --codec=h264 --pixel-format=yuv420p --crf=21"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.545",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
+    "remotion": "4.0.545"
+  }
+}

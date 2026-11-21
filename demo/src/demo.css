@@ -1,0 +1,66 @@
+* {
+  box-sizing: border-box;
+}
+
+.demo {
+  background:
+    radial-gradient(ellipse at 0% 0%, #e8e2ff, transparent 50%),
+    radial-gradient(ellipse at 92% 94%, #fce9f3, transparent 49%), #f8f7fd;
+  font-family: system-ui, sans-serif;
+  color: #19181f;
+}
+
+.demo-layout {
+  width: 1240px;
+  margin: 31px auto 0;
+}
+
+.demo-copy {
+  margin-bottom: 23px;
+}
+
+.demo-copy h1 {
+  margin: 0;
+  font-size: 54px;
+  font-weight: 800;
+  letter-spacing: -0.042em;
+  line-height: 1.13;
+}
+
+.demo-copy p {
+  margin: 10px 0 0;
+  color: #534e63;
+  font-size: 25px;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1360 / 760;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px #39314e20,
+    0 20px 52px #38256d22;
+}
+
+.screen-content {
+  position: absolute;
+  inset: 0;
+}
+
+.screen-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.focus-ring {
+  position: absolute;
+  border: 3px solid #4b2be9;
+  border-radius: 9px;
+  box-shadow: 0 0 0 5px #4b2be92a;
+}

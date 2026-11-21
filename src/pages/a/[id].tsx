@@ -7,6 +7,7 @@ import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import * as auctionService from "@/lib/services/auction.service";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
+import { ChristmasFlake } from "@/components/seasonal/ChristmasDecor";
 
 interface PublicAuctionPageProps {
   auction: {
@@ -83,7 +84,8 @@ export default function PublicAuctionPage({
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]"></div>
         </div>
 
-        <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl max-w-lg w-full relative z-10">
+        <div className="christmas-detail-card card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl max-w-lg w-full relative z-10">
+          <ChristmasFlake />
           <div className="card-body p-8">
             {/* Header */}
             <div className="text-center mb-6">

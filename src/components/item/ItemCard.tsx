@@ -42,7 +42,7 @@ export function ItemCard({ item, auctionId, userId, isAdmin }: ItemCardProps) {
 
   return (
     <div
-      className={`card bg-base-100/50 backdrop-blur-sm border hover:shadow-lg transition-all duration-300 relative group overflow-hidden ${
+      className={`christmas-item-card card bg-base-100/50 backdrop-blur-sm border hover:shadow-lg transition-all duration-300 relative group overflow-hidden ${
         ended ? "opacity-75" : ""
       } ${
         isOwnItem

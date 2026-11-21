@@ -157,7 +157,7 @@ export default function AdminPage({
 
   return (
     <PageLayout user={user} maxWidth="full">
-      <div className="mb-8">
+      <div className="christmas-overview-header mb-8">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-12 h-12 rounded-xl bg-warning/10 flex items-center justify-center text-warning">
             <span className="icon-[tabler--shield-check] size-7"></span>

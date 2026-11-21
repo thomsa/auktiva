@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { useAppContext } from "@/contexts/AppContext";
+import { ChristmasFlake } from "@/components/seasonal/ChristmasDecor";
 
 interface NavbarProps {
   user: {
@@ -58,6 +59,7 @@ export function Navbar({ user }: NavbarProps) {
           >
             <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
               <span className="icon-[tabler--gavel] size-6 text-primary transition-transform group-hover:-rotate-12 duration-300"></span>
+              <ChristmasFlake />
             </div>
             <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
               {tCommon("appName")}
