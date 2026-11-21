@@ -2,6 +2,35 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.22.0] - 2026-11-21
+
+### ⚙️ Miscellaneous
+
+- Prepare v1.22.0 release by @thomsa
+
+### 🐛 Bug Fixes
+
+- Keep the seasonal dashboard title readable on small phones by @thomsa
+- Keep demo controls accessible on tablets by @thomsa
+
+### 🚀 Features
+
+- Add Christmas scenes and an auction walkthrough by @thomsa
+
+## [1.21.4] - 2026-11-21
+
+### ⚙️ Miscellaneous
+
+- Prepare v1.21.4 release by @thomsa
+
+## [1.21.3] - 2026-11-21
+
+### ⚙️ Miscellaneous
+
+- Prepare v1.21.3 release by @thomsa
+
+## [1.21.2] - 2026-11-20
+
 ## [1.21.1] - 2026-11-20
 
 ### ⚙️ Miscellaneous
