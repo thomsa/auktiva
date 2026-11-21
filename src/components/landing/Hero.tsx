@@ -88,7 +88,7 @@ export function Hero() {
               </div>
 
               {/* Floating Cards Animation */}
-              <div className="absolute top-10 left-10 w-64 h-40 bg-base-100 rounded-lg shadow-lg border border-base-content/5 p-4 transform -rotate-6 group-hover:-rotate-3 transition-transform duration-500 hidden sm:block">
+              <div className="pointer-events-none absolute top-10 left-10 w-64 h-40 bg-base-100 rounded-lg shadow-lg border border-base-content/5 p-4 transform -rotate-6 group-hover:-rotate-3 transition-transform duration-500 hidden lg:block">
                 <div className="flex gap-3 mb-3">
                   <div className="w-12 h-12 rounded bg-primary/20"></div>
                   <div className="space-y-2">
@@ -104,7 +104,7 @@ export function Hero() {
                 </div>
               </div>
 
-              <div className="absolute bottom-10 right-10 w-64 h-40 bg-base-100 rounded-lg shadow-lg border border-base-content/5 p-4 transform rotate-3 group-hover:rotate-1 transition-transform duration-500 z-10 hidden sm:block">
+              <div className="pointer-events-none absolute bottom-10 right-10 w-64 h-40 bg-base-100 rounded-lg shadow-lg border border-base-content/5 p-4 transform rotate-3 group-hover:rotate-1 transition-transform duration-500 z-10 hidden lg:block">
                 <div className="flex gap-3 mb-3">
                   <div className="w-12 h-12 rounded bg-secondary/20"></div>
                   <div className="space-y-2">
