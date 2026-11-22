@@ -5,6 +5,7 @@ import * as notificationService from "./notification.service";
 import { publish, Events, Channels } from "@/lib/realtime";
 import type { ItemCreatedEvent } from "@/lib/realtime/events";
 import type { AuctionItem, AuctionMember } from "@/generated/prisma/client";
+import { isResultItemEnded } from "@/lib/results-summary";
 
 // ============================================================================
 // Types
@@ -246,6 +247,8 @@ export async function getItemDetailPageData(
   viewerId: string,
   bidderVisibility: string,
   isViewerAdmin: boolean,
+  /** Ends the item when it has no end date of its own. */
+  auctionEndDate: Date | string | null = null,
 ): Promise<ItemDetailPageData | null> {
   const item = await prisma.auctionItem.findUnique({
     where: { id: itemId },
@@ -285,8 +288,8 @@ export async function getItemDetailPageData(
     orderBy: { amount: "desc" },
   });
 
-  // Check if item has ended
-  const isItemEnded = item.endDate && new Date(item.endDate) < new Date();
+  // Check if item has ended (its own end date, else the auction's)
+  const isItemEnded = isResultItemEnded(item.endDate, auctionEndDate);
   const isItemOwner = item.creatorId === viewerId;
   const highestBid = bidsRaw[0] || null;
 

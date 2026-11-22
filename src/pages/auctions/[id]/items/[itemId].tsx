@@ -28,6 +28,7 @@ import * as auctionService from "@/lib/services/auction.service";
 import * as itemService from "@/lib/services/item.service";
 import * as userService from "@/lib/services/user.service";
 import { formatAuctionBidDisplay } from "@/lib/currency-display";
+import { isResultItemEnded } from "@/lib/results-summary";
 
 interface Bid {
   id: string;
@@ -75,6 +76,8 @@ interface ItemDetailProps {
     id: string;
     name: string;
     bidderVisibility: string;
+    /** Ends items that have no end date of their own. */
+    endDate: string | null;
   };
   auctionItems: SidebarItem[];
   itemSidebarCollapsed: boolean;
@@ -185,8 +188,10 @@ export default function ItemDetailPage({
   const [isEndingItem, setIsEndingItem] = useState(false);
 
   // Check if item has ended (use initialItem for initial polling config)
-  const initialIsEnded =
-    initialItem.endDate && new Date(initialItem.endDate) < new Date();
+  const initialIsEnded = isResultItemEnded(
+    initialItem.endDate,
+    auction.endDate,
+  );
 
   // Use critical priority for active bidding, pauses when tab hidden
   const baseRefreshInterval = usePollingInterval({
@@ -326,8 +331,9 @@ export default function ItemDetailPage({
 
   const isHighestBidder = item.highestBidderId === user.id;
 
-  // Use item from SWR data so it updates after ending
-  const isEnded = item.endDate && new Date(item.endDate) < new Date();
+  // Use item from SWR data so it updates after ending. Items without their
+  // own end date end with the auction (same rule as placing a bid).
+  const isEnded = isResultItemEnded(item.endDate, auction.endDate);
 
   const minBid = item.currentBid
     ? item.currentBid + item.minBidIncrement
@@ -1197,6 +1203,7 @@ export const getServerSideProps = withAuth(async (context) => {
     context.session.user.id,
     membership.auction.bidderVisibility,
     auctionService.isAdmin(membership),
+    membership.auction.endDate,
   );
 
   if (!itemData) {
@@ -1230,6 +1237,7 @@ export const getServerSideProps = withAuth(async (context) => {
         id: membership.auction.id,
         name: membership.auction.name,
         bidderVisibility: membership.auction.bidderVisibility,
+        endDate: membership.auction.endDate?.toISOString() ?? null,
       },
       auctionItems,
       itemSidebarCollapsed: userSettings?.itemSidebarCollapsed ?? false,
