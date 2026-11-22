@@ -259,7 +259,7 @@ Accepted by the maintainer on 2026-11-22, as recommended:
 Recorded during implementation on 2026-11-22. They do not change the spec
 deltas. The D3 failed-send note departs from D3's "do not roll back", and
 the D8 item-selection note narrows Resolved Decision 4. The maintainer
-accepted the D8 narrowing on 2026-11-22; the D3 note awaits confirmation.
+accepted both on 2026-11-22.
 
 - **D3 claim condition.** The claim also repeats the ended-item condition
   (`endedItemsAwaitingNotificationWhere(now)` plus `id` and the
