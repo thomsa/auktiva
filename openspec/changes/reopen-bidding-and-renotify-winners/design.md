@@ -286,10 +286,13 @@ untick them"); both await the maintainer's confirmation.
   it). Across processes, at-most-once rests on the single conditional
   claim `UPDATE`; two separate clients against remote Turso were not
   exercised.
-- **Settings end date time zone.** Every settings save with an end date now
-  goes through the reopen transition, so the main form shows the end date in
-  the browser's local time and sends it as an ISO string (unchanged fields
-  send the stored value). Before, it showed UTC as local time and sent a
+- **Settings end date time zone.** Every settings save sends the end date
+  (or null when the field is empty), so it goes through the reopen
+  transition. The main form therefore shows the end date in the browser's
+  local time, keeps it in step with the stored end after reopen, end-now and
+  data refreshes, refuses an unparseable value, and sends an ISO string with
+  an offset (unchanged fields send the stored value). The PATCH schema
+  requires an ISO date-time with offset, like the reopen schema. Before, it showed UTC as local time and sent a
   value without an offset that the server read in its own time zone, which
   could move an ended auction into the future. The auction create page has
   the same pre-existing pattern and is not changed here.
