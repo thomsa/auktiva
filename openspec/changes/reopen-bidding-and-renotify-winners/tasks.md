@@ -37,14 +37,42 @@ check in 6.2.
 
 ## 5. UI (owner: `src/pages/auctions/[id]/settings.tsx`, `src/components/notifications/*`, `messages/{en,de,es,hu,pl}/auction.json`; load `design-taste-frontend` before editing)
 
-- [ ] 5.1 Load and apply the `design-taste-frontend` skill. Add `closedItems` to the settings page's server-side props and build the "Reopen bidding" card: end date field, "no end time" toggle, item checklist with select all/none (all selected by default), and a confirm dialog. It calls `POST /api/auctions/[id]/reopen`, shows a toast with the counts on success and updates the ended state. Verify that `npx tsc --noEmit` and `npm run lint` pass, and use browser QA for "Auction live but items closed" and "Successful reopen feedback" at mobile and desktop widths.
-- [ ] 5.2 Add the `BIDDING_REOPENED` icon case to `notification-bell.tsx` and `mobile-notification-sheet.tsx`. Verify in browser QA that a reopen notification shows the new icon in both views (spec: "Recipient is online").
-- [ ] 5.3 Add the new UI strings to `messages/{en,de,es,hu,pl}/auction.json` with matching key sets. Verify that every locale has the same keys (a key-diff script or the existing i18n check) and that the card renders in `de` and `hu` without overflow.
+- [x] 5.1 Load and apply the `design-taste-frontend` skill. Add `closedItems` to the settings page's server-side props and build the "Reopen bidding" card: end date field, "no end time" toggle, item checklist with select all/none (all selected by default), and a confirm dialog. It calls `POST /api/auctions/[id]/reopen`, shows a toast with the counts on success and updates the ended state. Verify that `npx tsc --noEmit` and `npm run lint` pass, and use browser QA for "Auction live but items closed" and "Successful reopen feedback" at mobile and desktop widths.
+- [x] 5.2 Add the `BIDDING_REOPENED` icon case to `notification-bell.tsx` and `mobile-notification-sheet.tsx`. Verify in browser QA that a reopen notification shows the new icon in both views (spec: "Recipient is online").
+- [x] 5.3 Add the new UI strings to `messages/{en,de,es,hu,pl}/auction.json` with matching key sets. Verify that every locale has the same keys (a key-diff script or the existing i18n check) and that the card renders in `de` and `hu` without overflow.
 
 ## 6. Integration checks
 
-- [ ] 6.1 Run `npx tsx --test` over all touched and existing test files, then `npm run lint`, `npx tsc --noEmit` and `npm run build`. Verify that all pass and record the exact commands and results.
-- [ ] 6.2 End-to-end browser QA on a local SQLite DB with its own port and test data. Seed an auction, two bidders and a published item. Close the auction ("End auction now"), poll notifications (user A gets "won"), reopen through the settings card (user A gets "no longer final"), have user B outbid, end the auction again, and poll (user B gets "won", user A gets nothing new). Verify the notification list for each user and the item page state with screenshots.
+- [x] 6.1 Run `npx tsx --test` over all touched and existing test files, then `npm run lint`, `npx tsc --noEmit` and `npm run build`. Verify that all pass and record the exact commands and results.
+- [x] 6.2 End-to-end browser QA on a local SQLite DB with its own port and test data. Seed an auction, two bidders and a published item. Close the auction ("End auction now"), poll notifications (user A gets "won"), reopen through the settings card (user A gets "no longer final"), have user B outbid, end the auction again, and poll (user B gets "won", user A gets nothing new). Verify the notification list for each user and the item page state with screenshots.
+
+## Verification record
+
+Candidate e5acce3 on `claude/winner-renotify`, stacked on
+`claude/canonical-item-end` 96b19c8. Independent QA and browser QA both
+passed on that SHA (2026-11-22), Node 22.21.1:
+
+- `LOG_LEVEL=silent npx tsx --test $(git ls-files 'src/**/*.test.ts' | sort)`:
+  135 tests, 135 pass. Includes the libSQL adapter run
+  (`auction-end.libsql.test.ts`, migrations applied with `executeMultiple`).
+- `npx tsc --noEmit`: pass. `npm run lint`: 0 errors (6 existing
+  `no-img-element` warnings in untouched files). `npm run build`: pass.
+- `openspec validate reopen-bidding-and-renotify-winners --strict`: valid.
+  `npx prisma migrate diff --from-migrations prisma/migrations --to-schema
+  prisma/schema.prisma --exit-code`: no difference.
+- Locales: the new `auction.settings.reopen.*` and `endDateInvalid` keys match
+  in all five locales. de/es/hu/pl were already missing
+  `auction.settings.adminEditingDefaults`, `defaultItemsEditableByAdmin` and
+  `defaultItemsEditableByAdminDescription` on the base; not changed here.
+- Browser QA (isolated SQLite DB, port 3427, `next dev --webpack`, default
+  and America/New_York server zones): 6.2 end to end, mixed item groups,
+  stale tabs in both directions, the reopen card's 400 refresh, edited and
+  cleared end dates, invalid dates, 375px and desktop in en/de/hu with
+  light and dark themes.
+- Not covered: real-time push (soketi not available locally; the
+  bidding-reopened notification and its icon were verified arriving through
+  the polling fallback without a reload), real e-mail delivery (EmailLog
+  rows are asserted with a local SMTP stub), Firefox and Safari.
 
 ## Workflow follow-up
 
