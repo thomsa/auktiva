@@ -252,8 +252,10 @@ Accepted by the maintainer on 2026-11-22, as recommended:
 
 ## Implementation Notes
 
-Recorded during implementation on 2026-11-22. These refine the decisions
-above; they do not change the spec deltas.
+Recorded during implementation on 2026-11-22. They do not change the spec
+deltas. The D3 failed-send note departs from D3's "do not roll back", and
+the D8 item-selection note narrows Resolved Decision 4 ("The owner can
+untick them"); both await the maintainer's confirmation.
 
 - **D3 claim condition.** The claim also repeats the ended-item condition
   (`endedItemsAwaitingNotificationWhere(now)` plus `id` and the
@@ -277,9 +279,23 @@ above; they do not change the spec deltas.
 - **D4 remaining race.** With the better-sqlite3 adapter, a notifier claim
   that commits between the reopen transaction's read and its writes can
   still send the old winner "You won" just before the reopen notice. The
-  record stays pending, so the next close notifies the right winner. With
-  libSQL the adapter serializes these, and across processes SQLite rejects
-  the conflicting write.
+  record stays pending, so the next close notifies the right winner. The
+  libSQL adapter (production) serializes every statement and holds its
+  mutex for a whole interactive transaction within one process
+  (`auction-end.libsql.test.ts` runs the overlap and reopen-race tests on
+  it). Across processes, at-most-once rests on the single conditional
+  claim `UPDATE`; two separate clients against remote Turso were not
+  exercised.
+- **Settings end date time zone.** Every settings save with an end date now
+  goes through the reopen transition, so the main form shows the end date in
+  the browser's local time and sends it as an ISO string (unchanged fields
+  send the stored value). Before, it showed UTC as local time and sent a
+  value without an offset that the server read in its own time zone, which
+  could move an ended auction into the future. The auction create page has
+  the same pre-existing pattern and is not changed here.
+- **Dependency.** The base branch was rewritten during implementation
+  (69cfa95 replaced by 8be8f93, which drops the overlap claim of f9ad70d;
+  ad31552 and 96b19c8 added). This change carries the claim itself (D3).
 - **D7 migration name.** The migration is
   `20261122180000_add_winner_notification_record`, so it sorts after the
   base branch's `20261122170000_mark_past_null_dated_winners_notified`.

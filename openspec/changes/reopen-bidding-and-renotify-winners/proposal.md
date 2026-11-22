@@ -84,7 +84,8 @@ None. There are no baseline specs in `openspec/specs/` yet.
 - **UI**: the auction settings page gets a "Reopen bidding" card, and the
   notification bell and mobile sheet get an icon for the new type.
   Translations go in `messages/{en,de,es,hu,pl}`.
-- **Dependency**: land `claude/canonical-item-end` (67b91e8 and e345f4b)
+- **Dependency**: land `claude/canonical-item-end` (implemented on its tip
+  96b19c8: 67b91e8, e345f4b, 8be8f93, ad31552 and 96b19c8)
   first. This change reuses its ended-item query, its reopen guard and its
   SQLite notifier test harness.
 - **Realtime**: publishes `ITEM_UPDATED` for reopened items. Notifications
