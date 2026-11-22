@@ -210,6 +210,16 @@ sudo certbot --nginx -d auctions.yourdomain.com -d ws.auctions.yourdomain.com
 3. Set environment variables (see [Configuration](/developers/configuration))
 4. Deploy
 
+The repository's `vercel.json` sets the build command to
+`prisma generate && npx tsx scripts/migrate-turso.ts && npx tsx prisma/seed-currencies.ts && next build`.
+Every Vercel build therefore applies pending migrations to the Turso
+database in `DATABASE_URL`, and seeds currencies when that table is empty,
+before it runs `next build`. The previous deployment keeps serving until the
+new one is live. `vercel.json` also turns off Git deployments, so production
+deploys come from the deploy hook that the tag workflow
+(`.github/workflows/vercel-release.yml`) calls. See
+[Upgrading](/developers/upgrading) for release-specific steps.
+
 <Callout type="warning">
   Rate limiting uses in-memory storage which doesn't work reliably on Vercel.
   Consider using Upstash Redis for production rate limiting.

@@ -15,8 +15,9 @@ This guide covers how to upgrade your Auktiva installation to the latest version
 
 v1.23.0 changes how auction winners are notified, and it ships two
 migrations that change data as well as the schema. Follow the runbook for
-your setup in order: back up, check, migrate, deploy v1.23.0 straight away,
-then repair and verify.
+your setup in order: back up, check, migrate and deploy v1.23.0 together,
+then repair and verify. On Vercel with this repository's `vercel.json`, the
+production build applies the migrations itself, right before `next build`.
 
 <Callout type="error">
   Never deploy v1.23.0 before the migrations. The new code reads columns
@@ -25,7 +26,8 @@ then repair and verify.
   `no such column: main.auction_items.winnerNotifiedUserId`, and no winner
   is notified. If
   this happens, run the migration at once. It is safe to run while v1.23.0
-  is live.
+  is live. The Vercel build in this repository migrates before it builds, so
+  this only happens when you migrate by hand.
 </Callout>
 
 ### What changes for operators
@@ -175,12 +177,29 @@ numbers and the listed items before you migrate.
 
 ### Runbook: Vercel and Turso
 
-Production on Vercel uses Turso. `npm run build` does not migrate the
-database. You run the migration yourself with `npm run db:migrate:turso`
-from a v1.23.0 checkout. Keep the time between the migration and the
-v1.23.0 deploy short (see [the window](#between-the-migration-and-the-deploy)).
+This repository's `vercel.json` sets the production build command to:
 
-1. **Back up the database.** Take a dump, a copy, or both:
+```bash
+prisma generate && npx tsx scripts/migrate-turso.ts && npx tsx prisma/seed-currencies.ts && next build
+```
+
+Git deployments are turned off (`git.deploymentEnabled: false` and
+`ignoreCommand: "exit 1"`). A production deployment starts only when a `v*`
+tag is pushed. The **Vercel Production Deploy on Tag** workflow
+(`.github/workflows/vercel-release.yml`) checks that the tag is on `main`
+and calls the Vercel deploy hook. That build runs `scripts/migrate-turso.ts`
+against the production `DATABASE_URL`, so it applies both migrations. It
+then seeds currencies, which only adds them when the table is empty and
+does nothing otherwise, and runs `next build`. Vercel switches production to
+the new deployment when the build succeeds.
+
+<Callout type="warning">
+  Pushing the tag starts the deploy, and with it the migration, within
+  seconds. Take the backup and run the pre-check before you push the tag.
+</Callout>
+
+1. **Back up the database** before you push the tag. Take a dump, a copy,
+   or both:
 
    ```bash
    turso db shell <db-name> .dump > backup-<db-name>-$(date +%Y%m%d-%H%M%S).sql
@@ -192,67 +211,63 @@ v1.23.0 deploy short (see [the window](#between-the-migration-and-the-deploy)).
    depending on your plan's retention. Check `turso db create --help` for
    the options your CLI version supports.
 
-2. **Run the pre-check** from a v1.23.0 checkout and review its output:
+2. **Run the read-only pre-check** from a checkout of the release commit
+   and review its output:
 
    ```bash
-   git fetch --tags origin && git checkout v1.23.0
+   git fetch origin && git checkout <release-commit>
    npm ci
    DATABASE_URL="$DATABASE_URL" DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
      npx tsx scripts/upgrade/run-sql.ts scripts/upgrade/v1.23.0/precheck.sql
    ```
 
-3. **Build v1.23.0 without serving it.** Create a production deployment
-   that does not take the production domains yet:
+   It changes nothing. `notifyAfterDeploy` is the number of "You won"
+   messages to expect once v1.23.0 is live.
+
+3. **Push the release tag.** This starts the deploy hook build:
 
    ```bash
-   vercel deploy --prod --skip-domain
+   git push origin v1.23.0
    ```
 
-   This prints the deployment URL. Do not open that URL before step 4,
-   because its pages fail on the old schema. If your project deploys from
-   Git, turn off **Auto-assign Custom Production Domains** in the project
-   settings before you push the release, so the Git build is staged the
-   same way.
-
-4. **Migrate:**
-
-   ```bash
-   DATABASE_URL="$DATABASE_URL" DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
-     npm run db:migrate:turso
-   ```
-
-   On a database last migrated for v1.22.0, expect
-   `Applied: 2 new migration(s)`. If you already deployed and migrated a
-   build from `main` that included
-   `20261122170000_mark_past_null_dated_winners_notified`, only
-   `20261122180000_add_winner_notification_record` is applied
-   (`Applied: 1`). Running it again prints `Already applied` and changes
+   In the Vercel build log, the migration step prints `Applying` for each
+   new migration and then `Applied: 2 new migration(s)` on a database last
+   migrated for v1.22.0. If a build from `main` that included
+   `20261122170000_mark_past_null_dated_winners_notified` was already
+   deployed, only `20261122180000_add_winner_notification_record` is
+   applied (`Applied: 1`). Later builds print `Already applied` and change
    nothing.
 
-   `db:migrate:turso` does not wrap a migration in a transaction. If
-   `20261122180000_add_winner_notification_record` fails partway, its
-   columns can exist with the records not filled in, and the migration is
-   not recorded as applied. Running `db:migrate:turso` again then stops
+   From the migration step until the new deployment is live, v1.22.0 keeps
+   serving production on the migrated database while `next build` runs.
+   This is [the window](#between-the-migration-and-the-deploy). It usually
+   lasts as long as the build.
+
+4. **If the build fails after the migration step,** production stays on
+   v1.22.0 with the migrated database, and the window stays open until a
+   v1.23.0 build succeeds. Fix the cause and deploy again, for example with
+   **Redeploy** on the failed deployment in the Vercel dashboard or by
+   re-running the workflow. The migration step then skips both migrations.
+   Do not restore the database because of a failed build. Run the repair in
+   step 5 once v1.23.0 is live; it also fixes what v1.22.0 did in the
+   meantime.
+
+   If the migration step itself fails, the build stops before `next build`
+   and v1.22.0 keeps serving. `migrate-turso.ts` does not wrap a migration
+   in a transaction. If `20261122180000_add_winner_notification_record`
+   failed partway, its columns can exist with the records not filled in,
+   and the migration is not recorded as applied, so the next build stops
    with `duplicate column name`. In that case run
    `scripts/upgrade/v1.23.0/backfill.sql` with the runner, which repeats
    the data steps in one transaction. If only some of the three columns
    exist, first add the missing ones with the matching `ALTER TABLE` lines
-   from the migration file. Then record the migration:
+   from the migration file. Then record the migration and deploy again:
 
    ```bash
    turso db shell <db-name> "INSERT INTO _prisma_migrations (id, migration_name) VALUES (lower(hex(randomblob(16))), '20261122180000_add_winner_notification_record')"
    ```
 
-5. **Promote v1.23.0 immediately:**
-
-   ```bash
-   vercel promote <deployment-url>
-   ```
-
-   Turn **Auto-assign Custom Production Domains** back on afterwards if you
-   turned it off.
-
-6. **Repair and verify** once v1.23.0 serves all traffic:
+5. **Repair and verify** once v1.23.0 serves all traffic:
 
    ```bash
    DATABASE_URL="$DATABASE_URL" DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
@@ -263,7 +278,49 @@ v1.23.0 deploy short (see [the window](#between-the-migration-and-the-deploy)).
    ```
 
    The repair is safe to run more than once. Each of its five statements
-   reports `rows affected: 0` when nothing needs fixing.
+   reports `rows affected: 0` when nothing needs fixing. Every check in
+   `verify.sql` should report 0.
+
+#### Vercel projects that do not migrate in the build
+
+Use this only if your Vercel project's build command does not run
+`scripts/migrate-turso.ts`, for example because you changed it in
+`vercel.json` or in the project settings. Then you migrate by hand, and
+v1.23.0 must not serve traffic before the migration:
+
+1. Back up and run the pre-check as in steps 1 and 2 above.
+2. **Build v1.23.0 without serving it:**
+
+   ```bash
+   vercel deploy --prod --skip-domain
+   ```
+
+   This prints the deployment URL. Do not open it before the next step,
+   because its pages fail on the old schema. If your project deploys from
+   Git, turn off **Auto-assign Custom Production Domains** in the project
+   settings before you push the release, so the Git build is staged the
+   same way.
+
+3. **Migrate:**
+
+   ```bash
+   DATABASE_URL="$DATABASE_URL" DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
+     npm run db:migrate:turso
+   ```
+
+   Expect the same `Applied` output as in step 3 above. Handle a partial
+   failure as described in step 4.
+
+4. **Promote v1.23.0 immediately:**
+
+   ```bash
+   vercel promote <deployment-url>
+   ```
+
+   Turn **Auto-assign Custom Production Domains** back on afterwards if you
+   turned it off.
+
+5. **Repair and verify** as in step 5 above.
 
 ### Runbook: self-hosted
 
@@ -356,9 +413,12 @@ window described below.
 
 ### Between the migration and the deploy
 
-This section assumes the version you are replacing is v1.22.0. Until
-v1.23.0 serves all traffic, v1.22.0 keeps running its notifier on every
-notification poll, against the migrated database:
+This section assumes the version you are replacing is v1.22.0. The window
+runs from the migration until v1.23.0 serves all traffic. With this
+repository's Vercel build, that is from the build's migration step until the
+new deployment goes live, so it includes all of `next build`, and it lasts
+longer if the build fails. During the window, v1.22.0 keeps running its
+notifier on every notification poll, against the migrated database:
 
 - **Items without their own end date:** v1.22.0 ignores them. v1.23.0
   notifies their winners after the deploy.
@@ -386,7 +446,8 @@ v1.23.0 poll around the promote, because v1.22.0 does not claim items
 before it sends. `MAINTENANCE_MODE=true` does not close the
 window. It does not apply to `/api` routes, so open tabs keep polling
 notifications and running the notifier. On Vercel, changing it also needs a
-new deployment. Keep the window short instead and run the repair.
+new deployment. Keep the window short instead, for example by checking that
+the release commit builds before you tag it, and run the repair.
 
 ### Rolling back
 

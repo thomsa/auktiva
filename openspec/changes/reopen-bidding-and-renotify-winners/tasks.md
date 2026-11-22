@@ -53,6 +53,7 @@ check in 6.2.
 - [x] 7.3 In the migration, record (instead of re-queuing) changed winners whose effective end is more than 14 days old (design D7 step 3), and let the data steps run again on their own. Update `winner-notification-backfill.test.ts` to use relative dates and add the stale and still-open cases.
 - [x] 7.4 Add `scripts/upgrade/v1.23.0/{precheck,backfill,repair,verify}.sql` and `scripts/upgrade/run-sql.ts`. A test keeps `backfill.sql` equal to the migrations' data statements.
 - [x] 7.5 Write "Upgrading to v1.23.0" in `docs/content/developers/upgrading.mdx`: the operator-facing changes since v1.22.0 and the Vercel/Turso and self-hosted runbooks, with the window and rollback.
+- [x] 7.6 Match the Vercel runbook to `vercel.json`: the tag-triggered deploy hook build runs `scripts/migrate-turso.ts` and `prisma/seed-currencies.ts` before `next build`, so back up and run the read-only pre-check before pushing the tag, treat the build as the window, recover from a failed build or a partial migration, then repair and verify. Keep the manual `npm run db:migrate:turso` path for projects whose build does not migrate. Confirm `seed-currencies.ts` only touches the unchanged `currencies` table (seeds when empty, otherwise skips).
 
 ## Verification record
 

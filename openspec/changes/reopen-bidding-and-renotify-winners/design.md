@@ -183,9 +183,12 @@ date comparison (step 3):
 
 Step 3 is the one date comparison. The first design used none and left
 long-ended rows to the notifier's 14-day rule (D3 step 3). That holds only
-once the new code runs. On Turso, `npm run db:migrate:turso` runs before the
-v1.23.0 deploy, and self-hosted installs rebuild while the old process
-serves. In that window the v1.22.0 notifier, which has no 14-day rule,
+once the new code runs. On Vercel, the production build runs
+`scripts/migrate-turso.ts` before `next build` (`vercel.json`), so v1.22.0
+keeps serving on the migrated database for the rest of the build, or longer
+if the build fails. Operators who migrate by hand run
+`npm run db:migrate:turso` before the deploy, and self-hosted installs
+rebuild while the old process serves. In that window the v1.22.0 notifier, which has no 14-day rule,
 would send late "You won" messages for re-queued items with their own end
 date. Step 3 leaves those rows in the state the notifier's rule would
 produce: the current winner recorded and nothing sent. `winnerNotifiedAt`
