@@ -4,6 +4,373 @@ import { Callout } from "nextra/components";
 
 This guide covers how to upgrade your Auktiva installation to the latest version.
 
+<Callout type="warning">
+  **Upgrading from v1.22.0 to v1.23.0?** Read [Upgrading to
+  v1.23.0](#upgrading-to-v1230) first. That release has two data migrations
+  that must run before the new code serves traffic, and the Deployment Admin
+  updater does not run them.
+</Callout>
+
+## Upgrading to v1.23.0
+
+v1.23.0 changes how auction winners are notified, and it ships two
+migrations that change data as well as the schema. Follow the runbook for
+your setup in order: back up, check, migrate, deploy v1.23.0 straight away,
+then repair and verify.
+
+<Callout type="error">
+  Never deploy v1.23.0 before the migrations. The new code reads columns
+  that only the migration adds, so every page and API route that loads
+  auction items fails with
+  `no such column: main.auction_items.winnerNotifiedUserId`, and no winner
+  is notified. If
+  this happens, run the migration at once. It is safe to run while v1.23.0
+  is live.
+</Callout>
+
+### What changes for operators
+
+#### Database migrations
+
+- **`20261122170000_mark_past_null_dated_winners_notified`** marks items
+  without their own end date as notified if their auction had already ended
+  when the migration runs. v1.22.0 never notified the winners of such items.
+  v1.23.0 does, and this keeps it from sending "You won" for every past
+  auction at once. These winners are not messaged, even when the auction
+  ended yesterday. Organizers still see them on the results page and in the
+  export.
+- **`20261122180000_add_winner_notification_record`** adds three nullable
+  columns to `auction_items`: `winnerNotifiedUserId`, `winnerNotifiedAmount`
+  and `winnerNotifiedAt`. They record who was told they won, at what amount
+  and when. For items already marked as notified, the migration does this:
+  - It records the user of the item's latest `AUCTION_WON` notification
+    with that notification's time. If the notification was deleted, it
+    records the current highest bidder with no time.
+  - If the highest bidder changed after that message (an auction extended
+    after it ended), the item is queued again. The new winner then gets
+    "You won" once the item has ended. This fixes auctions that were
+    extended before the upgrade.
+  - If the winner changed but the item ended more than 14 days before the
+    migration runs, the item is not queued again. The current highest bidder
+    is recorded and nobody is messaged.
+- The `BIDDING_REOPENED` notification and e-mail types are new. SQLite and
+  Turso store these types as text, so no column changes for them.
+
+There are no new environment variables.
+
+#### Behavior
+
+- **Items without their own end date end with their auction** everywhere:
+  bids are refused once the auction's end date has passed ("Bidding has
+  ended for this item", 400), the item page shows the ended state, and
+  their winners get the "You won" notification and e-mail.
+- **Winners are notified again when the winner changes.** If an owner
+  reopens bidding and someone else wins, the new winner is told. The
+  previous winner is told that the win is no longer final. Items that ended
+  more than 14 days before the notifier first sees them are recorded without
+  a message.
+- **Owners can reopen bidding** from the auction settings ("Reopen
+  bidding"), with a new end date (or none) and a choice of closed items.
+  Bidders on reopened items get a `BIDDING_REOPENED` notification. A
+  previously notified winner also gets an e-mail if they turned on item-won
+  e-mails.
+- Editing an item can no longer reopen it once it has ended. This includes
+  clearing an item's own past end date (400).
+- The auction page has an organizer header with a "Close auction" dialog,
+  and the results page totals amounts per currency and leaves out drafts.
+
+#### API and export changes
+
+<Callout type="warning">
+  The results export format changed in a way that breaks existing
+  consumers. Update any spreadsheet or script that reads it.
+</Callout>
+
+- **Results export** (`GET /api/auctions/[id]/export`, admins only):
+  - Drafts are no longer included.
+  - JSON: `summary.totalValue` is removed. `summary.totalValueByCurrency`
+    lists one `{ currency, total, formatted, itemCount }` entry per currency
+    for won items, next to the new `wonItems`, `leadingItems` and
+    `unsoldItems` counts. Each item gets a `status` (`won`, `leading`,
+    `unsold` or `open`), a `highestBid` and an `endDate`. `winner` is now
+    `null` unless the item is `won`.
+  - CSV: the existing columns keep their names and order. "Winning Bid",
+    "Winning Bid Display", "Winning Bid Normalized", "Winner Name" and
+    "Winner Email" are empty unless the item is won. Before, "Winning Bid"
+    showed the current bid, or 0. New columns are appended: "Status",
+    "Highest Bid", "Highest Bid Display", "Highest Bidder Name", "Highest
+    Bidder Email" and "End Date". Text cells that start with `=`, `+`, `-`,
+    `@`, a tab or a carriage return get a leading `'`, so spreadsheet apps
+    show them as text instead of running them as formulas.
+- **`PATCH /api/auctions/[id]`**: `endDate` must be an ISO 8601 date-time
+  with an offset (for example `2026-12-01T18:00:00Z` or
+  `2026-12-01T19:00:00+01:00`) or `null`. Anything else gets
+  `422 VALIDATION_ERROR`. Leave the field out to keep the current end. A later
+  end date reopens the items that follow the auction and notifies their
+  bidders.
+- **New `POST /api/auctions/[id]/reopen`**, owner only. The body is
+  `{ "endDate": "<ISO 8601 with offset>" | null, "itemIds": ["<item-id>"] }`,
+  with at most 500 IDs. The listed items must be closed published items of
+  this auction. It returns `200` with
+  `{ auction, reopenedCount, notifiedCount }`. It returns `400` when the end date is not in the future
+  or an item cannot be reopened (with `invalidItemIds`), `403` for anyone
+  but the owner, and `422` for a malformed body.
+- Clients that switch on notification types should handle the new
+  `BIDDING_REOPENED` type.
+
+### Upgrade scripts
+
+v1.23.0 ships SQL files in `scripts/upgrade/v1.23.0/` and a runner for them:
+
+| File           | When                                               | Writes |
+| -------------- | -------------------------------------------------- | ------ |
+| `precheck.sql` | Before migrating: predicts what the upgrade does   | No     |
+| `repair.sql`   | After the v1.23.0 deploy: fixes winner records     | Yes    |
+| `verify.sql`   | After the repair: checks the result                | No     |
+| `backfill.sql` | Only if the schema was updated with `prisma db push` | Yes  |
+
+Run them from a v1.23.0 checkout:
+
+```bash
+DATABASE_URL="$DATABASE_URL" DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
+  npx tsx scripts/upgrade/run-sql.ts scripts/upgrade/v1.23.0/precheck.sql
+```
+
+The runner accepts `libsql://`, `https://` and `file:` URLs, and reads
+`.env` like `npm run db:migrate:turso`. It runs the whole file in one
+transaction, so a file applies in full or not at all. Add `--dry-run` to
+see the affected row counts without changing anything. You can also run the
+files with `turso db shell <db-name> < scripts/upgrade/v1.23.0/<file>.sql`
+or `sqlite3 <path-to-db> < scripts/upgrade/v1.23.0/<file>.sql`.
+
+`precheck.sql` prints one row per outcome, and then the items whose winner
+changed or who will be messaged:
+
+| Outcome                                 | What happens                                                    |
+| --------------------------------------- | --------------------------------------------------------------- |
+| `marked_notified_follows_ended_auction` | Marked as notified, nobody is messaged                          |
+| `notified_winner_unchanged`             | Keeps its winner, nothing is sent                               |
+| `pending`                               | Left as is                                                      |
+| `winner_changed_requeued_ended`         | The new winner is told they won right after the deploy          |
+| `winner_changed_requeued_open`          | The new winner is told once the item ends                       |
+| `winner_changed_recorded_over_14_days`  | The new winner is recorded, nobody is messaged                  |
+
+`notifyAfterDeploy` is the number of "You won" messages v1.23.0 sends right
+after the deploy. Check that number and the listed items before you migrate.
+
+### Runbook: Vercel and Turso
+
+Production on Vercel uses Turso. `npm run build` does not migrate the
+database. You run the migration yourself with `npm run db:migrate:turso`
+from a v1.23.0 checkout. Keep the time between the migration and the
+v1.23.0 deploy short (see [the window](#between-the-migration-and-the-deploy)).
+
+1. **Back up the database.** Take a dump, a copy, or both:
+
+   ```bash
+   turso db shell <db-name> .dump > backup-<db-name>-$(date +%Y%m%d-%H%M%S).sql
+   turso db create <db-name>-pre-v1-23 --from-db <db-name>
+   ```
+
+   Turso can also create a database from an earlier point in time with
+   `turso db create <new-db-name> --from-db <db-name> --timestamp <RFC 3339 time>`,
+   depending on your plan's retention. Check `turso db create --help` for
+   the options your CLI version supports.
+
+2. **Run the pre-check** from a v1.23.0 checkout and review its output:
+
+   ```bash
+   git fetch --tags origin && git checkout v1.23.0
+   npm ci
+   DATABASE_URL="$DATABASE_URL" DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
+     npx tsx scripts/upgrade/run-sql.ts scripts/upgrade/v1.23.0/precheck.sql
+   ```
+
+3. **Build v1.23.0 without serving it.** Create a production deployment
+   that does not take the production domains yet:
+
+   ```bash
+   vercel deploy --prod --skip-domain
+   ```
+
+   This prints the deployment URL. Do not open that URL before step 4,
+   because its pages fail on the old schema. If your project deploys from
+   Git, turn off **Auto-assign Custom Production Domains** in the project
+   settings before you push the release, so the Git build is staged the
+   same way.
+
+4. **Migrate:**
+
+   ```bash
+   DATABASE_URL="$DATABASE_URL" DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
+     npm run db:migrate:turso
+   ```
+
+   Expect `Applied: 2 new migration(s)`. Running it again prints
+   `Already applied` for both and changes nothing.
+
+5. **Promote v1.23.0 immediately:**
+
+   ```bash
+   vercel promote <deployment-url>
+   ```
+
+   Turn **Auto-assign Custom Production Domains** back on afterwards if you
+   turned it off.
+
+6. **Repair and verify** once v1.23.0 serves all traffic:
+
+   ```bash
+   DATABASE_URL="$DATABASE_URL" DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
+     npx tsx scripts/upgrade/run-sql.ts scripts/upgrade/v1.23.0/repair.sql
+   DATABASE_URL="$DATABASE_URL" DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
+     npx tsx scripts/upgrade/run-sql.ts scripts/upgrade/v1.23.0/verify.sql
+   turso db shell <db-name> "SELECT migration_name, applied_at FROM _prisma_migrations ORDER BY applied_at DESC LIMIT 2"
+   ```
+
+   The repair is safe to run more than once. It reports `rows affected: 0`
+   when nothing needs fixing.
+
+### Runbook: self-hosted
+
+<Callout type="warning">
+  The Deployment Admin updater and `scripts/update.sh` update the schema
+  with `prisma db push`. That adds the new columns but skips the data steps
+  of both migrations. With a Turso `DATABASE_URL`, `prisma db push` changes
+  only the local `./dev.db` fallback from `prisma.config.ts` and leaves
+  Turso unchanged. Use the steps below for this upgrade.
+</Callout>
+
+#### SQLite with the Deployment Admin updater
+
+1. **Back up** the database file:
+   `cp <path-to-db> backups/backup_$(date +%Y%m%d_%H%M%S).db`.
+2. **Apply the two migrations before you update.** On the server, in the
+   Auktiva directory (still on v1.22.0):
+
+   ```bash
+   git fetch --tags origin
+   for m in 20261122170000_mark_past_null_dated_winners_notified \
+            20261122180000_add_winner_notification_record; do
+     git show "v1.23.0:prisma/migrations/$m/migration.sql" > "/tmp/$m.sql"
+     npx prisma db execute --file "/tmp/$m.sql"
+   done
+   ```
+
+   `prisma db execute` uses the SQLite `DATABASE_URL` from `.env`. Each file
+   prints `Script executed successfully.` To preview the effect first, run
+   `git show v1.23.0:scripts/upgrade/v1.23.0/precheck.sql > /tmp/precheck.sql`
+   and `sqlite3 <path-to-db> < /tmp/precheck.sql` if `sqlite3` is installed.
+
+3. **Install the update** from **Settings** → **Deployment Administration**.
+   Its `prisma db push` step finds the schema already in sync.
+4. **Repair and verify** after the server has restarted on v1.23.0:
+
+   ```bash
+   npx tsx scripts/upgrade/run-sql.ts scripts/upgrade/v1.23.0/repair.sql
+   npx tsx scripts/upgrade/run-sql.ts scripts/upgrade/v1.23.0/verify.sql
+   ```
+
+If you already installed v1.23.0 without step 2, run the data steps now,
+then the repair and verify:
+
+```bash
+npx tsx scripts/upgrade/run-sql.ts scripts/upgrade/v1.23.0/backfill.sql
+```
+
+Until the backfill runs, v1.23.0 may already have told the winners of items
+without their own end date in auctions that ended in the last 14 days. It
+will not yet have told the new winners of auctions extended before the
+upgrade. The backfill queues those items, and the notifier then tells the new
+winners.
+
+#### SQLite, manual upgrade
+
+Follow [Manual Upgrade](#manual-upgrade), but in Step 6 apply the two
+migration files instead of `npm run db:push`:
+
+```bash
+npm run db:generate
+npx prisma db execute --file prisma/migrations/20261122170000_mark_past_null_dated_winners_notified/migration.sql
+npx prisma db execute --file prisma/migrations/20261122180000_add_winner_notification_record/migration.sql
+```
+
+If the second command fails with
+`duplicate column name: winnerNotifiedAmount`, the schema was already pushed. Run
+`scripts/upgrade/v1.23.0/backfill.sql` instead. After Step 7, run the repair
+and verify commands above.
+
+#### Turso on your own server
+
+Do not use **Install Update** for this release, because it does not migrate
+Turso. Upgrade by hand:
+
+```bash
+git fetch --tags origin && git checkout v1.23.0
+npm ci
+npm run db:generate
+npx tsx scripts/upgrade/run-sql.ts scripts/upgrade/v1.23.0/precheck.sql
+npm run db:migrate:turso
+npm run build
+pm2 restart auktiva   # or: systemctl restart auktiva
+npx tsx scripts/upgrade/run-sql.ts scripts/upgrade/v1.23.0/repair.sql
+npx tsx scripts/upgrade/run-sql.ts scripts/upgrade/v1.23.0/verify.sql
+```
+
+The old process keeps serving while `npm run build` runs, which is the
+window described below.
+
+### Between the migration and the deploy
+
+Until v1.23.0 serves all traffic, v1.22.0 keeps running its notifier on
+every notification poll, against the migrated database:
+
+- **Items without their own end date:** v1.22.0 ignores them. v1.23.0
+  notifies their winners after the deploy.
+- **Re-queued items with their own end date that ended in the last 14
+  days:** v1.22.0 sends the new winner the right "You won" message. It does
+  not update the new winner record, so the record still names the previous
+  winner. A later reopen would then tell the wrong person that their win
+  is no longer final. `repair.sql` fixes this.
+- **Items with their own end date that end during the window:** v1.22.0
+  notifies their winners and leaves the record empty. `repair.sql` fills it
+  in.
+- **Items that ended more than 14 days before the migration:** not queued
+  again, so nobody gets a late message.
+- **Owners who extend an auction during the window** get the v1.22.0
+  behavior: winners are not notified again.
+
+Nobody is messaged twice. `MAINTENANCE_MODE=true` does not close the
+window. It does not apply to `/api` routes, so open tabs keep polling
+notifications and running the notifier. On Vercel, changing it also needs a
+new deployment. Keep the window short instead and run the repair.
+
+### Rolling back
+
+- **Code only** (Vercel Instant Rollback, `vercel rollback`, or checking
+  out v1.22.0 and rebuilding): the new columns stay and v1.22.0 ignores
+  them. v1.22.0 cannot read rows with the new `BIDDING_REOPENED` type, so
+  users with such a notification would get errors loading their
+  notifications. Remove those rows before you roll back:
+
+  ```sql
+  DELETE FROM "notifications" WHERE "type" = 'BIDDING_REOPENED';
+  DELETE FROM "email_logs" WHERE "type" = 'BIDDING_REOPENED';
+  ```
+
+  After a rollback, v1.22.0 again ignores the winners of items without their
+  own end date. Items queued again by the migration that have their own end
+  date notify their new winner once.
+
+- **Data:** the migrations cannot be undone in place. To return to the
+  pre-upgrade data, restore the backup and point `DATABASE_URL` at it, for
+  example the `<db-name>-pre-v1-23` copy, or a new database loaded with
+  `turso db shell <new-db-name> < backup-<db-name>-<date>.sql`. This loses
+  everything written since the backup. Roll the code back with it, because
+  v1.23.0 cannot run on the v1.22.0 schema.
+- Do not edit `_prisma_migrations` by hand. Both migrations stay recorded
+  unless you restore a backup taken before them.
+
 ## Automatic Updates (Recommended)
 
 If you have a Deployment Admin configured, you can update directly from the Settings page:
