@@ -131,6 +131,7 @@
       "defaultAntiSnipeExtensionHint": "Ennyi idővel hosszabbodik meg a záró idő aktiváláskor. 5 másodperc és 60 perc között.",
       "seconds": "másodperc",
       "minutes": "perc",
+      "endDateInvalid": "Adj meg érvényes dátumot és időpontot.",
       "reopen": {
         "title": "Licitálás újranyitása",
         "descriptionEnded": "Ez az aukció lezárult. Adj meg új záróidőpontot, és válaszd ki az újranyitandó tételeket. Aki licitált egy újranyitott tételre, értesítést kap.",
@@ -155,7 +156,8 @@
         "confirmButton": "Licitálás újranyitása",
         "success": "{reopenedCount, plural, =0 {Egy tétel sem nyílt újra.} one {# tételre újra lehet licitálni.} other {# tételre újra lehet licitálni.}} {notifiedCount, plural, =0 {Senki sem kapott értesítést.} one {# licitáló kapott értesítést.} other {# licitáló kapott értesítést.}}",
         "followsAuctionHeading": "{count, plural, one {# tétel az aukcióval együtt zárul} other {# tétel az aukcióval együtt zárul}}",
-        "followsAuctionNote": "A saját záróidőpont nélküli tételek az aukcióval együtt zárulnak, ezért az új záróidőponttal újranyílnak."
+        "followsAuctionNote": "A saját záróidőpont nélküli tételek az aukcióval együtt zárulnak, ezért az új záróidőponttal újranyílnak.",
+        "followsAuctionListLabel": "Tétellista"
       }
     },
     "members": {

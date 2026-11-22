@@ -324,6 +324,34 @@ test("Invalid reopen bodies are rejected before anything changes", async () => {
   assert.deepEqual(await state(), before);
 });
 
+test("Owner PATCH with an end date that is not an ISO instant: 422 and nothing changes", async () => {
+  const before = await state();
+  const auctionBefore = await services.prisma.auction.findUniqueOrThrow({
+    where: { id: "a1" },
+  });
+  // A naive local time (parsed in the server's zone), a five-digit year and
+  // free text are all refused; only an ISO date with an offset (or null) is
+  // accepted.
+  for (const endDate of [
+    "2026-11-30T10:00",
+    "20261-01-01T10:00:00Z",
+    "next week",
+  ]) {
+    const { status } = await call(services.auctionRoute, {
+      method: "PATCH",
+      query: { id: "a1" },
+      userId: "owner",
+      body: { name: "Renamed", endDate },
+    });
+    assert.equal(status, 422, `${endDate} is rejected`);
+  }
+  assert.deepEqual(await state(), before);
+  assert.deepEqual(
+    await services.prisma.auction.findUniqueOrThrow({ where: { id: "a1" } }),
+    auctionBefore,
+  );
+});
+
 // ----------------------------------------------------------------------------
 // 4.4 Item-level reopening stays blocked
 // ----------------------------------------------------------------------------

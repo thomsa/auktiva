@@ -134,6 +134,7 @@
       "defaultAntiSnipeExtensionHint": "How much time to add to the end when triggered. Between 5 seconds and 60 minutes.",
       "seconds": "seconds",
       "minutes": "minutes",
+      "endDateInvalid": "Enter a valid date and time.",
       "reopen": {
         "title": "Reopen bidding",
         "descriptionEnded": "This auction has ended. Set a new end time and choose the items to reopen. Everyone who bid on a reopened item gets a notification.",
@@ -158,7 +159,8 @@
         "confirmButton": "Reopen bidding",
         "success": "{reopenedCount, plural, =0 {No items were reopened.} one {Bidding reopened on # item.} other {Bidding reopened on # items.}} {notifiedCount, plural, =0 {No bidders were notified.} one {# bidder was notified.} other {# bidders were notified.}}",
         "followsAuctionHeading": "{count, plural, one {# item follows the auction end} other {# items follow the auction end}}",
-        "followsAuctionNote": "Items without their own end time end with the auction, so they reopen with the new end time."
+        "followsAuctionNote": "Items without their own end time end with the auction, so they reopen with the new end time.",
+        "followsAuctionListLabel": "Item list"
       }
     },
     "members": {

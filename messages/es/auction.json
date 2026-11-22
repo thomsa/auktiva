@@ -131,6 +131,7 @@
       "defaultAntiSnipeExtensionHint": "Cuánto tiempo añadir al fin. Entre 5 segundos y 60 minutos.",
       "seconds": "segundos",
       "minutes": "minutos",
+      "endDateInvalid": "Introduce una fecha y hora válidas.",
       "reopen": {
         "title": "Reabrir las pujas",
         "descriptionEnded": "Esta subasta ha finalizado. Fija una nueva hora de cierre y elige los artículos que quieres reabrir. Todos los que pujaron por un artículo reabierto recibirán una notificación.",
@@ -155,7 +156,8 @@
         "confirmButton": "Reabrir las pujas",
         "success": "{reopenedCount, plural, =0 {No se reabrió ningún artículo.} one {Pujas reabiertas en # artículo.} other {Pujas reabiertas en # artículos.}} {notifiedCount, plural, =0 {No se notificó a ningún postor.} one {Se notificó a # postor.} other {Se notificó a # postores.}}",
         "followsAuctionHeading": "{count, plural, one {# artículo sigue el cierre de la subasta} other {# artículos siguen el cierre de la subasta}}",
-        "followsAuctionNote": "Los artículos sin hora de cierre propia cierran con la subasta, así que se reabren con la nueva hora de cierre."
+        "followsAuctionNote": "Los artículos sin hora de cierre propia cierran con la subasta, así que se reabren con la nueva hora de cierre.",
+        "followsAuctionListLabel": "Lista de artículos"
       }
     },
     "members": {

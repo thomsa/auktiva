@@ -30,7 +30,7 @@ export const updateAuctionSchema = z.object({
   memberCanInvite: z.boolean().optional(),
   bidderVisibility: z.enum(["VISIBLE", "ANONYMOUS", "PER_BID"]).optional(),
   itemEndMode: z.enum(["AUCTION_END", "CUSTOM", "NONE"]).optional(),
-  endDate: z.string().nullable().optional(),
+  endDate: z.iso.datetime({ offset: true }).nullable().optional(),
   defaultItemsEditableByAdmin: z.boolean().optional(),
   defaultAntiSnipe: z.boolean().optional(),
   defaultAntiSnipeThreshold: z.number().int().min(60).max(3600).optional(),

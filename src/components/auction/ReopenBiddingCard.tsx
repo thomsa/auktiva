@@ -4,7 +4,10 @@ import { ConfirmDialog } from "@/components/common";
 import { useToast } from "@/components/ui/toast";
 import { useFormatters } from "@/i18n";
 import { useConfirmDialog } from "@/hooks/ui";
-import { toDateTimeLocalValue } from "@/utils/datetime-local";
+import {
+  parseDateTimeLocal,
+  toDateTimeLocalValue,
+} from "@/utils/datetime-local";
 
 /** Mirrors the reopen API's `itemIds` limit. */
 const MAX_REOPEN_ITEMS = 500;
@@ -50,6 +53,7 @@ export function ReopenBiddingCard({
   onFailed,
 }: ReopenBiddingCardProps) {
   const t = useTranslations("auction.settings.reopen");
+  const tSettings = useTranslations("auction.settings");
   const tErrors = useTranslations("errors");
   const { showToast } = useToast();
   const { formatDate } = useFormatters();
@@ -64,6 +68,8 @@ export function ReopenBiddingCard({
   const followsId = `${fieldId}-follows`;
   const followsNoteId = `${fieldId}-follows-note`;
   const selectAllRef = useRef<HTMLInputElement>(null);
+  const followsScrollRef = useRef<HTMLDivElement>(null);
+  const [followsScrolls, setFollowsScrolls] = useState(false);
 
   // Local time only exists in the browser, so the field and the item dates
   // are filled after mount to keep the server render and hydration identical.
@@ -116,6 +122,23 @@ export function ReopenBiddingCard({
     }
   }, [someSelected]);
 
+  // The list of items that follow the auction has no controls, so it is a
+  // keyboard stop only while it actually scrolls (re-checked on resize).
+  useEffect(() => {
+    const el = followsScrollRef.current;
+    if (!el) {
+      setFollowsScrolls(false);
+      return;
+    }
+    const update = () => setFollowsScrolls(el.scrollHeight > el.clientHeight);
+    update();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    if (el.firstElementChild) observer.observe(el.firstElementChild);
+    return () => observer.disconnect();
+  }, [followingItems.length]);
+
   const isLocked = isPending || confirmDialog.isOpen;
 
   const toggleItem = (id: string, checked: boolean) => {
@@ -143,12 +166,16 @@ export function ReopenBiddingCard({
       return undefined;
     }
     // A `datetime-local` value has no offset, so it parses as local time.
-    const parsed = new Date(endDate);
-    if (Number.isNaN(parsed.getTime()) || parsed <= new Date()) {
+    const parsed = parseDateTimeLocal(endDate);
+    if (!parsed.ok || parsed.iso === null) {
+      setEndDateError(tSettings("endDateInvalid"));
+      return undefined;
+    }
+    if (new Date(parsed.iso) <= new Date()) {
       setEndDateError(t("endDateInPast"));
       return undefined;
     }
-    return parsed.toISOString();
+    return parsed.iso;
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -407,12 +434,18 @@ export function ReopenBiddingCard({
                         </span>
                       </div>
 
-                      {/* No controls inside, so the scroll area itself takes
-                          focus to stay scrollable from the keyboard. */}
+                      {/* No controls inside, so while it scrolls the area
+                          itself takes focus to stay scrollable from the
+                          keyboard. Its short label differs from the group's. */}
                       <div
-                        role="region"
-                        aria-labelledby={followsId}
-                        tabIndex={0}
+                        ref={followsScrollRef}
+                        role={followsScrolls ? "region" : undefined}
+                        aria-label={
+                          followsScrolls
+                            ? t("followsAuctionListLabel")
+                            : undefined
+                        }
+                        tabIndex={followsScrolls ? 0 : undefined}
                         className="max-h-80 overflow-y-auto focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-info"
                       >
                         <ul className="divide-y divide-base-content/5">

@@ -131,6 +131,7 @@
       "defaultAntiSnipeExtensionHint": "Ile czasu dodać po aktywacji. Od 5 sekund do 60 minut.",
       "seconds": "sekundy",
       "minutes": "minuty",
+      "endDateInvalid": "Wpisz poprawną datę i godzinę.",
       "reopen": {
         "title": "Wznów licytację",
         "descriptionEnded": "Ta aukcja została zakończona. Ustaw nowy czas zakończenia i wybierz przedmioty do ponownego otwarcia. Każdy, kto złożył ofertę na ponownie otwarty przedmiot, otrzyma powiadomienie.",
@@ -155,7 +156,8 @@
         "confirmButton": "Wznów licytację",
         "success": "{reopenedCount, plural, =0 {Żaden przedmiot nie został wznowiony.} one {Wznowiono licytację # przedmiotu.} few {Wznowiono licytację # przedmiotów.} many {Wznowiono licytację # przedmiotów.} other {Wznowiono licytację # przedmiotu.}} {notifiedCount, plural, =0 {Nikt nie otrzymał powiadomienia.} one {Powiadomiono # licytującego.} few {Powiadomiono # licytujących.} many {Powiadomiono # licytujących.} other {Powiadomiono # licytującego.}}",
         "followsAuctionHeading": "{count, plural, one {# przedmiot kończy się razem z aukcją} few {# przedmioty kończą się razem z aukcją} many {# przedmiotów kończy się razem z aukcją} other {# przedmiotu kończy się razem z aukcją}}",
-        "followsAuctionNote": "Przedmioty bez własnego czasu zakończenia kończą się razem z aukcją, więc zostaną wznowione z nowym czasem zakończenia."
+        "followsAuctionNote": "Przedmioty bez własnego czasu zakończenia kończą się razem z aukcją, więc zostaną wznowione z nowym czasem zakończenia.",
+        "followsAuctionListLabel": "Lista przedmiotów"
       }
     },
     "members": {

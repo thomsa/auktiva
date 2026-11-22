@@ -131,6 +131,7 @@
       "defaultAntiSnipeExtensionHint": "Wie viel Zeit zur Endzeit hinzugefügt wird. Zwischen 5 Sekunden und 60 Minuten.",
       "seconds": "Sekunden",
       "minutes": "Minuten",
+      "endDateInvalid": "Gib ein gültiges Datum und eine gültige Uhrzeit ein.",
       "reopen": {
         "title": "Gebote wieder zulassen",
         "descriptionEnded": "Diese Auktion ist beendet. Lege ein neues Ende fest und wähle die Artikel aus, die wieder geöffnet werden sollen. Alle, die auf einen wieder geöffneten Artikel geboten haben, werden benachrichtigt.",
@@ -155,7 +156,8 @@
         "confirmButton": "Gebote wieder zulassen",
         "success": "{reopenedCount, plural, =0 {Es wurden keine Artikel wieder geöffnet.} one {Gebote für # Artikel wieder zugelassen.} other {Gebote für # Artikel wieder zugelassen.}} {notifiedCount, plural, =0 {Niemand wurde benachrichtigt.} one {# Bieter wurde benachrichtigt.} other {# Bieter wurden benachrichtigt.}}",
         "followsAuctionHeading": "{count, plural, one {# Artikel folgt dem Auktionsende} other {# Artikel folgen dem Auktionsende}}",
-        "followsAuctionNote": "Artikel ohne eigenes Ende enden mit der Auktion und werden mit dem neuen Ende wieder geöffnet."
+        "followsAuctionNote": "Artikel ohne eigenes Ende enden mit der Auktion und werden mit dem neuen Ende wieder geöffnet.",
+        "followsAuctionListLabel": "Artikelliste"
       }
     },
     "members": {

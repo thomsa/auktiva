@@ -18,8 +18,8 @@ import { useConfirmDialog } from "@/hooks/ui";
 import { useTranslations } from "next-intl";
 import { withAuth } from "@/lib/auth/withAuth";
 import {
-  dateTimeLocalToIso,
   isoToDateTimeLocalValue,
+  parseDateTimeLocal,
 } from "@/utils/datetime-local";
 
 interface AuctionSettingsProps {
@@ -86,6 +86,9 @@ interface AuctionCurrencyProfileListItem {
   }>;
 }
 
+const END_DATE_FIELD_ID = "auction-settings-end-date";
+const END_DATE_ERROR_ID = "auction-settings-end-date-error";
+
 const EMPTY_CURRENCY_FORM: AuctionCurrencyProfileForm = {
   name: "",
   code: "",
@@ -134,14 +137,36 @@ export default function AuctionSettingsPage({
   const [isEnded, setIsEnded] = useState(auction.isEnded);
   const [auctionEndDate, setAuctionEndDate] = useState(auction.endDate);
   const [closedItems, setClosedItems] = useState(closedItemsProp);
+  const [endDateError, setEndDateError] = useState<string | null>(null);
 
-  // The end date field is a `datetime-local` input, which works in the
-  // browser's time zone. Fill it in local time once the page is mounted.
+  // The stored end the end date field was last filled from, and the text it
+  // was filled with. Saving while the field still shows that text sends the
+  // stored end unchanged (the field drops seconds); any other text is the
+  // owner's edit. Starts with the server-rendered text for hydration.
+  const [endField, setEndField] = useState<{
+    iso: string | null;
+    local: string;
+  }>({
+    iso: auction.endDate,
+    local: auction.endDate ? auction.endDate.slice(0, 16) : "",
+  });
+
+  /**
+   * Fills the end date field from a stored end. Used on mount and whenever
+   * the stored end changes outside the form (end now, reopen, a reload of
+   * the server data), so a later save never sends a stale end.
+   */
+  const syncEndField = (iso: string | null) => {
+    const local = isoToDateTimeLocalValue(iso);
+    setEndField({ iso, local });
+    setFormData((prev) => ({ ...prev, endDate: local }));
+    setEndDateError(null);
+  };
+
+  // The field is a `datetime-local` input, which works in the browser's
+  // time zone, so fill it in local time once the page is mounted.
   useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      endDate: isoToDateTimeLocalValue(auction.endDate),
-    }));
+    syncEndField(auction.endDate);
     // Mount only; later changes come from the sync points below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -182,6 +207,11 @@ export default function AuctionSettingsPage({
     setClosedItems(closedItemsProp);
     setIsEnded(auction.isEnded);
     setAuctionEndDate(auction.endDate);
+    // The stored end changed outside this form (another tab, or the reopen
+    // card's reload after an error): the field follows it. An unsaved edit
+    // of the field is dropped here, because saving it would act on an end
+    // date the owner no longer sees.
+    if (auction.endDate !== auctionEndDate) syncEndField(auction.endDate);
   }
 
   const refreshServerProps = () => {
@@ -202,10 +232,7 @@ export default function AuctionSettingsPage({
     setIsEnded(!auctionOpen);
     setAuctionEndDate(endDate);
     // Keep the main form in step so saving it does not restore the old end.
-    setFormData((prev) => ({
-      ...prev,
-      endDate: isoToDateTimeLocalValue(endDate),
-    }));
+    syncEndField(endDate);
     refreshServerProps();
   };
 
@@ -325,6 +352,7 @@ export default function AuctionSettingsPage({
     >,
   ) => {
     const { name, value, type } = e.target;
+    if (name === "endDate") setEndDateError(null);
     setFormData((prev) => ({
       ...prev,
       [name]:
@@ -334,15 +362,24 @@ export default function AuctionSettingsPage({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    // An untouched field sends the stored end exactly (the field drops
-    // seconds); an edited one is converted from local time to UTC, so the
-    // server never has to guess the owner's time zone.
-    const endDate =
-      formData.endDate === isoToDateTimeLocalValue(auctionEndDate)
-        ? auctionEndDate
-        : dateTimeLocalToIso(formData.endDate);
+    // An untouched field sends the stored end exactly; an edited one is
+    // converted from local time to UTC, so the server never has to guess the
+    // owner's time zone. Text that is not a real date never becomes "no end".
+    let endDate: string | null;
+    if (formData.endDate === endField.local) {
+      endDate = endField.iso;
+    } else {
+      const parsed = parseDateTimeLocal(formData.endDate);
+      if (!parsed.ok) {
+        setEndDateError(t("endDateInvalid"));
+        document.getElementById(END_DATE_FIELD_ID)?.focus();
+        return;
+      }
+      endDate = parsed.iso;
+    }
+    setEndDateError(null);
+    setIsLoading(true);
 
     try {
       const res = await fetch(`/api/auctions/${auction.id}`, {
@@ -360,6 +397,7 @@ export default function AuctionSettingsPage({
         // A new end date can end or reopen the auction and its items.
         const savedEnd: string | null =
           result.endDate === undefined ? endDate : result.endDate;
+        syncEndField(savedEnd);
         if (savedEnd !== auctionEndDate) {
           setAuctionEndDate(savedEnd);
           setIsEnded(savedEnd !== null && new Date(savedEnd) < new Date());
@@ -662,25 +700,33 @@ export default function AuctionSettingsPage({
               </h2>
 
               <div className="form-control">
-                <label className="label">
+                <label className="label" htmlFor={END_DATE_FIELD_ID}>
                   <span className="label-text font-medium">
                     {tCreate("endDate")}
                   </span>
                 </label>
                 <div className="flex gap-2">
                   <input
+                    id={END_DATE_FIELD_ID}
                     type="datetime-local"
                     name="endDate"
                     value={formData.endDate}
                     onChange={handleChange}
-                    className="input input-bordered flex-1 bg-base-100 focus:bg-base-100 transition-colors"
+                    aria-invalid={endDateError ? true : undefined}
+                    aria-describedby={
+                      endDateError ? END_DATE_ERROR_ID : undefined
+                    }
+                    className={`input input-bordered flex-1 bg-base-100 focus:bg-base-100 transition-colors ${
+                      endDateError ? "input-error" : ""
+                    }`}
                   />
                   {formData.endDate && (
                     <button
                       type="button"
-                      onClick={() =>
-                        setFormData((prev) => ({ ...prev, endDate: "" }))
-                      }
+                      onClick={() => {
+                        setEndDateError(null);
+                        setFormData((prev) => ({ ...prev, endDate: "" }));
+                      }}
                       className="btn btn-ghost btn-square"
                       title="Clear end date"
                     >
@@ -688,6 +734,15 @@ export default function AuctionSettingsPage({
                     </button>
                   )}
                 </div>
+                {endDateError && (
+                  <p
+                    id={END_DATE_ERROR_ID}
+                    role="alert"
+                    className="text-sm text-error mt-2"
+                  >
+                    {endDateError}
+                  </p>
+                )}
                 <label className="label">
                   <span className="label-text-alt text-base-content/60">
                     {tCreate("endDateHint")}
@@ -896,10 +951,7 @@ export default function AuctionSettingsPage({
                       setAuctionEndDate(endedAt);
                       // Keep the main form in step so saving it does not
                       // restore the old end and silently re-extend the auction.
-                      setFormData((prev) => ({
-                        ...prev,
-                        endDate: isoToDateTimeLocalValue(endedAt),
-                      }));
+                      syncEndField(endedAt);
                       endDialog.close();
                       showToast(t("endedSuccess"), "success");
                       // Load the now-closed items into the reopen card.
