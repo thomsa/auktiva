@@ -66,7 +66,7 @@ When an item reopens for bidding, the system SHALL mark its winner notification 
 - **THEN** no win notification is sent for it
 
 ### Requirement: Existing notification records stay compatible
-On upgrade, items already marked as notified SHALL keep a recorded notified winner. The system SHALL use the user from the item's latest won notification, or the current highest bidder if there is none. Items whose recorded winner differs from the current highest bidder SHALL become pending again.
+On upgrade, items already marked as notified SHALL keep a recorded notified winner. The system SHALL use the user from the item's latest won notification, or the current highest bidder if there is none. Items whose recorded winner differs from the current highest bidder SHALL become pending again, unless their effective end was more than 14 days before the upgrade. Those items SHALL instead record the current highest bidder as the notified winner, and nobody SHALL be messaged.
 
 #### Scenario: Unchanged past auction
 - **WHEN** an item was marked as notified before the upgrade and its highest bidder is the user who received the won notification
@@ -75,6 +75,10 @@ On upgrade, items already marked as notified SHALL keep a recorded notified winn
 #### Scenario: Auction extended before the upgrade
 - **WHEN** an item was marked as notified for user A before the upgrade and user B has since become the highest bidder
 - **THEN** after the upgrade the item is pending, and user B is notified once the item has ended
+
+#### Scenario: Auction extended before the upgrade that ended long ago
+- **WHEN** an item was marked as notified for user A before the upgrade, user B has since become the highest bidder, and the item's effective end was more than 14 days before the upgrade
+- **THEN** after the upgrade user B is recorded as the notified winner, the item stays notified, and no notification is sent, also by the previous release's notifier before the new release is deployed
 
 #### Scenario: Won notification was deleted
 - **WHEN** an item was marked as notified before the upgrade but its won notification no longer exists

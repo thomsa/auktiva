@@ -163,24 +163,59 @@ actorId, endDate, reopened })`:
   actions.
 
 ### D7. Migration and backfill
-One migration `<ts>_add_winner_notification_record` in plain SQL, with no
-date comparisons:
+One migration `<ts>_add_winner_notification_record` in plain SQL, with one
+date comparison (step 3):
 1. `ALTER TABLE auction_items ADD COLUMN` for the three fields.
-2. For `winnerNotified = 1` rows: set `winnerNotifiedUserId` to the
-   `userId` of the latest `AUCTION_WON` notification for the item (ordered
-   by `createdAt`, a column-to-column order). If there is none, use
-   `highestBidderId`. `winnerNotifiedAt` comes from that notification.
-   `winnerNotifiedAmount = currentBid` only when the user equals
-   `highestBidderId`.
-3. `UPDATE auction_items SET winnerNotified = 0 WHERE winnerNotified = 1
+2. For `winnerNotified = 1` rows without a record: set
+   `winnerNotifiedUserId` to the `userId` of the latest `AUCTION_WON`
+   notification for the item (ordered by `createdAt`, a column-to-column
+   order). If there is none, use `highestBidderId`. `winnerNotifiedAt`
+   comes from that notification. `winnerNotifiedAmount = currentBid` only
+   when the user equals `highestBidderId`.
+3. For `winnerNotified = 1` rows whose recorded user is not the current
+   `highestBidderId` and whose effective end (`COALESCE(item.endDate,
+   auction.endDate)`) is more than 14 days before the migration runs:
+   record `highestBidderId` and `currentBid` with `winnerNotifiedAt = NULL`,
+   and keep `winnerNotified = 1`.
+4. `UPDATE auction_items SET winnerNotified = 0 WHERE winnerNotified = 1
    AND highestBidderId IS NOT NULL AND winnerNotifiedUserId IS NOT
    highestBidderId`. This repairs auctions extended before the deploy.
 
-The migration is checked against a copy of a database with seed data and
-through `migrate-turso.ts` semantics, which apply the SQL as is. Rollback:
-the new columns are additive and the old code ignores them. Reverting the
-code leaves step 3's re-queued rows to the old notifier, which notifies the
-new winner once (the intended outcome).
+Step 3 is the one date comparison. The first design used none and left
+long-ended rows to the notifier's 14-day rule (D3 step 3). That holds only
+once the new code runs. On Turso, `npm run db:migrate:turso` runs before the
+v1.23.0 deploy, and self-hosted installs rebuild while the old process
+serves. In that window the v1.22.0 notifier, which has no 14-day rule,
+would send late "You won" messages for re-queued items with their own end
+date. Step 3 leaves those rows in the state the notifier's rule would
+produce: the current winner recorded and nothing sent. `winnerNotifiedAt`
+stays NULL because nobody was told about this winner. That matches the
+deleted-notification fallback, and the claim release key never matches
+NULL. Dates are compared in Unix seconds, ISO text or epoch milliseconds,
+as in `20261122170000_mark_past_null_dated_winners_notified`.
+
+Steps 2 to 4 only touch rows that still need them, so
+`scripts/upgrade/v1.23.0/backfill.sql` can repeat them unchanged after a
+`prisma db push`, which skips data steps. A test keeps the file in step
+with the migrations. The window has one more effect, which the migration
+cannot prevent: the v1.22.0 notifier sends the right message for re-queued
+items with their own end date, but it sets only `winnerNotified`. The
+record then still names the previous winner, or no one for items that end
+in the window. `scripts/upgrade/v1.23.0/repair.sql` runs after the deploy.
+It sets the record to the current highest bidder wherever the latest
+`AUCTION_WON` went to that bidder. The upgrade guide
+(`docs/content/developers/upgrading.mdx`) gives the order: migrate, deploy
+at once, then repair.
+
+The migration is checked on libSQL against a v1.22.0 database with seed
+data, applied the way `migrate-turso.ts` applies it
+(`winner-migration-upgrade.test.ts`, `winner-migration-window.test.ts`).
+Rollback: the new columns are additive and the old code ignores them.
+Reverting the code leaves step 4's re-queued rows to the old notifier. It
+notifies the new winner once for items with their own end date and never
+for items that follow the auction, as before this change. Old code cannot
+read `BIDDING_REOPENED` notification or e-mail rows, so the guide lists
+them for removal before a code rollback.
 
 ### D8. UI
 - Settings page (`src/pages/auctions/[id]/settings.tsx`): the
@@ -310,6 +345,12 @@ accepted both on 2026-11-22.
   base branch's `20261122170000_mark_past_null_dated_winners_notified`.
   Items that backfill marks as notified get the highest bidder as the
   recorded winner.
+- **D7 upgrade window.** Added during production readiness on 2026-11-22,
+  awaiting the maintainer's review. Step 3 adds a 14-day date comparison
+  to the migration, which the first design ruled out. It keeps the v1.22.0
+  notifier, which runs until v1.23.0 is deployed, from sending late "You
+  won" messages. The repair script fixes winner records that notifier
+  leaves stale. See D7 and `docs/content/developers/upgrading.mdx`.
 - **D8 item selection.** Items without their own end date follow the
   auction, so moving the auction end always reopens them (auction-reopen
   spec, "Moving the auction end reopens items that follow it"). The card

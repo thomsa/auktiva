@@ -38,8 +38,10 @@ previous winners keep a "You won" message that is no longer true.
   the highest bidder when that is missing. Rows where that person is no
   longer the highest bidder are queued again. This also repairs auctions
   that were already extended before the deploy. Items that ended more than
-  14 days before the notifier first sees them are recorded without sending
-  late messages.
+  14 days before the upgrade, or before the notifier first sees them, are
+  recorded without sending late messages. The upgrade guide gives
+  operators a pre-check, the migrate-then-deploy order and a post-deploy
+  repair (`scripts/upgrade/v1.23.0`).
 - New notification type and e-mail type `BIDDING_REOPENED`, with icons in
   the notification bell and the mobile sheet. New UI strings are added in
   all five locales (en, de, es, hu, pl).

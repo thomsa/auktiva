@@ -46,6 +46,14 @@ check in 6.2.
 - [x] 6.1 Run `npx tsx --test` over all touched and existing test files, then `npm run lint`, `npx tsc --noEmit` and `npm run build`. Verify that all pass and record the exact commands and results.
 - [x] 6.2 End-to-end browser QA on a local SQLite DB with its own port and test data. Seed an auction, two bidders and a published item. Close the auction ("End auction now"), poll notifications (user A gets "won"), reopen through the settings card (user A gets "no longer final"), have user B outbid, end the auction again, and poll (user B gets "won", user A gets nothing new). Verify the notification list for each user and the item page state with screenshots.
 
+## 7. Production upgrade readiness (added 2026-11-22, before v1.23.0)
+
+- [x] 7.1 Dry-run the upgrade on libSQL. Build a database from the migrations that shipped in v1.22.0, seed v1.22.0 data, run the pre-check, and apply the two new migrations the way `scripts/migrate-turso.ts` does, twice. Then run the v1.23.0 notifier through the libSQL adapter. Verify with `src/lib/services/winner-migration-upgrade.test.ts`.
+- [x] 7.2 Cover the transition. Show that v1.23.0 code on the v1.22.0 schema fails, and that the v1.22.0 notifier on the migrated schema sends only correct messages but leaves stale records. Then repair and deploy, and show that nobody is messaged twice. Verify with `src/lib/services/winner-migration-window.test.ts`.
+- [x] 7.3 In the migration, record (instead of re-queuing) changed winners whose effective end is more than 14 days old (design D7 step 3), and let the data steps run again on their own. Update `winner-notification-backfill.test.ts` to use relative dates and add the stale and still-open cases.
+- [x] 7.4 Add `scripts/upgrade/v1.23.0/{precheck,backfill,repair,verify}.sql` and `scripts/upgrade/run-sql.ts`. A test keeps `backfill.sql` equal to the migrations' data statements.
+- [x] 7.5 Write "Upgrading to v1.23.0" in `docs/content/developers/upgrading.mdx`: the operator-facing changes since v1.22.0 and the Vercel/Turso and self-hosted runbooks, with the window and rollback.
+
 ## Verification record
 
 Candidate e5acce3 on `claude/winner-renotify`, stacked on
