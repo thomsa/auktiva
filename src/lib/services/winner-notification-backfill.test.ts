@@ -10,7 +10,7 @@ import path from "node:path";
  * recorded notified winner and pending flag for each case.
  */
 
-const BACKFILL_MIGRATION = "20261122000000_add_winner_notification_record";
+const BACKFILL_MIGRATION = "20261122180000_add_winner_notification_record";
 
 const tmpDir = fs.mkdtempSync(
   path.join(os.tmpdir(), "auktiva-winner-backfill-"),
