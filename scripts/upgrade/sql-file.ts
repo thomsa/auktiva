@@ -23,21 +23,19 @@ export interface SqlStatementResult {
   rowsAffected: number;
 }
 
-const READ_ONLY = /^(SELECT|WITH|PRAGMA)\b/i;
-
 /**
- * Runs the statements in one transaction and commits it, or rolls it back
- * when `dryRun` is set or a statement fails, so a file either applies in
- * full or not at all. Files with only SELECT/WITH/PRAGMA statements use a
- * read transaction.
+ * Runs the statements in one write transaction and commits it, or rolls it
+ * back when `dryRun` is set or a statement fails, so a file either applies
+ * in full or not at all. There is no read-only guess from the statement
+ * text (a `WITH ... UPDATE` or a `PRAGMA name = value` writes), so a file of
+ * SELECTs is committed too, which changes nothing.
  */
 export async function runSqlStatements(
   client: Client,
   statements: string[],
   options: { dryRun?: boolean } = {},
 ): Promise<SqlStatementResult[]> {
-  const readOnly = statements.every((sql) => READ_ONLY.test(sql));
-  const tx = await client.transaction(readOnly ? "read" : "write");
+  const tx = await client.transaction("write");
   try {
     const results: SqlStatementResult[] = [];
     for (const sql of statements) {
@@ -48,10 +46,10 @@ export async function runSqlStatements(
         rows: rs.rows.map((row) =>
           Object.fromEntries(rs.columns.map((name, i) => [name, row[i]])),
         ),
-        rowsAffected: readOnly ? 0 : rs.rowsAffected,
+        rowsAffected: rs.rowsAffected,
       });
     }
-    if (options.dryRun || readOnly) {
+    if (options.dryRun) {
       await tx.rollback();
     } else {
       await tx.commit();
