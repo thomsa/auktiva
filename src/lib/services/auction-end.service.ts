@@ -45,9 +45,12 @@ export interface WinnerNotificationSnapshot {
  * Atomically claims an item's pending winner notification for the winner in
  * `snapshot` and records that winner, amount and `now` as notified.
  *
- * The claim only succeeds while the item is still pending and its highest
- * bidder is still the snapshot's, so overlapping runs claim an item once and
- * a run that read an outdated winner never messages the wrong user.
+ * The claim only succeeds while the item still matches
+ * `endedItemsAwaitingNotificationWhere(now)` (published, ended at `now` and
+ * pending) and its highest bidder is still the snapshot's. So overlapping
+ * runs claim an item once, a run that read an outdated winner never
+ * messages the wrong user, and an item the owner reopened after the run read
+ * it is left pending for whoever wins at the next close.
  *
  * @returns `true` when this call made the claim and may send the messages.
  */
@@ -57,8 +60,8 @@ export async function claimWinnerNotification(
 ): Promise<boolean> {
   const claim = await prisma.auctionItem.updateMany({
     where: {
+      ...endedItemsAwaitingNotificationWhere(now),
       id: snapshot.id,
-      winnerNotified: false,
       highestBidderId: snapshot.highestBidderId,
     },
     data: {
@@ -112,6 +115,37 @@ async function releaseWinnerNotificationClaim(
 }
 
 /**
+ * Whether an AUCTION_WON notification for this item and winner was created
+ * at or after `now` (this run's claim time), i.e. by this run. Answers
+ * `true` when the check itself fails, so an unknown outcome keeps the claim
+ * (at most once) rather than risking a duplicate.
+ */
+async function wonNotificationMayExist(
+  itemId: string,
+  winnerId: string,
+  now: Date,
+): Promise<boolean> {
+  try {
+    const existing = await prisma.notification.findFirst({
+      where: {
+        itemId,
+        userId: winnerId,
+        type: "AUCTION_WON",
+        createdAt: { gte: now },
+      },
+      select: { id: true },
+    });
+    return existing !== null;
+  } catch (err) {
+    auctionEndLogger.error(
+      { err, itemId },
+      "Failed to check for the winner notification; keeping the claim",
+    );
+    return true;
+  }
+}
+
+/**
  * Claims one ended item and messages its winner.
  *
  * @returns `true` when the winner received the in-app notification in this
@@ -151,13 +185,17 @@ async function notifyItemWinner(item: EndedItem, now: Date): Promise<boolean> {
       item.currency.symbol,
     );
   } catch (err) {
-    // Nothing reached the winner yet, so a later run may retry.
     auctionEndLogger.error(
       { err, itemId: item.id },
       "Failed to notify winner for item",
     );
-    await releaseWinnerNotificationClaim(item, winnerId, now);
-    return false;
+    // The notification row is inserted before the realtime and unread-count
+    // work that may also throw. Release the claim for a retry only when no
+    // row reached the winner, so a later run never sends a duplicate.
+    if (!(await wonNotificationMayExist(item.id, winnerId, now))) {
+      await releaseWinnerNotificationClaim(item, winnerId, now);
+      return false;
+    }
   }
 
   // The in-app notification exists from here on. Keep the claim whatever

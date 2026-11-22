@@ -613,3 +613,111 @@ test("a failed in-app notification releases the claim and restores the record", 
   assert.deepEqual(await wonBy("rel-item"), ["rel-b"]);
   assert.equal((await winnerRecord("rel-item")).winnerNotifiedUserId, "rel-b");
 });
+
+test("an item reopened after the notifier read it is not claimed, and the next winner is notified", async () => {
+  const { prisma, auctionEnd } = services;
+  const reopen = await import("@/lib/services/auction-reopen.service");
+  await seedUsers("race-a", "race-b");
+  await seedAuction("race-auction", daysFromNow(-1));
+  await seedItem("race-item", "race-auction", {
+    highestBidderId: "race-a",
+    currentBid: 10,
+  });
+  await prisma.bid.create({
+    data: { auctionItemId: "race-item", userId: "race-a", amount: 10 },
+  });
+
+  // A notifier run reads the item as pending with A as the winner...
+  const candidates = await prisma.auctionItem.findMany({
+    where: {
+      ...auctionEnd.endedItemsAwaitingNotificationWhere(new Date()),
+      id: "race-item",
+    },
+  });
+  assert.equal(candidates.length, 1);
+
+  // ...then the owner reopens bidding before the run claims it.
+  const reopened = await reopen.reopenBidding({
+    auctionId: "race-auction",
+    actorId: "owner",
+    endDate: daysFromNow(1),
+    itemIds: [],
+  });
+  assert.equal(reopened.reopenedCount, 1);
+
+  // The run's claim fails, so A is not told they won an open item.
+  assert.equal(
+    await auctionEnd.claimWinnerNotification(
+      { id: "race-item", highestBidderId: "race-a", currentBid: 10 },
+      new Date(),
+    ),
+    false,
+  );
+  assert.deepEqual(await wonBy("race-item"), []);
+  const pending = await winnerRecord("race-item");
+  assert.equal(pending.winnerNotified, false);
+  assert.equal(pending.winnerNotifiedUserId, null);
+
+  // B outbids A and the auction ends again: B is notified and recorded.
+  await prisma.bid.create({
+    data: { auctionItemId: "race-item", userId: "race-b", amount: 20 },
+  });
+  await prisma.auctionItem.update({
+    where: { id: "race-item" },
+    data: { highestBidderId: "race-b", currentBid: 20 },
+  });
+  await prisma.auction.update({
+    where: { id: "race-auction" },
+    data: { endDate: new Date(Date.now() - 1000) },
+  });
+  await auctionEnd.processEndedItems();
+
+  assert.deepEqual(await wonBy("race-item"), ["race-b"]);
+  const rec = await winnerRecord("race-item");
+  assert.equal(rec.winnerNotified, true);
+  assert.equal(rec.winnerNotifiedUserId, "race-b");
+  assert.equal(rec.winnerNotifiedAmount, 20);
+});
+
+test("a failure after the won notification was inserted keeps the claim", async () => {
+  const { prisma, auctionEnd } = services;
+  await seedUsers("kept-a");
+  await seedAuction("kept-auction", daysFromNow(-1));
+  await seedItem("kept-item", "kept-auction", {
+    highestBidderId: "kept-a",
+    currentBid: 35,
+  });
+
+  // Simulate a notification that is stored but whose create call still
+  // throws: the trigger stores a copy of the row and drops the original
+  // insert, so Prisma gets no row back and rejects.
+  await prisma.$executeRawUnsafe(
+    "CREATE TRIGGER store_then_fail_kept_item BEFORE INSERT ON notifications " +
+      "WHEN NEW.itemId = 'kept-item' AND NEW.id NOT LIKE 'stored-%' " +
+      "BEGIN " +
+      'INSERT INTO notifications ("id", "userId", "type", "title", "message", ' +
+      '"imageUrl", "auctionId", "itemId", "read", "createdAt") ' +
+      "VALUES ('stored-' || NEW.id, NEW.userId, NEW.type, NEW.title, " +
+      "NEW.message, NEW.imageUrl, NEW.auctionId, NEW.itemId, NEW.read, " +
+      "NEW.createdAt); " +
+      "SELECT RAISE(IGNORE); " +
+      "END",
+  );
+  try {
+    await auctionEnd.processEndedItems();
+  } finally {
+    await prisma.$executeRawUnsafe(
+      "DROP TRIGGER IF EXISTS store_then_fail_kept_item",
+    );
+  }
+
+  assert.deepEqual(await wonBy("kept-item"), ["kept-a"]);
+  const rec = await winnerRecord("kept-item");
+  assert.equal(rec.winnerNotified, true);
+  assert.equal(rec.winnerNotifiedUserId, "kept-a");
+  assert.equal(rec.winnerNotifiedAmount, 35);
+
+  // A later run does not send a duplicate.
+  await auctionEnd.processEndedItems();
+  assert.deepEqual(await wonBy("kept-item"), ["kept-a"]);
+});
