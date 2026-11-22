@@ -398,6 +398,8 @@ function ListingCard({
   tListings: ReturnType<typeof useTranslations>;
   ended?: boolean;
 }) {
+  // Items without their own end date end with their auction.
+  const endDate = getEffectiveItemEndDate(item.endDate, item.auctionEndDate);
   return (
     <Link
       href={`/auctions/${item.auctionId}/items/${item.id}`}
@@ -450,13 +452,13 @@ function ListingCard({
             </div>
           </div>
         </div>
-        {item.endDate && (
+        {endDate && (
           <div className="mt-3 pt-3 border-t border-base-content/5 flex justify-between items-center text-xs">
             <span className="text-base-content/60">
               {ended ? tStatus("ended") : tStatus("ends")}
             </span>
             <span className={ended ? "text-error" : "text-base-content/80"}>
-              {formatShortDate(item.endDate)}
+              {formatShortDate(endDate)}
             </span>
           </div>
         )}

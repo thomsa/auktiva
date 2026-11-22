@@ -626,9 +626,13 @@ export default function EditItemPage({
                   onChange={(e) => setItemEndDate(e.target.value)}
                   className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
                   disabled={!canSetCustomEndDate || isItemEnded}
+                  aria-describedby={isItemEnded ? "endDate-ended" : undefined}
                 />
                 {isItemEnded ? (
-                  <div className="mt-2 text-xs text-base-content/60 flex items-center gap-1.5">
+                  <div
+                    id="endDate-ended"
+                    className="mt-2 text-xs text-base-content/60 flex items-center gap-1.5"
+                  >
                     <span className="icon-[tabler--flag-filled] size-4"></span>
                     <span>{t("endedMessage")}</span>
                   </div>
@@ -680,8 +684,8 @@ export default function EditItemPage({
               </div>
             </div>
 
-            {/* Anti-Snipe Protection */}
-            {canSetCustomEndDate && (
+            {/* Anti-Snipe Protection (no use once the item has ended) */}
+            {canSetCustomEndDate && !isItemEnded && (
               <>
                 <div className="divider opacity-50"></div>
                 <div className="space-y-4">
