@@ -1,6 +1,7 @@
 import test, { after, before } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 import { applyMigrations } from "@/lib/testing/apply-migrations";
@@ -8,6 +9,9 @@ import { applyMigrations } from "@/lib/testing/apply-migrations";
 /**
  * Runs the auction-end notifier against a throwaway SQLite database built
  * from the checked-in migrations, so the Prisma query is exercised for real.
+ * E-mail goes to a local SMTP stub that drops every connection, so
+ * `sendEmail` writes its `EmailLog` row and then fails without leaving the
+ * machine. Only users with `emailOnItemWon` enabled get a win e-mail.
  */
 
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "auktiva-auction-end-"));
@@ -22,9 +26,20 @@ type Services = {
   auctionEnd: typeof import("@/lib/services/auction-end.service");
 };
 let services: Services;
+let smtpStub: net.Server;
 
 before(async () => {
+  smtpStub = net.createServer((socket) => socket.destroy());
+  await new Promise<void>((resolve) =>
+    smtpStub.listen(0, "127.0.0.1", resolve),
+  );
+  const { port } = smtpStub.address() as net.AddressInfo;
+
   process.env.DATABASE_URL = `file:${dbFile.replace(/\\/g, "/")}`;
+  process.env.EMAIL_PROVIDER = "smtp";
+  process.env.SMTP_HOST = "127.0.0.1";
+  process.env.SMTP_PORT = String(port);
+  delete process.env.SMTP_USER;
   const { prisma } = await import("@/lib/prisma");
   const auctionEnd = await import("@/lib/services/auction-end.service");
   services = { prisma, auctionEnd };
@@ -104,8 +119,25 @@ before(async () => {
 
 after(async () => {
   await services?.prisma.$disconnect();
+  await new Promise<void>((resolve) => smtpStub.close(() => resolve()));
   fs.rmSync(tmpDir, { recursive: true, force: true });
 });
+
+/** ITEM_WON e-mails logged for an item, as sorted recipient addresses. */
+async function wonEmailsFor(itemId: string) {
+  const emails = await services.prisma.emailLog.findMany({
+    where: { type: "ITEM_WON" },
+    select: { toEmail: true, metadata: true },
+  });
+  return emails
+    .filter(
+      (email) =>
+        email.metadata !== null &&
+        (JSON.parse(email.metadata) as { itemId?: string }).itemId === itemId,
+    )
+    .map((email) => email.toEmail)
+    .sort();
+}
 
 test("the ended-items query follows the auction end for null-dated items", async () => {
   const { prisma, auctionEnd } = services;
@@ -153,6 +185,10 @@ test("processEndedItems notifies winners of items that end with the auction", as
 
 test("overlapping processEndedItems runs notify each winner once", async () => {
   const { prisma, auctionEnd } = services;
+  // The winner opted into win e-mails, so each claim also sends one.
+  await prisma.userSettings.create({
+    data: { userId: "winner", emailOnItemWon: true },
+  });
   await prisma.auctionItem.createMany({
     data: ["race-1", "race-2", "race-3"].map((id) => ({
       id,
@@ -190,6 +226,15 @@ test("overlapping processEndedItems runs notify each winner once", async () => {
       ["race-3", 1],
     ],
   );
+
+  // At most one win e-mail per item: exactly one, as the winner opted in.
+  for (const itemId of ["race-1", "race-2", "race-3"]) {
+    assert.deepEqual(
+      await wonEmailsFor(itemId),
+      ["winner@example.test"],
+      itemId,
+    );
+  }
 
   const records = await prisma.auctionItem.findMany({
     where: { id: { in: ["race-1", "race-2", "race-3"] } },
@@ -431,6 +476,9 @@ test("Previous winner is not told they won again", async () => {
 test("Same winner after a reopen is notified again", async () => {
   const { prisma, auctionEnd } = services;
   await seedUsers("same-a");
+  await prisma.userSettings.create({
+    data: { userId: "same-a", emailOnItemWon: true },
+  });
   await seedAuction("same-auction", daysFromNow(-1));
   await seedItem("same-item", "same-auction", {
     highestBidderId: "same-a",
@@ -440,6 +488,7 @@ test("Same winner after a reopen is notified again", async () => {
   await auctionEnd.processEndedItems();
   const first = await winnerRecord("same-item");
   assert.deepEqual(await wonBy("same-item"), ["same-a"]);
+  assert.deepEqual(await wonEmailsFor("same-item"), ["same-a@example.test"]);
 
   // Reopen resets the pending flag and keeps the record; nobody outbids A.
   await prisma.auctionItem.update({
@@ -449,12 +498,49 @@ test("Same winner after a reopen is notified again", async () => {
   await auctionEnd.processEndedItems();
 
   assert.deepEqual(await wonBy("same-item"), ["same-a", "same-a"]);
+  // The opted-in win e-mail is sent again too, confirming the final win.
+  assert.deepEqual(await wonEmailsFor("same-item"), [
+    "same-a@example.test",
+    "same-a@example.test",
+  ]);
   const second = await winnerRecord("same-item");
   assert.equal(second.winnerNotified, true);
   assert.equal(second.winnerNotifiedUserId, "same-a");
   assert.ok(first.winnerNotifiedAt && second.winnerNotifiedAt);
   assert.ok(
     second.winnerNotifiedAt.getTime() >= first.winnerNotifiedAt.getTime(),
+  );
+});
+
+test("E-mail disabled: in-app win notification, no win e-mail", async () => {
+  const { prisma, auctionEnd } = services;
+  // One winner turned item-won e-mails off; the other never changed the
+  // setting, which defaults to off.
+  await seedUsers("mailoff-a", "mailoff-b");
+  await prisma.userSettings.create({
+    data: { userId: "mailoff-a", emailOnItemWon: false },
+  });
+  await seedAuction("mailoff-auction", daysFromNow(-1));
+  await seedItem("mailoff-explicit", "mailoff-auction", {
+    highestBidderId: "mailoff-a",
+  });
+  await seedItem("mailoff-default", "mailoff-auction", {
+    highestBidderId: "mailoff-b",
+  });
+
+  await auctionEnd.processEndedItems();
+
+  assert.deepEqual(await wonBy("mailoff-explicit"), ["mailoff-a"]);
+  assert.deepEqual(await wonBy("mailoff-default"), ["mailoff-b"]);
+  assert.deepEqual(await wonEmailsFor("mailoff-explicit"), []);
+  assert.deepEqual(await wonEmailsFor("mailoff-default"), []);
+  assert.equal(
+    await prisma.emailLog.count({
+      where: {
+        toEmail: { in: ["mailoff-a@example.test", "mailoff-b@example.test"] },
+      },
+    }),
+    0,
   );
 });
 
