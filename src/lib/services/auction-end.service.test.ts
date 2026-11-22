@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { applyMigrations } from "@/lib/testing/apply-migrations";
 
 /**
  * Runs the auction-end notifier against a throwaway SQLite database built
@@ -21,26 +22,6 @@ type Services = {
   auctionEnd: typeof import("@/lib/services/auction-end.service");
 };
 let services: Services;
-
-/** Applies every checked-in migration, one statement at a time. */
-async function applyMigrations(prisma: Services["prisma"]) {
-  const migrationsDir = path.join(process.cwd(), "prisma", "migrations");
-  for (const name of fs.readdirSync(migrationsDir).sort()) {
-    const sqlFile = path.join(migrationsDir, name, "migration.sql");
-    if (!fs.existsSync(sqlFile)) continue;
-    const statements = fs
-      .readFileSync(sqlFile, "utf8")
-      .split(/\r?\n/)
-      .filter((line) => !line.trim().startsWith("--"))
-      .join("\n")
-      .split(/;\s*(?:\n|$)/)
-      .map((statement) => statement.trim())
-      .filter(Boolean);
-    for (const statement of statements) {
-      await prisma.$executeRawUnsafe(statement);
-    }
-  }
-}
 
 before(async () => {
   process.env.DATABASE_URL = `file:${dbFile.replace(/\\/g, "/")}`;
