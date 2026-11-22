@@ -201,9 +201,17 @@ with the migrations. The window has one more effect, which the migration
 cannot prevent: the v1.22.0 notifier sends the right message for re-queued
 items with their own end date, but it sets only `winnerNotified`. The
 record then still names the previous winner, or no one for items that end
-in the window. `scripts/upgrade/v1.23.0/repair.sql` runs after the deploy.
-It sets the record to the current highest bidder wherever the latest
-`AUCTION_WON` went to that bidder. The upgrade guide
+in the window. Also, an owner who extends an auction in v1.22.0 resets no
+flag, so a new bid on an item that follows the auction leaves it marked
+notified for the previous winner. `scripts/upgrade/v1.23.0/repair.sql`
+runs after the deploy. It first sets the record to the current highest
+bidder wherever the latest `AUCTION_WON` went to that bidder. It then
+repeats steps 2 to 4. Under v1.23.0, a notified item's highest bidder
+only changes after a reopen, which resets the flag itself, so the repeated
+steps match only rows left over from the window. A test keeps the repair's
+copies of the amount statement of step 2, and of steps 3 and 4, identical
+to the migration. Its copy of the record statement also skips rows with
+nothing to record, so a second run changes no rows. The upgrade guide
 (`docs/content/developers/upgrading.mdx`) gives the order: migrate, deploy
 at once, then repair.
 
@@ -350,7 +358,16 @@ accepted both on 2026-11-22.
   to the migration, which the first design ruled out. It keeps the v1.22.0
   notifier, which runs until v1.23.0 is deployed, from sending late "You
   won" messages. The repair script fixes winner records that notifier
-  leaves stale. See D7 and `docs/content/developers/upgrading.mdx`.
+  leaves stale. It also re-queues items that v1.22.0 extensions left
+  marked notified for a previous winner. See D7 and
+  `docs/content/developers/upgrading.mdx`.
+- **Databases that applied the earlier 20261122180000.** Only development
+  and QA databases did: that version was never tagged or on `main`. They
+  keep re-queued rows for items that ended more than 14 days ago. The
+  notifier's 14-day rule records those winners without a message, so no
+  fix is needed. `prisma migrate dev` reports the applied migration as
+  modified and offers a reset. `migrate-turso.ts` keeps no checksums and
+  does not notice.
 - **D8 item selection.** Items without their own end date follow the
   auction, so moving the auction end always reopens them (auction-reopen
   spec, "Moving the auction end reopens items that follow it"). The card
