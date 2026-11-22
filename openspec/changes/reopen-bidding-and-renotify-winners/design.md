@@ -249,3 +249,44 @@ Accepted by the maintainer on 2026-11-22, as recommended:
 7. Only the owner can reopen bidding.
 8. No admin "resend winner notification" action in this change.
 9. The `emailOnItemWon` default is left to a separate change.
+
+## Implementation Notes
+
+Recorded during implementation on 2026-11-22. These refine the decisions
+above; they do not change the spec deltas.
+
+- **D3 claim condition.** The claim also repeats the ended-item condition
+  (`endedItemsAwaitingNotificationWhere(now)` plus `id` and the
+  `highestBidderId` snapshot). Without it, an owner reopen that lands
+  between the notifier's read and its claim let the claim succeed on an
+  open item, and the next winner was never notified.
+- **D3 failed sends.** The base branch retried failed sends by releasing
+  the claim. The implementation keeps that retry only when nothing was
+  delivered: the claim (and the previous `winnerNotified*` record) is
+  restored when `notifyAuctionWon` throws and no `AUCTION_WON` row for this
+  item and winner exists from this run. A failure after the in-app
+  notification exists is logged and the claim is kept, so the in-app
+  message stays at most once.
+- **D4 counts.** `closedBefore` covers every closed published item, not
+  only items with bids, so `reopenedCount` counts every item that moved from
+  closed to open. Items without bids produce no recipients. The
+  "no longer final" text and e-mail go only to a recorded winner whose
+  notification was still current (`winnerNotified = true`) at reopen time.
+  `reopenBidding` accepts `itemIds: []` (it then only moves the end date),
+  and `actorId` may be null for internal callers.
+- **D4 remaining race.** With the better-sqlite3 adapter, a notifier claim
+  that commits between the reopen transaction's read and its writes can
+  still send the old winner "You won" just before the reopen notice. The
+  record stays pending, so the next close notifies the right winner. With
+  libSQL the adapter serializes these, and across processes SQLite rejects
+  the conflicting write.
+- **D7 migration name.** The migration is
+  `20261122180000_add_winner_notification_record`, so it sorts after the
+  base branch's `20261122170000_mark_past_null_dated_winners_notified`.
+  Items that backfill marks as notified get the highest bidder as the
+  recorded winner.
+- **D8 item selection.** Items without their own end date follow the
+  auction, so moving the auction end always reopens them (auction-reopen
+  spec, "Moving the auction end reopens items that follow it"). The card
+  shows them as included and not deselectable; only items with their own
+  end date can be unticked.
