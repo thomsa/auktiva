@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-22T00:00:00Z",
+  "title": "Design System: Auktiva",
+  "extensions": {
+    "colorMeta": {
+      "paddle-indigo": { "role": "primary", "displayName": "Paddle Indigo", "canonical": "oklch(45% 0.24 277.023)", "tonalRamp": ["oklch(18% 0.09 277)", "oklch(28% 0.15 277)", "oklch(38% 0.21 277)", "oklch(45% 0.24 277)", "oklch(58% 0.233 277)", "oklch(70% 0.16 277)", "oklch(83% 0.08 277)", "oklch(94% 0.03 277)"] },
+      "paddle-indigo-dark-theme": { "role": "primary", "displayName": "Paddle Indigo (dark theme)", "canonical": "oklch(58% 0.233 277.117)" },
+      "paddle-indigo-content": { "role": "primary", "displayName": "Paddle Indigo Content", "canonical": "oklch(93% 0.034 272.788)" },
+      "raised-pink": { "role": "secondary", "displayName": "Raised Pink", "canonical": "oklch(65% 0.241 354.308)", "tonalRamp": ["oklch(20% 0.08 354)", "oklch(32% 0.13 354)", "oklch(45% 0.19 354)", "oklch(56% 0.23 354)", "oklch(65% 0.241 354)", "oklch(75% 0.16 354)", "oklch(86% 0.08 354)", "oklch(95% 0.03 354)"] },
+      "raised-pink-content": { "role": "secondary", "displayName": "Raised Pink Content", "canonical": "oklch(94% 0.028 342.258)" },
+      "ledger-teal": { "role": "tertiary", "displayName": "Ledger Teal", "canonical": "oklch(77% 0.152 181.912)", "tonalRamp": ["oklch(22% 0.04 182)", "oklch(32% 0.06 182)", "oklch(45% 0.09 182)", "oklch(58% 0.12 182)", "oklch(68% 0.14 182)", "oklch(77% 0.152 182)", "oklch(87% 0.09 182)", "oklch(95% 0.035 182)"] },
+      "ledger-teal-content": { "role": "tertiary", "displayName": "Ledger Teal Content", "canonical": "oklch(38% 0.063 188.416)" },
+      "hall-ink": { "role": "neutral", "displayName": "Hall Ink", "canonical": "oklch(14% 0.005 285.823)" },
+      "paper-white": { "role": "neutral", "displayName": "Paper White", "canonical": "oklch(100% 0 0)", "tonalRamp": ["oklch(15% 0.005 286)", "oklch(25% 0.006 286)", "oklch(40% 0.006 286)", "oklch(55% 0.005 286)", "oklch(70% 0.004 286)", "oklch(85% 0.002 286)", "oklch(95% 0 0)", "oklch(100% 0 0)"] },
+      "paper-mist": { "role": "neutral", "displayName": "Paper Mist", "canonical": "oklch(98% 0 0)" },
+      "paper-fold": { "role": "neutral", "displayName": "Paper Fold", "canonical": "oklch(95% 0 0)" },
+      "ink-text": { "role": "neutral", "displayName": "Ink Text", "canonical": "oklch(21% 0.006 285.885)" },
+      "night-slate": { "role": "neutral", "displayName": "Night Slate", "canonical": "oklch(25.33% 0.016 252.42)", "tonalRamp": ["oklch(15% 0.01 253)", "oklch(21.15% 0.012 254)", "oklch(23.26% 0.014 253)", "oklch(25.33% 0.016 252)", "oklch(35% 0.018 253)", "oklch(50% 0.02 254)", "oklch(75% 0.025 256)", "oklch(97.8% 0.029 257)"] },
+      "night-slate-deep": { "role": "neutral", "displayName": "Night Slate Deep", "canonical": "oklch(23.26% 0.014 253.1)" },
+      "night-slate-deepest": { "role": "neutral", "displayName": "Night Slate Deepest", "canonical": "oklch(21.15% 0.012 254.09)" },
+      "night-text": { "role": "neutral", "displayName": "Night Text", "canonical": "oklch(97.807% 0.029 256.847)" },
+      "status-info": { "role": "status", "displayName": "Info", "canonical": "oklch(74% 0.16 232.661)" },
+      "status-winning": { "role": "status", "displayName": "Winning / Won", "canonical": "oklch(76% 0.177 163.223)" },
+      "status-outbid": { "role": "status", "displayName": "Outbid / Draft", "canonical": "oklch(82% 0.189 84.429)" },
+      "status-ended": { "role": "status", "displayName": "Ended / Destructive", "canonical": "oklch(71% 0.194 13.428)" },
+      "christmas-pine": { "role": "seasonal", "displayName": "Christmas Pine", "canonical": "#1f593f" },
+      "christmas-fir": { "role": "seasonal", "displayName": "Christmas Fir", "canonical": "#408268" },
+      "christmas-cranberry": { "role": "seasonal", "displayName": "Christmas Cranberry", "canonical": "#a44550" },
+      "christmas-gold": { "role": "seasonal", "displayName": "Christmas Gold", "canonical": "#a87126" },
+      "christmas-light": { "role": "seasonal", "displayName": "Christmas Light", "canonical": "#ffe2a0" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Landing hero headline only; second line in gradient text." },
+      "headline": { "displayName": "Headline", "purpose": "Page titles and landing section titles." },
+      "title": { "displayName": "Title", "purpose": "Card and section titles inside app pages, paired with an icon." },
+      "subtitle": { "displayName": "Subtitle", "purpose": "Icon-led sub-section headings, often tinted." },
+      "body": { "displayName": "Body", "purpose": "Descriptions and supporting copy at 60% ink." },
+      "label": { "displayName": "Label", "purpose": "Uppercase field captions such as Current bid, at 50% ink." },
+      "price": { "displayName": "Price", "purpose": "Every bid amount, monospace bold, coloured by bid state." }
+    },
+    "shadows": [
+      { "name": "resting-chip", "value": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)", "purpose": "Status badges over images and small floating icon buttons." },
+      { "name": "card-hover", "value": "0 10px 15px -3px color-mix(in oklab, var(--color-primary) 5%, transparent), 0 4px 6px -4px color-mix(in oklab, var(--color-primary) 5%, transparent)", "purpose": "Interactive lift on item and auction cards; use secondary for own items." },
+      { "name": "hero-cta", "value": "0 20px 25px -5px color-mix(in oklab, var(--color-primary) 20%, transparent), 0 8px 10px -6px color-mix(in oklab, var(--color-primary) 20%, transparent)", "purpose": "Large landing calls to action; deepens to 40% on hover." },
+      { "name": "scrolled-bar", "value": "0 1px 3px 0 rgb(0 0 0 / 0.1)", "purpose": "Sticky top bar after scroll, with backdrop-blur-lg." }
+    ],
+    "motion": [
+      { "name": "state-standard", "value": "all 300ms cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Card hover, nav glass, CTA lift." },
+      { "name": "state-quick", "value": "all 200ms cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Floating edit button reveal, list row hover." },
+      { "name": "image-zoom", "value": "transform 500ms cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Item image scales to 105% on card hover." },
+      { "name": "fade-in-up", "value": "600ms ease-out", "purpose": "Landing hero entrance (10px rise)." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action per view: create, bid, save.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg>Add item</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; height: 2.5rem; padding: 0 1rem; border: 1px solid var(--color-primary, oklch(45% 0.24 277.023)); border-radius: 0.25rem; background: var(--color-primary, oklch(45% 0.24 277.023)); color: var(--color-primary-content, oklch(93% 0.034 272.788)); font: 600 0.875rem/1 ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background 200ms, box-shadow 200ms; } .ds-btn-primary:hover { background: color-mix(in oklab, var(--color-primary, oklch(45% 0.24 277.023)), black 8%); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-primary, oklch(45% 0.24 277.023)); outline-offset: 2px; } .ds-btn-primary:active { transform: scale(0.97); }"
+    },
+    {
+      "name": "Hero Pill Button",
+      "kind": "button",
+      "refersTo": "button-primary-hero",
+      "description": "Large landing call to action with an indigo-tinted shadow and a lift on hover.",
+      "html": "<button class=\"ds-btn-hero\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 13a8 8 0 0 1 7 7a6 6 0 0 0 3 -5a9 9 0 0 0 6 -8a3 3 0 0 0 -3 -3a9 9 0 0 0 -8 6a6 6 0 0 0 -5 3\"/><path d=\"M7 14a6 6 0 0 0 -3 6a6 6 0 0 0 6 -3\"/></svg>Start Auction</button>",
+      "css": ".ds-btn-hero { display: inline-flex; align-items: center; gap: 0.5rem; height: 3.5rem; padding: 0 2rem; border: none; border-radius: 9999px; background: var(--color-primary, oklch(45% 0.24 277.023)); color: var(--color-primary-content, oklch(93% 0.034 272.788)); font: 600 1.125rem/1 ui-sans-serif, system-ui, sans-serif; cursor: pointer; box-shadow: 0 20px 25px -5px color-mix(in oklab, var(--color-primary, oklch(45% 0.24 277.023)) 20%, transparent); transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-hero:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px color-mix(in oklab, var(--color-primary, oklch(45% 0.24 277.023)) 40%, transparent); } .ds-btn-hero:focus-visible { outline: 2px solid var(--color-primary, oklch(45% 0.24 277.023)); outline-offset: 3px; }"
+    },
+    {
+      "name": "Ghost Nav Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "The workhorse: navigation links, toolbar actions, with an indigo wash on hover.",
+      "html": "<button class=\"ds-btn-ghost\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 4h6v8h-6z\"/><path d=\"M4 16h6v4h-6z\"/><path d=\"M14 12h6v8h-6z\"/><path d=\"M14 4h6v4h-6z\"/></svg>Dashboard</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; gap: 0.375rem; height: 2rem; padding: 0 0.75rem; border: 1px solid transparent; border-radius: 0.25rem; background: transparent; color: color-mix(in oklab, var(--color-base-content, oklch(21% 0.006 285.885)) 70%, transparent); font: 500 0.75rem/1 ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: all 200ms; } .ds-btn-ghost:hover { color: var(--color-primary, oklch(45% 0.24 277.023)); background: color-mix(in oklab, var(--color-primary, oklch(45% 0.24 277.023)) 10%, transparent); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--color-primary, oklch(45% 0.24 277.023)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Bordered Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard form field at field radius with a visible focus ring.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Starting bid</span><input class=\"ds-input\" type=\"text\" value=\"25.00\" /></label>",
+      "css": ".ds-field { display: grid; gap: 0.375rem; max-width: 18rem; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-field-label { font-size: 0.875rem; font-weight: 500; color: var(--color-base-content, oklch(21% 0.006 285.885)); } .ds-input { height: 2.5rem; padding: 0 0.75rem; border: 1px solid color-mix(in oklab, var(--color-base-content, oklch(21% 0.006 285.885)) 20%, transparent); border-radius: 0.25rem; background: var(--color-base-100, oklch(100% 0 0)); color: var(--color-base-content, oklch(21% 0.006 285.885)); font: 400 0.875rem/1 ui-sans-serif, system-ui, sans-serif; transition: outline-color 200ms; } .ds-input:focus-visible { outline: 2px solid var(--color-base-content, oklch(21% 0.006 285.885)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Bid Status Badges",
+      "kind": "chip",
+      "refersTo": "badge-winning",
+      "description": "Bid-state badges; colour is reserved for state.",
+      "html": "<div class=\"ds-badges\"><span class=\"ds-badge ds-badge-win\">Winning</span><span class=\"ds-badge ds-badge-outbid\">Outbid</span><span class=\"ds-badge ds-badge-ended\">Ended</span><span class=\"ds-badge ds-badge-mine\">Your listing</span></div>",
+      "css": ".ds-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; } .ds-badge { display: inline-flex; align-items: center; height: 1.5rem; padding: 0 0.625rem; border-radius: 9999px; font: 700 0.75rem/1 ui-sans-serif, system-ui, sans-serif; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); } .ds-badge-win { background: var(--color-success, oklch(76% 0.177 163.223)); color: var(--color-success-content, oklch(37% 0.077 168.94)); } .ds-badge-outbid { background: var(--color-warning, oklch(82% 0.189 84.429)); color: var(--color-warning-content, oklch(41% 0.112 45.904)); } .ds-badge-ended { background: var(--color-error, oklch(71% 0.194 13.428)); color: var(--color-error-content, oklch(27% 0.105 12.094)); } .ds-badge-mine { background: var(--color-secondary, oklch(65% 0.241 354.308)); color: var(--color-secondary-content, oklch(94% 0.028 342.258)); }"
+    },
+    {
+      "name": "Item Card",
+      "kind": "card",
+      "refersTo": "card-item",
+      "description": "Signature unit: soft-glass card, image well, mono price coloured by bid state, tinted lift on hover.",
+      "html": "<a class=\"ds-item-card\" href=\"#\"><figure class=\"ds-item-media\"><span class=\"ds-badge ds-badge-win\">Winning</span></figure><div class=\"ds-item-body\"><h3 class=\"ds-item-title\">Handmade quilt</h3><p class=\"ds-item-desc\">Queen size, stitched by the parish sewing circle.</p><div class=\"ds-item-foot\"><div><div class=\"ds-item-label\">Current bid</div><div class=\"ds-item-price\">120 EUR</div></div><div class=\"ds-item-meta\">7 bids</div></div></div></a>",
+      "css": ".ds-item-card { display: flex; flex-direction: column; width: 17rem; overflow: hidden; border: 1px solid color-mix(in oklab, var(--color-base-content, oklch(21% 0.006 285.885)) 5%, transparent); border-radius: 0.5rem; background: color-mix(in oklab, var(--color-base-100, oklch(100% 0 0)) 50%, transparent); backdrop-filter: blur(4px); color: var(--color-base-content, oklch(21% 0.006 285.885)); text-decoration: none; font-family: ui-sans-serif, system-ui, sans-serif; transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-item-card:hover { border-color: color-mix(in oklab, var(--color-primary, oklch(45% 0.24 277.023)) 20%, transparent); box-shadow: 0 10px 15px -3px color-mix(in oklab, var(--color-primary, oklch(45% 0.24 277.023)) 5%, transparent), 0 4px 6px -4px color-mix(in oklab, var(--color-primary, oklch(45% 0.24 277.023)) 5%, transparent); } .ds-item-card:focus-visible { outline: 2px solid var(--color-primary, oklch(45% 0.24 277.023)); outline-offset: 2px; } .ds-item-media { position: relative; height: 12rem; margin: 0; background: color-mix(in oklab, var(--color-base-200, oklch(98% 0 0)) 50%, transparent); } .ds-item-media .ds-badge { position: absolute; top: 0.75rem; left: 0.75rem; display: inline-flex; align-items: center; height: 1.5rem; padding: 0 0.625rem; border-radius: 9999px; font: 700 0.75rem/1 ui-sans-serif, system-ui, sans-serif; } .ds-badge-win { background: var(--color-success, oklch(76% 0.177 163.223)); color: var(--color-success-content, oklch(37% 0.077 168.94)); } .ds-item-body { padding: 1.25rem; } .ds-item-title { margin: 0 0 0.5rem; font-size: 1rem; font-weight: 600; transition: color 300ms; } .ds-item-card:hover .ds-item-title { color: var(--color-primary, oklch(45% 0.24 277.023)); } .ds-item-desc { margin: 0 0 0.5rem; font-size: 0.875rem; color: color-mix(in oklab, var(--color-base-content, oklch(21% 0.006 285.885)) 60%, transparent); } .ds-item-foot { display: flex; justify-content: space-between; align-items: flex-end; padding-top: 1rem; border-top: 1px solid color-mix(in oklab, var(--color-base-content, oklch(21% 0.006 285.885)) 5%, transparent); } .ds-item-label { font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.025em; color: color-mix(in oklab, var(--color-base-content, oklch(21% 0.006 285.885)) 50%, transparent); } .ds-item-price { font: 700 1.25rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: -0.025em; color: var(--color-success, oklch(76% 0.177 163.223)); } .ds-item-meta { font-size: 0.75rem; color: color-mix(in oklab, var(--color-base-content, oklch(21% 0.006 285.885)) 60%, transparent); }"
+    },
+    {
+      "name": "Top Navigation",
+      "kind": "nav",
+      "refersTo": "nav-icon-tile",
+      "description": "Glass top bar with gavel tile, gradient wordmark and ghost links.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-brand\" href=\"#\"><span class=\"ds-brand-tile\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M13 10l7.383 7.418c.823 .82 .823 2.148 0 2.967a2.11 2.11 0 0 1 -2.976 0l-7.407 -7.385\"/><path d=\"M6 9l4 4\"/><path d=\"M13 10l-4 -4\"/><path d=\"M3 21h7\"/><path d=\"M6.793 15.793l-3.586 -3.586a1 1 0 0 1 0 -1.414l2.293 -2.293l.5 .5l3 -3l-.5 -.5l2.293 -2.293a1 1 0 0 1 1.414 0l3.586 3.586a1 1 0 0 1 0 1.414l-2.293 2.293l-.5 -.5l-3 3l.5 .5l-2.293 2.293a1 1 0 0 1 -1.414 0z\"/></svg></span><span class=\"ds-wordmark\">Auktiva</span></a><div class=\"ds-nav-links\"><a href=\"#\">Dashboard</a><a href=\"#\">My Listings</a><a href=\"#\">My Bids</a></div></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 2rem; padding: 0.5rem 1rem; border-bottom: 1px solid color-mix(in oklab, var(--color-base-content, oklch(21% 0.006 285.885)) 5%, transparent); background: color-mix(in oklab, var(--color-base-100, oklch(100% 0 0)) 80%, transparent); backdrop-filter: blur(16px); box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); font-family: ui-sans-serif, system-ui, sans-serif; } .ds-brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; } .ds-brand-tile { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: color-mix(in oklab, var(--color-primary, oklch(45% 0.24 277.023)) 10%, transparent); color: var(--color-primary, oklch(45% 0.24 277.023)); transition: background 300ms; } .ds-brand-tile svg { transition: transform 300ms; } .ds-brand:hover .ds-brand-tile { background: color-mix(in oklab, var(--color-primary, oklch(45% 0.24 277.023)) 20%, transparent); } .ds-brand:hover .ds-brand-tile svg { transform: rotate(-12deg); } .ds-wordmark { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.025em; background: linear-gradient(to right, var(--color-primary, oklch(45% 0.24 277.023)), var(--color-secondary, oklch(65% 0.241 354.308))); -webkit-background-clip: text; background-clip: text; color: transparent; } .ds-nav-links { display: flex; gap: 0.25rem; } .ds-nav-links a { padding: 0.5rem 0.75rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 500; color: color-mix(in oklab, var(--color-base-content, oklch(21% 0.006 285.885)) 70%, transparent); text-decoration: none; transition: all 200ms; } .ds-nav-links a:hover { color: var(--color-primary, oklch(45% 0.24 277.023)); background: color-mix(in oklab, var(--color-primary, oklch(45% 0.24 277.023)) 10%, transparent); } .ds-nav-links a:focus-visible, .ds-brand:focus-visible { outline: 2px solid var(--color-primary, oklch(45% 0.24 277.023)); outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Community Hall Auction",
+    "overview": "Auktiva should feel like a school gym or church hall on auction night, made digital: warm, welcoming and a little festive, never slick or corporate. The organizer runs the room, and guests drift between tables, check their bids and cheer when they win. The interface stays friendly and legible. Excitement belongs to the moments that earn it: a new bid, an outbid warning, a win.\n\nThe system is built on daisyUI 5's stock `light` and `dark` themes on Tailwind 4, with no custom theme file. Its identity comes from how those tokens are used: soft translucent surfaces, hairline borders, generous rounding on hero controls, an indigo-to-pink gradient on the wordmark and display headlines, and a strict set of status colours for bid states. Density is moderate. App screens use cards in grids and compact `sm` controls, while the landing page opens up into large centred type and big pill buttons.\n\nA seasonal layer sits on top of the base system. From 20 November to 6 January, `data-season=\"christmas\"` adds a pine, fir, cranberry and gold palette, trims and scenes, and it switches off completely outside that window.",
+    "keyCharacteristics": [
+      "Stock daisyUI light and dark themes, switched by `data-theme`, following the system preference by default.",
+      "The system sans font stack throughout, with monospace kept for money.",
+      "Soft glass surfaces: 50% base fill, a light backdrop blur, and a hairline border at 5% of the text colour.",
+      "An indigo-to-pink gradient reserved for the wordmark and display headlines.",
+      "Status colours tied to bid state: winning, outbid, ended, draft.",
+      "Tabler icons (via Iconify) next to almost every label and action.",
+      "A seasonal Christmas layer that adds to the base design without replacing it."
+    ],
+    "rules": [
+      { "name": "The Status Is Sacred Rule", "body": "Success, warning and error mean only bid state and outcome: winning or won, outbid or draft, ended or destructive. Never use them for decoration.", "section": "colors" },
+      { "name": "The Opacity, Not New Greys Rule", "body": "Text hierarchy comes from `base-content` at 80%, 60% or 50% opacity, and borders from `base-content` at 5–10%. Don't add new grey tokens.", "section": "colors" },
+      { "name": "The Gradient Is a Signature Rule", "body": "The indigo → pink (→ teal) gradient text is for the wordmark and display or hero headlines only. Body text, buttons and prices are always solid colour.", "section": "colors" },
+      { "name": "The Money Is Mono Rule", "body": "Every bid amount, starting price and total is set in monospace bold with the currency code after it. Numbers line up and read as figures.", "section": "typography" },
+      { "name": "The Native Voice Rule", "body": "Don't add a web font. The system stack is part of the \"feels like my phone\" promise and keeps first paint fast.", "section": "typography" },
+      { "name": "The Lift on Intent Rule", "body": "Surfaces are quiet at rest: translucent fill, hairline border, little or no shadow. Shadow and lift appear when the guest points at something.", "section": "elevation" },
+      { "name": "The Tinted Shadow Rule", "body": "Interactive shadows carry the colour of their meaning: indigo for anything you can open, pink for things that are yours. Neutral grey shadows are for static floating chips only.", "section": "elevation" }
+    ],
+    "dos": [
+      "**Do** build on daisyUI semantic classes and tokens (`btn-primary`, `base-content/60`, `badge-success`) so the light, dark and Christmas layers keep working without changes.",
+      "**Do** put a Tabler icon (`icon-[tabler--*]`) next to button and heading labels, sized 1rem in controls and 0.75rem in badges.",
+      "**Do** set every money value in monospace bold, followed by the currency code, coloured by bid state.",
+      "**Do** use soft glass (`base-100/50`, `backdrop-blur-sm`, `border-base-content/5`) for new cards, with a tinted `shadow-lg` on hover.",
+      "**Do** check every new screen in both light and dark themes, and with `data-season=\"christmas\"` on.",
+      "**Do** design the phone layout with the fixed bottom tab bar in mind and leave room for it."
+    ],
+    "donts": [
+      "**Don't** use success, warning or error colours for decoration. They mean bid state.",
+      "**Don't** apply gradient text outside the wordmark and display or hero headlines.",
+      "**Don't** add new grey or brand colour tokens. Use opacity steps on `base-content` and the daisyUI roles.",
+      "**Don't** add a web font. The system stack is part of the system.",
+      "**Don't** let seasonal decoration change layout or block content. It must disappear completely outside its date window."
+    ]
+  }
+}
