@@ -17,6 +17,10 @@ import { getMessages, Locale } from "@/i18n";
 import { useConfirmDialog } from "@/hooks/ui";
 import { useTranslations } from "next-intl";
 import { withAuth } from "@/lib/auth/withAuth";
+import {
+  dateTimeLocalToIso,
+  isoToDateTimeLocalValue,
+} from "@/utils/datetime-local";
 
 interface AuctionSettingsProps {
   user: {
@@ -114,6 +118,8 @@ export default function AuctionSettingsPage({
     memberCanInvite: auction.memberCanInvite,
     bidderVisibility: auction.bidderVisibility,
     itemEndMode: auction.itemEndMode,
+    // Same text on server and client for hydration; replaced with the
+    // browser's local time right after mount (see the effect below).
     endDate: auction.endDate ? auction.endDate.slice(0, 16) : "",
     defaultItemsEditableByAdmin: auction.defaultItemsEditableByAdmin,
     defaultAntiSnipe: auction.defaultAntiSnipe,
@@ -128,6 +134,17 @@ export default function AuctionSettingsPage({
   const [isEnded, setIsEnded] = useState(auction.isEnded);
   const [auctionEndDate, setAuctionEndDate] = useState(auction.endDate);
   const [closedItems, setClosedItems] = useState(closedItemsProp);
+
+  // The end date field is a `datetime-local` input, which works in the
+  // browser's time zone. Fill it in local time once the page is mounted.
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      endDate: isoToDateTimeLocalValue(auction.endDate),
+    }));
+    // Mount only; later changes come from the sync points below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(
     auction.thumbnailUrl,
   );
@@ -187,7 +204,7 @@ export default function AuctionSettingsPage({
     // Keep the main form in step so saving it does not restore the old end.
     setFormData((prev) => ({
       ...prev,
-      endDate: endDate ? endDate.slice(0, 16) : "",
+      endDate: isoToDateTimeLocalValue(endDate),
     }));
     refreshServerProps();
   };
@@ -319,14 +336,19 @@ export default function AuctionSettingsPage({
     e.preventDefault();
     setIsLoading(true);
 
+    // An untouched field sends the stored end exactly (the field drops
+    // seconds); an edited one is converted from local time to UTC, so the
+    // server never has to guess the owner's time zone.
+    const endDate =
+      formData.endDate === isoToDateTimeLocalValue(auctionEndDate)
+        ? auctionEndDate
+        : dateTimeLocalToIso(formData.endDate);
+
     try {
       const res = await fetch(`/api/auctions/${auction.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          endDate: formData.endDate || null,
-        }),
+        body: JSON.stringify({ ...formData, endDate }),
       });
 
       const result = await res.json();
@@ -335,6 +357,14 @@ export default function AuctionSettingsPage({
         showToast(result.message || tErrors("auction.updateFailed"), "error");
       } else {
         showToast(t("success"), "success");
+        // A new end date can end or reopen the auction and its items.
+        const savedEnd: string | null =
+          result.endDate === undefined ? endDate : result.endDate;
+        if (savedEnd !== auctionEndDate) {
+          setAuctionEndDate(savedEnd);
+          setIsEnded(savedEnd !== null && new Date(savedEnd) < new Date());
+          refreshServerProps();
+        }
       }
     } catch {
       showToast(tErrors("generic"), "error");
@@ -857,14 +887,18 @@ export default function AuctionSettingsPage({
                         "error",
                       );
                     } else {
-                      const endedAt = new Date().toISOString();
+                      const result = (await res.json().catch(() => ({}))) as {
+                        auction?: { endDate?: string };
+                      };
+                      const endedAt =
+                        result.auction?.endDate ?? new Date().toISOString();
                       setIsEnded(true);
                       setAuctionEndDate(endedAt);
                       // Keep the main form in step so saving it does not
                       // restore the old end and silently re-extend the auction.
                       setFormData((prev) => ({
                         ...prev,
-                        endDate: endedAt.slice(0, 16),
+                        endDate: isoToDateTimeLocalValue(endedAt),
                       }));
                       endDialog.close();
                       showToast(t("endedSuccess"), "success");
@@ -902,9 +936,9 @@ export default function AuctionSettingsPage({
       {/* Reopen Bidding */}
       {(isEnded || closedItems.length > 0) && (
         <ReopenBiddingCard
-          // Remount when the auction ends or reopens so the end time is
-          // prefilled from the current auction end again.
-          key={isEnded ? "ended" : "live"}
+          // Remount when the auction end changes (end now, reopen, or a saved
+          // end date) so the end time is prefilled from it again.
+          key={`${isEnded ? "ended" : "live"}-${auctionEndDate ?? "none"}`}
           auctionId={auction.id}
           auctionEndDate={auctionEndDate}
           isEnded={isEnded}

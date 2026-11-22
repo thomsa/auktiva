@@ -4,6 +4,7 @@ import { ConfirmDialog } from "@/components/common";
 import { useToast } from "@/components/ui/toast";
 import { useFormatters } from "@/i18n";
 import { useConfirmDialog } from "@/hooks/ui";
+import { toDateTimeLocalValue } from "@/utils/datetime-local";
 
 /** Mirrors the reopen API's `itemIds` limit. */
 const MAX_REOPEN_ITEMS = 500;
@@ -38,14 +39,6 @@ interface ReopenResponse {
   reopenedCount?: number;
   notifiedCount?: number;
   message?: string;
-}
-
-/** Formats a date as a `datetime-local` value in the browser's time zone. */
-function toLocalInputValue(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate(),
-  )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 export function ReopenBiddingCard({
@@ -86,10 +79,10 @@ export function ReopenBiddingCard({
   useEffect(() => {
     const now = new Date();
     setIsMounted(true);
-    setMinValue(toLocalInputValue(now));
+    setMinValue(toDateTimeLocalValue(now));
     if (auctionEndDate) {
       const end = new Date(auctionEndDate);
-      if (end > now) setEndDate(toLocalInputValue(end));
+      if (end > now) setEndDate(toDateTimeLocalValue(end));
     }
     // Prefill once; later prop changes must not overwrite the owner's input.
     // eslint-disable-next-line react-hooks/exhaustive-deps
