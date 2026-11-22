@@ -150,14 +150,15 @@
         "noClosedItems": "No published items are closed. Reopening only changes the auction end time.",
         "itemEnded": "Ended",
         "itemEndedAt": "Ended {date}",
-        "itemEndedWithAuction": "Ended with the auction",
         "bidCount": "{count, plural, =0 {No bids} one {# bid} other {# bids}}",
         "tooManyItems": "Select at most {max} items at a time.",
         "submit": "Reopen bidding",
         "confirmTitle": "{count, plural, =0 {Save the new end time without selecting items?} one {Reopen bidding on # item?} other {Reopen bidding on # items?}}",
         "confirmMessage": "Everyone who bid on a reopened item will be notified, including winners who were already told they won.",
         "confirmButton": "Reopen bidding",
-        "success": "{reopenedCount, plural, =0 {No items were reopened.} one {Bidding reopened on # item.} other {Bidding reopened on # items.}} {notifiedCount, plural, =0 {No bidders were notified.} one {# bidder was notified.} other {# bidders were notified.}}"
+        "success": "{reopenedCount, plural, =0 {No items were reopened.} one {Bidding reopened on # item.} other {Bidding reopened on # items.}} {notifiedCount, plural, =0 {No bidders were notified.} one {# bidder was notified.} other {# bidders were notified.}}",
+        "followsAuctionHeading": "{count, plural, one {# item follows the auction end} other {# items follow the auction end}}",
+        "followsAuctionNote": "Items without their own end time end with the auction, so they reopen with the new end time."
       }
     },
     "members": {

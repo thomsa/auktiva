@@ -147,14 +147,15 @@
         "noClosedItems": "Nincs lezárult közzétett tétel. Az újranyitás csak az aukció záróidőpontját módosítja.",
         "itemEnded": "Lezárult",
         "itemEndedAt": "Lezárult: {date}",
-        "itemEndedWithAuction": "Az aukcióval együtt zárult le",
         "bidCount": "{count, plural, =0 {Nincs licit} one {# licit} other {# licit}}",
         "tooManyItems": "Egyszerre legfeljebb {max} tételt jelölhetsz ki.",
         "submit": "Licitálás újranyitása",
         "confirmTitle": "{count, plural, =0 {Mented az új záróidőpontot tétel kijelölése nélkül?} one {Újranyitod a licitálást # tételre?} other {Újranyitod a licitálást # tételre?}}",
         "confirmMessage": "Mindenki értesítést kap, aki licitált egy újranyitott tételre, azok a nyertesek is, akiket már értesítettünk.",
         "confirmButton": "Licitálás újranyitása",
-        "success": "{reopenedCount, plural, =0 {Egy tétel sem nyílt újra.} one {# tételre újra lehet licitálni.} other {# tételre újra lehet licitálni.}} {notifiedCount, plural, =0 {Senki sem kapott értesítést.} one {# licitáló kapott értesítést.} other {# licitáló kapott értesítést.}}"
+        "success": "{reopenedCount, plural, =0 {Egy tétel sem nyílt újra.} one {# tételre újra lehet licitálni.} other {# tételre újra lehet licitálni.}} {notifiedCount, plural, =0 {Senki sem kapott értesítést.} one {# licitáló kapott értesítést.} other {# licitáló kapott értesítést.}}",
+        "followsAuctionHeading": "{count, plural, one {# tétel az aukcióval együtt zárul} other {# tétel az aukcióval együtt zárul}}",
+        "followsAuctionNote": "A saját záróidőpont nélküli tételek az aukcióval együtt zárulnak, ezért az új záróidőponttal újranyílnak."
       }
     },
     "members": {

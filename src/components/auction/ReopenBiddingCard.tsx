@@ -29,6 +29,8 @@ interface ReopenBiddingCardProps {
   isEnded: boolean;
   closedItems: ReopenClosedItem[];
   onReopened: (result: ReopenBiddingResult) => void;
+  /** Called after an API error so the page can reload the closed items. */
+  onFailed: () => void;
 }
 
 interface ReopenResponse {
@@ -52,6 +54,7 @@ export function ReopenBiddingCard({
   isEnded,
   closedItems,
   onReopened,
+  onFailed,
 }: ReopenBiddingCardProps) {
   const t = useTranslations("auction.settings.reopen");
   const tErrors = useTranslations("errors");
@@ -65,6 +68,7 @@ export function ReopenBiddingCard({
   const endDateErrorId = `${fieldId}-end-date-error`;
   const noEndId = `${fieldId}-no-end`;
   const itemsErrorId = `${fieldId}-items-error`;
+  const followsId = `${fieldId}-follows`;
   const selectAllRef = useRef<HTMLInputElement>(null);
 
   // Local time only exists in the browser, so the field and the item dates
@@ -90,12 +94,26 @@ export function ReopenBiddingCard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const selectedIds = useMemo(
-    () => closedItems.filter((i) => !deselected.has(i.id)).map((i) => i.id),
-    [closedItems, deselected],
+  // Items with their own (stamped) end date are the owner's choice. Items
+  // without one follow the auction end, so moving that end into the future
+  // (or clearing it) always reopens them; they are shown but not selectable.
+  const selectableItems = useMemo(
+    () => closedItems.filter((item) => item.endDate !== null),
+    [closedItems],
   );
+  const followingItems = useMemo(
+    () => closedItems.filter((item) => item.endDate === null),
+    [closedItems],
+  );
+  const selectedIds = useMemo(
+    () =>
+      selectableItems.filter((i) => !deselected.has(i.id)).map((i) => i.id),
+    [selectableItems, deselected],
+  );
+  const reopenCount = selectedIds.length + followingItems.length;
   const allSelected =
-    closedItems.length > 0 && selectedIds.length === closedItems.length;
+    selectableItems.length > 0 &&
+    selectedIds.length === selectableItems.length;
   const someSelected = selectedIds.length > 0 && !allSelected;
 
   useEffect(() => {
@@ -119,7 +137,7 @@ export function ReopenBiddingCard({
   const toggleAll = (checked: boolean) => {
     setItemsError(null);
     setDeselected(
-      checked ? new Set() : new Set(closedItems.map((item) => item.id)),
+      checked ? new Set() : new Set(selectableItems.map((item) => item.id)),
     );
   };
 
@@ -172,6 +190,10 @@ export function ReopenBiddingCard({
 
       if (!res.ok) {
         showToast(result.message || tErrors("auction.updateFailed"), "error");
+        // The list may be stale (another tab changed the auction), so close
+        // the dialog and let the page reload what is closed now.
+        confirmDialog.close();
+        onFailed();
         return;
       }
 
@@ -299,67 +321,117 @@ export function ReopenBiddingCard({
                   {t("noClosedItems")}
                 </p>
               ) : (
-                <div className="rounded-xl border border-base-content/10 bg-base-100 overflow-hidden">
-                  <label className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 min-h-11 cursor-pointer border-b border-base-content/10 bg-base-200/40">
-                    <input
-                      ref={selectAllRef}
-                      type="checkbox"
-                      checked={allSelected}
-                      onChange={(e) => toggleAll(e.target.checked)}
-                      className="checkbox checkbox-info checkbox-sm shrink-0"
-                    />
-                    <span className="flex-1 min-w-0 text-sm font-medium">
-                      {t("selectAll")}
-                    </span>
-                    <span
-                      className="text-xs text-base-content/60 tabular-nums"
-                      aria-live="polite"
-                    >
-                      {t("selectedCount", {
-                        selected: selectedIds.length,
-                        total: closedItems.length,
-                      })}
-                    </span>
-                  </label>
+                <div className="space-y-3">
+                  {selectableItems.length > 0 && (
+                    <div className="rounded-xl border border-base-content/10 bg-base-100 overflow-hidden">
+                      <label className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 min-h-11 cursor-pointer border-b border-base-content/10 bg-base-200/40">
+                        <input
+                          ref={selectAllRef}
+                          type="checkbox"
+                          checked={allSelected}
+                          onChange={(e) => toggleAll(e.target.checked)}
+                          className="checkbox checkbox-info checkbox-sm shrink-0"
+                        />
+                        <span className="flex-1 min-w-0 text-sm font-medium">
+                          {t("selectAll")}
+                        </span>
+                        <span
+                          className="text-xs text-base-content/60 tabular-nums"
+                          aria-live="polite"
+                        >
+                          {t("selectedCount", {
+                            selected: selectedIds.length,
+                            total: selectableItems.length,
+                          })}
+                        </span>
+                      </label>
 
-                  <ul className="max-h-80 overflow-y-auto divide-y divide-base-content/5">
-                    {closedItems.map((item) => (
-                      <li key={item.id}>
-                        <label className="flex items-start gap-3 px-3 py-2.5 min-h-11 cursor-pointer hover:bg-base-200/50 transition-colors">
-                          <input
-                            type="checkbox"
-                            checked={!deselected.has(item.id)}
-                            onChange={(e) =>
-                              toggleItem(item.id, e.target.checked)
-                            }
-                            className="checkbox checkbox-info checkbox-sm mt-0.5 shrink-0"
-                          />
-                          <span className="flex-1 min-w-0">
-                            <span className="block text-sm font-medium break-words">
-                              {item.name}
-                            </span>
-                            <span className="block text-xs text-base-content/60">
-                              {item.endDate ? (
-                                isMounted ? (
-                                  <time dateTime={item.endDate}>
-                                    {t("itemEndedAt", {
-                                      date: formatDate(item.endDate),
-                                    })}
-                                  </time>
-                                ) : (
-                                  t("itemEnded")
-                                )
-                              ) : (
-                                t("itemEndedWithAuction")
-                              )}
-                              <span aria-hidden="true"> · </span>
-                              {t("bidCount", { count: item.bidCount })}
-                            </span>
+                      <ul className="max-h-80 overflow-y-auto divide-y divide-base-content/5">
+                        {selectableItems.map((item) => (
+                          <li key={item.id}>
+                            <label className="flex items-start gap-3 px-3 py-2.5 min-h-11 cursor-pointer hover:bg-base-200/50 transition-colors">
+                              <input
+                                type="checkbox"
+                                checked={!deselected.has(item.id)}
+                                onChange={(e) =>
+                                  toggleItem(item.id, e.target.checked)
+                                }
+                                className="checkbox checkbox-info checkbox-sm mt-0.5 shrink-0"
+                              />
+                              <span className="flex-1 min-w-0">
+                                <span className="block text-sm font-medium break-words">
+                                  {item.name}
+                                </span>
+                                <span className="block text-xs text-base-content/60">
+                                  {isMounted && item.endDate ? (
+                                    <time dateTime={item.endDate}>
+                                      {t("itemEndedAt", {
+                                        date: formatDate(item.endDate),
+                                      })}
+                                    </time>
+                                  ) : (
+                                    t("itemEnded")
+                                  )}
+                                  <span aria-hidden="true"> · </span>
+                                  {t("bidCount", { count: item.bidCount })}
+                                </span>
+                              </span>
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {followingItems.length > 0 && (
+                    <div
+                      role="group"
+                      aria-labelledby={followsId}
+                      className="rounded-xl border border-base-content/10 bg-base-100 overflow-hidden"
+                    >
+                      <div className="flex items-start gap-3 px-3 py-2 min-h-11 border-b border-base-content/10 bg-base-200/40">
+                        <span
+                          className="icon-[tabler--clock-play] size-5 text-info shrink-0"
+                          aria-hidden="true"
+                        ></span>
+                        <span className="flex-1 min-w-0">
+                          <span
+                            id={followsId}
+                            className="block text-sm font-medium"
+                          >
+                            {t("followsAuctionHeading", {
+                              count: followingItems.length,
+                            })}
                           </span>
-                        </label>
-                      </li>
-                    ))}
-                  </ul>
+                          <span className="block text-xs text-base-content/60">
+                            {t("followsAuctionNote")}
+                          </span>
+                        </span>
+                      </div>
+
+                      <ul className="max-h-80 overflow-y-auto divide-y divide-base-content/5">
+                        {followingItems.map((item) => (
+                          <li
+                            key={item.id}
+                            className="flex items-start gap-3 px-3 py-2.5"
+                          >
+                            <span
+                              className="icon-[tabler--check] size-5 text-info shrink-0"
+                              aria-hidden="true"
+                            ></span>
+                            <span className="flex-1 min-w-0">
+                              <span className="block text-sm font-medium break-words">
+                                {item.name}
+                              </span>
+                              <span className="block text-xs text-base-content/60">
+                                {t("bidCount", { count: item.bidCount })}
+                              </span>
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -391,7 +463,7 @@ export function ReopenBiddingCard({
 
         <ConfirmDialog
           isOpen={confirmDialog.isOpen}
-          title={t("confirmTitle", { count: selectedIds.length })}
+          title={t("confirmTitle", { count: reopenCount })}
           message={t("confirmMessage")}
           confirmLabel={t("confirmButton")}
           variant="primary"

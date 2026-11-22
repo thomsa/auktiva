@@ -857,8 +857,15 @@ export default function AuctionSettingsPage({
                         "error",
                       );
                     } else {
+                      const endedAt = new Date().toISOString();
                       setIsEnded(true);
-                      setAuctionEndDate(new Date().toISOString());
+                      setAuctionEndDate(endedAt);
+                      // Keep the main form in step so saving it does not
+                      // restore the old end and silently re-extend the auction.
+                      setFormData((prev) => ({
+                        ...prev,
+                        endDate: endedAt.slice(0, 16),
+                      }));
                       endDialog.close();
                       showToast(t("endedSuccess"), "success");
                       // Load the now-closed items into the reopen card.
@@ -903,6 +910,7 @@ export default function AuctionSettingsPage({
           isEnded={isEnded}
           closedItems={closedItems}
           onReopened={handleReopened}
+          onFailed={refreshServerProps}
         />
       )}
 

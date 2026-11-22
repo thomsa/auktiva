@@ -147,14 +147,15 @@
         "noClosedItems": "Żaden opublikowany przedmiot nie jest zamknięty. Wznowienie zmieni tylko czas zakończenia aukcji.",
         "itemEnded": "Zakończono",
         "itemEndedAt": "Zakończono {date}",
-        "itemEndedWithAuction": "Zakończono razem z aukcją",
         "bidCount": "{count, plural, =0 {Brak ofert} one {# oferta} few {# oferty} many {# ofert} other {# oferty}}",
         "tooManyItems": "Zaznacz najwyżej {max} przedmiotów naraz.",
         "submit": "Wznów licytację",
         "confirmTitle": "{count, plural, =0 {Zapisać nowy czas zakończenia bez zaznaczania przedmiotów?} one {Wznowić licytację # przedmiotu?} few {Wznowić licytację # przedmiotów?} many {Wznowić licytację # przedmiotów?} other {Wznowić licytację # przedmiotu?}}",
         "confirmMessage": "Każdy, kto złożył ofertę na ponownie otwarty przedmiot, otrzyma powiadomienie, także zwycięzcy, którzy zostali już powiadomieni.",
         "confirmButton": "Wznów licytację",
-        "success": "{reopenedCount, plural, =0 {Żaden przedmiot nie został wznowiony.} one {Wznowiono licytację # przedmiotu.} few {Wznowiono licytację # przedmiotów.} many {Wznowiono licytację # przedmiotów.} other {Wznowiono licytację # przedmiotu.}} {notifiedCount, plural, =0 {Nikt nie otrzymał powiadomienia.} one {Powiadomiono # licytującego.} few {Powiadomiono # licytujących.} many {Powiadomiono # licytujących.} other {Powiadomiono # licytującego.}}"
+        "success": "{reopenedCount, plural, =0 {Żaden przedmiot nie został wznowiony.} one {Wznowiono licytację # przedmiotu.} few {Wznowiono licytację # przedmiotów.} many {Wznowiono licytację # przedmiotów.} other {Wznowiono licytację # przedmiotu.}} {notifiedCount, plural, =0 {Nikt nie otrzymał powiadomienia.} one {Powiadomiono # licytującego.} few {Powiadomiono # licytujących.} many {Powiadomiono # licytujących.} other {Powiadomiono # licytującego.}}",
+        "followsAuctionHeading": "{count, plural, one {# przedmiot kończy się razem z aukcją} few {# przedmioty kończą się razem z aukcją} many {# przedmiotów kończy się razem z aukcją} other {# przedmiotu kończy się razem z aukcją}}",
+        "followsAuctionNote": "Przedmioty bez własnego czasu zakończenia kończą się razem z aukcją, więc zostaną wznowione z nowym czasem zakończenia."
       }
     },
     "members": {

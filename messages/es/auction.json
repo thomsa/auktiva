@@ -147,14 +147,15 @@
         "noClosedItems": "No hay artículos publicados cerrados. Reabrir solo cambia la hora de cierre de la subasta.",
         "itemEnded": "Cerrado",
         "itemEndedAt": "Cerrado el {date}",
-        "itemEndedWithAuction": "Cerrado con la subasta",
         "bidCount": "{count, plural, =0 {Sin pujas} one {# puja} other {# pujas}}",
         "tooManyItems": "Selecciona como máximo {max} artículos a la vez.",
         "submit": "Reabrir las pujas",
         "confirmTitle": "{count, plural, =0 {¿Guardar la nueva hora de cierre sin seleccionar artículos?} one {¿Reabrir las pujas de # artículo?} other {¿Reabrir las pujas de # artículos?}}",
         "confirmMessage": "Todos los que pujaron por un artículo reabierto recibirán una notificación, incluidos los ganadores a los que ya se avisó.",
         "confirmButton": "Reabrir las pujas",
-        "success": "{reopenedCount, plural, =0 {No se reabrió ningún artículo.} one {Pujas reabiertas en # artículo.} other {Pujas reabiertas en # artículos.}} {notifiedCount, plural, =0 {No se notificó a ningún postor.} one {Se notificó a # postor.} other {Se notificó a # postores.}}"
+        "success": "{reopenedCount, plural, =0 {No se reabrió ningún artículo.} one {Pujas reabiertas en # artículo.} other {Pujas reabiertas en # artículos.}} {notifiedCount, plural, =0 {No se notificó a ningún postor.} one {Se notificó a # postor.} other {Se notificó a # postores.}}",
+        "followsAuctionHeading": "{count, plural, one {# artículo sigue el cierre de la subasta} other {# artículos siguen el cierre de la subasta}}",
+        "followsAuctionNote": "Los artículos sin hora de cierre propia cierran con la subasta, así que se reabren con la nueva hora de cierre."
       }
     },
     "members": {
