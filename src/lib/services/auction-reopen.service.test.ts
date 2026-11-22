@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { applyMigrations } from "@/lib/testing/apply-migrations";
 
 /**
  * Runs the reopen service and the auction form's end date path against a
@@ -24,26 +25,6 @@ type Services = {
   helpers: typeof import("@/utils/auction-helpers");
 };
 let services: Services;
-
-/** Applies every checked-in migration, one statement at a time. */
-async function applyMigrations(prisma: Services["prisma"]) {
-  const migrationsDir = path.join(process.cwd(), "prisma", "migrations");
-  for (const name of fs.readdirSync(migrationsDir).sort()) {
-    const sqlFile = path.join(migrationsDir, name, "migration.sql");
-    if (!fs.existsSync(sqlFile)) continue;
-    const statements = fs
-      .readFileSync(sqlFile, "utf8")
-      .split(/\r?\n/)
-      .filter((line) => !line.trim().startsWith("--"))
-      .join("\n")
-      .split(/;\s*(?:\n|$)/)
-      .map((statement) => statement.trim())
-      .filter(Boolean);
-    for (const statement of statements) {
-      await prisma.$executeRawUnsafe(statement);
-    }
-  }
-}
 
 before(async () => {
   process.env.DATABASE_URL = `file:${dbFile.replace(/\\/g, "/")}`;
@@ -479,6 +460,64 @@ test("Bidding continues from the current price: bids and highest bidder unchange
       ["bob", "Bidding reopened"],
     ],
   );
+});
+
+test("Reopened again before the notifier ran: the earlier winner is not told again their win is no longer final", async () => {
+  const { prisma, reopen } = services;
+  await seedAuction("twice", fromNow(-DAY), [
+    { key: "x", bids: [["alice", 100]], winnerNotifiedUserId: "alice" },
+  ]);
+  const titles = async () =>
+    (
+      await prisma.notification.findMany({
+        where: { auctionId: "twice", type: "BIDDING_REOPENED" },
+        select: { userId: true, title: true },
+        orderBy: [{ userId: "asc" }, { title: "asc" }],
+      })
+    ).map((n) => [n.userId, n.title]);
+
+  // Alice was told she won; the first reopen undoes that win.
+  await reopen.reopenBidding({
+    auctionId: "twice",
+    actorId: "owner",
+    endDate: fromNow(DAY),
+    itemIds: [],
+  });
+  assert.deepEqual(await titles(), [["alice", "Your win is no longer final"]]);
+
+  // Bob outbids Alice and the auction ends again, but the notifier has not
+  // run, so nobody was told they won this close.
+  await prisma.bid.create({
+    data: { auctionItemId: "twice-x", userId: "bob", amount: 150 },
+  });
+  await prisma.auctionItem.update({
+    where: { id: "twice-x" },
+    data: { highestBidderId: "bob", currentBid: 150 },
+  });
+  await prisma.auction.update({
+    where: { id: "twice" },
+    data: { endDate: fromNow(-60 * 1000) },
+  });
+
+  const result = await reopen.reopenBidding({
+    auctionId: "twice",
+    actorId: "owner",
+    endDate: fromNow(2 * DAY),
+    itemIds: [],
+  });
+  assert.equal(result.reopenedCount, 1);
+  assert.equal(result.notifiedCount, 2);
+  assert.deepEqual(await titles(), [
+    ["alice", "Bidding reopened"],
+    ["alice", "Your win is no longer final"],
+    ["bob", "Bidding reopened"],
+  ]);
+
+  // The record of Alice's earlier notified win is kept as it was.
+  const item = await loadItem("twice-x");
+  assert.equal(item.winnerNotified, false);
+  assert.equal(item.winnerNotifiedUserId, "alice");
+  assert.equal(item.winnerNotifiedAmount, 100);
 });
 
 test("Reopen without an end time also reopens items that follow the auction", async () => {

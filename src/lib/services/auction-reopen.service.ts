@@ -40,6 +40,13 @@ export interface ReopenBiddingResult {
 export interface ReopenedItem {
   id: string;
   name: string;
+  /**
+   * The winner who was told they won this item and whose win the reopen
+   * undoes. Null when the item was still pending (`winnerNotified = false`)
+   * at reopen time: an older record is from a close that an earlier reopen
+   * already undid, so that user is not told again that their win is no
+   * longer final.
+   */
   winnerNotifiedUserId: string | null;
 }
 
@@ -144,6 +151,7 @@ async function applyEndDateTransition(
           id: true,
           name: true,
           endDate: true,
+          winnerNotified: true,
           winnerNotifiedUserId: true,
           createdAt: true,
         },
@@ -219,7 +227,9 @@ async function applyEndDateTransition(
       reopened: reopened.map((item) => ({
         id: item.id,
         name: item.name,
-        winnerNotifiedUserId: item.winnerNotifiedUserId,
+        winnerNotifiedUserId: item.winnerNotified
+          ? item.winnerNotifiedUserId
+          : null,
       })),
     };
   });
@@ -260,7 +270,7 @@ async function announceReopenedItems(
         auctionId: auction.id,
         changes: { endDate: null },
       };
-      publish(Channels.item(item.id), Events.ITEM_UPDATED, event);
+      await publish(Channels.item(item.id), Events.ITEM_UPDATED, event);
     } catch (err) {
       reopenLogger.error(
         { err, auctionId: auction.id, itemId: item.id },
