@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { applyMigrations } from "@/lib/testing/apply-migrations";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 /**
@@ -29,26 +30,6 @@ type Services = {
   reopenSchema: typeof import("@/lib/api/handlers").reopenSchema;
 };
 let services: Services;
-
-/** Applies every checked-in migration, one statement at a time. */
-async function applyMigrations(prisma: Services["prisma"]) {
-  const migrationsDir = path.join(process.cwd(), "prisma", "migrations");
-  for (const name of fs.readdirSync(migrationsDir).sort()) {
-    const sqlFile = path.join(migrationsDir, name, "migration.sql");
-    if (!fs.existsSync(sqlFile)) continue;
-    const statements = fs
-      .readFileSync(sqlFile, "utf8")
-      .split(/\r?\n/)
-      .filter((line) => !line.trim().startsWith("--"))
-      .join("\n")
-      .split(/;\s*(?:\n|$)/)
-      .map((statement) => statement.trim())
-      .filter(Boolean);
-    for (const statement of statements) {
-      await prisma.$executeRawUnsafe(statement);
-    }
-  }
-}
 
 before(async () => {
   process.env.DATABASE_URL = `file:${dbFile.replace(/\\/g, "/")}`;
@@ -297,6 +278,29 @@ test("Admin or bidder tries to reopen: 403 and nothing changes", async () => {
     assert.equal(body.code, "FORBIDDEN");
   }
   assert.deepEqual(await state(), before);
+});
+
+test("Non-owner PATCH of the end date: 403, nothing changes and nothing is sent", async () => {
+  const before = await state();
+  const auctionBefore = await services.prisma.auction.findUniqueOrThrow({
+    where: { id: "a1" },
+  });
+  for (const userId of ["admin", "creator", "bidder"]) {
+    const { status, body } = await call(services.auctionRoute, {
+      method: "PATCH",
+      query: { id: "a1" },
+      userId,
+      body: { endDate: fromNow(DAY).toISOString() },
+    });
+    assert.equal(status, 403, `${userId} is forbidden`);
+    assert.equal(body.code, "FORBIDDEN");
+  }
+  assert.deepEqual(await state(), before);
+  assert.deepEqual(
+    await services.prisma.auction.findUniqueOrThrow({ where: { id: "a1" } }),
+    auctionBefore,
+  );
+  assert.equal(await services.prisma.notification.count(), 0);
 });
 
 test("Invalid reopen bodies are rejected before anything changes", async () => {

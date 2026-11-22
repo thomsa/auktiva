@@ -3,6 +3,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import {
+  applyMigrations,
+  listMigrations,
+} from "@/lib/testing/apply-migrations";
 
 /**
  * Runs the winner-notification backfill migration against a throwaway SQLite
@@ -16,7 +20,6 @@ const tmpDir = fs.mkdtempSync(
   path.join(os.tmpdir(), "auktiva-winner-backfill-"),
 );
 const dbFile = path.join(tmpDir, "test.db");
-const migrationsDir = path.join(process.cwd(), "prisma", "migrations");
 
 const OLDER_WIN = new Date("2026-10-01T12:00:00.000Z");
 const LATER_WIN = new Date("2026-10-05T08:30:00.000Z");
@@ -25,24 +28,6 @@ const PAST_END = new Date("2026-09-30T18:00:00.000Z");
 
 type Prisma = typeof import("@/lib/prisma").prisma;
 let prisma: Prisma;
-
-/** Splits a migration the same way the notifier test harness does. */
-function migrationStatements(name: string): string[] {
-  return fs
-    .readFileSync(path.join(migrationsDir, name, "migration.sql"), "utf8")
-    .split(/\r?\n/)
-    .filter((line) => !line.trim().startsWith("--"))
-    .join("\n")
-    .split(/;\s*(?:\n|$)/)
-    .map((statement) => statement.trim())
-    .filter(Boolean);
-}
-
-async function applyMigration(name: string) {
-  for (const statement of migrationStatements(name)) {
-    await prisma.$executeRawUnsafe(statement);
-  }
-}
 
 type ItemSeed = {
   id: string;
@@ -97,15 +82,13 @@ before(async () => {
   process.env.DATABASE_URL = `file:${dbFile.replace(/\\/g, "/")}`;
   ({ prisma } = await import("@/lib/prisma"));
 
-  const earlierMigrations = fs
-    .readdirSync(migrationsDir)
-    .filter((name) =>
-      fs.existsSync(path.join(migrationsDir, name, "migration.sql")),
-    )
-    .sort()
-    .filter((name) => name < BACKFILL_MIGRATION);
+  const migrations = listMigrations();
+  assert.ok(migrations.includes(BACKFILL_MIGRATION), "migration missing");
+  const earlierMigrations = migrations.filter(
+    (name) => name < BACKFILL_MIGRATION,
+  );
   assert.ok(earlierMigrations.length > 0);
-  for (const name of earlierMigrations) await applyMigration(name);
+  await applyMigrations(prisma, earlierMigrations);
 
   // Tables the migration does not touch can use the generated client.
   await prisma.currency.create({
@@ -183,7 +166,7 @@ before(async () => {
     winnerNotified: true,
   });
 
-  await applyMigration(BACKFILL_MIGRATION);
+  await applyMigrations(prisma, [BACKFILL_MIGRATION]);
 });
 
 after(async () => {

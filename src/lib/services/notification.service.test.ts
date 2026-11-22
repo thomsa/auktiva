@@ -4,6 +4,7 @@ import fs from "node:fs";
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
+import { applyMigrations } from "@/lib/testing/apply-migrations";
 
 /**
  * Bidding-reopened messages. The pure message builder is tested directly; the
@@ -12,6 +13,10 @@ import path from "node:path";
  * `sendEmail` writes its `EmailLog` row and then fails without leaving the
  * machine.
  */
+
+// Run in a zone with a UTC offset, set before any service module loads, so
+// the UTC formatting tests catch formatting in local time.
+process.env.TZ = "Europe/Berlin";
 
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "auktiva-notify-"));
 const dbFile = path.join(tmpDir, "test.db");
@@ -22,26 +27,6 @@ type Services = {
 };
 let services: Services;
 let smtpStub: net.Server;
-
-/** Applies every checked-in migration, one statement at a time. */
-async function applyMigrations(prisma: Services["prisma"]) {
-  const migrationsDir = path.join(process.cwd(), "prisma", "migrations");
-  for (const name of fs.readdirSync(migrationsDir).sort()) {
-    const sqlFile = path.join(migrationsDir, name, "migration.sql");
-    if (!fs.existsSync(sqlFile)) continue;
-    const statements = fs
-      .readFileSync(sqlFile, "utf8")
-      .split(/\r?\n/)
-      .filter((line) => !line.trim().startsWith("--"))
-      .join("\n")
-      .split(/;\s*(?:\n|$)/)
-      .map((statement) => statement.trim())
-      .filter(Boolean);
-    for (const statement of statements) {
-      await prisma.$executeRawUnsafe(statement);
-    }
-  }
-}
 
 const AUCTION = { id: "auction", name: "Spring Gala" };
 const END = new Date("2026-11-30T18:00:00.000Z");
@@ -222,6 +207,8 @@ test("No end time: says so instead of a close time", () => {
 
 test("Close times are formatted in UTC with zero-padded hours", () => {
   const { formatReopenCloseTime } = services.notifications;
+  // The process runs in Europe/Berlin, so local formatting would differ.
+  assert.notEqual(new Date("2026-01-05T03:07:00.000Z").getTimezoneOffset(), 0);
   assert.equal(
     formatReopenCloseTime(new Date("2026-01-05T03:07:00.000Z")),
     "5 Jan 2026, 03:07 UTC",
