@@ -363,20 +363,23 @@ export default function AuctionSettingsPage({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // An untouched field sends the stored end exactly; an edited one is
-    // converted from local time to UTC, so the server never has to guess the
-    // owner's time zone. Text that is not a real date never becomes "no end".
-    let endDate: string | null;
-    if (formData.endDate === endField.local) {
-      endDate = endField.iso;
-    } else {
+    // The end date is sent only when the owner edited or cleared the field.
+    // An untouched field leaves `endDate` out, so a stale tab cannot put back
+    // an end that another session has since changed (re-ending or re-opening
+    // the auction). An edit is converted from local time to UTC, and text
+    // that is not a real date never becomes "no end".
+    const body: Record<string, unknown> = { ...formData };
+    delete body.endDate;
+    let submittedEnd: string | null | undefined;
+    if (formData.endDate !== endField.local) {
       const parsed = parseDateTimeLocal(formData.endDate);
       if (!parsed.ok) {
         setEndDateError(t("endDateInvalid"));
         document.getElementById(END_DATE_FIELD_ID)?.focus();
         return;
       }
-      endDate = parsed.iso;
+      submittedEnd = parsed.iso;
+      body.endDate = submittedEnd;
     }
     setEndDateError(null);
     setIsLoading(true);
@@ -385,7 +388,7 @@ export default function AuctionSettingsPage({
       const res = await fetch(`/api/auctions/${auction.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, endDate }),
+        body: JSON.stringify(body),
       });
 
       const result = await res.json();
@@ -394,9 +397,15 @@ export default function AuctionSettingsPage({
         showToast(result.message || tErrors("auction.updateFailed"), "error");
       } else {
         showToast(t("success"), "success");
-        // A new end date can end or reopen the auction and its items.
+        // The response carries the server's current end, which may come from
+        // another session when this save left the end alone. The field was
+        // read-only while saving, so syncing it overwrites no new edit.
         const savedEnd: string | null =
-          result.endDate === undefined ? endDate : result.endDate;
+          result.endDate !== undefined
+            ? result.endDate
+            : submittedEnd !== undefined
+              ? submittedEnd
+              : endField.iso;
         syncEndField(savedEnd);
         if (savedEnd !== auctionEndDate) {
           setAuctionEndDate(savedEnd);
@@ -712,6 +721,7 @@ export default function AuctionSettingsPage({
                     name="endDate"
                     value={formData.endDate}
                     onChange={handleChange}
+                    disabled={isLoading}
                     aria-invalid={endDateError ? true : undefined}
                     aria-describedby={
                       endDateError ? END_DATE_ERROR_ID : undefined
@@ -723,6 +733,7 @@ export default function AuctionSettingsPage({
                   {formData.endDate && (
                     <button
                       type="button"
+                      disabled={isLoading}
                       onClick={() => {
                         setEndDateError(null);
                         setFormData((prev) => ({ ...prev, endDate: "" }));
