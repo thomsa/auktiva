@@ -19,6 +19,35 @@ interface NavbarProps {
   };
 }
 
+function DesktopNavLink({
+  href,
+  icon,
+  label,
+  tone = "default",
+}: {
+  href: string;
+  icon: string;
+  label: string;
+  tone?: "default" | "warning";
+}) {
+  const toneClass =
+    tone === "warning"
+      ? "text-warning hover:text-warning hover:bg-warning/10"
+      : "text-base-content/70 hover:text-primary hover:bg-primary/10";
+
+  return (
+    <Link
+      href={href}
+      aria-label={label}
+      title={label}
+      className={`btn btn-ghost btn-sm max-lg:btn-square font-medium gap-1.5 ${toneClass}`}
+    >
+      <span className={`${icon} size-4 shrink-0`} aria-hidden="true"></span>
+      <span className="hidden lg:inline whitespace-nowrap">{label}</span>
+    </Link>
+  );
+}
+
 export function Navbar({ user }: NavbarProps) {
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
@@ -52,7 +81,7 @@ export function Navbar({ user }: NavbarProps) {
       }`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-4 lg:gap-8 min-w-0">
           <Link
             href="/dashboard"
             className="group flex items-center gap-2 text-xl font-bold tracking-tight"
@@ -67,36 +96,31 @@ export function Navbar({ user }: NavbarProps) {
           </Link>
 
           {/* Desktop Navigation */}
+          {/* Icon-only between md and lg so the bar never overlaps; the
+              label returns from lg and names each link (aria-label, title). */}
           <div className="hidden md:flex items-center gap-1">
-            <Link
+            <DesktopNavLink
               href="/dashboard"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
-            >
-              <span className="icon-[tabler--layout-dashboard] size-4"></span>
-              {t("dashboard")}
-            </Link>
-            <Link
+              icon="icon-[tabler--layout-dashboard]"
+              label={t("dashboard")}
+            />
+            <DesktopNavLink
               href="/listings"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
-            >
-              <span className="icon-[tabler--tag] size-4"></span>
-              {t("myListings")}
-            </Link>
-            <Link
+              icon="icon-[tabler--tag]"
+              label={t("myListings")}
+            />
+            <DesktopNavLink
               href="/history"
-              className="btn btn-ghost btn-sm font-medium text-base-content/70 hover:text-primary hover:bg-primary/10 gap-1.5"
-            >
-              <span className="icon-[tabler--gavel] size-4"></span>
-              {t("myBids")}
-            </Link>
+              icon="icon-[tabler--gavel]"
+              label={t("myBids")}
+            />
             {isUserAuctionAdmin && (
-              <Link
+              <DesktopNavLink
                 href="/auctions/admin"
-                className="btn btn-ghost btn-sm font-medium text-warning hover:text-warning hover:bg-warning/10 gap-1.5"
-              >
-                <span className="icon-[tabler--shield-check] size-4"></span>
-                {t("adminPanel")}
-              </Link>
+                icon="icon-[tabler--shield-check]"
+                label={t("adminPanel")}
+                tone="warning"
+              />
             )}
           </div>
         </div>
