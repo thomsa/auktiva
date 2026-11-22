@@ -189,6 +189,8 @@ export function NotificationBell() {
                           <span className="icon-[tabler--clock-off] size-5 text-error"></span>
                         ) : notification.type === "INVITE_RECEIVED" ? (
                           <span className="icon-[tabler--mail] size-5 text-primary"></span>
+                        ) : notification.type === "BIDDING_REOPENED" ? (
+                          <span className="icon-[tabler--clock-play] size-5 text-info"></span>
                         ) : null}
                       </div>
                       <div className="flex-1 min-w-0">

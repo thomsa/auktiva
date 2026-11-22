@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import * as auctionService from "@/lib/services/auction.service";
+import * as auctionReopenService from "@/lib/services/auction-reopen.service";
 import { PageLayout, BackLink, ConfirmDialog } from "@/components/common";
+import {
+  ReopenBiddingCard,
+  type ReopenBiddingResult,
+  type ReopenClosedItem,
+} from "@/components/auction/ReopenBiddingCard";
 import { ThumbnailUpload } from "@/components/upload/thumbnail-upload";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
@@ -34,6 +40,7 @@ interface AuctionSettingsProps {
     defaultAntiSnipeThreshold: number;
     defaultAntiSnipeExtension: number;
   };
+  closedItems: ReopenClosedItem[];
   allowOpenAuctions: boolean;
 }
 
@@ -90,6 +97,7 @@ const EMPTY_CURRENCY_FORM: AuctionCurrencyProfileForm = {
 export default function AuctionSettingsPage({
   user,
   auction,
+  closedItems: closedItemsProp,
   allowOpenAuctions,
 }: AuctionSettingsProps) {
   const router = useRouter();
@@ -118,6 +126,8 @@ export default function AuctionSettingsPage({
   const deleteDialog = useConfirmDialog();
   const endDialog = useConfirmDialog();
   const [isEnded, setIsEnded] = useState(auction.isEnded);
+  const [auctionEndDate, setAuctionEndDate] = useState(auction.endDate);
+  const [closedItems, setClosedItems] = useState(closedItemsProp);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(
     auction.thumbnailUrl,
   );
@@ -146,6 +156,41 @@ export default function AuctionSettingsPage({
   useEffect(() => {
     void loadCurrencyProfiles();
   }, [loadCurrencyProfiles]);
+
+  // Server props change after `refreshServerProps`; adopt the fresh
+  // closed-item list and end state (React's "adjust state on prop change").
+  const [syncedClosedItems, setSyncedClosedItems] = useState(closedItemsProp);
+  if (closedItemsProp !== syncedClosedItems) {
+    setSyncedClosedItems(closedItemsProp);
+    setClosedItems(closedItemsProp);
+    setIsEnded(auction.isEnded);
+    setAuctionEndDate(auction.endDate);
+  }
+
+  const refreshServerProps = () => {
+    void router.replace(router.asPath, undefined, { scroll: false });
+  };
+
+  const handleReopened = ({ endDate, itemIds }: ReopenBiddingResult) => {
+    const auctionOpen = endDate === null || new Date(endDate) > new Date();
+    const reopened = new Set(itemIds);
+    // Optimistic list until the refreshed props arrive: selected items are
+    // open now, and so are items following an auction that is open again.
+    setClosedItems((prev) =>
+      prev.filter(
+        (item) =>
+          !reopened.has(item.id) && !(auctionOpen && item.endDate === null),
+      ),
+    );
+    setIsEnded(!auctionOpen);
+    setAuctionEndDate(endDate);
+    // Keep the main form in step so saving it does not restore the old end.
+    setFormData((prev) => ({
+      ...prev,
+      endDate: endDate ? endDate.slice(0, 16) : "",
+    }));
+    refreshServerProps();
+  };
 
   const openCreateCurrencyModal = () => {
     setEditingCurrencyId(null);
@@ -813,8 +858,11 @@ export default function AuctionSettingsPage({
                       );
                     } else {
                       setIsEnded(true);
+                      setAuctionEndDate(new Date().toISOString());
                       endDialog.close();
                       showToast(t("endedSuccess"), "success");
+                      // Load the now-closed items into the reopen card.
+                      refreshServerProps();
                     }
                   } catch {
                     showToast(tErrors("generic"), "error");
@@ -842,6 +890,20 @@ export default function AuctionSettingsPage({
             </a>
           </span>
         </div>
+      )}
+
+      {/* Reopen Bidding */}
+      {(isEnded || closedItems.length > 0) && (
+        <ReopenBiddingCard
+          // Remount when the auction ends or reopens so the end time is
+          // prefilled from the current auction end again.
+          key={isEnded ? "ended" : "live"}
+          auctionId={auction.id}
+          auctionEndDate={auctionEndDate}
+          isEnded={isEnded}
+          closedItems={closedItems}
+          onReopened={handleReopened}
+        />
       )}
 
       {isCurrencyModalOpen && (
@@ -1132,6 +1194,9 @@ export const getServerSideProps = withAuth(async (context) => {
     };
   }
 
+  // Owner-only: the membership check above redirects everyone else.
+  const closedItems = await auctionReopenService.findClosedItems(auctionId);
+
   return {
     props: {
       user: {
@@ -1157,6 +1222,7 @@ export const getServerSideProps = withAuth(async (context) => {
         defaultAntiSnipeThreshold: auction.defaultAntiSnipeThreshold,
         defaultAntiSnipeExtension: auction.defaultAntiSnipeExtension,
       },
+      closedItems,
       allowOpenAuctions: process.env.ALLOW_OPEN_AUCTIONS === "true",
       messages: await getMessages(context.locale as Locale),
     },

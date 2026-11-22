@@ -130,7 +130,32 @@
       "defaultAntiSnipeExtension": "Alapértelmezett hosszabbítás mértéke",
       "defaultAntiSnipeExtensionHint": "Ennyi idővel hosszabbodik meg a záró idő aktiváláskor. 5 másodperc és 60 perc között.",
       "seconds": "másodperc",
-      "minutes": "perc"
+      "minutes": "perc",
+      "reopen": {
+        "title": "Licitálás újranyitása",
+        "descriptionEnded": "Ez az aukció lezárult. Adj meg új záróidőpontot, és válaszd ki az újranyitandó tételeket. Aki licitált egy újranyitott tételre, értesítést kap.",
+        "descriptionLive": "Néhány tétel lezárult, pedig az aukció még tart. Válaszd ki az újranyitandó tételeket, és erősítsd meg az aukció záróidőpontját. Aki licitált egy újranyitott tételre, értesítést kap.",
+        "endDateLabel": "Az aukció záróidőpontja",
+        "endDateHint": "Helyi idő szerint. Az újranyitott tételek az aukcióval együtt zárulnak.",
+        "noEndTime": "Nincs záróidőpont",
+        "noEndTimeHint": "A licitálás addig tart, amíg le nem zárod az aukciót.",
+        "endDateRequired": "Válassz záróidőpontot, vagy kapcsold be a „Nincs záróidőpont” beállítást.",
+        "endDateInPast": "Jövőbeli záróidőpontot válassz.",
+        "itemsLegend": "Lezárult tételek",
+        "selectAll": "Összes kijelölése",
+        "selectedCount": "{selected} / {total} kijelölve",
+        "noClosedItems": "Nincs lezárult közzétett tétel. Az újranyitás csak az aukció záróidőpontját módosítja.",
+        "itemEnded": "Lezárult",
+        "itemEndedAt": "Lezárult: {date}",
+        "itemEndedWithAuction": "Az aukcióval együtt zárult le",
+        "bidCount": "{count, plural, =0 {Nincs licit} one {# licit} other {# licit}}",
+        "tooManyItems": "Egyszerre legfeljebb {max} tételt jelölhetsz ki.",
+        "submit": "Licitálás újranyitása",
+        "confirmTitle": "{count, plural, =0 {Mented az új záróidőpontot tétel kijelölése nélkül?} one {Újranyitod a licitálást # tételre?} other {Újranyitod a licitálást # tételre?}}",
+        "confirmMessage": "Mindenki értesítést kap, aki licitált egy újranyitott tételre, azok a nyertesek is, akiket már értesítettünk.",
+        "confirmButton": "Licitálás újranyitása",
+        "success": "{reopenedCount, plural, =0 {Egy tétel sem nyílt újra.} one {# tételre újra lehet licitálni.} other {# tételre újra lehet licitálni.}} {notifiedCount, plural, =0 {Senki sem kapott értesítést.} one {# licitáló kapott értesítést.} other {# licitáló kapott értesítést.}}"
+      }
     },
     "members": {
       "title": "Tagok",

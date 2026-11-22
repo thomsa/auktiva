@@ -130,7 +130,32 @@
       "defaultAntiSnipeExtension": "Standard-Verlängerungsdauer",
       "defaultAntiSnipeExtensionHint": "Wie viel Zeit zur Endzeit hinzugefügt wird. Zwischen 5 Sekunden und 60 Minuten.",
       "seconds": "Sekunden",
-      "minutes": "Minuten"
+      "minutes": "Minuten",
+      "reopen": {
+        "title": "Gebote wieder zulassen",
+        "descriptionEnded": "Diese Auktion ist beendet. Lege ein neues Ende fest und wähle die Artikel aus, die wieder geöffnet werden sollen. Alle, die auf einen wieder geöffneten Artikel geboten haben, werden benachrichtigt.",
+        "descriptionLive": "Einige Artikel sind geschlossen, obwohl die Auktion noch läuft. Wähle die Artikel aus, die wieder geöffnet werden sollen, und bestätige das Auktionsende. Alle, die auf einen wieder geöffneten Artikel geboten haben, werden benachrichtigt.",
+        "endDateLabel": "Auktionsende",
+        "endDateHint": "In deiner Ortszeit. Wieder geöffnete Artikel enden mit der Auktion.",
+        "noEndTime": "Kein Ende",
+        "noEndTimeHint": "Gebote bleiben möglich, bis du die Auktion beendest.",
+        "endDateRequired": "Wähle ein Ende oder aktiviere „Kein Ende“.",
+        "endDateInPast": "Wähle ein Ende in der Zukunft.",
+        "itemsLegend": "Geschlossene Artikel",
+        "selectAll": "Alle auswählen",
+        "selectedCount": "{selected} von {total} ausgewählt",
+        "noClosedItems": "Keine veröffentlichten Artikel sind geschlossen. Das Wiederöffnen ändert nur das Auktionsende.",
+        "itemEnded": "Beendet",
+        "itemEndedAt": "Beendet am {date}",
+        "itemEndedWithAuction": "Mit der Auktion beendet",
+        "bidCount": "{count, plural, =0 {Keine Gebote} one {# Gebot} other {# Gebote}}",
+        "tooManyItems": "Wähle höchstens {max} Artikel auf einmal aus.",
+        "submit": "Gebote wieder zulassen",
+        "confirmTitle": "{count, plural, =0 {Neues Ende ohne ausgewählte Artikel speichern?} one {Gebote für # Artikel wieder zulassen?} other {Gebote für # Artikel wieder zulassen?}}",
+        "confirmMessage": "Alle, die auf einen wieder geöffneten Artikel geboten haben, werden benachrichtigt, auch Gewinner, die schon vom Zuschlag erfahren haben.",
+        "confirmButton": "Gebote wieder zulassen",
+        "success": "{reopenedCount, plural, =0 {Es wurden keine Artikel wieder geöffnet.} one {Gebote für # Artikel wieder zugelassen.} other {Gebote für # Artikel wieder zugelassen.}} {notifiedCount, plural, =0 {Niemand wurde benachrichtigt.} one {# Bieter wurde benachrichtigt.} other {# Bieter wurden benachrichtigt.}}"
+      }
     },
     "members": {
       "title": "Mitglieder",

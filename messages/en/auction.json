@@ -133,7 +133,32 @@
       "defaultAntiSnipeExtension": "Default extension amount",
       "defaultAntiSnipeExtensionHint": "How much time to add to the end when triggered. Between 5 seconds and 60 minutes.",
       "seconds": "seconds",
-      "minutes": "minutes"
+      "minutes": "minutes",
+      "reopen": {
+        "title": "Reopen bidding",
+        "descriptionEnded": "This auction has ended. Set a new end time and choose the items to reopen. Everyone who bid on a reopened item gets a notification.",
+        "descriptionLive": "Some items have closed while the auction is still running. Choose the items to reopen and confirm the auction end time. Everyone who bid on a reopened item gets a notification.",
+        "endDateLabel": "Auction end time",
+        "endDateHint": "In your local time. Reopened items end with the auction.",
+        "noEndTime": "No end time",
+        "noEndTimeHint": "Bidding stays open until you end the auction.",
+        "endDateRequired": "Choose an end time or turn on No end time.",
+        "endDateInPast": "Choose an end time in the future.",
+        "itemsLegend": "Closed items",
+        "selectAll": "Select all",
+        "selectedCount": "{selected} of {total} selected",
+        "noClosedItems": "No published items are closed. Reopening only changes the auction end time.",
+        "itemEnded": "Ended",
+        "itemEndedAt": "Ended {date}",
+        "itemEndedWithAuction": "Ended with the auction",
+        "bidCount": "{count, plural, =0 {No bids} one {# bid} other {# bids}}",
+        "tooManyItems": "Select at most {max} items at a time.",
+        "submit": "Reopen bidding",
+        "confirmTitle": "{count, plural, =0 {Save the new end time without selecting items?} one {Reopen bidding on # item?} other {Reopen bidding on # items?}}",
+        "confirmMessage": "Everyone who bid on a reopened item will be notified, including winners who were already told they won.",
+        "confirmButton": "Reopen bidding",
+        "success": "{reopenedCount, plural, =0 {No items were reopened.} one {Bidding reopened on # item.} other {Bidding reopened on # items.}} {notifiedCount, plural, =0 {No bidders were notified.} one {# bidder was notified.} other {# bidders were notified.}}"
+      }
     },
     "members": {
       "title": "Members",

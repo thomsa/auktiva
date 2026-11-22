@@ -128,6 +128,12 @@ export function MobileNotificationSheet({
             <span className="icon-[tabler--mail] size-6 text-primary" />
           </div>
         );
+      case "BIDDING_REOPENED":
+        return (
+          <div className="size-12 rounded-xl bg-info/10 flex items-center justify-center">
+            <span className="icon-[tabler--clock-play] size-6 text-info" />
+          </div>
+        );
       default:
         return (
           <div className="size-12 rounded-xl bg-base-200 flex items-center justify-center">
