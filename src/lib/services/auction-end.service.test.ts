@@ -150,3 +150,466 @@ test("processEndedItems notifies winners of items that end with the auction", as
   // A second run finds nothing left to notify.
   assert.equal(await auctionEnd.processEndedItems(), 0);
 });
+
+test("overlapping processEndedItems runs notify each winner once", async () => {
+  const { prisma, auctionEnd } = services;
+  await prisma.auctionItem.createMany({
+    data: ["race-1", "race-2", "race-3"].map((id) => ({
+      id,
+      name: id,
+      auctionId: "ended",
+      currencyCode: "EUR",
+      creatorId: "owner",
+      currentBid: 10,
+      highestBidderId: "winner",
+      isPublished: true,
+    })),
+  });
+
+  const counts = await Promise.all([
+    auctionEnd.processEndedItems(),
+    auctionEnd.processEndedItems(),
+    auctionEnd.processEndedItems(),
+  ]);
+  assert.equal(
+    counts.reduce((sum, count) => sum + count, 0),
+    3,
+  );
+
+  const notifications = await prisma.notification.groupBy({
+    by: ["itemId"],
+    where: { itemId: { in: ["race-1", "race-2", "race-3"] } },
+    _count: { _all: true },
+    orderBy: { itemId: "asc" },
+  });
+  assert.deepEqual(
+    notifications.map((n) => [n.itemId, n._count._all]),
+    [
+      ["race-1", 1],
+      ["race-2", 1],
+      ["race-3", 1],
+    ],
+  );
+
+  const records = await prisma.auctionItem.findMany({
+    where: { id: { in: ["race-1", "race-2", "race-3"] } },
+    select: {
+      winnerNotified: true,
+      winnerNotifiedUserId: true,
+      winnerNotifiedAmount: true,
+      winnerNotifiedAt: true,
+    },
+  });
+  assert.equal(records.length, 3);
+  for (const record of records) {
+    assert.equal(record.winnerNotified, true);
+    assert.equal(record.winnerNotifiedUserId, "winner");
+    assert.equal(record.winnerNotifiedAmount, 10);
+    assert.ok(record.winnerNotifiedAt instanceof Date);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Winner record, re-notification and stale guard. Each test seeds its own
+// users, auctions and items under a unique prefix and only asserts on those,
+// and leaves no ended item pending, so the tests do not depend on order.
+// ---------------------------------------------------------------------------
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const daysFromNow = (days: number) => new Date(Date.now() + days * DAY_MS);
+
+async function seedUsers(...ids: string[]) {
+  await services.prisma.user.createMany({
+    data: ids.map((id) => ({ id, email: `${id}@example.test`, name: id })),
+  });
+}
+
+async function seedAuction(id: string, endDate: Date | null) {
+  await services.prisma.auction.create({
+    data: { id, name: id, endDate, creatorId: "owner" },
+  });
+}
+
+async function seedItem(
+  id: string,
+  auctionId: string,
+  data: Partial<{
+    highestBidderId: string | null;
+    currentBid: number | null;
+    endDate: Date | null;
+    isPublished: boolean;
+    winnerNotified: boolean;
+    winnerNotifiedUserId: string | null;
+    winnerNotifiedAmount: number | null;
+    winnerNotifiedAt: Date | null;
+  }> = {},
+) {
+  await services.prisma.auctionItem.create({
+    data: {
+      id,
+      name: id,
+      auctionId,
+      currencyCode: "EUR",
+      creatorId: "owner",
+      currentBid: 10,
+      isPublished: true,
+      ...data,
+    },
+  });
+}
+
+/** AUCTION_WON notifications for an item, as sorted user IDs. */
+async function wonBy(itemId: string) {
+  const notifications = await services.prisma.notification.findMany({
+    where: { itemId, type: "AUCTION_WON" },
+    select: { userId: true },
+  });
+  return notifications.map((n) => n.userId).sort();
+}
+
+async function winnerRecord(itemId: string) {
+  return services.prisma.auctionItem.findUniqueOrThrow({
+    where: { id: itemId },
+    select: {
+      winnerNotified: true,
+      winnerNotifiedUserId: true,
+      winnerNotifiedAmount: true,
+      winnerNotifiedAt: true,
+    },
+  });
+}
+
+test("the stale window is 14 days", () => {
+  assert.equal(
+    services.auctionEnd.STALE_WINNER_NOTIFICATION_MS,
+    14 * 24 * 60 * 60 * 1000,
+  );
+});
+
+test("Record written on notification: user, amount and time", async () => {
+  const { auctionEnd } = services;
+  await seedUsers("rec-a");
+  await seedAuction("rec-auction", daysFromNow(-1));
+  await seedItem("rec-item", "rec-auction", {
+    highestBidderId: "rec-a",
+    currentBid: 120,
+  });
+
+  const before = Date.now();
+  await auctionEnd.processEndedItems();
+  const after = Date.now();
+
+  assert.deepEqual(await wonBy("rec-item"), ["rec-a"]);
+  const rec = await winnerRecord("rec-item");
+  assert.equal(rec.winnerNotified, true);
+  assert.equal(rec.winnerNotifiedUserId, "rec-a");
+  assert.equal(rec.winnerNotifiedAmount, 120);
+  assert.ok(rec.winnerNotifiedAt);
+  assert.ok(rec.winnerNotifiedAt.getTime() >= before);
+  assert.ok(rec.winnerNotifiedAt.getTime() <= after);
+});
+
+test("Auction that ended long ago: record written, no notification", async () => {
+  const { auctionEnd } = services;
+  await seedUsers("stale-a", "stale-b");
+  await seedAuction("stale-old-auction", daysFromNow(-20));
+  await seedAuction("stale-running-auction", daysFromNow(1));
+  // Follows an auction that ended 20 days ago.
+  await seedItem("stale-follows", "stale-old-auction", {
+    highestBidderId: "stale-a",
+    currentBid: 30,
+  });
+  // Own end date 20 days ago.
+  await seedItem("stale-own", "stale-running-auction", {
+    highestBidderId: "stale-b",
+    currentBid: 40,
+    endDate: daysFromNow(-20),
+  });
+
+  await auctionEnd.processEndedItems();
+
+  const expected = [
+    ["stale-follows", "stale-a", 30],
+    ["stale-own", "stale-b", 40],
+  ] as const;
+  for (const [itemId, userId, amount] of expected) {
+    assert.deepEqual(await wonBy(itemId), [], itemId);
+    const rec = await winnerRecord(itemId);
+    assert.equal(rec.winnerNotified, true, itemId);
+    assert.equal(rec.winnerNotifiedUserId, userId, itemId);
+    assert.equal(rec.winnerNotifiedAmount, amount, itemId);
+    assert.ok(rec.winnerNotifiedAt, itemId);
+  }
+
+  // Recorded items are not picked up again.
+  await auctionEnd.processEndedItems();
+  assert.deepEqual(await wonBy("stale-follows"), []);
+  assert.deepEqual(await wonBy("stale-own"), []);
+});
+
+test("Recently ended item: notified, including items following the auction", async () => {
+  const { auctionEnd } = services;
+  await seedUsers("recent-a", "recent-b", "recent-c");
+  await seedAuction("recent-auction", daysFromNow(-2));
+  await seedAuction("recent-old-auction", daysFromNow(-20));
+  // Follows an auction that ended 2 days ago.
+  await seedItem("recent-follows", "recent-auction", {
+    highestBidderId: "recent-a",
+  });
+  // Own end date 2 days ago.
+  await seedItem("recent-own", "recent-auction", {
+    highestBidderId: "recent-b",
+    endDate: daysFromNow(-2),
+  });
+  // Own end date 2 days ago wins over an auction that ended 20 days ago.
+  await seedItem("recent-own-in-old", "recent-old-auction", {
+    highestBidderId: "recent-c",
+    endDate: daysFromNow(-2),
+  });
+
+  await auctionEnd.processEndedItems();
+
+  assert.deepEqual(await wonBy("recent-follows"), ["recent-a"]);
+  assert.deepEqual(await wonBy("recent-own"), ["recent-b"]);
+  assert.deepEqual(await wonBy("recent-own-in-old"), ["recent-c"]);
+});
+
+test("New winner after an extension: B is notified and recorded, A gets nothing", async () => {
+  const { auctionEnd } = services;
+  await seedUsers("ext-a", "ext-b");
+  await seedAuction("ext-auction", daysFromNow(-1));
+  const previousAt = daysFromNow(-3);
+  // State after a reopen and a new highest bid by B, ended again.
+  await seedItem("ext-item", "ext-auction", {
+    highestBidderId: "ext-b",
+    currentBid: 80,
+    winnerNotified: false,
+    winnerNotifiedUserId: "ext-a",
+    winnerNotifiedAmount: 50,
+    winnerNotifiedAt: previousAt,
+  });
+
+  await auctionEnd.processEndedItems();
+
+  assert.deepEqual(await wonBy("ext-item"), ["ext-b"]);
+  const rec = await winnerRecord("ext-item");
+  assert.equal(rec.winnerNotified, true);
+  assert.equal(rec.winnerNotifiedUserId, "ext-b");
+  assert.equal(rec.winnerNotifiedAmount, 80);
+  assert.ok(rec.winnerNotifiedAt);
+  assert.ok(rec.winnerNotifiedAt.getTime() > previousAt.getTime());
+});
+
+test("Previous winner is not told they won again", async () => {
+  const { prisma, auctionEnd } = services;
+  await seedUsers("prev-a", "prev-b");
+  await seedAuction("prev-auction", daysFromNow(-1));
+  await seedItem("prev-item", "prev-auction", {
+    highestBidderId: "prev-a",
+    currentBid: 50,
+  });
+
+  // First close: A wins.
+  await auctionEnd.processEndedItems();
+  assert.deepEqual(await wonBy("prev-item"), ["prev-a"]);
+
+  // Reopen (pending flag reset), B outbids A, and the item ends again.
+  await prisma.auctionItem.update({
+    where: { id: "prev-item" },
+    data: { winnerNotified: false, highestBidderId: "prev-b", currentBid: 60 },
+  });
+  await auctionEnd.processEndedItems();
+
+  // A still has only the original notification; B has one.
+  assert.deepEqual(await wonBy("prev-item"), ["prev-a", "prev-b"]);
+  assert.equal(
+    (await winnerRecord("prev-item")).winnerNotifiedUserId,
+    "prev-b",
+  );
+});
+
+test("Same winner after a reopen is notified again", async () => {
+  const { prisma, auctionEnd } = services;
+  await seedUsers("same-a");
+  await seedAuction("same-auction", daysFromNow(-1));
+  await seedItem("same-item", "same-auction", {
+    highestBidderId: "same-a",
+    currentBid: 70,
+  });
+
+  await auctionEnd.processEndedItems();
+  const first = await winnerRecord("same-item");
+  assert.deepEqual(await wonBy("same-item"), ["same-a"]);
+
+  // Reopen resets the pending flag and keeps the record; nobody outbids A.
+  await prisma.auctionItem.update({
+    where: { id: "same-item" },
+    data: { winnerNotified: false },
+  });
+  await auctionEnd.processEndedItems();
+
+  assert.deepEqual(await wonBy("same-item"), ["same-a", "same-a"]);
+  const second = await winnerRecord("same-item");
+  assert.equal(second.winnerNotified, true);
+  assert.equal(second.winnerNotifiedUserId, "same-a");
+  assert.ok(first.winnerNotifiedAt && second.winnerNotifiedAt);
+  assert.ok(
+    second.winnerNotifiedAt.getTime() >= first.winnerNotifiedAt.getTime(),
+  );
+});
+
+test("Repeated runs after notification send nothing more", async () => {
+  const { auctionEnd } = services;
+  await seedUsers("rep-a");
+  await seedAuction("rep-auction", daysFromNow(-1));
+  await seedItem("rep-item", "rep-auction", { highestBidderId: "rep-a" });
+
+  await auctionEnd.processEndedItems();
+  const first = await winnerRecord("rep-item");
+  await auctionEnd.processEndedItems();
+  await auctionEnd.processEndedItems();
+
+  assert.deepEqual(await wonBy("rep-item"), ["rep-a"]);
+  assert.deepEqual(await winnerRecord("rep-item"), first);
+});
+
+test("Draft item: no notification and no record", async () => {
+  const { auctionEnd } = services;
+  await seedUsers("draft-a");
+  await seedAuction("draft-auction", daysFromNow(-1));
+  await seedItem("draft-item", "draft-auction", {
+    highestBidderId: "draft-a",
+    endDate: daysFromNow(-1),
+    isPublished: false,
+  });
+
+  await auctionEnd.processEndedItems();
+
+  assert.deepEqual(await wonBy("draft-item"), []);
+  const rec = await winnerRecord("draft-item");
+  assert.equal(rec.winnerNotified, false);
+  assert.equal(rec.winnerNotifiedUserId, null);
+});
+
+test("Item in an auction without an end date: no notification", async () => {
+  const { auctionEnd } = services;
+  await seedUsers("noend-a");
+  await seedAuction("noend-auction", null);
+  await seedItem("noend-item", "noend-auction", {
+    highestBidderId: "noend-a",
+  });
+
+  await auctionEnd.processEndedItems();
+
+  assert.deepEqual(await wonBy("noend-item"), []);
+  const rec = await winnerRecord("noend-item");
+  assert.equal(rec.winnerNotified, false);
+  assert.equal(rec.winnerNotifiedUserId, null);
+});
+
+test("Reopened item that is still open: no notification, record kept", async () => {
+  const { auctionEnd } = services;
+  await seedUsers("open-a");
+  await seedAuction("open-auction", daysFromNow(1));
+  const previous = {
+    winnerNotified: false,
+    winnerNotifiedUserId: "open-a",
+    winnerNotifiedAmount: 25,
+    winnerNotifiedAt: daysFromNow(-2),
+  };
+  // Follows the extended auction, and one with its own future end.
+  await seedItem("open-follows", "open-auction", {
+    highestBidderId: "open-a",
+    ...previous,
+  });
+  await seedItem("open-own", "open-auction", {
+    highestBidderId: "open-a",
+    endDate: daysFromNow(1),
+    ...previous,
+  });
+
+  await auctionEnd.processEndedItems();
+
+  for (const itemId of ["open-follows", "open-own"]) {
+    assert.deepEqual(await wonBy(itemId), [], itemId);
+    assert.deepEqual(await winnerRecord(itemId), previous, itemId);
+  }
+});
+
+test("a claim whose highest-bidder snapshot is outdated does not claim", async () => {
+  const { auctionEnd } = services;
+  await seedUsers("snap-a", "snap-b");
+  await seedAuction("snap-auction", daysFromNow(-1));
+  // A run read A as the winner, then B became the highest bidder.
+  await seedItem("snap-item", "snap-auction", {
+    highestBidderId: "snap-b",
+    currentBid: 90,
+  });
+
+  const now = new Date();
+  assert.equal(
+    await auctionEnd.claimWinnerNotification(
+      { id: "snap-item", highestBidderId: "snap-a", currentBid: 80 },
+      now,
+    ),
+    false,
+  );
+  const untouched = await winnerRecord("snap-item");
+  assert.equal(untouched.winnerNotified, false);
+  assert.equal(untouched.winnerNotifiedUserId, null);
+
+  // The current snapshot claims once, and a second claim fails.
+  const snapshot = {
+    id: "snap-item",
+    highestBidderId: "snap-b",
+    currentBid: 90,
+  };
+  assert.equal(await auctionEnd.claimWinnerNotification(snapshot, now), true);
+  assert.equal(await auctionEnd.claimWinnerNotification(snapshot, now), false);
+  assert.deepEqual(await winnerRecord("snap-item"), {
+    winnerNotified: true,
+    winnerNotifiedUserId: "snap-b",
+    winnerNotifiedAmount: 90,
+    winnerNotifiedAt: now,
+  });
+  // Claimed directly, so no message was sent.
+  assert.deepEqual(await wonBy("snap-item"), []);
+});
+
+test("a failed in-app notification releases the claim and restores the record", async () => {
+  const { prisma, auctionEnd } = services;
+  await seedUsers("rel-a", "rel-b");
+  await seedAuction("rel-auction", daysFromNow(-1));
+  const previous = {
+    winnerNotified: false,
+    winnerNotifiedUserId: "rel-a",
+    winnerNotifiedAmount: 50,
+    winnerNotifiedAt: daysFromNow(-3),
+  };
+  await seedItem("rel-item", "rel-auction", {
+    highestBidderId: "rel-b",
+    currentBid: 75,
+    ...previous,
+  });
+
+  // Make creating the in-app notification for this item fail.
+  await prisma.$executeRawUnsafe(
+    "CREATE TRIGGER fail_rel_item_notification BEFORE INSERT ON notifications " +
+      "WHEN NEW.itemId = 'rel-item' " +
+      "BEGIN SELECT RAISE(ABORT, 'notification insert failed'); END",
+  );
+  try {
+    await auctionEnd.processEndedItems();
+    assert.deepEqual(await wonBy("rel-item"), []);
+    assert.deepEqual(await winnerRecord("rel-item"), previous);
+  } finally {
+    await prisma.$executeRawUnsafe(
+      "DROP TRIGGER IF EXISTS fail_rel_item_notification",
+    );
+  }
+
+  // A later run retries and notifies the winner.
+  await auctionEnd.processEndedItems();
+  assert.deepEqual(await wonBy("rel-item"), ["rel-b"]);
+  assert.equal((await winnerRecord("rel-item")).winnerNotifiedUserId, "rel-b");
+});
