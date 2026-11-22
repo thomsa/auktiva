@@ -22,6 +22,8 @@ interface ItemSidebarProps {
   items: AuctionItemSummary[];
   currentItemId: string;
   auctionId: string;
+  /** The auction's end date; items without their own end with it. */
+  auctionEndDate: string | null;
   isCollapsed: boolean;
   currentSort: string;
   onToggle: () => void;
@@ -31,6 +33,7 @@ export function ItemSidebar({
   items,
   currentItemId,
   auctionId,
+  auctionEndDate,
   isCollapsed,
   currentSort,
   onToggle,
@@ -63,7 +66,7 @@ export function ItemSidebar({
             </div>
             <div className="space-y-2">
               {items.map((item) => {
-                const ended = isItemEnded(item.endDate);
+                const ended = isItemEnded(item.endDate, auctionEndDate);
                 return (
                   <Link
                     key={item.id}

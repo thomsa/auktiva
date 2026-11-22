@@ -2,6 +2,8 @@
  * Auction and item business logic helpers
  */
 
+import { isResultItemEnded } from "@/lib/results-summary";
+
 export function canAutoJoin(auction: { joinMode: string }): boolean {
   return auction.joinMode === "FREE" || auction.joinMode === "LINK";
 }
@@ -11,9 +13,30 @@ export function isAuctionEnded(endDate: string | null): boolean {
   return new Date(endDate) < new Date();
 }
 
-export function isItemEnded(endDate: string | null): boolean {
-  if (!endDate) return false;
-  return new Date(endDate) < new Date();
+/**
+ * Whether an item has ended. The item's own end date wins; an item without
+ * one ends with the auction; with neither set it stays open. This is the
+ * same rule the bid API enforces (`isBiddingClosed`), so views and the
+ * server agree. The auction end date is required on purpose: pass `null`
+ * only when the auction has no end date.
+ */
+export function isItemEnded(
+  itemEndDate: Date | string | null | undefined,
+  auctionEndDate: Date | string | null | undefined,
+  now: Date = new Date(),
+): boolean {
+  return isResultItemEnded(itemEndDate, auctionEndDate, now);
+}
+
+/**
+ * The moment an item ends or ended: its own end date, else the auction's.
+ * Null when neither is set. Returned as given (ISO string or Date).
+ */
+export function getEffectiveItemEndDate<T extends Date | string>(
+  itemEndDate: T | null | undefined,
+  auctionEndDate: T | null | undefined,
+): T | null {
+  return itemEndDate ?? auctionEndDate ?? null;
 }
 
 export function canUserBid(

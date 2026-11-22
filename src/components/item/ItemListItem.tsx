@@ -23,6 +23,8 @@ interface ItemListItemProps {
     };
   };
   auctionId: string;
+  /** The auction's end date; items without their own end with it. */
+  auctionEndDate: string | null;
   userId: string;
   isAdmin: boolean;
 }
@@ -30,12 +32,13 @@ interface ItemListItemProps {
 export function ItemListItem({
   item,
   auctionId,
+  auctionEndDate,
   userId,
   isAdmin,
 }: ItemListItemProps) {
   const t = useTranslations();
   const { formatShortDate } = useFormatters();
-  const ended = isItemEnded(item.endDate);
+  const ended = isItemEnded(item.endDate, auctionEndDate);
   const canEditItem = item.creatorId === userId || isAdmin;
   const isOwnItem = item.creatorId === userId;
 

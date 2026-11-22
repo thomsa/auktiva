@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma/client";
 import * as notificationService from "./notification.service";
 import { queueItemWonEmail } from "@/lib/email/service";
 import { createLogger } from "@/lib/logger";
@@ -6,21 +7,33 @@ import { createLogger } from "@/lib/logger";
 const auctionEndLogger = createLogger("auction-end");
 
 /**
+ * Published items that have ended, have a highest bidder and whose winner
+ * has not been notified yet. "Ended" follows the same rule as the bid API
+ * (`isResultItemEnded`): the item's own end date wins, and an item without
+ * one ends with the auction.
+ */
+export function endedItemsAwaitingNotificationWhere(
+  now: Date,
+): Prisma.AuctionItemWhereInput {
+  return {
+    isPublished: true,
+    highestBidderId: { not: null },
+    winnerNotified: false,
+    OR: [
+      { endDate: { lt: now } },
+      { endDate: null, auction: { endDate: { lt: now } } },
+    ],
+  };
+}
+
+/**
  * Process items that have ended but winner hasn't been notified yet.
  * This runs as a background task triggered by notification polling.
  */
 export async function processEndedItems(): Promise<number> {
   try {
-    // Find items that:
-    // 1. Have ended (endDate < now)
-    // 2. Have a winner (highestBidderId exists)
-    // 3. Winner hasn't been notified yet
     const endedItems = await prisma.auctionItem.findMany({
-      where: {
-        endDate: { lt: new Date() },
-        highestBidderId: { not: null },
-        winnerNotified: false,
-      },
+      where: endedItemsAwaitingNotificationWhere(new Date()),
       include: {
         currency: { select: { symbol: true } },
         auction: { select: { id: true, name: true } },

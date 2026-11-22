@@ -6,6 +6,7 @@ import {
   BadRequestError,
 } from "@/lib/api/errors";
 import * as itemService from "@/lib/services/item.service";
+import { isResultItemEnded } from "@/lib/results-summary";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
@@ -98,6 +99,23 @@ export const createItem: ApiHandler = async (req, res, ctx) => {
 };
 
 /**
+ * An ended item stays ended. True when the requested end date (a later
+ * date, or clearing the date so the item follows a still-running auction)
+ * would reopen an item that has ended under the bid API's rule.
+ */
+export function wouldReopenEndedItem(
+  currentEndDate: Date | null,
+  requestedEndDate: Date | null,
+  auctionEndDate: Date | null,
+  now: Date = new Date(),
+): boolean {
+  return (
+    isResultItemEnded(currentEndDate, auctionEndDate, now) &&
+    !isResultItemEnded(requestedEndDate, auctionEndDate, now)
+  );
+}
+
+/**
  * GET /api/auctions/[id]/items/[itemId] - Get item details
  */
 export const getItem: ApiHandler = async (_req, res, ctx) => {
@@ -120,7 +138,7 @@ export const getItem: ApiHandler = async (_req, res, ctx) => {
     },
     include: {
       auction: {
-        select: { bidderVisibility: true },
+        select: { bidderVisibility: true, endDate: true },
       },
     },
   });
@@ -142,7 +160,8 @@ export const getItem: ApiHandler = async (_req, res, ctx) => {
     itemId,
     ctx.session!.user.id,
     item.creator.id,
-    item.endDate ? new Date(item.endDate) : null,
+    item.endDate,
+    membership.auction.endDate,
   );
 
   res.status(200).json({
@@ -201,9 +220,10 @@ export const updateItem: ApiHandler = async (req, res, ctx) => {
       ? new Date(validatedBody.endDate)
       : null;
     const now = new Date();
-    const isItemEnded = item.endDate && item.endDate < now;
 
-    if (isItemEnded && newEndDate && newEndDate > now) {
+    if (
+      wouldReopenEndedItem(item.endDate, newEndDate, item.auction.endDate, now)
+    ) {
       throw new BadRequestError(
         "Cannot extend end date for an item that has already ended",
       );

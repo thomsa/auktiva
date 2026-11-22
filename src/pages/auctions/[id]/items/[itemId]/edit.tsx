@@ -15,6 +15,7 @@ import { useToast } from "@/components/ui/toast";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { withAuth } from "@/lib/auth/withAuth";
+import { isItemEnded as isItemEndedForAuction } from "@/utils/auction-helpers";
 
 interface Currency {
   code: string;
@@ -121,7 +122,7 @@ export default function EditItemPage({
     item.antiSnipeExtensionSeconds,
   );
 
-  const isItemEnded = !!(item.endDate && new Date(item.endDate) < new Date());
+  const isItemEnded = isItemEndedForAuction(item.endDate, auction.endDate);
   const auctionHasEndDate = !!auction.endDate;
   const canSetCustomEndDate = auction.itemEndMode === "CUSTOM";
 
@@ -152,7 +153,11 @@ export default function EditItemPage({
         }
       })(),
       bidderAnonymous: formData.get("bidderAnonymous") === "on",
-      endDate: (formData.get("endDate") as string) || null,
+      // An ended item keeps its end date: the field is locked, so leave the
+      // date out instead of sending an empty value that would clear it.
+      endDate: isItemEnded
+        ? undefined
+        : (formData.get("endDate") as string) || null,
       discussionsEnabled,
       isEditableByAdmin,
       antiSnipeEnabled,
@@ -620,9 +625,14 @@ export default function EditItemPage({
                   value={itemEndDate}
                   onChange={(e) => setItemEndDate(e.target.value)}
                   className="input input-bordered w-full bg-base-100 focus:bg-base-100 transition-colors"
-                  disabled={!canSetCustomEndDate}
+                  disabled={!canSetCustomEndDate || isItemEnded}
                 />
-                {canSetCustomEndDate ? (
+                {isItemEnded ? (
+                  <div className="mt-2 text-xs text-base-content/60 flex items-center gap-1.5">
+                    <span className="icon-[tabler--flag-filled] size-4"></span>
+                    <span>{t("endedMessage")}</span>
+                  </div>
+                ) : canSetCustomEndDate ? (
                   <label className="label">
                     <span className="label-text-alt text-base-content/60">
                       {tAuction("create.endDateHint")}

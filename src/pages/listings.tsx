@@ -11,7 +11,10 @@ import {
 import { SlidingSwitch } from "@/components/ui/sliding-switch";
 import { SkeletonListingsPage } from "@/components/ui/skeleton";
 import { useSortFilter } from "@/hooks/ui";
-import { isItemEnded } from "@/utils/auction-helpers";
+import {
+  getEffectiveItemEndDate,
+  isItemEnded,
+} from "@/utils/auction-helpers";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { useFormatters } from "@/i18n";
@@ -22,6 +25,7 @@ interface UserItem {
   name: string;
   auctionId: string;
   auctionName: string;
+  auctionEndDate: string | null;
   currencySymbol: string;
   startingBid: number;
   currentBid: number | null;
@@ -83,7 +87,9 @@ export default function ListingsPage({ user }: ListingsPageProps) {
   const activeItems = useMemo(
     () =>
       sortListings(
-        publishedItems.filter((item) => !isItemEnded(item.endDate)),
+        publishedItems.filter(
+          (item) => !isItemEnded(item.endDate, item.auctionEndDate),
+        ),
         activeSort,
       ),
     [publishedItems, activeSort],
@@ -92,7 +98,9 @@ export default function ListingsPage({ user }: ListingsPageProps) {
   const endedItems = useMemo(
     () =>
       sortListings(
-        publishedItems.filter((item) => isItemEnded(item.endDate)),
+        publishedItems.filter((item) =>
+          isItemEnded(item.endDate, item.auctionEndDate),
+        ),
         endedSort,
       ),
     [publishedItems, endedSort],
@@ -102,9 +110,12 @@ export default function ListingsPage({ user }: ListingsPageProps) {
   const justEndedItems = useMemo(
     () =>
       endedItems.filter((item) => {
-        if (!item.endDate) return false;
-        const endDate = new Date(item.endDate);
-        return endDate >= threeDaysAgo && item.bidCount > 0;
+        const effectiveEnd = getEffectiveItemEndDate(
+          item.endDate,
+          item.auctionEndDate,
+        );
+        if (!effectiveEnd) return false;
+        return new Date(effectiveEnd) >= threeDaysAgo && item.bidCount > 0;
       }),
     [endedItems, threeDaysAgo],
   );

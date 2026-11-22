@@ -318,6 +318,7 @@ export default function AuctionDetailPage({
                       key={item.id}
                       item={item}
                       auctionId={auction.id}
+                      auctionEndDate={auction.endDate}
                       userId={user.id}
                       isAdmin={isAdmin}
                     />
@@ -330,6 +331,7 @@ export default function AuctionDetailPage({
                       key={item.id}
                       item={item}
                       auctionId={auction.id}
+                      auctionEndDate={auction.endDate}
                       userId={user.id}
                       isAdmin={isAdmin}
                     />

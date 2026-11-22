@@ -755,15 +755,17 @@ export async function getItemBidsForDisplay(
 }
 
 /**
- * Get winner email for ended item (only for item owner)
+ * Get winner email for ended item (only for item owner). An item without
+ * its own end date ends with the auction.
  */
 export async function getItemWinnerEmail(
   itemId: string,
   viewerId: string,
   itemCreatorId: string,
-  itemEndDate: Date | null,
+  itemEndDate: Date | string | null,
+  auctionEndDate: Date | string | null,
 ): Promise<string | null> {
-  const isItemEnded = itemEndDate && itemEndDate < new Date();
+  const isItemEnded = isResultItemEnded(itemEndDate, auctionEndDate);
   const isItemOwner = itemCreatorId === viewerId;
 
   if (!isItemEnded || !isItemOwner) return null;
@@ -1064,12 +1066,15 @@ export function canBidOnItem(
 }
 
 /**
- * Check if item has ended
+ * Check if item has ended: its own end date wins, otherwise it ends with
+ * the auction (same rule as the bid API).
  */
-export function isItemEnded(endDate: Date | string | null): boolean {
-  if (!endDate) return false;
-  const date = typeof endDate === "string" ? new Date(endDate) : endDate;
-  return date < new Date();
+export function isItemEnded(
+  endDate: Date | string | null,
+  auctionEndDate: Date | string | null,
+  now: Date = new Date(),
+): boolean {
+  return isResultItemEnded(endDate, auctionEndDate, now);
 }
 
 /**
@@ -1374,6 +1379,7 @@ export async function getUserCreatedItems(userId: string) {
         select: {
           id: true,
           name: true,
+          endDate: true,
         },
       },
       currency: {
@@ -1409,6 +1415,7 @@ export async function getUserCreatedItems(userId: string) {
     name: item.name,
     auctionId: item.auction.id,
     auctionName: item.auction.name,
+    auctionEndDate: item.auction.endDate?.toISOString() ?? null,
     currencySymbol: item.currency.symbol,
     startingBid: item.startingBid,
     currentBid: item.bids[0]?.amount ?? null,

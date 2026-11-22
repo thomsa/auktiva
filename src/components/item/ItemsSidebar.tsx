@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { isItemEnded } from "@/utils/auction-helpers";
 import {
   SortDropdown,
   sidebarItemSortOptions,
@@ -29,6 +30,8 @@ export interface SidebarItem {
 interface ItemsSidebarProps {
   items: SidebarItem[];
   auctionId: string;
+  /** The auction's end date; items without their own end with it. */
+  auctionEndDate: string | null;
   currentItemId: string;
   userId: string;
   collapsed: boolean;
@@ -38,6 +41,7 @@ interface ItemsSidebarProps {
 export function ItemsSidebar({
   items,
   auctionId,
+  auctionEndDate,
   currentItemId,
   userId,
   collapsed,
@@ -82,6 +86,7 @@ export function ItemsSidebar({
                   key={item.id}
                   item={item}
                   auctionId={auctionId}
+                  auctionEndDate={auctionEndDate}
                   isActive={item.id === currentItemId}
                   userId={userId}
                 />
@@ -109,15 +114,17 @@ export function ItemsSidebar({
 function SidebarItemCard({
   item,
   auctionId,
+  auctionEndDate,
   isActive,
   userId,
 }: {
   item: SidebarItem;
   auctionId: string;
+  auctionEndDate: string | null;
   isActive: boolean;
   userId: string;
 }) {
-  const isEnded = item.endDate && new Date(item.endDate) < new Date();
+  const isEnded = isItemEnded(item.endDate, auctionEndDate);
   const isWinning = item.highestBidderId === userId;
   const isOutbid = item.userHasBid && !isWinning;
   const isOwnItem = item.creatorId === userId;
@@ -154,7 +161,7 @@ function SidebarItemCard({
             </div>
           )}
           <StatusBadge
-            isEnded={!!isEnded}
+            isEnded={isEnded}
             isWinning={isWinning}
             isOutbid={isOutbid}
           />

@@ -537,6 +537,7 @@ export default function ItemDetailPage({
           <ItemsSidebar
             items={auctionItems}
             auctionId={auction.id}
+            auctionEndDate={auction.endDate}
             currentItemId={initialItem.id}
             userId={user.id}
             collapsed={sidebarCollapsed}

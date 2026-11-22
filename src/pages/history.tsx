@@ -6,6 +6,7 @@ import { StatsCard, CurrencyStatsCard } from "@/components/ui/stats-card";
 import { SkeletonHistoryPage } from "@/components/ui/skeleton";
 import { formatDate } from "@/utils/formatters";
 import { getMessages, Locale } from "@/i18n";
+import { isItemEnded } from "@/utils/auction-helpers";
 import { useTranslations } from "next-intl";
 import { withAuth } from "@/lib/auth/withAuth";
 
@@ -26,6 +27,7 @@ interface BidHistory {
   auction: {
     id: string;
     name: string;
+    endDate: string | null;
   };
 }
 
@@ -168,8 +170,10 @@ export default function HistoryPage({ user }: HistoryPageProps) {
               {/* Mobile Card View */}
               <div className="space-y-3 md:hidden px-4 pb-4">
                 {bids.map((bid) => {
-                  const isEnded =
-                    bid.item.endDate && new Date(bid.item.endDate) < new Date();
+                  const isEnded = isItemEnded(
+                    bid.item.endDate,
+                    bid.auction.endDate,
+                  );
                   return (
                     <Link
                       key={bid.id}
@@ -250,9 +254,10 @@ export default function HistoryPage({ user }: HistoryPageProps) {
                   </thead>
                   <tbody>
                     {bids.map((bid) => {
-                      const isEnded =
-                        bid.item.endDate &&
-                        new Date(bid.item.endDate) < new Date();
+                      const isEnded = isItemEnded(
+                        bid.item.endDate,
+                        bid.auction.endDate,
+                      );
 
                       return (
                         <tr

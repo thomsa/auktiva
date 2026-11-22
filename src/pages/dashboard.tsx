@@ -46,6 +46,7 @@ interface BidItem {
   currencySymbol: string;
   auctionId: string;
   auctionName: string;
+  auctionEndDate: string | null;
   userHighestBid: number;
 }
 
@@ -67,6 +68,7 @@ interface UserItem {
   name: string;
   auctionId: string;
   auctionName: string;
+  auctionEndDate: string | null;
   currencySymbol: string;
   startingBid: number;
   currentBid: number | null;
@@ -94,7 +96,7 @@ interface DashboardProps {
 
 function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
   const t = useTranslations("status");
-  const ended = isItemEnded(item.endDate);
+  const ended = isItemEnded(item.endDate, item.auctionEndDate);
   const isWinning = item.highestBidderId === userId;
   const status = getBidStatus(isWinning, ended);
 
@@ -160,7 +162,7 @@ function BidItemCard({ item, userId }: { item: BidItem; userId: string }) {
 function UserItemCard({ item }: { item: UserItem }) {
   const t = useTranslations("dashboard");
   const tItem = useTranslations("item.edit");
-  const ended = isItemEnded(item.endDate);
+  const ended = isItemEnded(item.endDate, item.auctionEndDate);
   const isDraft = !item.isPublished;
 
   return (

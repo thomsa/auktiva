@@ -48,6 +48,8 @@ export interface UserBidItem {
   currencySymbol: string;
   auctionId: string;
   auctionName: string;
+  /** Items without their own end date end with the auction. */
+  auctionEndDate: string | null;
   userHighestBid: number;
 }
 
@@ -145,7 +147,7 @@ export async function getUserBidHistory(userId: string) {
         include: {
           currency: true,
           auction: {
-            select: { id: true, name: true },
+            select: { id: true, name: true, endDate: true },
           },
         },
       },
@@ -193,7 +195,11 @@ export async function getUserBidHistory(userId: string) {
           symbol: b.auctionItem.currency.symbol,
         },
       },
-      auction: b.auctionItem.auction,
+      auction: {
+        id: b.auctionItem.auction.id,
+        name: b.auctionItem.auction.name,
+        endDate: b.auctionItem.auction.endDate?.toISOString() ?? null,
+      },
     })),
     stats: {
       totalBids: bids.length,
@@ -215,7 +221,7 @@ export async function getUserBidItems(userId: string): Promise<UserBidItem[]> {
       auctionItem: {
         include: {
           currency: { select: { code: true, symbol: true } },
-          auction: { select: { id: true, name: true } },
+          auction: { select: { id: true, name: true, endDate: true } },
           images: {
             select: { url: true },
             orderBy: { order: "asc" },
@@ -254,6 +260,7 @@ export async function getUserBidItems(userId: string): Promise<UserBidItem[]> {
     currencySymbol: item.currency.symbol,
     auctionId: item.auction.id,
     auctionName: item.auction.name,
+    auctionEndDate: item.auction.endDate?.toISOString() ?? null,
     userHighestBid: item.userHighestBid,
   }));
 }
