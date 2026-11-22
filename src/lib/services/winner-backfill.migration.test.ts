@@ -37,13 +37,15 @@ before(async () => {
   ({ prisma } = await import("@/lib/prisma"));
   auctionEnd = await import("@/lib/services/auction-end.service");
 
+  // The backfill is a data-only UPDATE, so build the full current schema
+  // without it, seed rows, then run it on its own. Later migrations do not
+  // break this test.
   const migrations = listMigrations();
-  assert.equal(
-    migrations.at(-1),
-    BACKFILL,
-    "the backfill must be the latest migration",
+  assert.ok(migrations.includes(BACKFILL), "backfill migration missing");
+  await applyMigrations(
+    prisma,
+    migrations.filter((name) => name !== BACKFILL),
   );
-  await applyMigrations(prisma, migrations.slice(0, -1));
 
   await prisma.currency.create({
     data: { code: "EUR", name: "Euro", symbol: "€" },
