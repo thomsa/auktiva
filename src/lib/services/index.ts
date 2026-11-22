@@ -2,6 +2,7 @@
 // Business logic is centralized here for reuse across API handlers and getServerSideProps
 
 export * as auctionService from "./auction.service";
+export * as auctionReopenService from "./auction-reopen.service";
 export * as itemService from "./item.service";
 export * as bidService from "./bid.service";
 export * as memberService from "./member.service";

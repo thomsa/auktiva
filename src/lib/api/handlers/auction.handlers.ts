@@ -2,6 +2,8 @@ import type { ApiHandler } from "@/lib/api/types";
 import type { ValidatedRequest } from "@/lib/api/middleware";
 import { NotFoundError, BadRequestError } from "@/lib/api/errors";
 import * as auctionService from "@/lib/services/auction.service";
+import * as auctionReopenService from "@/lib/services/auction-reopen.service";
+import type { Auction } from "@/generated/prisma/client";
 import { z } from "zod";
 
 // ============================================================================
@@ -35,8 +37,24 @@ export const updateAuctionSchema = z.object({
   defaultAntiSnipeExtension: z.number().int().min(5).max(3600).optional(),
 });
 
+export const reopenSchema = z.object({
+  endDate: z.iso.datetime({ offset: true }).nullable(),
+  itemIds: z.array(z.string().min(1)).max(500),
+});
+
 export type CreateAuctionBody = z.infer<typeof createAuctionSchema>;
 export type UpdateAuctionBody = z.infer<typeof updateAuctionSchema>;
+export type ReopenAuctionBody = z.infer<typeof reopenSchema>;
+
+/** Serializes an auction's dates for JSON responses. */
+function serializeAuction(auction: Auction) {
+  return {
+    ...auction,
+    endDate: auction.endDate?.toISOString() || null,
+    createdAt: auction.createdAt.toISOString(),
+    updatedAt: auction.updatedAt.toISOString(),
+  };
+}
 
 // ============================================================================
 // Handlers
@@ -102,14 +120,10 @@ export const updateAuction: ApiHandler = async (req, res, ctx) => {
   const auction = await auctionService.updateAuction(
     ctx.params.id,
     validatedBody,
+    ctx.session!.user.id,
   );
 
-  res.status(200).json({
-    ...auction,
-    endDate: auction.endDate?.toISOString() || null,
-    createdAt: auction.createdAt.toISOString(),
-    updatedAt: auction.updatedAt.toISOString(),
-  });
+  res.status(200).json(serializeAuction(auction));
 };
 
 /**
@@ -129,5 +143,25 @@ export const closeAuction: ApiHandler = async (_req, res, ctx) => {
   res.status(200).json({
     message: "Auction closed successfully",
     ...result,
+  });
+};
+
+/**
+ * POST /api/auctions/[id]/reopen - Reopen bidding (owner only)
+ */
+export const reopenAuction: ApiHandler = async (req, res, ctx) => {
+  const { validatedBody } = req as ValidatedRequest<ReopenAuctionBody>;
+
+  const result = await auctionReopenService.reopenBidding({
+    auctionId: ctx.params.id,
+    actorId: ctx.session!.user.id,
+    endDate: validatedBody.endDate ? new Date(validatedBody.endDate) : null,
+    itemIds: validatedBody.itemIds,
+  });
+
+  res.status(200).json({
+    auction: serializeAuction(result.auction),
+    reopenedCount: result.reopenedCount,
+    notifiedCount: result.notifiedCount,
   });
 };

@@ -2,12 +2,13 @@ import { randomUUID } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { getPublicUrl } from "@/lib/storage";
 import { JoinMode, MemberRole } from "@/generated/prisma/enums";
-import type { Auction, AuctionMember } from "@/generated/prisma/client";
+import type { Auction, AuctionMember, Prisma } from "@/generated/prisma/client";
 import { canAutoJoin } from "@/utils/auction-helpers";
 import {
   buildAuctionResults,
   type AuctionResultsModel,
 } from "@/lib/results-summary";
+import { updateAuctionEndDate } from "./auction-reopen.service";
 
 // ============================================================================
 // Types
@@ -343,13 +344,19 @@ export async function createAuction(
 }
 
 /**
- * Update an auction
+ * Update an auction.
+ *
+ * An end date change goes through the reopen transition: items that follow
+ * the auction end and move from closed to open are handled as reopened (their
+ * bidders are notified and the next close notifies the winner again). Pass the
+ * acting user as `actorId` so they are not notified about their own change.
  */
 export async function updateAuction(
   auctionId: string,
   input: UpdateAuctionInput,
+  actorId?: string,
 ): Promise<Auction> {
-  const updateData: Record<string, unknown> = {};
+  const updateData: Prisma.AuctionUpdateInput = {};
 
   if (input.name !== undefined) updateData.name = input.name;
   if (input.description !== undefined)
@@ -361,9 +368,6 @@ export async function updateAuction(
     updateData.bidderVisibility = input.bidderVisibility;
   if (input.itemEndMode !== undefined)
     updateData.itemEndMode = input.itemEndMode;
-  if (input.endDate !== undefined) {
-    updateData.endDate = input.endDate ? new Date(input.endDate) : null;
-  }
   if (input.defaultItemsEditableByAdmin !== undefined) {
     updateData.defaultItemsEditableByAdmin = input.defaultItemsEditableByAdmin;
   }
@@ -375,6 +379,16 @@ export async function updateAuction(
   }
   if (input.defaultAntiSnipeExtension !== undefined) {
     updateData.defaultAntiSnipeExtension = input.defaultAntiSnipeExtension;
+  }
+
+  if (input.endDate !== undefined) {
+    const { auction } = await updateAuctionEndDate({
+      auctionId,
+      actorId: actorId ?? null,
+      endDate: input.endDate ? new Date(input.endDate) : null,
+      auctionData: updateData,
+    });
+    return auction;
   }
 
   return prisma.auction.update({

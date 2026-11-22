@@ -16,8 +16,10 @@ export * as discussionHandlers from "./discussion.handlers";
 export {
   createAuctionSchema,
   updateAuctionSchema,
+  reopenSchema,
   type CreateAuctionBody,
   type UpdateAuctionBody,
+  type ReopenAuctionBody,
 } from "./auction.handlers";
 
 export {
