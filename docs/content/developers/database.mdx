@@ -166,7 +166,7 @@ Reopening bidding sets `winnerNotified = false` on every item that goes from clo
 Two migrations come with this release:
 
 - `20261122170000_mark_past_null_dated_winners_notified` marks winners of items without their own end date in auctions that had already ended as notified. This stops a burst of late "won" notifications now that these items end with their auction.
-- `20261122180000_add_winner_notification_record` adds the three record columns. For items already marked as notified, it fills in the user and time from the item's latest `AUCTION_WON` notification, or the current highest bidder when that notification is gone. Items whose recorded winner is no longer the highest bidder become pending again.
+- `20261122180000_add_winner_notification_record` adds the three record columns. For items already marked as notified, it fills in the user and time from the item's latest `AUCTION_WON` notification, or the current highest bidder when that notification is gone. Items whose recorded winner is no longer the highest bidder become pending again, so the new winner is told once the item has ended. The exception is items whose effective end (their own end date, else the auction's) was more than 14 days before the upgrade. For those, the current highest bidder is recorded and nobody is messaged.
 
 See [Upgrading](/developers/upgrading) for how to apply them and what to check.
 

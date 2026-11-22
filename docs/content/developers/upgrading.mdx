@@ -58,6 +58,18 @@ then repair and verify.
 
 There are no new environment variables.
 
+<Callout type="info">
+  **For developers:** `20261122180000_add_winner_notification_record` was
+  changed before release to add the 14-day step. It was never tagged or on
+  `main`. A development or QA database that applied the earlier version
+  keeps its re-queued rows for items that ended more than 14 days ago. The
+  notifier's 14-day rule then records their winners without messaging
+  anyone, so nothing needs fixing. `prisma migrate dev` reports that the
+  applied migration was modified and offers to reset the database. Reset
+  it, or recreate it from the migrations. `npm run db:migrate:turso` does
+  not check for changes.
+</Callout>
+
 #### Behavior
 
 - **Items without their own end date end with their auction** everywhere:
@@ -125,7 +137,7 @@ v1.23.0 ships SQL files in `scripts/upgrade/v1.23.0/` and a runner for them:
 | File           | When                                               | Writes |
 | -------------- | -------------------------------------------------- | ------ |
 | `precheck.sql` | Before migrating: predicts what the upgrade does   | No     |
-| `repair.sql`   | After the v1.23.0 deploy: fixes winner records     | Yes    |
+| `repair.sql`   | After the v1.23.0 deploy: fixes what the window left | Yes  |
 | `verify.sql`   | After the repair: checks the result                | No     |
 | `backfill.sql` | Only if the schema was updated with `prisma db push` | Yes  |
 
@@ -156,7 +168,10 @@ changed or who will be messaged:
 | `winner_changed_recorded_over_14_days`  | The new winner is recorded, nobody is messaged                  |
 
 `notifyAfterDeploy` is the number of "You won" messages v1.23.0 sends right
-after the deploy. Check that number and the listed items before you migrate.
+after the deploy. `recordedAfterDeploy` counts items that are still pending,
+ended more than 14 days ago and have a highest bidder (usually none). v1.23.0
+records their winner on its first run without messaging anyone. Check both
+numbers and the listed items before you migrate.
 
 ### Runbook: Vercel and Turso
 
@@ -206,8 +221,27 @@ v1.23.0 deploy short (see [the window](#between-the-migration-and-the-deploy)).
      npm run db:migrate:turso
    ```
 
-   Expect `Applied: 2 new migration(s)`. Running it again prints
-   `Already applied` for both and changes nothing.
+   On a database last migrated for v1.22.0, expect
+   `Applied: 2 new migration(s)`. If you already deployed and migrated a
+   build from `main` that included
+   `20261122170000_mark_past_null_dated_winners_notified`, only
+   `20261122180000_add_winner_notification_record` is applied
+   (`Applied: 1`). Running it again prints `Already applied` and changes
+   nothing.
+
+   `db:migrate:turso` does not wrap a migration in a transaction. If
+   `20261122180000_add_winner_notification_record` fails partway, its
+   columns can exist with the records not filled in, and the migration is
+   not recorded as applied. Running `db:migrate:turso` again then stops
+   with `duplicate column name`. In that case run
+   `scripts/upgrade/v1.23.0/backfill.sql` with the runner, which repeats
+   the data steps in one transaction. If only some of the three columns
+   exist, first add the missing ones with the matching `ALTER TABLE` lines
+   from the migration file. Then record the migration:
+
+   ```bash
+   turso db shell <db-name> "INSERT INTO _prisma_migrations (id, migration_name) VALUES (lower(hex(randomblob(16))), '20261122180000_add_winner_notification_record')"
+   ```
 
 5. **Promote v1.23.0 immediately:**
 
@@ -228,8 +262,8 @@ v1.23.0 deploy short (see [the window](#between-the-migration-and-the-deploy)).
    turso db shell <db-name> "SELECT migration_name, applied_at FROM _prisma_migrations ORDER BY applied_at DESC LIMIT 2"
    ```
 
-   The repair is safe to run more than once. It reports `rows affected: 0`
-   when nothing needs fixing.
+   The repair is safe to run more than once. Each of its five statements
+   reports `rows affected: 0` when nothing needs fixing.
 
 ### Runbook: self-hosted
 
@@ -322,8 +356,9 @@ window described below.
 
 ### Between the migration and the deploy
 
-Until v1.23.0 serves all traffic, v1.22.0 keeps running its notifier on
-every notification poll, against the migrated database:
+This section assumes the version you are replacing is v1.22.0. Until
+v1.23.0 serves all traffic, v1.22.0 keeps running its notifier on every
+notification poll, against the migrated database:
 
 - **Items without their own end date:** v1.22.0 ignores them. v1.23.0
   notifies their winners after the deploy.
@@ -338,9 +373,17 @@ every notification poll, against the migrated database:
 - **Items that ended more than 14 days before the migration:** not queued
   again, so nobody gets a late message.
 - **Owners who extend an auction during the window** get the v1.22.0
-  behavior: winners are not notified again.
+  behavior: no winner flag is reset. If someone then outbids the winner of
+  an item that follows the auction, the item stays marked as notified for
+  the previous winner. `repair.sql` queues it again, and v1.23.0 tells the
+  new winner once the item has ended. If it ended more than 14 days ago,
+  the new winner is recorded and nobody is messaged.
 
-Nobody is messaged twice. `MAINTENANCE_MODE=true` does not close the
+The upgrade itself sends nobody a second message. As in v1.22.0, two
+notifier runs that overlap can still both message the same winner. This
+applies to two v1.22.0 polls at the same moment, or a v1.22.0 and a
+v1.23.0 poll around the promote, because v1.22.0 does not claim items
+before it sends. `MAINTENANCE_MODE=true` does not close the
 window. It does not apply to `/api` routes, so open tabs keep polling
 notifications and running the notifier. On Vercel, changing it also needs a
 new deployment. Keep the window short instead and run the repair.
