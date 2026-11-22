@@ -69,6 +69,7 @@ export function ReopenBiddingCard({
   const noEndId = `${fieldId}-no-end`;
   const itemsErrorId = `${fieldId}-items-error`;
   const followsId = `${fieldId}-follows`;
+  const followsNoteId = `${fieldId}-follows-note`;
   const selectAllRef = useRef<HTMLInputElement>(null);
 
   // Local time only exists in the browser, so the field and the item dates
@@ -387,6 +388,7 @@ export function ReopenBiddingCard({
                     <div
                       role="group"
                       aria-labelledby={followsId}
+                      aria-describedby={followsNoteId}
                       className="rounded-xl border border-base-content/10 bg-base-100 overflow-hidden"
                     >
                       <div className="flex items-start gap-3 px-3 py-2 min-h-11 border-b border-base-content/10 bg-base-200/40">
@@ -403,33 +405,45 @@ export function ReopenBiddingCard({
                               count: followingItems.length,
                             })}
                           </span>
-                          <span className="block text-xs text-base-content/60">
+                          <span
+                            id={followsNoteId}
+                            className="block text-xs text-base-content/60"
+                          >
                             {t("followsAuctionNote")}
                           </span>
                         </span>
                       </div>
 
-                      <ul className="max-h-80 overflow-y-auto divide-y divide-base-content/5">
-                        {followingItems.map((item) => (
-                          <li
-                            key={item.id}
-                            className="flex items-start gap-3 px-3 py-2.5"
-                          >
-                            <span
-                              className="icon-[tabler--check] size-5 text-info shrink-0"
-                              aria-hidden="true"
-                            ></span>
-                            <span className="flex-1 min-w-0">
-                              <span className="block text-sm font-medium break-words">
-                                {item.name}
+                      {/* No controls inside, so the scroll area itself takes
+                          focus to stay scrollable from the keyboard. */}
+                      <div
+                        role="region"
+                        aria-labelledby={followsId}
+                        tabIndex={0}
+                        className="max-h-80 overflow-y-auto focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-info"
+                      >
+                        <ul className="divide-y divide-base-content/5">
+                          {followingItems.map((item) => (
+                            <li
+                              key={item.id}
+                              className="flex items-start gap-3 px-3 py-2.5"
+                            >
+                              <span
+                                className="icon-[tabler--check] size-5 text-info shrink-0"
+                                aria-hidden="true"
+                              ></span>
+                              <span className="flex-1 min-w-0">
+                                <span className="block text-sm font-medium break-words">
+                                  {item.name}
+                                </span>
+                                <span className="block text-xs text-base-content/60">
+                                  {t("bidCount", { count: item.bidCount })}
+                                </span>
                               </span>
-                              <span className="block text-xs text-base-content/60">
-                                {t("bidCount", { count: item.bidCount })}
-                              </span>
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   )}
                 </div>
