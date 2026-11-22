@@ -52,7 +52,8 @@
     "signedInAs": "Zalogowany jako",
     "features": "Funkcje",
     "howItWorks": "Jak to działa",
-    "docs": "Dokumenty"
+    "docs": "Dokumenty",
+    "adminPanel": "Zarządzanie aukcjami"
   },
   "sort": {
     "newestFirst": "Najnowsze",

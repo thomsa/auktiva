@@ -6,14 +6,27 @@ import {
   BadRequestError,
 } from "@/lib/api/errors";
 import * as bidService from "@/lib/services/bid.service";
-import * as itemService from "@/lib/services/item.service";
 import * as auctionCurrencyService from "@/lib/services/auction-currency.service";
 import {
   normalizeBidValue,
   evaluateBidRules,
 } from "@/lib/services/auction-currency-rule.service";
+import { isResultItemEnded } from "@/lib/results-summary";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+
+/**
+ * Bidding is closed once the item's own end date has passed or, for an item
+ * without one, once the auction's end date has passed. This is the same rule
+ * the results page and the leave-auction check use.
+ */
+export function isBiddingClosed(
+  itemEndDate: Date | string | null,
+  auctionEndDate: Date | string | null,
+  now: Date = new Date(),
+): boolean {
+  return isResultItemEnded(itemEndDate, auctionEndDate, now);
+}
 
 // ============================================================================
 // Schemas
@@ -67,7 +80,7 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
     where: { id: itemId },
     include: {
       currency: true,
-      auction: { select: { bidderVisibility: true } },
+      auction: { select: { bidderVisibility: true, endDate: true } },
     },
   });
 
@@ -85,8 +98,8 @@ export const placeBid: ApiHandler = async (req, res, ctx) => {
     throw new ForbiddenError("You cannot bid on your own item");
   }
 
-  // Check if bidding has ended
-  if (itemService.isItemEnded(item.endDate)) {
+  // Check if bidding has ended (item end date, else the auction's)
+  if (isBiddingClosed(item.endDate, item.auction.endDate)) {
     throw new BadRequestError("Bidding has ended for this item");
   }
 

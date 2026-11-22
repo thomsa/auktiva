@@ -52,7 +52,8 @@
     "signedInAs": "Sesión iniciada como",
     "features": "Funcionalidades",
     "howItWorks": "Cómo funciona",
-    "docs": "Docs"
+    "docs": "Docs",
+    "adminPanel": "Administración de subastas"
   },
   "sort": {
     "newestFirst": "Más recientes primero",

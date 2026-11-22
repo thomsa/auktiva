@@ -6,7 +6,10 @@ import {
 } from "@/lib/api";
 import type { ApiHandler } from "@/lib/api";
 import { prisma } from "@/lib/prisma";
-import { formatAuctionBidDisplay } from "@/lib/currency-display";
+import {
+  auctionExportToCsv,
+  buildAuctionExport,
+} from "@/lib/auction-export";
 
 const exportAuction: ApiHandler = async (req, res, ctx) => {
   const auctionId = ctx.params.id;
@@ -16,14 +19,23 @@ const exportAuction: ApiHandler = async (req, res, ctx) => {
     where: { id: auctionId },
     include: {
       items: {
+        // Drafts are not part of the results.
+        where: { isPublished: true },
+        orderBy: { createdAt: "asc" },
         include: {
           currency: true,
+          images: {
+            orderBy: { order: "asc" },
+            take: 1,
+          },
           bids: {
             orderBy: { amount: "desc" },
+            take: 1,
             include: {
               currencyProfile: {
                 select: {
                   id: true,
+                  code: true,
                   symbol: true,
                   inputMode: true,
                   fractionMode: true,
@@ -35,6 +47,9 @@ const exportAuction: ApiHandler = async (req, res, ctx) => {
                 select: { id: true, name: true, email: true },
               },
             },
+          },
+          _count: {
+            select: { bids: true },
           },
         },
       },
@@ -52,95 +67,25 @@ const exportAuction: ApiHandler = async (req, res, ctx) => {
     throw new NotFoundError("Auction not found");
   }
 
-  // Prepare export data
-  const exportData = {
-    auction: {
-      id: auction.id,
-      name: auction.name,
-      description: auction.description,
-      endDate: auction.endDate?.toISOString() || null,
-      createdAt: auction.createdAt.toISOString(),
-    },
-    summary: {
-      totalItems: auction.items.length,
-      itemsWithBids: auction.items.filter((i) => i.bids.length > 0).length,
-      totalBids: auction.items.reduce((sum, i) => sum + i.bids.length, 0),
-      totalValue: auction.items.reduce(
-        (sum, i) => sum + (i.currentBid || 0),
-        0,
-      ),
-      memberCount: auction.members.length,
-    },
-    items: auction.items.map((item) => ({
-      id: item.id,
-      name: item.name,
-      description: item.description,
-      currency: item.currency.code,
-      currencySymbol: item.currency.symbol,
-      startingBid: item.startingBid,
-      currentBid: item.currentBid,
-      bidCount: item.bids.length,
-      winner: item.bids[0]
-        ? {
-            name: item.bids[0].user.name,
-            email: item.bids[0].user.email,
-            amount: item.bids[0].amount,
-            normalizedAmount: item.bids[0].normalizedAmount,
-            displayRepresentation: formatAuctionBidDisplay({
-              amount: item.bids[0].amount,
-              enteredRepresentation: item.bids[0].enteredRepresentation,
-              profile: item.bids[0].currencyProfile,
-              fallbackSymbol: item.currency.symbol,
-            }),
-          }
-        : null,
-      endDate: item.endDate?.toISOString() || null,
-    })),
-    members: auction.members.map((m) => ({
-      name: m.user.name,
-      email: m.user.email,
-      role: m.role,
-      joinedAt: m.joinedAt.toISOString(),
-    })),
-  };
+  // Only admins reach this handler (requireAdmin); the results page's rules
+  // for admins apply to winner names and emails.
+  const exportData = buildAuctionExport({
+    auction,
+    items: auction.items,
+    members: auction.members,
+    viewerId: ctx.session!.user.id,
+    isAdmin: true,
+  });
+
+  const fileBase = auction.name.replace(/[^a-z0-9]/gi, "_");
 
   if (format === "csv") {
-    // Generate CSV for items
-    const csvRows = [
-      [
-        "Item Name",
-        "Currency",
-        "Starting Bid",
-        "Winning Bid",
-        "Winning Bid Display",
-        "Winning Bid Normalized",
-        "Winner Name",
-        "Winner Email",
-        "Bid Count",
-      ].join(","),
-      ...exportData.items.map((item) =>
-        [
-          `"${item.name.replace(/"/g, '""')}"`,
-          item.currency,
-          item.startingBid,
-          item.currentBid || 0,
-          item.winner ? `"${item.winner.displayRepresentation}"` : "",
-          item.winner?.normalizedAmount ?? "",
-          item.winner
-            ? `"${(item.winner.name || "").replace(/"/g, '""')}"`
-            : "",
-          item.winner ? `"${item.winner.email}"` : "",
-          item.bidCount,
-        ].join(","),
-      ),
-    ];
-
     res.setHeader("Content-Type", "text/csv");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${auction.name.replace(/[^a-z0-9]/gi, "_")}_export.csv"`,
+      `attachment; filename="${fileBase}_export.csv"`,
     );
-    res.status(200).send(csvRows.join("\n"));
+    res.status(200).send(auctionExportToCsv(exportData));
     return;
   }
 
@@ -148,7 +93,7 @@ const exportAuction: ApiHandler = async (req, res, ctx) => {
   res.setHeader("Content-Type", "application/json");
   res.setHeader(
     "Content-Disposition",
-    `attachment; filename="${auction.name.replace(/[^a-z0-9]/gi, "_")}_export.json"`,
+    `attachment; filename="${fileBase}_export.json"`,
   );
   res.status(200).json(exportData);
 };

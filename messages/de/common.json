@@ -52,7 +52,8 @@
     "signedInAs": "Angemeldet als",
     "features": "Funktionen",
     "howItWorks": "Wie es funktioniert",
-    "docs": "Doku"
+    "docs": "Doku",
+    "adminPanel": "Auktionsverwaltung"
   },
   "sort": {
     "newestFirst": "Neueste zuerst",

@@ -52,7 +52,8 @@
     "signedInAs": "Bejelentkezve mint",
     "features": "Funkciók",
     "howItWorks": "Hogyan működik",
-    "docs": "Dokumentáció"
+    "docs": "Dokumentáció",
+    "adminPanel": "Aukciókezelés"
   },
   "sort": {
     "newestFirst": "Legújabb elöl",
