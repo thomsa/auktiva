@@ -84,7 +84,8 @@
       "creator": "Creator",
       "bidder": "Bidder",
       "open": "Open",
-      "left": "Left"
+      "left": "Left",
+      "owner": "Owner"
     },
     "empty": {
       "title": "No auctions yet",
@@ -234,6 +235,72 @@
       "or": "or",
       "createAccount": "Create Account",
       "poweredBy": "Powered by {appName}"
+    },
+    "viewToggle": {
+      "label": "Item view",
+      "grid": "Grid view",
+      "list": "List view"
+    },
+    "overview": {
+      "regionLabel": "Auction status",
+      "statusLabel": "Status",
+      "status": {
+        "live": "Live",
+        "ended": "Ended",
+        "open": "No end date",
+        "overtime": "Still open"
+      },
+      "timeLabel": "Time left",
+      "endedLabel": "Closed",
+      "countdown": {
+        "days": "{days}d {hours}h",
+        "hours": "{hours}h {minutes}m",
+        "minutes": "{minutes}m {seconds}s",
+        "seconds": "{seconds}s"
+      },
+      "timeLeft": "{time} left",
+      "endsOn": "Ends {date}",
+      "perItem": "Items end on their own dates",
+      "perItemDeadline": "All close by {date}",
+      "openOwner": "Runs until you close it",
+      "openOthers": "Runs until the organizer closes it",
+      "bidsLabel": "Bids",
+      "itemsWithBidsLabel": "Items with bids",
+      "itemsWithBids": "{withBids} of {total}",
+      "closeAuction": "Close auction",
+      "viewResults": "View results",
+      "manageLabel": "Manage auction",
+      "actions": {
+        "invite": "Invite",
+        "share": "Share link",
+        "linkCopied": "Copied!",
+        "members": "Members",
+        "settings": "Settings"
+      },
+      "close": {
+        "title": "Close the auction?",
+        "beatOnce": "Going once…",
+        "beatTwice": "Going twice…",
+        "beatSold": "Sold!",
+        "summaryLabel": "What closes",
+        "items": "{count, plural, =0 {No items to close} one {# item closes} other {# items close}}",
+        "winners": "{count, plural, =0 {No item has a bid, so no one wins} one {# with bids goes to its highest bidder} other {# with bids go to their highest bidders}}",
+        "unsold": "{count, plural, =0 {Nothing ends unsold} one {# without bids ends unsold} other {# without bids end unsold}}",
+        "drafts": "{count, plural, one {# of them is your unpublished draft} other {# of them are your unpublished drafts}}",
+        "hiddenDrafts": "{count, plural, one {# draft by another member also closes} other {# drafts by other members also close}}",
+        "irreversible": "Bidding ends on every item now. This can't be undone.",
+        "confirm": "Close auction",
+        "closing": "Closing…",
+        "success": "Sold! The auction is closed.",
+        "error": "The auction couldn't be closed. Please try again.",
+        "dismiss": "Dismiss",
+        "alreadyEnded": "Bidding has just ended on every item, so there's nothing left to close."
+      },
+      "deadlinePassed": "Auction deadline passed",
+      "itemsStillOpen": "{count, plural, one {# item still open} other {# items still open}}",
+      "noItemsYet": "No items yet",
+      "biddingLabel": "Bidding",
+      "deadlinePassedShort": "Deadline passed"
     }
   }
 }

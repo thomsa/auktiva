@@ -84,7 +84,8 @@
       "creator": "Twórca",
       "bidder": "Licytujący",
       "open": "Otwarta",
-      "left": "Opuszczona"
+      "left": "Opuszczona",
+      "owner": "Właściciel"
     },
     "empty": {
       "title": "Brak aukcji",
@@ -231,6 +232,72 @@
       "or": "lub",
       "createAccount": "Utwórz konto",
       "poweredBy": "Powered by {appName}"
+    },
+    "viewToggle": {
+      "label": "Widok przedmiotów",
+      "grid": "Widok siatki",
+      "list": "Widok listy"
+    },
+    "overview": {
+      "regionLabel": "Stan aukcji",
+      "statusLabel": "Stan",
+      "status": {
+        "live": "Trwa",
+        "ended": "Zakończona",
+        "open": "Bez daty końca",
+        "overtime": "Wciąż otwarta"
+      },
+      "timeLabel": "Pozostały czas",
+      "endedLabel": "Zamknięta",
+      "countdown": {
+        "days": "{days} dn. {hours} godz.",
+        "hours": "{hours} godz. {minutes} min",
+        "minutes": "{minutes} min {seconds} s",
+        "seconds": "{seconds} s"
+      },
+      "timeLeft": "Zostało {time}",
+      "endsOn": "Koniec {date}",
+      "perItem": "Przedmioty kończą się we własnych terminach",
+      "perItemDeadline": "Wszystkie kończą się do {date}",
+      "openOwner": "Trwa, dopóki jej nie zakończysz",
+      "openOthers": "Trwa, dopóki organizator jej nie zakończy",
+      "bidsLabel": "Oferty",
+      "itemsWithBidsLabel": "Przedmioty z ofertami",
+      "itemsWithBids": "{withBids} z {total}",
+      "closeAuction": "Zakończ aukcję",
+      "viewResults": "Zobacz wyniki",
+      "manageLabel": "Zarządzaj aukcją",
+      "actions": {
+        "invite": "Zaproś",
+        "share": "Udostępnij",
+        "linkCopied": "Skopiowano!",
+        "members": "Członkowie",
+        "settings": "Ustawienia"
+      },
+      "close": {
+        "title": "Zakończyć aukcję?",
+        "beatOnce": "Po raz pierwszy…",
+        "beatTwice": "Po raz drugi…",
+        "beatSold": "Sprzedane!",
+        "summaryLabel": "Co się zamyka",
+        "items": "{count, plural, =0 {Brak przedmiotów do zamknięcia} one {Zamyka się # przedmiot} few {Zamykają się # przedmioty} many {Zamyka się # przedmiotów} other {Zamyka się # przedmiotu}}",
+        "winners": "{count, plural, =0 {Żaden przedmiot nie ma ofert, więc nikt nie wygrywa} one {# z ofertami trafia do najwyższego licytującego} few {# z ofertami trafiają do najwyższych licytujących} many {# z ofertami trafia do najwyższych licytujących} other {# z ofertami trafia do najwyższych licytujących}}",
+        "unsold": "{count, plural, =0 {Nic nie zostaje niesprzedane} one {# bez ofert zostaje niesprzedany} few {# bez ofert zostają niesprzedane} many {# bez ofert zostaje niesprzedanych} other {# bez ofert zostaje niesprzedanych}}",
+        "drafts": "{count, plural, one {# z nich to Twój nieopublikowany szkic} few {# z nich to Twoje nieopublikowane szkice} many {# z nich to Twoje nieopublikowane szkice} other {# z nich to Twoje nieopublikowane szkice}}",
+        "hiddenDrafts": "{count, plural, one {Zamyka się też # szkic innego członka} few {Zamykają się też # szkice innych członków} many {Zamyka się też # szkiców innych członków} other {Zamyka się też # szkicu innych członków}}",
+        "irreversible": "Licytacja kończy się teraz dla wszystkich przedmiotów. Tego nie można cofnąć.",
+        "confirm": "Zakończ aukcję",
+        "closing": "Kończenie…",
+        "success": "Sprzedane! Aukcja została zakończona.",
+        "error": "Nie udało się zakończyć aukcji. Spróbuj ponownie.",
+        "dismiss": "Zamknij",
+        "alreadyEnded": "Licytacja właśnie zakończyła się dla wszystkich przedmiotów, więc nie ma już czego zamykać."
+      },
+      "deadlinePassed": "Termin aukcji minął",
+      "itemsStillOpen": "{count, plural, one {# przedmiot wciąż otwarty} few {# przedmioty wciąż otwarte} many {# przedmiotów wciąż otwartych} other {# przedmiotu wciąż otwartego}}",
+      "noItemsYet": "Brak przedmiotów",
+      "biddingLabel": "Licytacja",
+      "deadlinePassedShort": "Termin minął"
     }
   }
 }

@@ -4,8 +4,8 @@ import { useTranslations } from "next-intl";
 import { isAuctionEnded } from "@/utils/auction-helpers";
 import { useFormatters } from "@/i18n";
 import { RichTextRenderer } from "@/components/ui/rich-text-editor";
-import { useToast } from "@/components/ui/toast";
 import { QuitAuctionModal } from "@/components/auction/QuitAuctionModal";
+import { useAuctionShareLink } from "./useAuctionShareLink";
 
 interface AuctionSidebarProps {
   auction: {
@@ -29,50 +29,60 @@ interface AuctionSidebarProps {
   membership: {
     role: string;
   };
+  /** Items the viewer can see (published plus their own drafts), as listed. */
+  visibleItemCount: number;
+  /**
+   * The overview header carries the organizer actions: View results at every
+   * width, and Invite, Share, Members and Settings below lg.
+   */
+  actionsInHeader?: boolean;
+  /**
+   * Whether bidding has ended, as the overview header derives it from the
+   * items (an item can run past the auction's own deadline). Falls back to
+   * the auction's end date.
+   */
+  isEnded?: boolean;
+  /**
+   * The auction's own deadline passed while some items still take bids
+   * (overtime), so the date is history rather than something ahead.
+   */
+  deadlinePassed?: boolean;
+  /**
+   * When bidding really ended (the latest item end), shown instead of the
+   * auction's own deadline once it has ended, to match the header.
+   */
+  endedAt?: string | null;
 }
 
-export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
-  const [copied, setCopied] = useState(false);
+export function AuctionSidebar({
+  auction,
+  membership,
+  visibleItemCount,
+  actionsInHeader = false,
+  isEnded,
+  deadlinePassed = false,
+  endedAt = null,
+}: AuctionSidebarProps) {
   const [showQuitModal, setShowQuitModal] = useState(false);
-  const { showToast } = useToast();
+  const { copied, copyShareLink } = useAuctionShareLink(auction.id);
   const t = useTranslations("auction");
   const tRoles = useTranslations("auction.roles");
   const tJoinModes = useTranslations("auction.joinModes");
   const tVisibilities = useTranslations("auction.create"); // Reusing from create form translations
   const { formatShortDate } = useFormatters();
-  const ended = isAuctionEnded(auction.endDate);
+  const ended = isEnded ?? isAuctionEnded(auction.endDate);
   const isOwner = membership.role === "OWNER";
   const isAdmin = membership.role === "ADMIN" || isOwner;
-  const canCreateItems = isAdmin || membership.role === "CREATOR";
   const canInvite = isAdmin || auction.memberCanInvite;
   const isShareable =
     auction.joinMode === "FREE" || auction.joinMode === "LINK";
 
-  const handleCopyShareLink = async () => {
-    const shareUrl = `${window.location.origin}/a/${auction.id}`;
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      showToast(t("sidebar.linkCopied"), "success");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback for older browsers
-      const textArea = document.createElement("textarea");
-      textArea.value = shareUrl;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-      setCopied(true);
-      showToast(t("sidebar.linkCopied"), "success");
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
   const roleKey = membership.role.toLowerCase();
   const roleLabel = ["admin", "creator", "bidder", "owner"].includes(roleKey)
-    ? tRoles(roleKey === "owner" ? "admin" : roleKey)
+    ? tRoles(roleKey)
     : membership.role;
+  // Actions the header already shows below lg are hidden here at those widths.
+  const belowLgInHeader = actionsInHeader ? "max-lg:hidden" : "";
 
   // Map enum values to translation keys
   const getJoinModeLabel = (mode: string) => {
@@ -150,7 +160,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                 {t("sidebar.items")}
               </span>
               <span className="font-bold text-base-content">
-                {auction._count.items}
+                {visibleItemCount}
               </span>
             </div>
             <div className="flex justify-between items-center text-sm">
@@ -165,15 +175,29 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
             {auction.endDate && (
               <div className="flex justify-between items-center text-sm">
                 <span className="text-base-content/60 flex items-center gap-2">
-                  <span className="icon-[tabler--clock] size-4"></span>
-                  {t("card.ends")}
+                  <span
+                    className={`size-4 ${
+                      deadlinePassed && !ended
+                        ? "icon-[tabler--clock-off]"
+                        : "icon-[tabler--clock]"
+                    }`}
+                  ></span>
+                  {deadlinePassed && !ended
+                    ? t("overview.deadlinePassedShort")
+                    : t("card.ends")}
                 </span>
                 <span
                   className={`font-medium ${
-                    ended ? "text-error" : "text-primary"
+                    ended
+                      ? "text-error"
+                      : deadlinePassed
+                        ? "text-base-content/50"
+                        : "text-primary"
                   }`}
                 >
-                  {formatShortDate(auction.endDate)}
+                  {formatShortDate(
+                    ended && endedAt ? endedAt : auction.endDate,
+                  )}
                 </span>
               </div>
             )}
@@ -189,27 +213,22 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-lg">
+      {/* Quick Actions (Add Item lives in the items toolbar) */}
+      <div
+        className={`card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-lg ${
+          actionsInHeader && isOwner ? "max-lg:hidden" : ""
+        }`}
+      >
         <div className="card-body p-5">
           <h3 className="font-bold text-sm uppercase tracking-wider text-base-content/40 mb-3 flex items-center gap-2">
             <span className="icon-[tabler--bolt] size-4"></span>
             {t("sidebar.quickActions")}
           </h3>
           <div className="space-y-2">
-            {canCreateItems && (
-              <Link
-                href={`/auctions/${auction.id}/items/create`}
-                className="btn btn-primary btn-sm btn-block justify-start shadow-sm shadow-primary/20"
-              >
-                <span className="icon-[tabler--plus] size-4"></span>
-                {t("sidebar.addItem")}
-              </Link>
-            )}
             {canInvite && (
               <Link
                 href={`/auctions/${auction.id}/invite`}
-                className="btn btn-outline btn-sm btn-block justify-start border-base-content/10 hover:bg-base-200 hover:border-base-content/20 text-base-content"
+                className={`btn btn-outline btn-sm btn-block justify-start border-base-content/10 hover:bg-base-200 hover:border-base-content/20 text-base-content ${belowLgInHeader}`}
               >
                 <span className="icon-[tabler--user-plus] size-4"></span>
                 {t("sidebar.invitePeople")}
@@ -217,8 +236,8 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
             )}
             {isShareable && (
               <button
-                onClick={handleCopyShareLink}
-                className="btn btn-outline btn-sm btn-block justify-start border-base-content/10 hover:bg-base-200 hover:border-base-content/20 text-base-content"
+                onClick={copyShareLink}
+                className={`btn btn-outline btn-sm btn-block justify-start border-base-content/10 hover:bg-base-200 hover:border-base-content/20 text-base-content ${belowLgInHeader}`}
               >
                 <span
                   className={`size-4 ${
@@ -228,13 +247,15 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
                 {copied ? t("sidebar.linkCopied") : t("sidebar.shareAuction")}
               </button>
             )}
-            <Link
-              href={`/auctions/${auction.id}/results`}
-              className="btn btn-ghost btn-sm btn-block justify-start hover:bg-base-content/5"
-            >
-              <span className="icon-[tabler--trophy] size-4"></span>
-              {t("sidebar.results")}
-            </Link>
+            {!actionsInHeader && (
+              <Link
+                href={`/auctions/${auction.id}/results`}
+                className="btn btn-ghost btn-sm btn-block justify-start hover:bg-base-content/5"
+              >
+                <span className="icon-[tabler--trophy] size-4"></span>
+                {t("sidebar.results")}
+              </Link>
+            )}
             {!isOwner && (
               <button
                 onClick={() => setShowQuitModal(true)}
@@ -256,7 +277,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
               <span className="icon-[tabler--settings] size-4"></span>
               {t("sidebar.manage")}
             </h3>
-            <div className="space-y-2">
+            <div className={`space-y-2 ${belowLgInHeader}`}>
               <Link
                 href={`/auctions/${auction.id}/members`}
                 className="btn btn-ghost btn-sm btn-block justify-start hover:bg-base-content/5"
@@ -275,7 +296,7 @@ export function AuctionSidebar({ auction, membership }: AuctionSidebarProps) {
               )}
             </div>
 
-            <div className="divider my-2 opacity-50"></div>
+            <div className={`divider my-2 opacity-50 ${belowLgInHeader}`}></div>
 
             <div className="space-y-2.5">
               <div className="flex justify-between items-center text-xs">

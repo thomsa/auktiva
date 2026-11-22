@@ -84,7 +84,8 @@
       "creator": "Ersteller",
       "bidder": "Bieter",
       "open": "Offen",
-      "left": "Verlassen"
+      "left": "Verlassen",
+      "owner": "Inhaber"
     },
     "empty": {
       "title": "Noch keine Auktionen",
@@ -231,6 +232,72 @@
       "or": "oder",
       "createAccount": "Konto erstellen",
       "poweredBy": "Powered by {appName}"
+    },
+    "viewToggle": {
+      "label": "Artikelansicht",
+      "grid": "Rasteransicht",
+      "list": "Listenansicht"
+    },
+    "overview": {
+      "regionLabel": "Auktionsstatus",
+      "statusLabel": "Status",
+      "status": {
+        "live": "Läuft",
+        "ended": "Beendet",
+        "open": "Kein Enddatum",
+        "overtime": "Noch offen"
+      },
+      "timeLabel": "Restzeit",
+      "endedLabel": "Beendet",
+      "countdown": {
+        "days": "{days} T. {hours} Std.",
+        "hours": "{hours} Std. {minutes} Min.",
+        "minutes": "{minutes} Min. {seconds} Sek.",
+        "seconds": "{seconds} Sek."
+      },
+      "timeLeft": "noch {time}",
+      "endsOn": "Endet am {date}",
+      "perItem": "Artikel enden zu eigenen Terminen",
+      "perItemDeadline": "Alle enden bis {date}",
+      "openOwner": "Läuft, bis du sie beendest",
+      "openOthers": "Läuft, bis die Organisation sie beendet",
+      "bidsLabel": "Gebote",
+      "itemsWithBidsLabel": "Artikel mit Geboten",
+      "itemsWithBids": "{withBids} von {total}",
+      "closeAuction": "Auktion beenden",
+      "viewResults": "Ergebnisse ansehen",
+      "manageLabel": "Auktion verwalten",
+      "actions": {
+        "invite": "Einladen",
+        "share": "Link teilen",
+        "linkCopied": "Kopiert!",
+        "members": "Mitglieder",
+        "settings": "Einstellungen"
+      },
+      "close": {
+        "title": "Auktion jetzt beenden?",
+        "beatOnce": "Zum Ersten…",
+        "beatTwice": "Zum Zweiten…",
+        "beatSold": "Verkauft!",
+        "summaryLabel": "Was beendet wird",
+        "items": "{count, plural, =0 {Keine Artikel zu beenden} one {# Artikel wird beendet} other {# Artikel werden beendet}}",
+        "winners": "{count, plural, =0 {Kein Artikel hat ein Gebot, also gewinnt niemand} one {# mit Geboten geht an den Höchstbietenden} other {# mit Geboten gehen an die Höchstbietenden}}",
+        "unsold": "{count, plural, =0 {Nichts bleibt unverkauft} one {# ohne Gebote bleibt unverkauft} other {# ohne Gebote bleiben unverkauft}}",
+        "drafts": "{count, plural, one {Davon ist # dein unveröffentlichter Entwurf} other {Davon sind # deine unveröffentlichten Entwürfe}}",
+        "hiddenDrafts": "{count, plural, one {# Entwurf eines anderen Mitglieds wird ebenfalls beendet} other {# Entwürfe anderer Mitglieder werden ebenfalls beendet}}",
+        "irreversible": "Das Bieten endet jetzt für alle Artikel. Das lässt sich nicht rückgängig machen.",
+        "confirm": "Auktion beenden",
+        "closing": "Wird beendet…",
+        "success": "Verkauft! Die Auktion ist beendet.",
+        "error": "Die Auktion konnte nicht beendet werden. Bitte versuche es erneut.",
+        "dismiss": "Schließen",
+        "alreadyEnded": "Das Bieten ist gerade für alle Artikel zu Ende gegangen. Es gibt nichts mehr zu beenden."
+      },
+      "deadlinePassed": "Auktionsende überschritten",
+      "itemsStillOpen": "{count, plural, one {# Artikel noch offen} other {# Artikel noch offen}}",
+      "noItemsYet": "Noch keine Artikel",
+      "biddingLabel": "Bieten",
+      "deadlinePassedShort": "Frist abgelaufen"
     }
   }
 }

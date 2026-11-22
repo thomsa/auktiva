@@ -84,7 +84,8 @@
       "creator": "Creador",
       "bidder": "Pujador",
       "open": "Abierto",
-      "left": "Abandonada"
+      "left": "Abandonada",
+      "owner": "Propietario"
     },
     "empty": {
       "title": "No hay subastas aún",
@@ -231,6 +232,72 @@
       "or": "o",
       "createAccount": "Crear Cuenta",
       "poweredBy": "Powered by {appName}"
+    },
+    "viewToggle": {
+      "label": "Vista de artículos",
+      "grid": "Vista de cuadrícula",
+      "list": "Vista de lista"
+    },
+    "overview": {
+      "regionLabel": "Estado de la subasta",
+      "statusLabel": "Estado",
+      "status": {
+        "live": "En curso",
+        "ended": "Finalizada",
+        "open": "Sin fecha de fin",
+        "overtime": "Aún abierta"
+      },
+      "timeLabel": "Tiempo restante",
+      "endedLabel": "Cerrada",
+      "countdown": {
+        "days": "{days} d {hours} h",
+        "hours": "{hours} h {minutes} min",
+        "minutes": "{minutes} min {seconds} s",
+        "seconds": "{seconds} s"
+      },
+      "timeLeft": "Quedan {time}",
+      "endsOn": "Termina el {date}",
+      "perItem": "Cada artículo termina en su propia fecha",
+      "perItemDeadline": "Todos cierran antes del {date}",
+      "openOwner": "Sigue abierta hasta que la cierres",
+      "openOthers": "Sigue abierta hasta que la organización la cierre",
+      "bidsLabel": "Pujas",
+      "itemsWithBidsLabel": "Artículos con pujas",
+      "itemsWithBids": "{withBids} de {total}",
+      "closeAuction": "Finalizar subasta",
+      "viewResults": "Ver resultados",
+      "manageLabel": "Gestionar la subasta",
+      "actions": {
+        "invite": "Invitar",
+        "share": "Compartir",
+        "linkCopied": "¡Copiado!",
+        "members": "Miembros",
+        "settings": "Ajustes"
+      },
+      "close": {
+        "title": "¿Finalizar la subasta?",
+        "beatOnce": "A la una…",
+        "beatTwice": "A las dos…",
+        "beatSold": "¡Vendido!",
+        "summaryLabel": "Qué se cierra",
+        "items": "{count, plural, =0 {No hay artículos que cerrar} one {Se cierra # artículo} other {Se cierran # artículos}}",
+        "winners": "{count, plural, =0 {Ningún artículo tiene pujas, así que nadie gana} one {# con pujas va a su mejor postor} other {# con pujas van a sus mejores postores}}",
+        "unsold": "{count, plural, =0 {Nada queda sin vender} one {# sin pujas queda sin vender} other {# sin pujas quedan sin vender}}",
+        "drafts": "{count, plural, one {# de ellos es tu borrador sin publicar} other {# de ellos son tus borradores sin publicar}}",
+        "hiddenDrafts": "{count, plural, one {También se cierra # borrador de otro miembro} other {También se cierran # borradores de otros miembros}}",
+        "irreversible": "Las pujas terminan ahora en todos los artículos. Esto no se puede deshacer.",
+        "confirm": "Finalizar subasta",
+        "closing": "Finalizando…",
+        "success": "¡Vendido! La subasta ha finalizado.",
+        "error": "No se pudo finalizar la subasta. Inténtalo de nuevo.",
+        "dismiss": "Cerrar",
+        "alreadyEnded": "Las pujas acaban de terminar en todos los artículos, así que no queda nada por cerrar."
+      },
+      "deadlinePassed": "Plazo de la subasta vencido",
+      "itemsStillOpen": "{count, plural, one {# artículo sigue abierto} other {# artículos siguen abiertos}}",
+      "noItemsYet": "Aún no hay artículos",
+      "biddingLabel": "Pujas abiertas",
+      "deadlinePassedShort": "Plazo vencido"
     }
   }
 }

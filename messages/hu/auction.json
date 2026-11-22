@@ -84,7 +84,8 @@
       "creator": "Szervező",
       "bidder": "Licitáló",
       "open": "Nyílt",
-      "left": "Kilépett"
+      "left": "Kilépett",
+      "owner": "Tulajdonos"
     },
     "empty": {
       "title": "Még nincsenek aukciók",
@@ -231,6 +232,72 @@
       "or": "vagy",
       "createAccount": "Fiók létrehozása",
       "poweredBy": "Üzemelteti: {appName}"
+    },
+    "viewToggle": {
+      "label": "Tételnézet",
+      "grid": "Rácsnézet",
+      "list": "Listanézet"
+    },
+    "overview": {
+      "regionLabel": "Aukció állapota",
+      "statusLabel": "Állapot",
+      "status": {
+        "live": "Folyamatban",
+        "ended": "Lezárult",
+        "open": "Nincs záró időpont",
+        "overtime": "Még nyitott"
+      },
+      "timeLabel": "Hátralévő idő",
+      "endedLabel": "Lezárva",
+      "countdown": {
+        "days": "{days} n {hours} ó",
+        "hours": "{hours} ó {minutes} p",
+        "minutes": "{minutes} p {seconds} mp",
+        "seconds": "{seconds} mp"
+      },
+      "timeLeft": "Még {time}",
+      "endsOn": "Zárul: {date}",
+      "perItem": "A tételek saját időpontban zárulnak",
+      "perItemDeadline": "Mind lezárul eddig: {date}",
+      "openOwner": "Addig fut, amíg le nem zárod",
+      "openOthers": "Addig fut, amíg a szervező le nem zárja",
+      "bidsLabel": "Licitek",
+      "itemsWithBidsLabel": "Licitált tételek",
+      "itemsWithBids": "{withBids} / {total}",
+      "closeAuction": "Aukció lezárása",
+      "viewResults": "Eredmények",
+      "manageLabel": "Aukció kezelése",
+      "actions": {
+        "invite": "Meghívás",
+        "share": "Megosztás",
+        "linkCopied": "Másolva!",
+        "members": "Tagok",
+        "settings": "Beállítások"
+      },
+      "close": {
+        "title": "Lezárod az aukciót?",
+        "beatOnce": "Először…",
+        "beatTwice": "Másodszor…",
+        "beatSold": "Eladva!",
+        "summaryLabel": "Mi zárul le",
+        "items": "{count, plural, =0 {Nincs lezárandó tétel} one {# tétel zárul le} other {# tétel zárul le}}",
+        "winners": "{count, plural, =0 {Egyik tételre sincs licit, így senki sem nyer} one {# licitált tétel a legmagasabb licitálóé lesz} other {# licitált tétel a legmagasabb licitálóké lesz}}",
+        "unsold": "{count, plural, =0 {Egy tétel sem marad eladatlan} one {# licit nélküli tétel eladatlan marad} other {# licit nélküli tétel eladatlan marad}}",
+        "drafts": "{count, plural, one {Ebből # a saját, még nem közzétett piszkozatod} other {Ebből # a saját, még nem közzétett piszkozatod}}",
+        "hiddenDrafts": "{count, plural, one {Más tagok # piszkozata is lezárul} other {Más tagok # piszkozata is lezárul}}",
+        "irreversible": "A licitálás most minden tételen véget ér. Ez nem vonható vissza.",
+        "confirm": "Aukció lezárása",
+        "closing": "Lezárás…",
+        "success": "Eladva! Az aukció lezárult.",
+        "error": "Nem sikerült lezárni az aukciót. Próbáld újra.",
+        "dismiss": "Bezárás",
+        "alreadyEnded": "A licitálás épp most ért véget minden tételen, így nincs mit lezárni."
+      },
+      "deadlinePassed": "Az aukció határideje lejárt",
+      "itemsStillOpen": "{count, plural, one {# tétel még nyitott} other {# tétel még nyitott}}",
+      "noItemsYet": "Még nincs tétel",
+      "biddingLabel": "Licitálás",
+      "deadlinePassedShort": "Határidő lejárt"
     }
   }
 }

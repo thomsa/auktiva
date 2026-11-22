@@ -11,7 +11,8 @@ import {
   PENDING_AUCTION_ARRIVAL_PARAM,
 } from "@/lib/services/pending-auction.service";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
-import { AuctionSidebar } from "@/components/auction";
+import { AuctionOverviewHeader, AuctionSidebar } from "@/components/auction";
+import type { AuctionPhase } from "@/lib/auction-overview";
 import { ItemCard, ItemListItem } from "@/components/item";
 import { ChristmasScene } from "@/components/seasonal/ChristmasDecor";
 import { SkeletonAuctionPage } from "@/components/ui/skeleton";
@@ -24,6 +25,7 @@ import { useSortFilter, usePollingInterval } from "@/hooks/ui";
 import { withAuth } from "@/lib/auth/withAuth";
 import {
   canAutoJoin,
+  isAuctionEnded,
   isUserAdmin,
   canUserCreateItems,
 } from "@/utils/auction-helpers";
@@ -62,6 +64,7 @@ interface Item {
   endDate: string | null;
   createdAt: string;
   creatorId: string;
+  isPublished: boolean;
   thumbnailUrl: string | null;
   highestBidderId: string | null;
   userHasBid: boolean;
@@ -104,12 +107,19 @@ export default function AuctionDetailPage({
   const viewMode = (router.query.view as "grid" | "list") || "grid";
   const [rejoining, setRejoining] = useState(false);
   const [rejoinError, setRejoinError] = useState<string | null>(null);
+  // The header's live phase, tagged with the auction and end date it was
+  // computed for, so an extended or different auction never reuses it.
+  const [overviewPhase, setOverviewPhase] = useState<{
+    key: string;
+    phase: AuctionPhase;
+    endedAt: number | null;
+  } | null>(null);
 
   // Use high priority for auction detail page, pauses when tab hidden
   const refreshInterval = usePollingInterval({ priority: "high" });
 
   // Client-side data fetching with polling for live bid updates
-  const { data, isLoading } = useSWR<AuctionDetailsData>(
+  const { data, isLoading, mutate } = useSWR<AuctionDetailsData>(
     hasLeft ? null : `/api/auctions/${auctionId}/details`,
     fetcher,
     {
@@ -203,6 +213,31 @@ export default function AuctionDetailPage({
 
   const isAdmin = isUserAdmin(membership!.role);
   const canCreate = canUserCreateItems(membership!.role);
+  // The header's "Close auction" is the page's one solid primary while it shows.
+  const phaseKey = `${auctionId}|${auction?.endDate ?? ""}`;
+  const knownPhase =
+    overviewPhase?.key === phaseKey ? overviewPhase.phase : null;
+  const ownerCanClose =
+    membership!.role === "OWNER" &&
+    (knownPhase
+      ? knownPhase !== "ended"
+      : !isAuctionEnded(auction?.endDate ?? null));
+  const knownEndedAt =
+    overviewPhase?.key === phaseKey && overviewPhase.endedAt !== null
+      ? new Date(overviewPhase.endedAt).toISOString()
+      : null;
+  const handlePhaseChange = (phase: AuctionPhase, endedAt: number | null) => {
+    setOverviewPhase({ key: phaseKey, phase, endedAt });
+  };
+  const handleDeadlineReached = () => {
+    void mutate();
+  };
+
+  // The view toggle is a pressed state, not a primary action: neutral fills.
+  const toggleOn =
+    "border-base-content/15 bg-base-content/10 text-base-content hover:bg-base-content/15";
+  const toggleOff =
+    "btn-ghost bg-base-200/50 text-base-content/60 hover:text-base-content";
 
   // Show skeleton while loading
   if (isLoading || !auction) {
@@ -231,6 +266,13 @@ export default function AuctionDetailPage({
             {auction.name}
           </h1>
         </div>
+        <AuctionOverviewHeader
+          auction={auction}
+          items={items}
+          role={membership!.role}
+          onDeadlineReached={handleDeadlineReached}
+          onPhaseChange={handlePhaseChange}
+        />
       </div>
 
       <div className="christmas-detail-columns flex flex-col lg:flex-row gap-8">
@@ -252,34 +294,51 @@ export default function AuctionDetailPage({
                     options={itemSortOptions}
                     currentSort={currentSort}
                   />
-                  <div className="join shadow-sm">
+                  <div
+                    className="join shadow-sm"
+                    role="group"
+                    aria-label={t("viewToggle.label")}
+                  >
                     <button
+                      type="button"
                       className={`btn btn-sm join-item ${
-                        viewMode === "grid"
-                          ? "btn-active btn-primary"
-                          : "btn-ghost bg-base-200/50"
+                        viewMode === "grid" ? toggleOn : toggleOff
                       }`}
                       onClick={() => setViewMode("grid")}
-                      title="Grid view"
+                      title={t("viewToggle.grid")}
+                      aria-label={t("viewToggle.grid")}
+                      aria-pressed={viewMode === "grid"}
                     >
-                      <span className="icon-[tabler--layout-grid] size-4"></span>
+                      <span
+                        className="icon-[tabler--layout-grid] size-4"
+                        aria-hidden="true"
+                      ></span>
                     </button>
                     <button
+                      type="button"
                       className={`btn btn-sm join-item ${
-                        viewMode === "list"
-                          ? "btn-active btn-primary"
-                          : "btn-ghost bg-base-200/50"
+                        viewMode === "list" ? toggleOn : toggleOff
                       }`}
                       onClick={() => setViewMode("list")}
-                      title="List view"
+                      title={t("viewToggle.list")}
+                      aria-label={t("viewToggle.list")}
+                      aria-pressed={viewMode === "list"}
                     >
-                      <span className="icon-[tabler--list] size-4"></span>
+                      <span
+                        className="icon-[tabler--list] size-4"
+                        aria-hidden="true"
+                      ></span>
                     </button>
                   </div>
-                  {canCreate && (
+                  {/* With no items, the empty state carries the one Add Item action. */}
+                  {canCreate && sortedItems.length > 0 && (
                     <Link
                       href={`/auctions/${auction.id}/items/create`}
-                      className="btn btn-primary btn-sm shadow-md shadow-primary/20 w-full sm:w-auto"
+                      className={`btn btn-primary btn-sm w-full sm:w-auto ${
+                        ownerCanClose
+                          ? "btn-soft"
+                          : "shadow-md shadow-primary/20"
+                      }`}
                     >
                       <span className="icon-[tabler--plus] size-4"></span>
                       <span className="hidden sm:inline ">
@@ -302,7 +361,9 @@ export default function AuctionDetailPage({
                       canCreate ? (
                         <Link
                           href={`/auctions/${auction.id}/items/create`}
-                          className="btn btn-primary shadow-lg"
+                          className={`btn btn-primary whitespace-nowrap max-sm:w-full max-sm:px-3 ${
+                            ownerCanClose ? "btn-soft" : "shadow-lg"
+                          }`}
                         >
                           <span className="icon-[tabler--plus] size-5"></span>
                           {tItem("empty.createFirst")}
@@ -344,7 +405,15 @@ export default function AuctionDetailPage({
 
         {/* Sidebar */}
         <div className="lg:w-80 shrink-0">
-          <AuctionSidebar auction={auction} membership={membership!} />
+          <AuctionSidebar
+            auction={auction}
+            membership={membership!}
+            visibleItemCount={items.length}
+            actionsInHeader={isAdmin}
+            isEnded={knownPhase ? knownPhase === "ended" : undefined}
+            deadlinePassed={knownPhase === "overtime"}
+            endedAt={knownEndedAt}
+          />
         </div>
         <div className="christmas-scene-slot">
           <ChristmasScene placement="sidebar" />
