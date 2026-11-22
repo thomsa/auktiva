@@ -85,9 +85,11 @@ WHERE "winnerNotified" = 1
 
 -- An item whose winner changed after the notification, and whose effective
 -- end (its own end date, else the auction's) is more than 14 days before
--- this migration runs, is not queued again. The current highest bidder is
--- recorded with no notification time, the state the notifier's 14-day rule
--- (STALE_WINNER_NOTIFICATION_MS) leaves. The previous release's notifier
+-- this migration runs, is not queued again. The current highest bidder and
+-- bid are recorded, as the notifier's 14-day rule
+-- (STALE_WINNER_NOTIFICATION_MS) would record them, but with no
+-- notification time, because nobody is told (the notifier stores its run
+-- time there instead). The previous release's notifier
 -- has no such rule and would otherwise send late "You won" messages for
 -- these items until the new release is live. Dates are compared in Unix
 -- seconds as in 20261122170000 (ISO text, or epoch milliseconds in older

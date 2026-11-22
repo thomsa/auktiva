@@ -381,9 +381,11 @@ export function seededWonAt(item: ItemSeed, now: Date): Date | null {
  * The v1.22.0 notifier's database effects (`git show
  * v1.22.0:src/lib/services/auction-end.service.ts`): items with their own
  * end date before now, a highest bidder and `winnerNotified = false` get an
- * AUCTION_WON notification (and an item-won e-mail when enabled), then
- * `winnerNotified = true` and nothing else. It selects only columns v1.22.0
- * knows. Returns `itemId:userId` for each message, sorted.
+ * AUCTION_WON notification, then `winnerNotified = true` and nothing else.
+ * v1.22.0 also queued an item-won e-mail for winners who enabled it; this
+ * replica does not, so check `AUCTION_WON` rows, not `email_logs`. It
+ * selects only columns v1.22.0 knows. Returns `itemId:userId` for each
+ * message, sorted.
  */
 export async function runV122Notifier(db: PrismaClient): Promise<string[]> {
   const ended = await db.auctionItem.findMany({
