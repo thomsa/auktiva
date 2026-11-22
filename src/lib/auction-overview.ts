@@ -105,21 +105,22 @@ export function getAuctionTiming(
 }
 
 /**
- * The last instant at which the header's state can still change on its own:
- * the latest effective end among the auction and its items. Null when the
- * auction has no deadline, so nothing needs a per-second clock.
+ * The last instant at which the overview can still change on its own: the
+ * latest effective end among the auction and its published items. Item ends
+ * count even without an auction deadline, because each one closes bidding on
+ * its card. Null when nothing has an end date, so no per-second clock runs.
  */
 export function getTickUntil(
   auction: { endDate: string | null },
   items: TimingItem[],
 ): number | null {
-  const endsAt = toEpoch(auction.endDate);
-  if (endsAt === null) return null;
-  let latest = endsAt;
+  let latest = toEpoch(auction.endDate);
   for (const item of items) {
     if (!isBiddable(item)) continue;
     const itemEnd = toEpoch(item.endDate);
-    if (itemEnd !== null && itemEnd > latest) latest = itemEnd;
+    if (itemEnd !== null && (latest === null || itemEnd > latest)) {
+      latest = itemEnd;
+    }
   }
   return latest;
 }

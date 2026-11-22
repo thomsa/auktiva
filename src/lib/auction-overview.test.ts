@@ -195,11 +195,18 @@ test("the clock runs until the latest effective end of auction or items", () => 
   );
 });
 
-test("an auction without a deadline needs no per-second clock", () => {
+test("without an auction deadline the clock runs until the last item end", () => {
   assert.equal(
-    getTickUntil({ endDate: null }, [{ endDate: iso(NOW + HOUR) }]),
-    null,
+    getTickUntil({ endDate: null }, [
+      { endDate: iso(NOW + HOUR) },
+      { endDate: iso(NOW + 2 * HOUR), isPublished: false },
+    ]),
+    NOW + HOUR,
   );
+});
+
+test("with no end date anywhere no per-second clock runs", () => {
+  assert.equal(getTickUntil({ endDate: null }, [{ endDate: null }]), null);
 });
 
 // ---------------------------------------------------------------------------
@@ -393,4 +400,21 @@ test("a draft with the latest end date does not push endedAt out", () => {
   );
   assert.equal(timing.phase, "ended");
   assert.equal(timing.endedAt, NOW - 2 * HOUR);
+});
+
+test("the open item count drops the moment an item's own end passes", () => {
+  // Overtime: the deadline passed, two items run on and end 15s apart.
+  const auction = { endDate: iso(NOW - HOUR), itemEndMode: "CUSTOM" };
+  const items: TimingItem[] = [
+    { endDate: iso(NOW - 15_000) },
+    { endDate: iso(NOW) },
+  ];
+  const before = getAuctionTiming(auction, items, NOW - 15_000);
+  const after = getAuctionTiming(auction, items, NOW - 15_000 + 1);
+  assert.equal(before.phase, "overtime");
+  assert.equal(before.openItemCount, 2);
+  assert.equal(after.phase, "overtime");
+  assert.equal(after.openItemCount, 1);
+  // The clock keeps running until the second item's end.
+  assert.equal(getTickUntil(auction, items), NOW);
 });

@@ -40,8 +40,16 @@ interface AuctionOverviewHeaderProps {
   role: string;
   /** Called when the auction moves on by itself (deadline or last item end). */
   onDeadlineReached?: () => void;
-  /** Reports the phase whenever it or the auction's end date changes. */
-  onPhaseChange?: (phase: AuctionPhase, endedAt: number | null) => void;
+  /**
+   * Reports the phase, when bidding ended and how many items are still open,
+   * whenever any of them or the auction's end date changes. The open count
+   * changes when an item's own end passes, even within one phase.
+   */
+  onPhaseChange?: (
+    phase: AuctionPhase,
+    endedAt: number | null,
+    openItemCount: number,
+  ) => void;
 }
 
 // --- Clock -----------------------------------------------------------------
@@ -212,9 +220,16 @@ export function AuctionOverviewHeader({
   });
   const currentPhase = timing?.phase ?? null;
   const currentEndedAt = timing?.endedAt ?? null;
+  const currentOpenItems = timing?.openItemCount ?? 0;
   useEffect(() => {
-    if (currentPhase) onPhaseChangeRef.current?.(currentPhase, currentEndedAt);
-  }, [currentPhase, currentEndedAt, auction.endDate]);
+    if (currentPhase) {
+      onPhaseChangeRef.current?.(
+        currentPhase,
+        currentEndedAt,
+        currentOpenItems,
+      );
+    }
+  }, [currentPhase, currentEndedAt, currentOpenItems, auction.endDate]);
 
   const access = getOverviewAccess(role, timing?.phase ?? "ended");
 

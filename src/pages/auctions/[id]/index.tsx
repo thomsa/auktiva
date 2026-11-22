@@ -109,10 +109,14 @@ export default function AuctionDetailPage({
   const [rejoinError, setRejoinError] = useState<string | null>(null);
   // The header's live phase, tagged with the auction and end date it was
   // computed for, so an extended or different auction never reuses it.
+  // openItemCount is stored so the page re-renders when an item's own end
+  // passes: the cards and list rows then re-check isItemEnded against the
+  // current time instead of waiting for the next phase change or new data.
   const [overviewPhase, setOverviewPhase] = useState<{
     key: string;
     phase: AuctionPhase;
     endedAt: number | null;
+    openItemCount: number;
   } | null>(null);
 
   // Use high priority for auction detail page, pauses when tab hidden
@@ -226,8 +230,12 @@ export default function AuctionDetailPage({
     overviewPhase?.key === phaseKey && overviewPhase.endedAt !== null
       ? new Date(overviewPhase.endedAt).toISOString()
       : null;
-  const handlePhaseChange = (phase: AuctionPhase, endedAt: number | null) => {
-    setOverviewPhase({ key: phaseKey, phase, endedAt });
+  const handlePhaseChange = (
+    phase: AuctionPhase,
+    endedAt: number | null,
+    openItemCount: number,
+  ) => {
+    setOverviewPhase({ key: phaseKey, phase, endedAt, openItemCount });
   };
   const handleDeadlineReached = () => {
     void mutate();
