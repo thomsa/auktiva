@@ -241,7 +241,11 @@ Accepted by the maintainer on 2026-11-22, as recommended:
 3. The reopen notice goes in-app to every bidder on the reopened items.
    E-mail goes only to previous winners who opted into item-won e-mails.
    No new setting.
-4. The reopen card pre-selects all closed items. The owner can untick them.
+4. The reopen card pre-selects all closed items. The owner can untick
+   items that have their own end date. Items that follow the auction end
+   always reopen when the auction end moves and cannot be unticked
+   (narrowed during implementation, accepted by the maintainer on
+   2026-11-22; see Implementation Notes, D8 item selection).
 5. Reopened items drop their own end date and follow the auction. Losing
    anti-snipe on them is an accepted limitation.
 6. Items that ended more than 14 days before the notifier sees them are
@@ -254,8 +258,8 @@ Accepted by the maintainer on 2026-11-22, as recommended:
 
 Recorded during implementation on 2026-11-22. They do not change the spec
 deltas. The D3 failed-send note departs from D3's "do not roll back", and
-the D8 item-selection note narrows Resolved Decision 4 ("The owner can
-untick them"); both await the maintainer's confirmation.
+the D8 item-selection note narrows Resolved Decision 4. The maintainer
+accepted the D8 narrowing on 2026-11-22; the D3 note awaits confirmation.
 
 - **D3 claim condition.** The claim also repeats the ended-item condition
   (`endedItemsAwaitingNotificationWhere(now)` plus `id` and the
