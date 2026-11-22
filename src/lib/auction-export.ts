@@ -207,9 +207,16 @@ export function buildAuctionExport(input: {
   };
 }
 
+/**
+ * Spreadsheet apps run a cell that starts with one of these as a formula.
+ * Such text cells get a leading apostrophe so they open as plain text.
+ */
+const CSV_FORMULA_TRIGGER = /^[=+\-@\t\r]/;
+
 function csvText(value: string | null | undefined): string {
   if (value === null || value === undefined || value === "") return "";
-  return `"${value.replace(/"/g, '""')}"`;
+  const safe = CSV_FORMULA_TRIGGER.test(value) ? `'${value}` : value;
+  return `"${safe.replace(/"/g, '""')}"`;
 }
 
 function csvNumber(value: number | null | undefined): string {

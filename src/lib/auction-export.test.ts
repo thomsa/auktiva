@@ -186,3 +186,40 @@ test("auctionExportToCsv keeps legacy columns first and appends new ones", () =>
     `"Item unsold",USD,1,,,,,,0,unsold,,,,,${PAST.toISOString()}`,
   );
 });
+
+test("auctionExportToCsv neutralises spreadsheet formulas in text cells", () => {
+  const data = build();
+  const csv = auctionExportToCsv({
+    ...data,
+    items: [
+      { ...data.items[0], name: '=HYPERLINK("http://evil.test","x")' },
+      { ...data.items[1], name: "+1+1" },
+      { ...data.items[2], name: "-2" },
+      { ...data.items[3], name: "@SUM(A1)" },
+      { ...data.items[4], name: "\tTabbed" },
+      { ...data.items[5], name: "\rReturn" },
+    ],
+  });
+  const rows = csv.split("\n").slice(1);
+  const expected = [
+    `"'=HYPERLINK(""http://evil.test"",""x"")"`,
+    `"'+1+1"`,
+    `"'-2"`,
+    `"'@SUM(A1)"`,
+    `"'\tTabbed"`,
+    `"'\rReturn"`,
+  ];
+
+  assert.equal(rows.length, expected.length);
+  expected.forEach((cell, index) => {
+    assert.ok(
+      rows[index].startsWith(`${cell},USD,`) ||
+        rows[index].startsWith(`${cell},EUR,`),
+      `row ${index}: ${rows[index]}`,
+    );
+  });
+  // Ordinary names are left alone.
+  assert.ok(
+    auctionExportToCsv(data).split("\n")[1].startsWith('"Item won-usd",'),
+  );
+});
