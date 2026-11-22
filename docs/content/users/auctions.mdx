@@ -36,21 +36,80 @@ import { Callout } from "nextra/components";
 
 ### Item End Mode
 
-| Mode            | Description                     |
-| --------------- | ------------------------------- |
-| **Auction End** | All items end when auction ends |
-| **Custom**      | Each item has its own end date  |
-| **None**        | Items don't automatically end   |
+| Mode            | Description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| **Auction End** | All items end when the auction ends                          |
+| **Custom**      | Each item can have its own end date                          |
+| **None**        | Items have no end date of their own and end with the auction |
+
+An item without its own end date always ends with the auction, whatever the mode. If the auction has no end date either, the item stays open until the auction is ended.
 
 ## Managing Your Auction
 
-### Ending an Auction Early
+Only the auction owner can change the end date, end the auction or reopen bidding. The **Settings** page is available to the owner only.
+
+### Changing the End Date
 
 1. Go to auction **Settings**
-2. Click **"End Auction Now"**
-3. Confirm the action
+2. Under **Timing**, change **"Auction End Date (optional)"**, or clear it for no end date
+3. Click **"Save Changes"**
 
-<Callout type="warning">Ending an auction is irreversible.</Callout>
+The field uses your browser's local time. The end date is only saved when you changed or cleared the field, so saving other settings leaves it as it is.
+
+Moving the end date of an ended auction into the future, or clearing it, reopens the items that follow the auction end (items without their own end date). Items that have their own end date stay closed, including every item that **"End Auction Now"** closed. To reopen those, use [Reopen bidding](#reopening-bidding).
+
+Bidders on items that reopen this way are told in the same way as with [Reopen bidding](#reopening-bidding). Moving the end date of an auction that is still running does not reopen anything and sends no notifications.
+
+### Ending an Auction Early
+
+You can end a running auction in two places:
+
+- On the auction page, click **"Close auction"**. The dialog shows how many items close and how many go to their highest bidders.
+- In **Settings**, click **"End Auction Now"** and confirm.
+
+Ending sets the auction end to now and gives every item that is still open its own end date of now. Bidding stops on all items, and the winners are notified as described in [Notifications](/users/notifications#item-won).
+
+<Callout type="warning">
+  Ending an auction closes bidding on every item at once. You can take bids
+  again later only with **Reopen bidding**, which tells everyone who bid that
+  the result is not final.
+</Callout>
+
+### Reopening Bidding
+
+Use **Reopen bidding** to extend an auction that has ended, or to reopen items that closed while the auction is still running.
+
+The **"Reopen bidding"** card appears on the **Settings** page when the auction has ended, or when the auction is still running but some published items are closed.
+
+1. Go to auction **Settings** and find the **"Reopen bidding"** card
+2. Set the **"Auction end time"** (in your local time), or turn on **"No end time"** to keep bidding open until you end the auction. If the auction's current end is still in the future, it is filled in for you.
+3. Under **"Closed items"**, choose what to reopen:
+   - Items with their own end date have a checkbox, and all of them are selected at first. Untick any you want to keep closed, or use **"Select all"**.
+   - Items that follow the auction end are listed separately and always reopen with the new end time. You can't deselect them.
+4. Click **"Reopen bidding"** and confirm in the dialog
+5. A message confirms how many items reopened and how many bidders were notified
+
+You can select up to 500 items at a time. If there are no closed items, the card only saves the new end time. If the list is out of date, for example because the auction changed in another tab, nothing changes, an error is shown and the list reloads.
+
+What reopening does:
+
+- **Reopened items follow the auction.** Each selected item drops its own end date and closes when the auction closes. A later change to the auction end date applies to it too.
+- **Bids are kept.** Every bid, the current price and the highest bidder stay as they are. New bids must meet the usual minimum above the current highest bid.
+- **Bidders are told.** Everyone who bid on a reopened item gets one notification, except you. Bidders who were already told they won are told that their win is no longer final. See [Bidding Reopened](/users/notifications#bidding-reopened).
+- **Winners are notified again.** When the items close again, whoever is the highest bidder then gets a new "won" notification, even if they won before.
+
+<Callout type="warning">
+  Reopened items no longer have their own end date, so [Bid Extension
+  Protection](/users/bid-extension) does not apply to them.
+</Callout>
+
+Someone who already has an item page open sees the item as closed until they reload the page.
+
+<Callout type="info">
+  Items can't be reopened one by one. Admins, item creators and other members
+  can't reopen bidding. On the item edit page, the end date of an ended item is
+  locked, and the server refuses a later end date for it.
+</Callout>
 
 ### Deleting an Auction
 

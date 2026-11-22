@@ -88,10 +88,80 @@ See [Realtime Features](/developers/realtime) for configuration details.
 ### RESTful Endpoints
 
 ```
-/api/auth/*              # NextAuth endpoints
-/api/auctions            # List/create auctions
-/api/auctions/[id]       # Get/update/delete auction
-/api/auctions/[id]/items # List/create items
-/api/notifications       # User notifications
-/api/upload              # File uploads
+/api/auth/*               # NextAuth endpoints
+/api/auctions             # List/create auctions
+/api/auctions/[id]        # Get/update/delete auction (owner only)
+/api/auctions/[id]/close  # End the auction now (owner only)
+/api/auctions/[id]/reopen # Reopen bidding (owner only)
+/api/auctions/[id]/items  # List/create items
+/api/notifications        # User notifications
+/api/upload               # File uploads
 ```
+
+Errors are returned as JSON with `message` and `code` (for example `BAD_REQUEST`, `FORBIDDEN` or `VALIDATION_ERROR`), plus any details. Validation errors (422) include an `errors` object keyed by field.
+
+### Auction End Date
+
+`PATCH /api/auctions/[id]` is owner only. Its optional `endDate` field takes:
+
+- an ISO 8601 date-time with a UTC offset, such as `"2026-11-30T18:00:00Z"` or `"2026-11-30T19:00:00+01:00"`, to set the end
+- `null` to remove the end date
+- nothing (leave the field out) to keep the current end
+
+Any other value, such as a date-time without an offset, is rejected with 422. When `endDate` is present, the change goes through the same transition as reopening. Items without their own end date that move from closed to open count as reopened: their bidders are notified and the next close notifies the winner again. Moving the end of a running auction, or saving the same end again, reopens nothing and sends nothing. The response is the updated auction.
+
+### Reopening Bidding
+
+`POST /api/auctions/[id]/reopen` is owner only.
+
+Request body:
+
+```json
+{
+  "endDate": "2026-11-30T18:00:00Z",
+  "itemIds": ["item-id-1", "item-id-2"]
+}
+```
+
+- `endDate` (required): the new auction end, an ISO 8601 date-time with a UTC offset that lies in the future, or `null` for no end time.
+- `itemIds` (required, up to 500): published items of this auction that are currently closed. They drop their own end date and then follow the auction end. Use `[]` to only move the auction end.
+
+Items without their own end date reopen whenever the new end reopens the auction, whether or not they are listed. Bids, `currentBid` and `highestBidder` are left unchanged.
+
+Response (200):
+
+```json
+{
+  "auction": { "id": "...", "endDate": "2026-11-30T18:00:00.000Z", "...": "..." },
+  "reopenedCount": 2,
+  "notifiedCount": 3
+}
+```
+
+`reopenedCount` counts every item that went from closed to open, with or without bids. `notifiedCount` is the number of bidders who got the in-app "bidding reopened" notification. The owner who reopens is never notified.
+
+Errors:
+
+| Status | When                                                                                                                                                                                             |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 401    | Not signed in                                                                                                                                                                                    |
+| 403    | Not a member of the auction, or not its owner                                                                                                                                                    |
+| 422    | The body does not match the schema (missing fields, an `endDate` without an offset, more than 500 `itemIds`)                                                                                     |
+| 400    | `endDate` is not in the future, or an item ID is unknown, belongs to another auction, is a draft or is still open. The body lists `invalidItemIds`, and `notInAuction`, `drafts` or `open` where they apply. Nothing changes. |
+
+`PATCH /api/auctions/[id]/items/[itemId]` still refuses to reopen an ended item. A later `endDate`, or clearing the end date while the auction is still running, returns 400.
+
+### Notification Types
+
+In-app notifications have a `type` from the `NotificationType` enum. The app creates:
+
+| Type               | Sent when                                                                              |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| `NEW_ITEM`         | An item is added to an auction you're a member of                                       |
+| `OUTBID`           | Someone outbids you                                                                     |
+| `AUCTION_WON`      | An item closes and you are the highest bidder (at most once per close)                  |
+| `BIDDING_REOPENED` | Bidding reopens on items you bid on; the text tells previous winners the win is not final |
+
+The enum also holds `AUCTION_ENDED`, `INVITE_RECEIVED` and `MEMBER_JOINED`, which the bell can display but the app does not currently create. Notification text is English and stored when it is created. Times in it are in UTC.
+
+There is no scheduled job for winner notifications. Each `GET /api/notifications` starts the auction-end notifier in the background without waiting for it (up to 50 items per run), so several runs can overlap. Each item is claimed atomically before anything is sent; see [Winner Notification Fields](/developers/database#winner-notification-fields).

@@ -181,11 +181,21 @@ All events are sent on private channels that require authentication.
 
 ### Item Events
 
-| Event                | Channel                 | Description        |
-| -------------------- | ----------------------- | ------------------ |
-| `bid:new`            | `private-item-{itemId}` | New bid placed     |
-| `discussion:new`     | `private-item-{itemId}` | New comment posted |
-| `discussion:deleted` | `private-item-{itemId}` | Comment deleted    |
+| Event                | Channel                 | Description                                                          |
+| -------------------- | ----------------------- | -------------------------------------------------------------------- |
+| `bid:new`            | `private-item-{itemId}` | New bid placed                                                       |
+| `item:updated`       | `private-item-{itemId}` | Item changed, for example reopened (`changes: { endDate: null }`)   |
+| `discussion:new`     | `private-item-{itemId}` | New comment posted                                                   |
+| `discussion:deleted` | `private-item-{itemId}` | Comment deleted                                                      |
+
+<Callout type="info">
+  `item:updated` is published when bidding reopens on an item and when a
+  member leaves or is removed and their bids are deleted. No client page
+  subscribes to it yet, so an open item page shows a reopened item as closed
+  until it is reloaded. Bidding-reopened and win notifications reach users
+  through `notification:new` and `notification:count`, like every other
+  notification.
+</Callout>
 
 ### User Events
 

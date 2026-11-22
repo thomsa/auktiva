@@ -140,6 +140,36 @@ Auktiva uses the following main tables:
 - **notifications** - User notifications
 - **user_settings** - User preferences
 
+### Winner Notification Fields
+
+Each row in **auction_items** records whether its winner has been told and who that was:
+
+| Field                  | Type        | Meaning                                                                                       |
+| ---------------------- | ----------- | --------------------------------------------------------------------------------------------- |
+| `winnerNotified`       | `Boolean`   | `false` means a win notification is pending for whoever is the highest bidder when the item ends |
+| `winnerNotifiedUserId` | `String?`   | The user last told they won (a plain user ID, like `highestBidderId`)                         |
+| `winnerNotifiedAmount` | `Float?`    | The item's `currentBid` when that user was recorded                                           |
+| `winnerNotifiedAt`     | `DateTime?` | When the notified winner was recorded                                                         |
+
+The auction-end notifier (`src/lib/services/auction-end.service.ts`) selects published items that have ended, have a highest bidder and have `winnerNotified = false`. An item has ended when its own `endDate` has passed, or, if it has none, when its auction's `endDate` has passed. The notifier claims each item with one conditional update that sets `winnerNotified = true` and writes the three record fields. Only the run whose claim succeeds sends the in-app notification and the item-won e-mail, so overlapping runs notify a winner at most once. If creating the in-app notification fails before anything was stored, the claim is released for a later run.
+
+Items whose effective end is more than 14 days before the claim (`STALE_WINNER_NOTIFICATION_MS`) are recorded without sending anything.
+
+Reopening bidding sets `winnerNotified = false` on every item that goes from closed to open and keeps the other three fields. The next close then notifies whoever wins at that point.
+
+### Notification and E-mail Types
+
+`NotificationType` and `EmailType` both include `BIDDING_REOPENED`. It is used for the notice sent to bidders when bidding reopens, and for the e-mail sent to previous winners who enabled item-won e-mails. SQLite stores enums as text, so the new value needs no SQL change, but run `npm run db:generate` to update the Prisma client.
+
+### Migrations in v1.23.0
+
+Two migrations come with this release:
+
+- `20261122170000_mark_past_null_dated_winners_notified` marks winners of items without their own end date in auctions that had already ended as notified. This stops a burst of late "won" notifications now that these items end with their auction.
+- `20261122180000_add_winner_notification_record` adds the three record columns. For items already marked as notified, it fills in the user and time from the item's latest `AUCTION_WON` notification, or the current highest bidder when that notification is gone. Items whose recorded winner is no longer the highest bidder become pending again.
+
+See [Upgrading](/developers/upgrading) for how to apply them and what to check.
+
 ## Backups
 
 ### SQLite Backups

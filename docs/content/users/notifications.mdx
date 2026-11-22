@@ -2,6 +2,8 @@
 
 Stay informed about auction activity with Auktiva's notification system.
 
+import { Callout } from "nextra/components";
+
 ## Notification Types
 
 ### New Item Added
@@ -12,17 +14,33 @@ When a new item is added to an auction you're a member of. Shows the item name, 
 
 When someone places a higher bid than yours.
 
-### Auction Ending Soon
-
-When an auction you're in is about to end.
-
 ### Item Won
 
-When an item you bid on ends and you won.
+When an item you bid on closes and you have the highest bid. An item closes at its own end date, or with the auction if it has no end date of its own.
 
-### Item Lost
+- You get the notification at most once each time the item closes.
+- Auktiva checks for closed items whenever a signed-in member's app loads notifications, so the notification can arrive a little after the item closes.
+- Items that closed more than 14 days before Auktiva first checks them are recorded as notified without sending anything. This avoids late "You won" messages, for example after an upgrade or when nobody used the app for a long time.
 
-When an item you bid on ends and someone else won.
+If the owner reopens bidding on an item you were told you won, you get a [Bidding Reopened](#bidding-reopened) notification instead. When the item closes again:
+
+- If you are still the highest bidder, you get a new "won" notification. It confirms that your win is now final.
+- If someone outbid you, the new highest bidder gets the "won" notification. You get nothing new.
+
+### Bidding Reopened
+
+When the auction owner reopens bidding on items you bid on, either with **Reopen bidding** or by moving the end date of an ended auction. See [Reopening Bidding](/users/auctions#reopening-bidding).
+
+- Everyone who bid on a reopened item gets it, except the owner who reopened bidding. Members who never bid on those items get nothing.
+- You get one notification per reopen, even if you bid on several reopened items. It names the item, or the number of items, and the auction.
+- It gives the new close time in UTC, or says that there is no end time.
+- If you were told you won one of the items, the title is **"Your win is no longer final"**. The message says the item can be outbid until the new close time.
+- Saving the auction settings again, or moving the end time of an auction that is still running, does not send it again.
+
+<Callout type="info">
+  Notification and e-mail texts are in English, whatever language you chose,
+  and times in them are in UTC.
+</Callout>
 
 ## Accessing Notifications
 
@@ -37,21 +55,20 @@ The bell icon in the top navigation shows:
 ### Notification Dropdown
 
 - Unread notifications are highlighted
-- Click a notification to go to the item
+- Click a notification to go to its item, or to the auction when it is about several items
 - Click "Mark all as read" to clear
 
 ## Real-Time Updates
 
 Notifications update automatically:
 
-- New notifications appear without refreshing
-- Badge count updates in real-time
-- Polling interval: every 30 seconds
-
-import { Callout } from "nextra/components";
+- When real-time updates are enabled, new notifications and the badge count appear at once
+- Otherwise the app checks for new notifications every 5 seconds on auction pages and every 30 seconds elsewhere, and pauses while the tab is hidden
+- If real-time is enabled but the connection drops, the app checks at most once a minute until it reconnects
 
 <Callout type="info">
-  You don't need to refresh the page to see new notifications.
+  You don't need to refresh the page to see new notifications. See [Real-Time
+  Updates](/users/realtime) for details.
 </Callout>
 
 ## Email Notifications
@@ -64,6 +81,8 @@ In addition to in-app notifications, Auktiva can send you email notifications fo
 - **Auction Invites** - When someone invites you to an auction
 - **New Items** - When items are added to auctions you're in
 - **Outbid Alerts** - When someone outbids you
+- **Item Won** - When you win an item
+- **Bidding Reopened** - When bidding reopens on an item you were told you won
 
 ### Managing Email Preferences
 
@@ -74,6 +93,9 @@ You can control email notifications in **Settings → Email Notifications**:
 3. Toggle notifications on/off:
    - **New item notifications** - Emails for new auction items
    - **Outbid notifications** - Emails when you're outbid
+   - **Item won notifications** - Emails when you win an item, and when bidding reopens on an item you were told you won
+
+All three are off by default. The bidding reopened e-mail goes only to previous winners who turned on **Item won notifications**. Other bidders on a reopened item get the in-app notification only.
 
 <Callout type="info">
   Disabling email notifications doesn't affect in-app notifications. You'll
@@ -84,5 +106,5 @@ You can control email notifications in **Settings → Email Notifications**:
 
 - Check notifications regularly during active auctions
 - Pay attention to outbid notifications
-- Watch for auction ending reminders
+- Turn on item won emails if you want a record of your wins outside the app
 - Enable email notifications for auctions you care about
