@@ -316,7 +316,10 @@ test("after the deploy the verify checks pass and the repair changes nothing", a
     migrator,
     splitSqlStatements(readUpgradeSql("repair.sql")),
   );
-  assert.equal(repair[0].rowsAffected, 0);
+  assert.deepEqual(
+    repair.map((result) => result.rowsAffected),
+    [0, 0, 0, 0, 0],
+  );
 
   const [columns, checks] = await runSqlStatements(
     migrator,
@@ -358,4 +361,16 @@ test("backfill.sql holds exactly the data statements of the two migrations", () 
     splitSqlStatements(readUpgradeSql("backfill.sql")),
     dataStatements,
   );
+});
+
+test("repair.sql repeats the migration's amount, stale-record and re-queue steps unchanged", () => {
+  const migration = splitSqlStatements(
+    fs.readFileSync(
+      path.join(MIGRATIONS_DIR, V1_23_MIGRATIONS[1], "migration.sql"),
+      "utf-8",
+    ),
+  );
+  const repair = splitSqlStatements(readUpgradeSql("repair.sql"));
+  assert.equal(repair.length, 5);
+  assert.deepEqual(repair.slice(2), migration.slice(-3));
 });

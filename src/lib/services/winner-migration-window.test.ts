@@ -29,9 +29,11 @@ import {
  * 2. The migration, then v1.22.0 code still serving (the window between
  *    `npm run db:migrate:turso` and the v1.23.0 deploy, or a self-hosted
  *    rebuild): its notifier messages the right users but leaves the new
- *    winner records stale.
- * 3. scripts/upgrade/v1.23.0/repair.sql, then v1.23.0: records are fixed and
- *    nobody is messaged twice.
+ *    winner records stale, and an auction the owner extends gets a new
+ *    leader on an item still marked notified.
+ * 3. scripts/upgrade/v1.23.0/repair.sql, then v1.23.0: records are fixed,
+ *    the extended item is queued again for its new leader, and nobody is
+ *    messaged twice.
  */
 
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "auktiva-window-"));
@@ -49,6 +51,11 @@ const SENT_IN_WINDOW = [
   "edge-13d:bob",
   "own-pending-ended:carol",
 ];
+/**
+ * Follows an auction that the owner extends in v1.22.0 during the window,
+ * after which a new bidder leads while the item stays marked notified.
+ */
+const EXTENDED_IN_WINDOW = "old-follow-unnotified";
 /** What v1.23.0 sends after the window and the repair. */
 const SENT_AFTER_DEPLOY = [
   "charity-follow:bob",
@@ -149,7 +156,26 @@ test("window: the v1.22.0 notifier on the migrated schema", async (t) => {
   assert.deepEqual(await wonSince(windowStart), SENT_IN_WINDOW);
   assert.deepEqual(await runV122Notifier(prisma), []);
 
-  const rows = await records(SENT_IN_WINDOW.map((id) => id.split(":")[0]));
+  // The owner extends the auction that ended 40 days ago in v1.22.0, which
+  // only moves the auction end and resets no winner flag. Dave outbids
+  // Carol on an item that follows the auction (marked notified for Carol by
+  // 20261122170000). v1.22.0 accepted such bids.
+  await prisma.auction.update({
+    where: { id: "old" },
+    data: { endDate: new Date(Date.now() + 24 * 60 * 60 * 1000) },
+  });
+  await prisma.bid.create({
+    data: { auctionItemId: EXTENDED_IN_WINDOW, userId: "dave", amount: 33 },
+  });
+  await prisma.auctionItem.updateMany({
+    where: { id: EXTENDED_IN_WINDOW },
+    data: { highestBidderId: "dave", currentBid: 33 },
+  });
+
+  const rows = await records([
+    ...SENT_IN_WINDOW.map((id) => id.split(":")[0]),
+    EXTENDED_IN_WINDOW,
+  ]);
   diagnoseTable(t, "records after the window", rows);
   // The right users were told, but the records still name Alice (or no
   // one), so a later reopen would tell the wrong user.
@@ -158,27 +184,38 @@ test("window: the v1.22.0 notifier on the migrated schema", async (t) => {
     [
       ["charity-own", true, "alice"],
       ["edge-13d", true, "alice"],
+      // Still marked notified for Carol although Dave now leads.
+      [EXTENDED_IN_WINDOW, true, "carol"],
       ["own-pending-ended", true, null],
     ],
   );
   const checks = await verifyChecks();
   t.diagnostic(`verify before repair: ${JSON.stringify(checks)}`);
   assert.equal(checks.notified_without_record, 1);
-  assert.equal(checks.notified_record_not_highest_bidder, 2);
+  assert.equal(checks.notified_record_not_highest_bidder, 3);
 });
 
-test("repair: records the users the v1.22.0 notifier told, and is idempotent", async (t) => {
+test("repair: fixes the records and re-queues the item extended in the window, and is idempotent", async (t) => {
   const statements = splitSqlStatements(readUpgradeSql("repair.sql"));
-  const [first] = await runSqlStatements(migrator, statements);
-  const [second] = await runSqlStatements(migrator, statements);
+  const first = await runSqlStatements(migrator, statements);
+  const second = await runSqlStatements(migrator, statements);
+  const affected = (results: typeof first) =>
+    results.map((result) => result.rowsAffected);
   t.diagnostic(
-    `repair rows affected: first ${first.rowsAffected}, second ${second.rowsAffected}`,
+    `repair rows affected per statement: first ${affected(first).join(", ")}, second ${affected(second).join(", ")}`,
   );
-  assert.equal(first.rowsAffected, 3);
-  assert.equal(second.rowsAffected, 0);
+  // 1: the three window notifications; 5: the extended item re-queued.
+  assert.deepEqual(affected(first), [3, 0, 0, 0, 1]);
+  assert.deepEqual(affected(second), [0, 0, 0, 0, 0]);
+
+  const [extended] = await records([EXTENDED_IN_WINDOW]);
+  assert.deepEqual(
+    [extended.winnerNotified, extended.winnerNotifiedUserId, extended.highestBidderId],
+    [false, "carol", "dave"],
+  );
 
   const rows = await records(SENT_IN_WINDOW.map((id) => id.split(":")[0]));
-  diagnoseTable(t, "records after the repair", rows);
+  diagnoseTable(t, "records after the repair", [...rows, extended]);
   for (const row of rows) {
     const won = await prisma.notification.findFirstOrThrow({
       where: { itemId: row.id, type: "AUCTION_WON" },
@@ -207,4 +244,20 @@ test("after the deploy: v1.23.0 sends the rest once and nobody twice", async (t)
     notified_record_not_highest_bidder: 0,
     pending_ended_items: 0,
   });
+});
+
+test("the auction extended in the window notifies Dave once it ends again", async () => {
+  await prisma.auction.update({
+    where: { id: "old" },
+    data: { endDate: new Date(Date.now() - 1000) },
+  });
+  const endedAt = new Date();
+  assert.equal(await auctionEnd.processEndedItems(), 1);
+  assert.equal(await auctionEnd.processEndedItems(), 0);
+  assert.deepEqual(await wonSince(endedAt), [`${EXTENDED_IN_WINDOW}:dave`]);
+  const [record] = await records([EXTENDED_IN_WINDOW]);
+  assert.deepEqual(
+    [record.winnerNotified, record.winnerNotifiedUserId, record.winnerNotifiedAmount],
+    [true, "dave", 33],
+  );
 });
