@@ -21,16 +21,24 @@ const tmpDir = fs.mkdtempSync(
 );
 const dbFile = path.join(tmpDir, "test.db");
 
-const OLDER_WIN = new Date("2026-10-01T12:00:00.000Z");
-const LATER_WIN = new Date("2026-10-05T08:30:00.000Z");
-const LATEST_OTHER = new Date("2026-10-09T09:00:00.000Z");
-const PAST_END = new Date("2026-09-30T18:00:00.000Z");
+// Relative to now, because the migration treats items that ended more than
+// 14 days before it runs differently.
+const DAY_MS = 24 * 60 * 60 * 1000;
+const daysAgo = (days: number) => new Date(Date.now() - days * DAY_MS);
+const OLDER_WIN = daysAgo(5);
+const LATER_WIN = daysAgo(4);
+const LATEST_OTHER = daysAgo(3);
+const PAST_END = daysAgo(2);
+const STALE_END = daysAgo(30);
+const STALE_WIN = daysAgo(31);
+const FUTURE_END = new Date(Date.now() + 2 * DAY_MS);
 
 type Prisma = typeof import("@/lib/prisma").prisma;
 let prisma: Prisma;
 
 type ItemSeed = {
   id: string;
+  auctionId?: string;
   highestBidderId: string | null;
   currentBid: number | null;
   winnerNotified: boolean;
@@ -46,12 +54,12 @@ async function insertItem(item: ItemSeed) {
       ("id", "auctionId", "name", "currencyCode", "currentBid",
        "highestBidderId", "isPublished", "endDate", "winnerNotified",
        "updatedAt", "creatorId")
-     VALUES (?, 'ended', ?, 'EUR', ?, ?, 1, ?, ?, ?, 'owner')`,
+     VALUES (?, ?, ?, 'EUR', ?, ?, 1, NULL, ?, ?, 'owner')`,
     item.id,
+    item.auctionId ?? "ended",
     item.id,
     item.currentBid,
     item.highestBidderId,
-    PAST_END.toISOString(),
     item.winnerNotified ? 1 : 0,
     PAST_END.toISOString(),
   );
@@ -63,13 +71,14 @@ async function wonNotification(
   itemId: string,
   createdAt: Date,
   type: "AUCTION_WON" | "OUTBID" = "AUCTION_WON",
+  auctionId = "ended",
 ) {
   await prisma.notification.create({
     data: {
       id,
       userId,
       itemId,
-      auctionId: "ended",
+      auctionId,
       type,
       title: type === "AUCTION_WON" ? "Congratulations! You won!" : "Outbid",
       message: `${type} for ${itemId}`,
@@ -101,8 +110,13 @@ before(async () => {
       { id: "bob", email: "bob@example.test", name: "Bob" },
     ],
   });
-  await prisma.auction.create({
-    data: { id: "ended", name: "Ended", endDate: PAST_END, creatorId: "owner" },
+  // Items follow their auction's end date (none of their own).
+  await prisma.auction.createMany({
+    data: [
+      { id: "ended", name: "Ended", endDate: PAST_END, creatorId: "owner" },
+      { id: "stale", name: "Stale", endDate: STALE_END, creatorId: "owner" },
+      { id: "open", name: "Open", endDate: FUTURE_END, creatorId: "owner" },
+    ],
   });
 
   // Unchanged past auction: Alice was told and still holds the highest bid.
@@ -122,6 +136,41 @@ before(async () => {
     winnerNotified: true,
   });
   await wonNotification("n-extended", "alice", "extended", OLDER_WIN);
+
+  // Extended, but the auction ended more than 14 days ago: Bob is recorded
+  // and nobody is messaged this late.
+  await insertItem({
+    id: "extended-stale",
+    auctionId: "stale",
+    highestBidderId: "bob",
+    currentBid: 130,
+    winnerNotified: true,
+  });
+  await wonNotification(
+    "n-extended-stale",
+    "alice",
+    "extended-stale",
+    STALE_WIN,
+    "AUCTION_WON",
+    "stale",
+  );
+
+  // Extended and still open: pending, so Bob is notified once it ends.
+  await insertItem({
+    id: "extended-open",
+    auctionId: "open",
+    highestBidderId: "bob",
+    currentBid: 140,
+    winnerNotified: true,
+  });
+  await wonNotification(
+    "n-extended-open",
+    "alice",
+    "extended-open",
+    OLDER_WIN,
+    "AUCTION_WON",
+    "open",
+  );
 
   // Won notification was deleted: nothing left to copy from.
   await insertItem({
@@ -210,6 +259,28 @@ test("auction extended before the upgrade becomes pending for the new winner", a
   });
 });
 
+test("auction extended before the upgrade that ended over 14 days ago records the new winner without re-queuing", async () => {
+  assert.deepEqual(await record("extended-stale"), {
+    winnerNotified: true,
+    winnerNotifiedUserId: "bob",
+    winnerNotifiedAmount: 130,
+    winnerNotifiedAt: null,
+    highestBidderId: "bob",
+    currentBid: 130,
+  });
+});
+
+test("auction extended before the upgrade and still open becomes pending", async () => {
+  assert.deepEqual(await record("extended-open"), {
+    winnerNotified: false,
+    winnerNotifiedUserId: "alice",
+    winnerNotifiedAmount: null,
+    winnerNotifiedAt: OLDER_WIN,
+    highestBidderId: "bob",
+    currentBid: 140,
+  });
+});
+
 test("deleted won notification records the current highest bidder", async () => {
   assert.deepEqual(await record("deleted"), {
     winnerNotified: true,
@@ -254,7 +325,7 @@ test("notified items without a highest bidder stay notified with no record", asy
   });
 });
 
-test("the backfill only re-queues the item whose winner changed", async () => {
+test("the backfill only re-queues the items whose winner changed recently or that are open", async () => {
   const pending = await prisma.auctionItem.findMany({
     where: { winnerNotified: false },
     select: { id: true },
@@ -262,6 +333,6 @@ test("the backfill only re-queues the item whose winner changed", async () => {
   });
   assert.deepEqual(
     pending.map((item) => item.id),
-    ["extended", "pending"],
+    ["extended", "extended-open", "pending"],
   );
 });
