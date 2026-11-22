@@ -177,7 +177,8 @@
       "noBidsDescription": "Żaden przedmiot w tej aukcji nie otrzymał ofert.",
       "noBidsYetDescription": "Nie złożono jeszcze żadnych ofert.",
       "unsoldTitle": "Niesprzedane przedmioty",
-      "unsoldCount": "{count, plural, one {# przedmiot zakończył się bez ofert} few {# przedmioty zakończyły się bez ofert} many {# przedmiotów zakończyło się bez ofert} other {# przedmiotów zakończyło się bez ofert}}"
+      "unsoldCount": "{count, plural, one {# przedmiot zakończył się bez ofert} few {# przedmioty zakończyły się bez ofert} many {# przedmiotów zakończyło się bez ofert} other {# przedmiotów zakończyło się bez ofert}}",
+      "noBidsYet": "Brak ofert"
     },
     "acceptInvite": {
       "title": "Dołącz do aukcji",

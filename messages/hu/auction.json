@@ -177,7 +177,8 @@
       "noBidsDescription": "Ebben az aukcióban egyetlen tételre sem érkezett licit.",
       "noBidsYetDescription": "Még nem érkezett licit.",
       "unsoldTitle": "Eladatlan tételek",
-      "unsoldCount": "{count, plural, one {# tétel licit nélkül zárult} other {# tétel licit nélkül zárult}}"
+      "unsoldCount": "{count, plural, one {# tétel licit nélkül zárult} other {# tétel licit nélkül zárult}}",
+      "noBidsYet": "Még nincs licit"
     },
     "acceptInvite": {
       "title": "Csatlakozás aukcióhoz",

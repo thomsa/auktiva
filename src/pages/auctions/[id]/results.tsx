@@ -1,9 +1,5 @@
 import Link from "next/link";
 import * as auctionService from "@/lib/services/auction.service";
-import type {
-  AuctionResultRow,
-  AuctionUnsoldItem,
-} from "@/lib/services/auction.service";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { StatsCard } from "@/components/ui/stats-card";
 import { getMessages, Locale } from "@/i18n";
@@ -12,6 +8,8 @@ import { withAuth } from "@/lib/auth/withAuth";
 import { formatAuctionBidDisplay } from "@/lib/currency-display";
 import {
   groupTotalsByCurrency,
+  type AuctionResultRow,
+  type AuctionUnsoldItem,
   type CurrencyTotal,
 } from "@/lib/results-summary";
 
@@ -83,27 +81,69 @@ function Thumbnail({
   );
 }
 
-/** Per-currency totals as a value for a stats card. */
-function StatTotals({ totals }: { totals: CurrencyTotal[] }) {
-  if (totals.length === 0) {
-    return <span className="font-mono">0</span>;
-  }
-
-  if (totals.length === 1) {
-    return <span className="font-mono">{totals[0].formatted}</span>;
-  }
-
+/**
+ * An e-mail address with a break opportunity before its "@", so long
+ * addresses break there first and
+ * only break inside a part when that part alone is too wide.
+ */
+function EmailText({ email }: { email: string }) {
+  const at = email.lastIndexOf("@");
+  if (at <= 0) return <>{email}</>;
   return (
-    <ul className="font-mono text-base leading-snug space-y-0.5 pt-0.5">
-      {totals.map((total) => (
-        <li key={total.key} className="truncate">
-          {total.formatted}
-          <span className="ml-1.5 text-xs font-sans font-medium text-base-content/50">
-            {total.code}
-          </span>
-        </li>
-      ))}
-    </ul>
+    <>
+      {email.slice(0, at)}
+      <wbr />
+      {email.slice(at)}
+    </>
+  );
+}
+
+/**
+ * The value stat card. It mirrors `StatsCard`, but money is never truncated:
+ * several currencies stack, and the code wraps under its amount when the
+ * card is narrow.
+ */
+function ValueStatsCard({
+  totals,
+  label,
+}: {
+  totals: CurrencyTotal[];
+  label: string;
+}) {
+  return (
+    <div className="card bg-base-100 shadow min-w-0">
+      <div className="card-body p-4">
+        <div className="flex items-start gap-3 min-w-0">
+          <div className="bg-primary/10 p-2 rounded-lg shrink-0">
+            <span className="icon-[tabler--coins] size-6 text-primary"></span>
+          </div>
+          <div className="min-w-0 flex-1">
+            {totals.length <= 1 ? (
+              <div className="text-2xl font-bold font-mono break-words">
+                {totals[0]?.formatted ?? "0"}
+              </div>
+            ) : (
+              <ul className="font-bold font-mono text-base leading-snug space-y-1 pt-0.5">
+                {totals.map((total) => (
+                  <li
+                    key={total.key}
+                    className="flex flex-wrap items-baseline gap-x-1.5"
+                  >
+                    <span className="break-words min-w-0">
+                      {total.formatted}
+                    </span>
+                    <span className="text-xs font-sans font-medium text-base-content/50">
+                      {total.code}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="text-xs text-base-content/60 truncate">{label}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -138,7 +178,9 @@ function BidderCell({
       : "icon-[tabler--trophy]";
 
   return (
-    <div className={`flex flex-col ${compact ? "gap-0.5" : "gap-1"} min-w-0`}>
+    <div
+      className={`flex flex-col ${compact ? "gap-0.5 min-w-0" : "gap-1 min-w-52"}`}
+    >
       <span
         className={`inline-flex items-center max-w-full ${compact ? "flex-wrap" : ""} ${chipSize} ${chipTone}`}
       >
@@ -181,7 +223,7 @@ function BidderCell({
         >
           <span className="icon-[tabler--mail] size-3 shrink-0"></span>
           <span className="underline underline-offset-2 min-w-0 break-words">
-            {row.winner.email}
+            <EmailText email={row.winner.email} />
           </span>
         </a>
       )}
@@ -232,7 +274,7 @@ export default function ResultsPage({
       {/* Header */}
       <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
         <div className="card-body p-5 sm:p-8">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 lg:gap-6">
             <div className="min-w-0">
               <p className="text-xs font-bold text-base-content/50 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                 <span className="icon-[tabler--chart-bar] size-3"></span>
@@ -240,12 +282,12 @@ export default function ResultsPage({
               </p>
               <h1 className="card-title text-xl sm:text-4xl font-extrabold tracking-tight flex items-center gap-3">
                 <span className="icon-[tabler--trophy] size-6 sm:size-8 text-warning shrink-0"></span>
-                <span className="min-w-0 text-wrap wrap-anywhere">
+                <span className="min-w-0 text-wrap text-balance break-words">
                   {auction.name}
                 </span>
               </h1>
             </div>
-            <div className="flex flex-wrap items-center gap-3 sm:justify-end shrink-0">
+            <div className="flex flex-wrap items-center gap-3 lg:justify-end lg:shrink-0">
               {auction.isEnded ? (
                 <div className="badge badge-error badge-lg font-bold shadow-sm gap-1">
                   <span className="icon-[tabler--flag-filled] size-3"></span>
@@ -284,7 +326,7 @@ export default function ResultsPage({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mt-6 lg:mt-8">
             <StatsCard
               icon="icon-[tabler--trophy]"
               iconColor="warning"
@@ -303,10 +345,8 @@ export default function ResultsPage({
               value={totalBids}
               label={t("totalBids")}
             />
-            <StatsCard
-              icon="icon-[tabler--coins]"
-              iconColor="primary"
-              value={<StatTotals totals={valueTotals} />}
+            <ValueStatsCard
+              totals={valueTotals}
               label={isStillRunning ? t("totalValueSoFar") : t("totalValue")}
             />
           </div>
@@ -347,12 +387,12 @@ export default function ResultsPage({
                       />
                       <div className="min-w-0 flex-1">
                         <div
-                          className="font-semibold line-clamp-2 wrap-anywhere"
+                          className="font-semibold line-clamp-2 break-words"
                           title={win.itemName}
                         >
                           {win.itemName}
                         </div>
-                        <div className="text-primary font-bold font-mono mt-1 wrap-anywhere">
+                        <div className="text-primary font-bold font-mono mt-1 break-words">
                           {formatRowAmount(win)}
                         </div>
                       </div>
@@ -367,7 +407,7 @@ export default function ResultsPage({
                         {userWinTotals.map((total) => (
                           <li
                             key={total.key}
-                            className="text-xl font-bold font-mono text-primary wrap-anywhere"
+                            className="text-xl font-bold font-mono text-primary break-words"
                           >
                             {total.formatted}
                             {userWinTotals.length > 1 && (
@@ -407,7 +447,7 @@ export default function ResultsPage({
                 <div className="p-6 sm:p-12">
                   <EmptyState
                     icon="icon-[tabler--hammer-off]"
-                    title={t("noItemsSold")}
+                    title={auction.isEnded ? t("noItemsSold") : t("noBidsYet")}
                     description={
                       auction.isEnded
                         ? t("noBidsDescription")
@@ -526,7 +566,7 @@ export default function ResultsPage({
                       <div className="min-w-0 flex flex-wrap items-center gap-x-2 gap-y-0.5">
                         <Link
                           href={`/auctions/${auction.id}/items/${item.itemId}`}
-                          className="link link-hover font-medium line-clamp-2 wrap-anywhere"
+                          className="link link-hover font-medium line-clamp-2 min-w-0 break-words"
                           title={item.itemName}
                         >
                           {item.itemName}

@@ -180,7 +180,8 @@
       "noBidsDescription": "No items received bids in this auction.",
       "noBidsYetDescription": "No bids have been placed yet.",
       "unsoldTitle": "Unsold items",
-      "unsoldCount": "{count, plural, one {# item ended without bids} other {# items ended without bids}}"
+      "unsoldCount": "{count, plural, one {# item ended without bids} other {# items ended without bids}}",
+      "noBidsYet": "No bids yet"
     },
     "acceptInvite": {
       "title": "Join Auction",

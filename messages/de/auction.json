@@ -177,7 +177,8 @@
       "noBidsDescription": "In dieser Auktion hat kein Artikel ein Gebot erhalten.",
       "noBidsYetDescription": "Bisher wurden keine Gebote abgegeben.",
       "unsoldTitle": "Unverkaufte Artikel",
-      "unsoldCount": "{count, plural, one {# Artikel endete ohne Gebote} other {# Artikel endeten ohne Gebote}}"
+      "unsoldCount": "{count, plural, one {# Artikel endete ohne Gebote} other {# Artikel endeten ohne Gebote}}",
+      "noBidsYet": "Noch keine Gebote"
     },
     "acceptInvite": {
       "title": "Auktion beitreten",

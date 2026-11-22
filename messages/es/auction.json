@@ -177,7 +177,8 @@
       "noBidsDescription": "Ningún artículo recibió pujas en esta subasta.",
       "noBidsYetDescription": "Todavía no se ha realizado ninguna puja.",
       "unsoldTitle": "Artículos sin vender",
-      "unsoldCount": "{count, plural, one {# artículo terminó sin pujas} other {# artículos terminaron sin pujas}}"
+      "unsoldCount": "{count, plural, one {# artículo terminó sin pujas} other {# artículos terminaron sin pujas}}",
+      "noBidsYet": "Todavía no hay pujas"
     },
     "acceptInvite": {
       "title": "Unirse a Subasta",

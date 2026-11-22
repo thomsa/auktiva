@@ -5,12 +5,8 @@ import { JoinMode, MemberRole } from "@/generated/prisma/enums";
 import type { Auction, AuctionMember } from "@/generated/prisma/client";
 import { canAutoJoin } from "@/utils/auction-helpers";
 import {
-  classifyResultItem,
-  isResultItemEnded,
-  resolveWinnerVisibility,
-  toVisibleBidder,
-  type ResultBidder,
-  type ResultItemState,
+  buildAuctionResults,
+  type AuctionResultsModel,
 } from "@/lib/results-summary";
 
 // ============================================================================
@@ -562,43 +558,13 @@ export async function rejoinAuction(
   });
 }
 
-export type AuctionResultRowStatus = Extract<
-  ResultItemState,
-  "won" | "leading"
->;
+export type {
+  AuctionResultRow,
+  AuctionResultRowStatus,
+  AuctionUnsoldItem,
+} from "@/lib/results-summary";
 
-export interface AuctionResultRow {
-  itemId: string;
-  itemName: string;
-  thumbnailUrl: string | null;
-  status: AuctionResultRowStatus;
-  winningBid: number;
-  normalizedWinningBid: number | null;
-  enteredRepresentation: unknown;
-  currencyCode: string;
-  currencySymbol: string;
-  currencyProfile: {
-    id: string;
-    code: string;
-    symbol: string;
-    inputMode: "SCALAR" | "DENOMINATION";
-    fractionMode: "INTEGER_ONLY" | "DECIMAL";
-    precision: number;
-    denominationConfig: unknown;
-  } | null;
-  winner: ResultBidder | null;
-  isCurrentUser: boolean;
-  isItemCreator: boolean;
-}
-
-export interface AuctionUnsoldItem {
-  itemId: string;
-  itemName: string;
-  thumbnailUrl: string | null;
-  isItemCreator: boolean;
-}
-
-export interface AuctionResultsData {
+export interface AuctionResultsData extends AuctionResultsModel {
   auction: {
     id: string;
     name: string;
@@ -606,24 +572,15 @@ export interface AuctionResultsData {
     endDate: string | null;
     isEnded: boolean;
   };
-  /** Ended items with bids (won) first, then open items with bids (leading). */
-  results: AuctionResultRow[];
-  /** Published, ended items without any bid. */
-  unsold: AuctionUnsoldItem[];
-  /** Ended items the viewer won. */
-  userWins: AuctionResultRow[];
-  /** Published items only. */
-  totalItems: number;
-  totalBids: number;
 }
 
 /**
  * Get auction results data for results page.
  *
- * Only published items are included. Bidder identity follows the auction's
- * `bidderVisibility` (see `resolveWinnerVisibility`); `isAdmin` lets auction
- * admins see the top bidder, and the email is only sent to the item creator
- * and admins once the item has ended.
+ * Loads the published items with their top bid and hands them to
+ * `buildAuctionResults`, which applies the auction's bidder visibility
+ * (admins and item creators see the top bidder; the email only reaches them
+ * once the item has ended).
  */
 export async function getAuctionResultsData(
   auctionId: string,
@@ -672,68 +629,14 @@ export async function getAuctionResultsData(
   });
 
   const now = new Date();
-  const totalBids = items.reduce((sum, item) => sum + item._count.bids, 0);
-
-  const won: AuctionResultRow[] = [];
-  const leading: AuctionResultRow[] = [];
-  const unsold: AuctionUnsoldItem[] = [];
-
-  for (const item of items) {
-    const isItemCreator = item.creatorId === userId;
-    const isEnded = isResultItemEnded(item.endDate, auction.endDate, now);
-    const topBid = item.bids[0];
-    const state = classifyResultItem({
-      isEnded,
-      bidCount: topBid ? item._count.bids : 0,
-    });
-    const thumbnailUrl = item.images[0]?.url
-      ? getPublicUrl(item.images[0].url)
-      : null;
-
-    if (state === "unsold") {
-      unsold.push({
-        itemId: item.id,
-        itemName: item.name,
-        thumbnailUrl,
-        isItemCreator,
-      });
-      continue;
-    }
-
-    if ((state !== "won" && state !== "leading") || !topBid) continue;
-
-    const isCurrentUser = topBid.userId === userId;
-    const visibility = resolveWinnerVisibility({
-      bidderVisibility: auction.bidderVisibility,
-      bidIsAnonymous: topBid.isAnonymous,
-      viewerIsItemCreator: isItemCreator,
-      viewerIsAdmin: isAdmin,
-      viewerIsBidder: isCurrentUser,
-      isEnded,
-    });
-
-    const row: AuctionResultRow = {
-      itemId: item.id,
-      itemName: item.name,
-      thumbnailUrl,
-      status: state,
-      winningBid: topBid.amount,
-      normalizedWinningBid: topBid.normalizedAmount,
-      enteredRepresentation: topBid.enteredRepresentation,
-      currencyCode: item.currencyCode,
-      currencySymbol: item.currency.symbol,
-      currencyProfile: topBid.currencyProfile,
-      winner: toVisibleBidder(topBid.user, visibility),
-      isCurrentUser,
-      isItemCreator,
-    };
-
-    (state === "won" ? won : leading).push(row);
-  }
-
-  const isEnded = auction.endDate
-    ? new Date(auction.endDate) < now
-    : false;
+  const model = buildAuctionResults({
+    items,
+    auction,
+    viewerId: userId,
+    isAdmin,
+    now,
+    resolveImageUrl: getPublicUrl,
+  });
 
   return {
     auction: {
@@ -741,13 +644,9 @@ export async function getAuctionResultsData(
       name: auction.name,
       description: auction.description,
       endDate: auction.endDate?.toISOString() || null,
-      isEnded,
+      isEnded: auction.endDate ? auction.endDate < now : false,
     },
-    results: [...won, ...leading],
-    unsold,
-    userWins: won.filter((row) => row.isCurrentUser),
-    totalItems: items.length,
-    totalBids,
+    ...model,
   };
 }
 
