@@ -371,7 +371,10 @@ model AuctionItem {
   antiSnipeExtensionSeconds Int       @default(300)  // Seconds to extend by (5-3600)
   
   // Notification tracking
-  winnerNotified  Boolean   @default(false) // Track if winner notification sent
+  winnerNotified  Boolean   @default(false) // false = a win notification is pending for whoever wins at the end
+  winnerNotifiedUserId String?   // User ID last told they won (plain ID, like highestBidderId)
+  winnerNotifiedAmount Float?    // currentBid when that user was notified
+  winnerNotifiedAt     DateTime? // When the notified winner was recorded
   
   // Metadata
   createdAt       DateTime  @default(now())
@@ -455,6 +458,7 @@ enum NotificationType {
   INVITE_RECEIVED // You received an invite
   MEMBER_JOINED   // Someone joined your auction
   NEW_ITEM        // New item added to an auction you're in
+  BIDDING_REOPENED // Bidding reopened on items you bid on
 }
 
 model Notification {
@@ -500,6 +504,7 @@ enum EmailType {
   ITEM_WON           // User won an item
   ACCOUNT_EXISTS     // Registration attempt with existing email
   EMAIL_VERIFICATION // Email verification on registration
+  BIDDING_REOPENED   // Bidding reopened on an item the user was told they won
 }
 
 model EmailLog {
