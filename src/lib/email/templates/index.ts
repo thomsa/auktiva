@@ -6,3 +6,4 @@ export { getPasswordResetTemplateData } from "./password-reset";
 export { getItemWonTemplateData } from "./item-won";
 export { getAccountExistsTemplateData } from "./account-exists";
 export { getEmailVerificationTemplateData } from "./email-verification";
+export { getBiddingReopenedTemplateData } from "./bidding-reopened";

@@ -20,6 +20,7 @@ import {
   getNewItemTemplateData,
   getOutbidTemplateData,
   getItemWonTemplateData,
+  getBiddingReopenedTemplateData,
 } from "./templates";
 import { createLogger } from "@/lib/logger";
 
@@ -406,6 +407,84 @@ export async function queueItemWonEmail(params: {
     emailServiceLogger.error(
       { err, itemId, auctionId, winnerId },
       "Failed to queue item won email",
+    );
+    return false;
+  }
+}
+
+/**
+ * Queue a bidding-reopened email for a user who was told they won one or
+ * more of the reopened items. Uses the item-won opt-in, so it only sends when
+ * the user enabled item-won e-mails.
+ */
+export async function queueBiddingReopenedEmail(params: {
+  userId: string;
+  email: string;
+  name: string | null;
+  auctionId: string;
+  auctionName: string;
+  items: { id: string; name: string }[];
+  /** New close time formatted for display (UTC), or null for no end time. */
+  closeTime: string | null;
+}): Promise<boolean> {
+  const { userId, email, name, auctionId, auctionName, items, closeTime } =
+    params;
+
+  emailServiceLogger.info(
+    { auctionId, userId, itemCount: items.length },
+    "Queueing bidding reopened email",
+  );
+
+  try {
+    const userSettings = await prisma.userSettings.findUnique({
+      where: { userId },
+      select: { emailOnItemWon: true },
+    });
+
+    // Same opt-in as the original win e-mail (default off)
+    if (userSettings?.emailOnItemWon !== true) {
+      emailServiceLogger.debug(
+        { auctionId, userId },
+        "User has not enabled item won notifications, skipping",
+      );
+      return true; // Not an error, just skipped
+    }
+
+    const templateData = getBiddingReopenedTemplateData({
+      auctionName,
+      auctionId,
+      items,
+      closeTime,
+      appUrl: APP_URL,
+    });
+
+    const subject =
+      items.length === 1
+        ? `Bidding reopened on "${items[0].name}"`
+        : `Bidding reopened in "${auctionName}"`;
+
+    const result = await sendEmail({
+      to: email,
+      toName: name || undefined,
+      subject,
+      mjmlTemplate: templateData.template,
+      replacements: templateData.replacements,
+      type: "BIDDING_REOPENED",
+      metadata: {
+        auctionId,
+        userId,
+        itemIds: items.map((item) => item.id),
+      },
+    });
+    emailServiceLogger.debug(
+      { auctionId, userId, result },
+      "Bidding reopened email queue result",
+    );
+    return result;
+  } catch (err) {
+    emailServiceLogger.error(
+      { err, auctionId, userId },
+      "Failed to queue bidding reopened email",
     );
     return false;
   }
