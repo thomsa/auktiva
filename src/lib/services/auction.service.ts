@@ -4,6 +4,14 @@ import { getPublicUrl } from "@/lib/storage";
 import { JoinMode, MemberRole } from "@/generated/prisma/enums";
 import type { Auction, AuctionMember } from "@/generated/prisma/client";
 import { canAutoJoin } from "@/utils/auction-helpers";
+import {
+  classifyResultItem,
+  isResultItemEnded,
+  resolveWinnerVisibility,
+  toVisibleBidder,
+  type ResultBidder,
+  type ResultItemState,
+} from "@/lib/results-summary";
 
 // ============================================================================
 // Types
@@ -554,15 +562,74 @@ export async function rejoinAuction(
   });
 }
 
+export type AuctionResultRowStatus = Extract<
+  ResultItemState,
+  "won" | "leading"
+>;
+
+export interface AuctionResultRow {
+  itemId: string;
+  itemName: string;
+  thumbnailUrl: string | null;
+  status: AuctionResultRowStatus;
+  winningBid: number;
+  normalizedWinningBid: number | null;
+  enteredRepresentation: unknown;
+  currencyCode: string;
+  currencySymbol: string;
+  currencyProfile: {
+    id: string;
+    code: string;
+    symbol: string;
+    inputMode: "SCALAR" | "DENOMINATION";
+    fractionMode: "INTEGER_ONLY" | "DECIMAL";
+    precision: number;
+    denominationConfig: unknown;
+  } | null;
+  winner: ResultBidder | null;
+  isCurrentUser: boolean;
+  isItemCreator: boolean;
+}
+
+export interface AuctionUnsoldItem {
+  itemId: string;
+  itemName: string;
+  thumbnailUrl: string | null;
+  isItemCreator: boolean;
+}
+
+export interface AuctionResultsData {
+  auction: {
+    id: string;
+    name: string;
+    description: string | null;
+    endDate: string | null;
+    isEnded: boolean;
+  };
+  /** Ended items with bids (won) first, then open items with bids (leading). */
+  results: AuctionResultRow[];
+  /** Published, ended items without any bid. */
+  unsold: AuctionUnsoldItem[];
+  /** Ended items the viewer won. */
+  userWins: AuctionResultRow[];
+  /** Published items only. */
+  totalItems: number;
+  totalBids: number;
+}
+
 /**
- * Get auction results data for results page
- * @param isAdmin - If true, show winner info even for anonymous bids (for auction owners)
+ * Get auction results data for results page.
+ *
+ * Only published items are included. Bidder identity follows the auction's
+ * `bidderVisibility` (see `resolveWinnerVisibility`); `isAdmin` lets auction
+ * admins see the top bidder, and the email is only sent to the item creator
+ * and admins once the item has ended.
  */
 export async function getAuctionResultsData(
   auctionId: string,
   userId: string,
   isAdmin: boolean = false,
-) {
+): Promise<AuctionResultsData | null> {
   const auction = await prisma.auction.findUnique({
     where: { id: auctionId },
   });
@@ -570,12 +637,10 @@ export async function getAuctionResultsData(
   if (!auction) return null;
 
   const items = await prisma.auctionItem.findMany({
-    where: { auctionId },
+    where: { auctionId, isPublished: true },
+    orderBy: { createdAt: "asc" },
     include: {
       currency: true,
-      creator: {
-        select: { id: true, name: true, email: true },
-      },
       images: {
         orderBy: { order: "asc" },
         take: 1,
@@ -587,6 +652,7 @@ export async function getAuctionResultsData(
           currencyProfile: {
             select: {
               id: true,
+              code: true,
               symbol: true,
               inputMode: true,
               fractionMode: true,
@@ -605,36 +671,68 @@ export async function getAuctionResultsData(
     },
   });
 
+  const now = new Date();
   const totalBids = items.reduce((sum, item) => sum + item._count.bids, 0);
 
-  const winners = items
-    .filter((item) => item.bids.length > 0)
-    .map((item) => {
-      const isItemCreator = item.creatorId === userId;
-      // Show winner info if: admin, or item creator (so they can contact winner)
-      const canSeeWinner = isAdmin || isItemCreator || !item.bidderAnonymous;
-      return {
+  const won: AuctionResultRow[] = [];
+  const leading: AuctionResultRow[] = [];
+  const unsold: AuctionUnsoldItem[] = [];
+
+  for (const item of items) {
+    const isItemCreator = item.creatorId === userId;
+    const isEnded = isResultItemEnded(item.endDate, auction.endDate, now);
+    const topBid = item.bids[0];
+    const state = classifyResultItem({
+      isEnded,
+      bidCount: topBid ? item._count.bids : 0,
+    });
+    const thumbnailUrl = item.images[0]?.url
+      ? getPublicUrl(item.images[0].url)
+      : null;
+
+    if (state === "unsold") {
+      unsold.push({
         itemId: item.id,
         itemName: item.name,
-        thumbnailUrl: item.images[0]?.url
-          ? getPublicUrl(item.images[0].url)
-          : null,
-        winningBid: item.bids[0].amount,
-        normalizedWinningBid: item.bids[0].normalizedAmount,
-        enteredRepresentation: item.bids[0].enteredRepresentation,
-        currencyCode: item.currencyCode,
-        currencySymbol: item.currency.symbol,
-        currencyProfile: item.bids[0].currencyProfile,
-        winner: canSeeWinner ? item.bids[0].user : null,
-        isCurrentUser: item.bids[0].userId === userId,
+        thumbnailUrl,
         isItemCreator,
-      };
+      });
+      continue;
+    }
+
+    if ((state !== "won" && state !== "leading") || !topBid) continue;
+
+    const isCurrentUser = topBid.userId === userId;
+    const visibility = resolveWinnerVisibility({
+      bidderVisibility: auction.bidderVisibility,
+      bidIsAnonymous: topBid.isAnonymous,
+      viewerIsItemCreator: isItemCreator,
+      viewerIsAdmin: isAdmin,
+      viewerIsBidder: isCurrentUser,
+      isEnded,
     });
 
-  const userWins = winners.filter((w) => w.isCurrentUser);
+    const row: AuctionResultRow = {
+      itemId: item.id,
+      itemName: item.name,
+      thumbnailUrl,
+      status: state,
+      winningBid: topBid.amount,
+      normalizedWinningBid: topBid.normalizedAmount,
+      enteredRepresentation: topBid.enteredRepresentation,
+      currencyCode: item.currencyCode,
+      currencySymbol: item.currency.symbol,
+      currencyProfile: topBid.currencyProfile,
+      winner: toVisibleBidder(topBid.user, visibility),
+      isCurrentUser,
+      isItemCreator,
+    };
+
+    (state === "won" ? won : leading).push(row);
+  }
 
   const isEnded = auction.endDate
-    ? new Date(auction.endDate) < new Date()
+    ? new Date(auction.endDate) < now
     : false;
 
   return {
@@ -645,8 +743,9 @@ export async function getAuctionResultsData(
       endDate: auction.endDate?.toISOString() || null,
       isEnded,
     },
-    winners,
-    userWins,
+    results: [...won, ...leading],
+    unsold,
+    userWins: won.filter((row) => row.isCurrentUser),
     totalItems: items.length,
     totalBids,
   };

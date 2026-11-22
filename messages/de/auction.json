@@ -163,7 +163,21 @@
       "noItemsSold": "Keine Artikel verkauft",
       "you": "Du",
       "anonymous": "Anonym",
-      "yourListing": "Dein Artikel"
+      "yourListing": "Dein Artikel",
+      "exportCsv": "Als CSV exportieren",
+      "exportJson": "Als JSON exportieren",
+      "totalValueSoFar": "Bisheriger Wert",
+      "total": "Gesamt",
+      "totalSoFar": "Bisher gesamt",
+      "highestBidder": "Höchstbietende",
+      "highestBid": "Höchstgebot",
+      "leading": "Führend",
+      "unnamedBidder": "Bieter ohne Namen",
+      "openCount": "{count, plural, one {# Artikel ist noch für Gebote offen} other {# Artikel sind noch für Gebote offen}}",
+      "noBidsDescription": "In dieser Auktion hat kein Artikel ein Gebot erhalten.",
+      "noBidsYetDescription": "Bisher wurden keine Gebote abgegeben.",
+      "unsoldTitle": "Unverkaufte Artikel",
+      "unsoldCount": "{count, plural, one {# Artikel endete ohne Gebote} other {# Artikel endeten ohne Gebote}}"
     },
     "acceptInvite": {
       "title": "Auktion beitreten",

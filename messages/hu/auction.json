@@ -163,7 +163,21 @@
       "noItemsSold": "Nincs eladott tétel",
       "you": "Te",
       "anonymous": "Anonim",
-      "yourListing": "Saját tétel"
+      "yourListing": "Saját tétel",
+      "exportCsv": "Exportálás CSV-be",
+      "exportJson": "Exportálás JSON-be",
+      "totalValueSoFar": "Eddigi érték",
+      "total": "Összesen",
+      "totalSoFar": "Eddig összesen",
+      "highestBidder": "Legmagasabb licitáló",
+      "highestBid": "Legmagasabb licit",
+      "leading": "Vezet",
+      "unnamedBidder": "Névtelen licitáló",
+      "openCount": "{count, plural, one {# tételre még lehet licitálni} other {# tételre még lehet licitálni}}",
+      "noBidsDescription": "Ebben az aukcióban egyetlen tételre sem érkezett licit.",
+      "noBidsYetDescription": "Még nem érkezett licit.",
+      "unsoldTitle": "Eladatlan tételek",
+      "unsoldCount": "{count, plural, one {# tétel licit nélkül zárult} other {# tétel licit nélkül zárult}}"
     },
     "acceptInvite": {
       "title": "Csatlakozás aukcióhoz",

@@ -1,37 +1,19 @@
 import Link from "next/link";
 import * as auctionService from "@/lib/services/auction.service";
+import type {
+  AuctionResultRow,
+  AuctionUnsoldItem,
+} from "@/lib/services/auction.service";
 import { PageLayout, BackLink, EmptyState } from "@/components/common";
 import { StatsCard } from "@/components/ui/stats-card";
 import { getMessages, Locale } from "@/i18n";
 import { useTranslations } from "next-intl";
 import { withAuth } from "@/lib/auth/withAuth";
 import { formatAuctionBidDisplay } from "@/lib/currency-display";
-
-interface Winner {
-  itemId: string;
-  itemName: string;
-  thumbnailUrl: string | null;
-  winningBid: number;
-  normalizedWinningBid: number | null;
-  enteredRepresentation: unknown;
-  currencyCode: string;
-  currencySymbol: string;
-  currencyProfile: {
-    id: string;
-    symbol: string;
-    inputMode: "SCALAR" | "DENOMINATION";
-    fractionMode: "INTEGER_ONLY" | "DECIMAL";
-    precision: number;
-    denominationConfig: unknown;
-  } | null;
-  winner: {
-    id: string;
-    name: string | null;
-    email: string;
-  } | null;
-  isCurrentUser: boolean;
-  isItemCreator: boolean;
-}
+import {
+  groupTotalsByCurrency,
+  type CurrencyTotal,
+} from "@/lib/results-summary";
 
 interface ResultsPageProps {
   user: {
@@ -46,17 +28,172 @@ interface ResultsPageProps {
     endDate: string | null;
     isEnded: boolean;
   };
-  winners: Winner[];
-  userWins: Winner[];
+  results: AuctionResultRow[];
+  unsold: AuctionUnsoldItem[];
+  userWins: AuctionResultRow[];
   totalItems: number;
   totalBids: number;
   isAdmin: boolean;
 }
 
+function toTotals(rows: AuctionResultRow[]): CurrencyTotal[] {
+  return groupTotalsByCurrency(
+    rows.map((row) => ({
+      amount: row.winningBid,
+      currencyCode: row.currencyCode,
+      currencySymbol: row.currencySymbol,
+      currencyProfile: row.currencyProfile,
+    })),
+  );
+}
+
+function formatRowAmount(row: AuctionResultRow): string {
+  return formatAuctionBidDisplay({
+    amount: row.winningBid,
+    enteredRepresentation: row.enteredRepresentation,
+    profile: row.currencyProfile,
+    fallbackSymbol: row.currencySymbol,
+  });
+}
+
+function Thumbnail({
+  url,
+  alt,
+  className,
+  iconClassName,
+}: {
+  url: string | null;
+  alt: string;
+  className: string;
+  iconClassName: string;
+}) {
+  return (
+    <div className={`${className} shrink-0 bg-base-200 overflow-hidden`}>
+      {url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={url} alt={alt} className="w-full h-full object-cover" />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center">
+          <span
+            className={`icon-[tabler--photo] ${iconClassName} text-base-content/20`}
+          ></span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Per-currency totals as a value for a stats card. */
+function StatTotals({ totals }: { totals: CurrencyTotal[] }) {
+  if (totals.length === 0) {
+    return <span className="font-mono">0</span>;
+  }
+
+  if (totals.length === 1) {
+    return <span className="font-mono">{totals[0].formatted}</span>;
+  }
+
+  return (
+    <ul className="font-mono text-base leading-snug space-y-0.5 pt-0.5">
+      {totals.map((total) => (
+        <li key={total.key} className="truncate">
+          {total.formatted}
+          <span className="ml-1.5 text-xs font-sans font-medium text-base-content/50">
+            {total.code}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function BidderCell({
+  row,
+  compact,
+}: {
+  row: AuctionResultRow;
+  compact: boolean;
+}) {
+  const t = useTranslations("auction.results");
+  const isLeading = row.status === "leading";
+  const name = row.winner
+    ? row.winner.name || row.winner.email || t("unnamedBidder")
+    : null;
+
+  const chipSize = compact
+    ? "gap-1 px-1.5 py-0.5 rounded"
+    : "gap-2 px-3 py-1.5 rounded-lg";
+  const iconSize = compact ? "size-3" : "size-4";
+
+  const chipTone = !row.winner
+    ? "bg-base-200 text-base-content/60"
+    : isLeading
+      ? "bg-base-200 text-base-content/80"
+      : "bg-primary/10 text-primary";
+
+  const icon = !row.winner
+    ? "icon-[tabler--spy]"
+    : isLeading
+      ? "icon-[tabler--user]"
+      : "icon-[tabler--trophy]";
+
+  return (
+    <div className={`flex flex-col ${compact ? "gap-0.5" : "gap-1"} min-w-0`}>
+      <span
+        className={`inline-flex items-center max-w-full ${compact ? "flex-wrap" : ""} ${chipSize} ${chipTone}`}
+      >
+        <span className={`${icon} ${iconSize} shrink-0`}></span>
+        {name ? (
+          <span
+            className={`${compact ? "font-medium" : "font-semibold"} min-w-0 break-words`}
+          >
+            {name}
+          </span>
+        ) : (
+          <span className="italic">{t("anonymous")}</span>
+        )}
+        {row.isCurrentUser && (
+          <span
+            className={`badge badge-xs font-bold ${
+              isLeading ? "badge-outline" : "badge-success shadow-sm"
+            }`}
+          >
+            {t("you")}
+          </span>
+        )}
+      </span>
+      {isLeading && (
+        <span
+          className={`flex items-center gap-1 text-xs font-medium text-base-content/60 ${
+            compact ? "" : "pl-1"
+          }`}
+        >
+          <span className="icon-[tabler--hourglass-high] size-3 shrink-0"></span>
+          {t("leading")}
+        </span>
+      )}
+      {row.winner?.email && (
+        <a
+          href={`mailto:${row.winner.email}`}
+          className={`text-primary flex items-center gap-1 hover:opacity-80 transition-opacity min-w-0 ${
+            compact ? "text-xs" : "text-xs pl-1"
+          }`}
+        >
+          <span className="icon-[tabler--mail] size-3 shrink-0"></span>
+          <span className="underline underline-offset-2 min-w-0 break-words">
+            {row.winner.email}
+          </span>
+        </a>
+      )}
+    </div>
+  );
+}
+
 export default function ResultsPage({
   user,
   auction,
-  winners,
+  results,
+  unsold,
   userWins,
   totalItems,
   totalBids,
@@ -66,14 +203,14 @@ export default function ResultsPage({
   const tCommon = useTranslations("common");
   const tAuction = useTranslations("auction");
   const tStatus = useTranslations("status");
-  const totalValue = winners.reduce((sum, w) => sum + w.winningBid, 0);
 
-  const handleExport = (format: "json" | "csv") => {
-    window.open(
-      `/api/auctions/${auction.id}/export?format=${format}`,
-      "_blank",
-    );
-  };
+  const wonRows = results.filter((row) => row.status === "won");
+  const leadingCount = results.length - wonRows.length;
+  const isStillRunning = !auction.isEnded || leadingCount > 0;
+  const valueTotals = toTotals(wonRows);
+  const userWinTotals = toTotals(userWins);
+  const exportHref = (format: "csv" | "json") =>
+    `/api/auctions/${auction.id}/export?format=${format}`;
 
   return (
     <PageLayout user={user}>
@@ -85,7 +222,7 @@ export default function ResultsPage({
         />
         <Link
           href={`/auctions/${auction.id}`}
-          className="btn btn-outline btn-sm gap-2"
+          className="btn btn-outline btn-sm gap-2 self-start sm:self-auto"
         >
           <span className="icon-[tabler--list-details] size-4"></span>
           {t("viewAll")}
@@ -94,19 +231,21 @@ export default function ResultsPage({
 
       {/* Header */}
       <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl mb-8">
-        <div className="card-body p-8">
+        <div className="card-body p-5 sm:p-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
-            <div>
+            <div className="min-w-0">
               <p className="text-xs font-bold text-base-content/50 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                 <span className="icon-[tabler--chart-bar] size-3"></span>
                 {t("title")}
               </p>
               <h1 className="card-title text-xl sm:text-4xl font-extrabold tracking-tight flex items-center gap-3">
                 <span className="icon-[tabler--trophy] size-6 sm:size-8 text-warning shrink-0"></span>
-                <span className="min-w-0 text-wrap">{auction.name}</span>
+                <span className="min-w-0 text-wrap wrap-anywhere">
+                  {auction.name}
+                </span>
               </h1>
             </div>
-            <div className="flex items-center gap-3 self-start">
+            <div className="flex flex-wrap items-center gap-3 sm:justify-end shrink-0">
               {auction.isEnded ? (
                 <div className="badge badge-error badge-lg font-bold shadow-sm gap-1">
                   <span className="icon-[tabler--flag-filled] size-3"></span>
@@ -119,39 +258,27 @@ export default function ResultsPage({
                 </div>
               )}
               {isAdmin && (
-                <div className="dropdown dropdown-end">
-                  <button
-                    tabIndex={0}
-                    className="btn btn-ghost btn-sm btn-square"
+                <div
+                  role="group"
+                  aria-label={t("export")}
+                  className="flex flex-wrap gap-2"
+                >
+                  <a
+                    href={exportHref("csv")}
+                    download
+                    className="btn btn-outline btn-sm gap-2"
                   >
-                    <span className="icon-[tabler--dots-vertical] size-5"></span>
-                  </button>
-                  <ul
-                    tabIndex={0}
-                    className="dropdown-content menu bg-base-100/90 backdrop-blur rounded-box z-10 w-48 p-2 shadow-lg border border-base-content/5"
+                    <span className="icon-[tabler--table-export] size-4"></span>
+                    {t("exportCsv")}
+                  </a>
+                  <a
+                    href={exportHref("json")}
+                    download
+                    className="btn btn-outline btn-sm gap-2"
                   >
-                    <li className="menu-title text-xs font-semibold uppercase tracking-wider text-base-content/50 px-2 py-1">
-                      {t("export")}
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => handleExport("json")}
-                        className="gap-3"
-                      >
-                        <span className="icon-[tabler--file-code] size-4"></span>
-                        JSON
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => handleExport("csv")}
-                        className="gap-3"
-                      >
-                        <span className="icon-[tabler--table] size-4"></span>
-                        CSV
-                      </button>
-                    </li>
-                  </ul>
+                    <span className="icon-[tabler--file-code] size-4"></span>
+                    {t("exportJson")}
+                  </a>
                 </div>
               )}
             </div>
@@ -161,7 +288,7 @@ export default function ResultsPage({
             <StatsCard
               icon="icon-[tabler--trophy]"
               iconColor="warning"
-              value={winners.length}
+              value={wonRows.length}
               label={t("winners")}
             />
             <StatsCard
@@ -177,10 +304,10 @@ export default function ResultsPage({
               label={t("totalBids")}
             />
             <StatsCard
-              icon="icon-[tabler--currency-dollar]"
-              iconColor="success"
-              value={`$${totalValue.toLocaleString()}`}
-              label={t("totalValue")}
+              icon="icon-[tabler--coins]"
+              iconColor="primary"
+              value={<StatTotals totals={valueTotals} />}
+              label={isStillRunning ? t("totalValueSoFar") : t("totalValue")}
             />
           </div>
         </div>
@@ -212,44 +339,45 @@ export default function ResultsPage({
                       key={win.itemId}
                       className="bg-base-100 p-4 rounded-xl shadow-sm border border-base-content/5 flex gap-4"
                     >
-                      <div className="relative w-16 h-16 shrink-0 bg-base-200 rounded-lg overflow-hidden">
-                        {win.thumbnailUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={win.thumbnailUrl}
-                            alt={win.itemName}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <span className="icon-[tabler--photo] size-6 text-base-content/20"></span>
-                          </div>
-                        )}
-                      </div>
+                      <Thumbnail
+                        url={win.thumbnailUrl}
+                        alt={win.itemName}
+                        className="w-16 h-16 rounded-lg"
+                        iconClassName="size-6"
+                      />
                       <div className="min-w-0 flex-1">
-                        <div className="font-semibold truncate">
+                        <div
+                          className="font-semibold line-clamp-2 wrap-anywhere"
+                          title={win.itemName}
+                        >
                           {win.itemName}
                         </div>
-                        <div className="text-primary font-bold font-mono mt-1">
-                          {formatAuctionBidDisplay({
-                            amount: win.winningBid,
-                            enteredRepresentation: win.enteredRepresentation,
-                            profile: win.currencyProfile,
-                            fallbackSymbol: win.currencySymbol,
-                          })}
+                        <div className="text-primary font-bold font-mono mt-1 wrap-anywhere">
+                          {formatRowAmount(win)}
                         </div>
                       </div>
                     </div>
                   ))}
                   <div className="mt-6 pt-6 border-t border-primary/10">
-                    <div className="flex justify-between items-center text-sm font-medium">
-                      <span className="text-base-content/60">Total</span>
-                      <span className="text-xl font-bold text-primary">
-                        {userWins[0]?.currencySymbol}
-                        {userWins
-                          .reduce((sum, w) => sum + w.winningBid, 0)
-                          .toFixed(2)}
+                    <div className="flex justify-between items-start gap-4 text-sm font-medium">
+                      <span className="text-base-content/60 pt-1">
+                        {isStillRunning ? t("totalSoFar") : t("total")}
                       </span>
+                      <ul className="text-right space-y-1 min-w-0">
+                        {userWinTotals.map((total) => (
+                          <li
+                            key={total.key}
+                            className="text-xl font-bold font-mono text-primary wrap-anywhere"
+                          >
+                            {total.formatted}
+                            {userWinTotals.length > 1 && (
+                              <span className="ml-1.5 text-xs font-sans font-medium text-base-content/50">
+                                {total.code}
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
                 </div>
@@ -258,23 +386,33 @@ export default function ResultsPage({
           </div>
         </div>
 
-        {/* All Winners */}
-        <div className="lg:col-span-2 min-w-0">
+        <div className="lg:col-span-2 min-w-0 space-y-4 sm:space-y-8">
+          {/* All results */}
           <div className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl overflow-hidden">
             <div className="card-body p-0 min-w-0">
-              <div className="p-6 border-b border-base-content/5">
+              <div className="p-4 sm:p-6 border-b border-base-content/5">
                 <h2 className="card-title text-lg flex items-center gap-2">
                   <span className="icon-[tabler--list] size-5"></span>
                   {t("auctionWinners")}
                 </h2>
+                {leadingCount > 0 && (
+                  <p className="text-sm text-base-content/60 mt-1 flex items-center gap-1.5">
+                    <span className="icon-[tabler--hourglass-high] size-4 shrink-0"></span>
+                    {t("openCount", { count: leadingCount })}
+                  </p>
+                )}
               </div>
 
-              {winners.length === 0 ? (
-                <div className="p-12">
+              {results.length === 0 ? (
+                <div className="p-6 sm:p-12">
                   <EmptyState
                     icon="icon-[tabler--hammer-off]"
                     title={t("noItemsSold")}
-                    description="No items received bids in this auction."
+                    description={
+                      auction.isEnded
+                        ? t("noBidsDescription")
+                        : t("noBidsYetDescription")
+                    }
                   />
                 </div>
               ) : (
@@ -283,122 +421,64 @@ export default function ResultsPage({
                     <thead>
                       <tr className="bg-base-200/30 text-base-content/60 text-xs sm:text-sm">
                         <th className="pl-4 sm:pl-8">{t("item")}</th>
-                        <th className="hidden sm:table-cell">{t("winner")}</th>
+                        <th className="hidden sm:table-cell">
+                          {leadingCount > 0 ? t("highestBidder") : t("winner")}
+                        </th>
                         <th className="text-right pr-4 sm:pr-8">
-                          {t("winningBid")}
+                          {leadingCount > 0 ? t("highestBid") : t("winningBid")}
                         </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-base-content/5">
-                      {winners.map((win) => (
+                      {results.map((row) => (
                         <tr
-                          key={win.itemId}
+                          key={row.itemId}
                           className={`hover:bg-base-content/2 transition-colors ${
-                            win.isItemCreator ? "bg-secondary/5" : ""
+                            row.isItemCreator ? "bg-secondary/5" : ""
                           }`}
                         >
                           <td className="pl-4 sm:pl-8">
                             <div className="flex items-center gap-2 sm:gap-4">
-                              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-base-200 shrink-0 overflow-hidden">
-                                {win.thumbnailUrl ? (
-                                  // eslint-disable-next-line @next/next/no-img-element
-                                  <img
-                                    src={win.thumbnailUrl}
-                                    alt={win.itemName}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <span className="icon-[tabler--photo] size-5 text-base-content/20"></span>
-                                  </div>
-                                )}
-                              </div>
+                              <Thumbnail
+                                url={row.thumbnailUrl}
+                                alt={row.itemName}
+                                className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg"
+                                iconClassName="size-5"
+                              />
                               <div className="min-w-0">
-                                <div className="font-medium truncate flex items-center gap-2">
-                                  {win.itemName}
-                                  {win.isItemCreator && (
+                                <div className="font-medium flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                                  <Link
+                                    href={`/auctions/${auction.id}/items/${row.itemId}`}
+                                    className="link link-hover line-clamp-2 wrap-anywhere"
+                                    title={row.itemName}
+                                  >
+                                    {row.itemName}
+                                  </Link>
+                                  {row.isItemCreator && (
                                     <span className="badge badge-secondary badge-xs font-bold">
                                       {t("yourListing")}
                                     </span>
                                   )}
                                 </div>
-                                {/* Mobile: show winner below item name */}
-                                <div className="sm:hidden text-xs mt-0.5">
-                                  {win.winner ? (
-                                    <div className="flex flex-col gap-0.5">
-                                      <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">
-                                        <span className="icon-[tabler--trophy] size-3"></span>
-                                        {win.winner.name || win.winner.email}
-                                        {win.isCurrentUser && (
-                                          <span className="badge badge-success badge-xs ml-1 font-bold">
-                                            {t("you")}
-                                          </span>
-                                        )}
-                                      </span>
-                                      {win.isItemCreator &&
-                                        win.winner.email && (
-                                          <a
-                                            href={`mailto:${win.winner.email}`}
-                                            className="text-primary flex items-center gap-1 hover:opacity-80 transition-opacity"
-                                          >
-                                            <span className="icon-[tabler--mail] size-3"></span>
-                                            <span className="underline underline-offset-2">
-                                              {win.winner.email}
-                                            </span>
-                                          </a>
-                                        )}
-                                    </div>
-                                  ) : (
-                                    <span className="inline-flex items-center gap-1 bg-base-200 text-base-content/50 px-1.5 py-0.5 rounded italic">
-                                      <span className="icon-[tabler--spy] size-3"></span>
-                                      {t("anonymous")}
-                                    </span>
-                                  )}
+                                {/* Mobile: show bidder below item name */}
+                                <div className="sm:hidden text-xs mt-1">
+                                  <BidderCell row={row} compact />
                                 </div>
                               </div>
                             </div>
                           </td>
                           <td className="hidden sm:table-cell">
-                            {win.winner ? (
-                              <div className="flex flex-col gap-1">
-                                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 rounded-lg">
-                                  <span className="icon-[tabler--trophy] size-4"></span>
-                                  <span className="font-semibold">
-                                    {win.winner.name || win.winner.email}
-                                  </span>
-                                  {win.isCurrentUser && (
-                                    <span className="badge badge-success badge-xs font-bold shadow-sm">
-                                      {t("you")}
-                                    </span>
-                                  )}
-                                </div>
-                                {win.isItemCreator && win.winner.email && (
-                                  <a
-                                    href={`mailto:${win.winner.email}`}
-                                    className="text-xs text-primary flex items-center gap-1 pl-1 hover:opacity-80 transition-opacity"
-                                  >
-                                    <span className="icon-[tabler--mail] size-3"></span>
-                                    <span className="underline underline-offset-2">
-                                      {win.winner.email}
-                                    </span>
-                                  </a>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="inline-flex items-center gap-2 bg-base-200 text-base-content/50 px-3 py-1.5 rounded-lg italic">
-                                <span className="icon-[tabler--spy] size-4"></span>
-                                {t("anonymous")}
-                              </div>
-                            )}
+                            <BidderCell row={row} compact={false} />
                           </td>
-                          <td className="text-right pr-4 sm:pr-8">
-                            <span className="font-bold font-mono text-sm sm:text-lg">
-                              {formatAuctionBidDisplay({
-                                amount: win.winningBid,
-                                enteredRepresentation: win.enteredRepresentation,
-                                profile: win.currencyProfile,
-                                fallbackSymbol: win.currencySymbol,
-                              })}
+                          <td className="text-right pr-4 sm:pr-8 align-middle">
+                            <span
+                              className={`font-bold font-mono text-sm sm:text-lg whitespace-nowrap ${
+                                row.status === "leading"
+                                  ? "text-base-content/80"
+                                  : ""
+                              }`}
+                            >
+                              {formatRowAmount(row)}
                             </span>
                           </td>
                         </tr>
@@ -409,6 +489,60 @@ export default function ResultsPage({
               )}
             </div>
           </div>
+
+          {/* Unsold items */}
+          {unsold.length > 0 && (
+            <section
+              aria-labelledby="unsold-heading"
+              className="card bg-base-100/50 backdrop-blur-sm border border-base-content/5 shadow-xl overflow-hidden"
+            >
+              <div className="card-body p-0 min-w-0">
+                <div className="p-4 sm:p-6 border-b border-base-content/5">
+                  <h2
+                    id="unsold-heading"
+                    className="card-title text-lg flex items-center gap-2"
+                  >
+                    <span className="icon-[tabler--package-off] size-5"></span>
+                    {t("unsoldTitle")}
+                  </h2>
+                  <p className="text-sm text-base-content/60 mt-1">
+                    {t("unsoldCount", { count: unsold.length })}
+                  </p>
+                </div>
+                <ul className="divide-y divide-base-content/5">
+                  {unsold.map((item) => (
+                    <li
+                      key={item.itemId}
+                      className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-8 py-3 ${
+                        item.isItemCreator ? "bg-secondary/5" : ""
+                      }`}
+                    >
+                      <Thumbnail
+                        url={item.thumbnailUrl}
+                        alt={item.itemName}
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg grayscale opacity-75"
+                        iconClassName="size-5"
+                      />
+                      <div className="min-w-0 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                        <Link
+                          href={`/auctions/${auction.id}/items/${item.itemId}`}
+                          className="link link-hover font-medium line-clamp-2 wrap-anywhere"
+                          title={item.itemName}
+                        >
+                          {item.itemName}
+                        </Link>
+                        {item.isItemCreator && (
+                          <span className="badge badge-secondary badge-xs font-bold">
+                            {t("yourListing")}
+                          </span>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </PageLayout>
@@ -435,7 +569,8 @@ export const getServerSideProps = withAuth(async (context) => {
 
   const isAdmin = auctionService.isAdmin(membership);
 
-  // Get auction results data (pass isAdmin to show winner info for anonymous bids)
+  // Admins see the top bidder in every visibility mode; the service applies
+  // the auction's bidder visibility for everyone else.
   const resultsData = await auctionService.getAuctionResultsData(
     auctionId,
     context.session.user.id,
@@ -459,7 +594,8 @@ export const getServerSideProps = withAuth(async (context) => {
         email: context.session.user.email || "",
       },
       auction: resultsData.auction,
-      winners: resultsData.winners,
+      results: resultsData.results,
+      unsold: resultsData.unsold,
       userWins: resultsData.userWins,
       totalItems: resultsData.totalItems,
       totalBids: resultsData.totalBids,

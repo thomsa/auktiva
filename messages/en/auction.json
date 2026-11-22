@@ -166,7 +166,21 @@
       "noItemsSold": "No items sold",
       "you": "You",
       "anonymous": "Anonymous",
-      "yourListing": "Your Listing"
+      "yourListing": "Your Listing",
+      "exportCsv": "Export CSV",
+      "exportJson": "Export JSON",
+      "totalValueSoFar": "Value so far",
+      "total": "Total",
+      "totalSoFar": "Total so far",
+      "highestBidder": "Highest bidder",
+      "highestBid": "Highest bid",
+      "leading": "Leading",
+      "unnamedBidder": "Unnamed bidder",
+      "openCount": "{count, plural, one {# item is still open for bidding} other {# items are still open for bidding}}",
+      "noBidsDescription": "No items received bids in this auction.",
+      "noBidsYetDescription": "No bids have been placed yet.",
+      "unsoldTitle": "Unsold items",
+      "unsoldCount": "{count, plural, one {# item ended without bids} other {# items ended without bids}}"
     },
     "acceptInvite": {
       "title": "Join Auction",

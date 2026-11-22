@@ -163,7 +163,21 @@
       "noItemsSold": "Brak sprzedanych przedmiotów",
       "you": "Ty",
       "anonymous": "Anonimowy",
-      "yourListing": "Twój przedmiot"
+      "yourListing": "Twój przedmiot",
+      "exportCsv": "Eksportuj CSV",
+      "exportJson": "Eksportuj JSON",
+      "totalValueSoFar": "Wartość do tej pory",
+      "total": "Razem",
+      "totalSoFar": "Razem do tej pory",
+      "highestBidder": "Najwyżej licytujący",
+      "highestBid": "Najwyższa oferta",
+      "leading": "Prowadzi",
+      "unnamedBidder": "Licytujący bez nazwy",
+      "openCount": "{count, plural, one {# przedmiot jest wciąż otwarty na oferty} few {# przedmioty są wciąż otwarte na oferty} many {# przedmiotów jest wciąż otwartych na oferty} other {# przedmiotów jest wciąż otwartych na oferty}}",
+      "noBidsDescription": "Żaden przedmiot w tej aukcji nie otrzymał ofert.",
+      "noBidsYetDescription": "Nie złożono jeszcze żadnych ofert.",
+      "unsoldTitle": "Niesprzedane przedmioty",
+      "unsoldCount": "{count, plural, one {# przedmiot zakończył się bez ofert} few {# przedmioty zakończyły się bez ofert} many {# przedmiotów zakończyło się bez ofert} other {# przedmiotów zakończyło się bez ofert}}"
     },
     "acceptInvite": {
       "title": "Dołącz do aukcji",

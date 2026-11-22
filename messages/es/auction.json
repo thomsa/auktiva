@@ -163,7 +163,21 @@
       "noItemsSold": "Ningún artículo vendido",
       "you": "Tú",
       "anonymous": "Anónimo",
-      "yourListing": "Tu artículo"
+      "yourListing": "Tu artículo",
+      "exportCsv": "Exportar CSV",
+      "exportJson": "Exportar JSON",
+      "totalValueSoFar": "Valor hasta ahora",
+      "total": "Total",
+      "totalSoFar": "Total hasta ahora",
+      "highestBidder": "Mejor postor",
+      "highestBid": "Puja más alta",
+      "leading": "En cabeza",
+      "unnamedBidder": "Postor sin nombre",
+      "openCount": "{count, plural, one {# artículo sigue abierto a pujas} other {# artículos siguen abiertos a pujas}}",
+      "noBidsDescription": "Ningún artículo recibió pujas en esta subasta.",
+      "noBidsYetDescription": "Todavía no se ha realizado ninguna puja.",
+      "unsoldTitle": "Artículos sin vender",
+      "unsoldCount": "{count, plural, one {# artículo terminó sin pujas} other {# artículos terminaron sin pujas}}"
     },
     "acceptInvite": {
       "title": "Unirse a Subasta",
