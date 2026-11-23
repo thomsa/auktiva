@@ -211,6 +211,19 @@ test("an unfinished migration stops the update; rolled-back ones are ignored", a
   );
 });
 
+test("a failed first migration stops the update even without tables", async () => {
+  const { client } = newDatabase();
+  await recordLikePrisma(client, [{ name: migrations[0], finished: false }]);
+  assert.deepEqual(
+    await checkMigrationHistory({
+      snapshot: await readMigrationSnapshot(client),
+      migrations,
+      schemaMatches: neverCalled,
+    }),
+    { status: "failed-migrations", failed: [migrations[0]] },
+  );
+});
+
 test("a history with migrations this version does not have stops the update", async () => {
   const { client } = newDatabase();
   await applySchema(client, migrations.slice(0, 1));

@@ -111,15 +111,18 @@ export async function checkMigrationHistory(options: {
   schemaMatches?: (migrations: string[]) => Promise<boolean>;
 }): Promise<MigrationCheck> {
   const { snapshot, migrations, schemaMatches } = options;
-  if (snapshot.tables.length === 0) {
-    return { status: "ok", reason: "empty-database" };
-  }
-
+  // Before the empty check: a first migration that failed before it
+  // created a table leaves only its history row, and `migrate deploy`
+  // then refuses with P3009.
   const failed = snapshot.history
     .filter((migration) => !migration.finished)
     .map((migration) => migration.name);
   if (failed.length > 0) {
     return { status: "failed-migrations", failed };
+  }
+
+  if (snapshot.tables.length === 0) {
+    return { status: "ok", reason: "empty-database" };
   }
 
   const applied = new Set(snapshot.history.map((migration) => migration.name));

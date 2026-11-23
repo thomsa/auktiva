@@ -27,28 +27,33 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 UPGRADE_DOCS_URL="https://docs.auktiva.org/developers/upgrading"
 
-# Prints the database URL: DATABASE_URL from the environment, else the last
-# DATABASE_URL line of .env, else the default.
+# Prints the database URL the way the app's tools find it (dotenv, which
+# never overrides the environment, then `|| "file:./dev.db"` as in
+# prisma.config.ts): DATABASE_URL from the environment when set, else
+# DATABASE_URL from ./.env parsed by dotenv, else file:./dev.db. dotenv comes
+# from the project's node_modules; without it this fails instead of guessing.
 resolve_database_url() {
-  if [ -n "${DATABASE_URL:-}" ]; then
-    printf '%s\n' "$DATABASE_URL"
+  if [ -n "${DATABASE_URL+set}" ]; then
+    printf '%s\n' "${DATABASE_URL:-file:./dev.db}"
     return
   fi
-  local line=""
-  if [ -f .env ]; then
-    line=$(grep -E '^[[:space:]]*(export[[:space:]]+)?DATABASE_URL=' .env | tail -n 1 || true)
-  fi
-  if [ -z "$line" ]; then
+  if [ ! -f .env ]; then
     printf 'file:./dev.db\n'
     return
   fi
-  line="${line#*=}"
-  line="${line%$'\r'}"
-  line="${line#\"}"
-  line="${line%\"}"
-  line="${line#\'}"
-  line="${line%\'}"
-  printf '%s\n' "$line"
+  node -e '
+    let dotenv;
+    try {
+      dotenv = require(require.resolve("dotenv", { paths: [process.argv[1]] }));
+    } catch {
+      console.error(
+        `Error: cannot read .env without dotenv in ${process.argv[1]}/node_modules. Run npm ci first.`,
+      );
+      process.exit(1);
+    }
+    const env = dotenv.parse(require("fs").readFileSync(".env"));
+    process.stdout.write(`${env.DATABASE_URL || "file:./dev.db"}\n`);
+  ' "$PROJECT_ROOT"
 }
 
 is_sqlite_url() {
