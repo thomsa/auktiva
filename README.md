@@ -123,7 +123,7 @@ If you prefer to configure manually:
 cp .env.example .env
 # Edit .env with your settings
 
-npm run db:push
+npx prisma migrate deploy   # SQLite; for Turso use npm run db:migrate:turso
 npm run seed:currencies
 npm run build
 npm start
@@ -144,10 +144,15 @@ DATABASE_URL="file:./dev.db"
 **Commands:**
 
 ```bash
-npm run db:push        # Apply schema changes
-npm run db:migrate     # Create and apply migrations
-npm run db:studio      # Open database GUI
+npx prisma migrate deploy  # Apply migrations
+npm run db:migrate         # Create and apply migrations (development)
+npm run db:studio          # Open database GUI
 ```
+
+Use migrations rather than `npm run db:push` for any database you will keep.
+Updates apply migrations and stop on a database whose schema was pushed until
+its history is baselined; see
+[Migration history and baselining](https://docs.auktiva.org/developers/upgrading#migration-history-and-baselining).
 
 ### Option 2: Turso (Production)
 
@@ -393,7 +398,7 @@ Use a reverse proxy (nginx, caddy) for HTTPS.
 | `npm run build`            | Build for production            |
 | `npm start`                | Start production server         |
 | `npm test`                 | Run the test suite              |
-| `npm run db:push`          | Push schema to database         |
+| `npm run db:push`          | Push schema (development only)  |
 | `npm run db:migrate`       | Create migration (local SQLite) |
 | `npm run db:migrate:turso` | Apply migrations to Turso       |
 | `npm run db:studio`        | Open Prisma Studio              |
