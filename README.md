@@ -11,7 +11,7 @@ A free, open-source auction platform for hosting private and public auctions. Pe
 
 🌐 **Live Demo**: [auktiva.org](https://auktiva.org)  
 📚 **Documentation**: [docs.auktiva.org](https://docs.auktiva.org)  
-📝 **Changelog**: [CHANGELOG.md](./CHANGELOG.md)
+📝 **Release notes**: [GitHub Releases](https://github.com/thomsa/auktiva/releases) (earlier history in [CHANGELOG.md](./CHANGELOG.md))
 
 ## Features
 
