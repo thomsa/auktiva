@@ -612,10 +612,10 @@ release after v1.23.0, it:
 - Restarts the server (if PM2 is configured)
 
 <Callout type="warning">
-  Up to v1.23.0, the script updates the schema with `prisma db push
-  --accept-data-loss` instead, which skips the data steps of migrations and
-  changes only the local `./dev.db` fallback when `DATABASE_URL` is a Turso URL.
-  The update from v1.23.0 or earlier to a newer release still runs that old
+  Up to v1.23.0, the script updates the schema with `prisma db push` and its
+  `--accept-data-loss` flag instead, which skips the data steps of migrations
+  and changes only the local `./dev.db` fallback when `DATABASE_URL` is a Turso
+  URL. The update from v1.23.0 or earlier to a newer release still runs that old
   script, because the updater always runs the installed version's script. Read
   the release notes of the version you install for steps that this skips.
 </Callout>
