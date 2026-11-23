@@ -1,4 +1,5 @@
 -- Auktiva v1.23.0 upgrade pre-check. Read-only.
+-- run-sql: read-only
 --
 -- Run it on the v1.22.0 database BEFORE the migrations. It predicts, per
 -- item, what migrations 20261122170000 and 20261122180000 do and what the

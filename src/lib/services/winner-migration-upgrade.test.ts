@@ -90,6 +90,7 @@ before(async () => {
   precheck = await runSqlStatements(
     migrator,
     splitSqlStatements(readUpgradeSql("precheck.sql")),
+    { readOnly: true },
   );
   firstRun = await migrateLikeTurso(migrator);
   secondRun = await migrateLikeTurso(migrator);
@@ -324,6 +325,7 @@ test("after the deploy the verify checks pass and the repair changes nothing", a
   const [columns, checks] = await runSqlStatements(
     migrator,
     splitSqlStatements(readUpgradeSql("verify.sql")),
+    { readOnly: true },
   );
   diagnoseTable(t, "verify.sql", columns.rows);
   diagnoseTable(t, "verify.sql checks", checks.rows);

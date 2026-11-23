@@ -1,9 +1,17 @@
 -- Auktiva v1.23.0 post-upgrade checks. Read-only.
+-- run-sql: read-only
 --
--- Run it after the v1.23.0 deploy and repair.sql. Every row's "items"
--- should equal "expected". pending_ended_items drops to 0 once the
--- notifier has run, which happens on the next notification poll of any
--- signed-in user.
+-- Run it after the v1.23.0 deploy and repair.sql. Two result sets:
+--
+-- 1. winnerRecordColumns: 3, the same as "expected". Fewer means migration
+--    20261122180000 is not (fully) applied.
+-- 2. One row per check; "items" should equal "expected" (0):
+--    notified_without_record and notified_record_not_highest_bidder are 0
+--    right after repair.sql. pending_ended_items counts ended items whose
+--    winner the notifier has not handled yet, including the ones repair.sql
+--    just queued again. It can be above 0 right after the repair and drops
+--    to 0 once the notifier has run: on the next notification poll of any
+--    signed-in user, 50 items per run.
 
 SELECT COUNT(*) AS "winnerRecordColumns", 3 AS "expected"
 FROM pragma_table_info('auction_items')

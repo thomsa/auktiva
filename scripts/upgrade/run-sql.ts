@@ -5,8 +5,13 @@
  * result. The whole file runs in one transaction: it applies in full, or
  * (on an error, or with --dry-run) not at all.
  *
+ * With --read-only, or for a file that contains the line
+ * `-- run-sql: read-only`, it runs in a read transaction, which a read-only
+ * Turso token can open, and always rolls back. On a local `file:` database
+ * a write statement then fails.
+ *
  * Usage:
- *   npx tsx scripts/upgrade/run-sql.ts [--dry-run] <file.sql>
+ *   npx tsx scripts/upgrade/run-sql.ts [--dry-run] [--read-only] <file.sql>
  *
  * Reads DATABASE_URL and DATABASE_AUTH_TOKEN from the environment or .env,
  * like scripts/migrate-turso.ts. It does not record anything in
@@ -16,7 +21,11 @@
 import { createClient } from "@libsql/client";
 import * as fs from "fs";
 import "dotenv/config";
-import { runSqlStatements, splitSqlStatements } from "./sql-file";
+import {
+  declaresReadOnly,
+  runSqlStatements,
+  splitSqlStatements,
+} from "./sql-file";
 
 function describeTarget(url: string): string {
   if (url.startsWith("file:")) return url;
@@ -30,11 +39,12 @@ function describeTarget(url: string): string {
 
 async function main() {
   const args = process.argv.slice(2);
+  const flags = ["--dry-run", "--read-only"];
   const dryRun = args.includes("--dry-run");
-  const files = args.filter((arg) => arg !== "--dry-run");
-  if (files.length !== 1) {
+  const files = args.filter((arg) => !flags.includes(arg));
+  if (files.length !== 1 || files[0].startsWith("--")) {
     console.error(
-      "Usage: npx tsx scripts/upgrade/run-sql.ts [--dry-run] <file.sql>",
+      "Usage: npx tsx scripts/upgrade/run-sql.ts [--dry-run] [--read-only] <file.sql>",
     );
     process.exit(2);
   }
@@ -50,7 +60,9 @@ async function main() {
     process.exit(1);
   }
 
-  const statements = splitSqlStatements(fs.readFileSync(file, "utf-8"));
+  const sql = fs.readFileSync(file, "utf-8");
+  const readOnly = args.includes("--read-only") || declaresReadOnly(sql);
+  const statements = splitSqlStatements(sql);
   if (statements.length === 0) {
     console.error(`No SQL statements in ${file}`);
     process.exit(1);
@@ -58,7 +70,7 @@ async function main() {
 
   console.log(`Database: ${describeTarget(url)}`);
   console.log(
-    `File: ${file} (${statements.length} statement(s))${dryRun ? " [dry run]" : ""}`,
+    `File: ${file} (${statements.length} statement(s))${readOnly ? " [read-only]" : dryRun ? " [dry run]" : ""}`,
   );
 
   const client = createClient({
@@ -66,7 +78,10 @@ async function main() {
     authToken: process.env.DATABASE_AUTH_TOKEN,
   });
   try {
-    const results = await runSqlStatements(client, statements, { dryRun });
+    const results = await runSqlStatements(client, statements, {
+      dryRun,
+      readOnly,
+    });
     results.forEach((result, i) => {
       const firstLine = result.sql.split("\n")[0];
       console.log("");
@@ -83,9 +98,11 @@ async function main() {
     });
     console.log("");
     console.log(
-      dryRun
-        ? "Dry run: rolled back, nothing was changed."
-        : "Done.",
+      readOnly
+        ? "Read-only: rolled back, nothing was changed."
+        : dryRun
+          ? "Dry run: rolled back, nothing was changed."
+          : "Done.",
     );
   } catch (error) {
     console.error("");

@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { createClient, type Client } from "@libsql/client";
 import {
+  declaresReadOnly,
   runSqlStatements,
   splitSqlStatements,
 } from "../../../scripts/upgrade/sql-file";
@@ -97,4 +98,55 @@ test("a failing statement rolls back the statements before it", async () => {
     /no such table: missing/,
   );
   assert.deepEqual(await state(), { v: 0, userVersion: 0 });
+});
+
+test("a read-only run returns the rows and refuses a write", async () => {
+  await reset();
+  const results = await runSqlStatements(
+    client,
+    [`SELECT "v" FROM "t" WHERE "id" = 1`],
+    { readOnly: true },
+  );
+  assert.deepEqual(results[0].rows, [{ v: 0 }]);
+
+  await assert.rejects(
+    runSqlStatements(client, splitSqlStatements(WRITES_THAT_LOOK_READ_ONLY), {
+      readOnly: true,
+    }),
+    /readonly/i,
+  );
+  await assert.rejects(
+    runSqlStatements(client, ["PRAGMA user_version = 7"], { readOnly: true }),
+    /readonly/i,
+  );
+  assert.deepEqual(await state(), { v: 0, userVersion: 0 });
+
+  // The read-only setting ends with the run's own connection.
+  await runSqlStatements(client, [`UPDATE "t" SET "v" = 3 WHERE "id" = 1`]);
+  assert.deepEqual(await state(), { v: 3, userVersion: 0 });
+});
+
+test("transaction control statements are refused before anything runs", async () => {
+  await reset();
+  for (const control of ["COMMIT", "BEGIN IMMEDIATE", "rollback", "END"]) {
+    await assert.rejects(
+      runSqlStatements(client, [
+        `UPDATE "t" SET "v" = 9 WHERE "id" = 1`,
+        control,
+      ]),
+      /runner manages the transaction/,
+    );
+  }
+  assert.deepEqual(await state(), { v: 0, userVersion: 0 });
+});
+
+test("the v1.23.0 checks declare themselves read-only, the data steps do not", () => {
+  const dir = path.join(process.cwd(), "scripts", "upgrade", "v1.23.0");
+  const read = (name: string) =>
+    declaresReadOnly(fs.readFileSync(path.join(dir, name), "utf8"));
+  assert.equal(read("precheck.sql"), true);
+  assert.equal(read("verify.sql"), true);
+  assert.equal(read("repair.sql"), false);
+  assert.equal(read("backfill.sql"), false);
+  assert.equal(declaresReadOnly("-- Read-only.\nSELECT 1;"), false);
 });

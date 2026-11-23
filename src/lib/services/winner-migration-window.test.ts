@@ -121,6 +121,7 @@ async function verifyChecks() {
   const [, checks] = await runSqlStatements(
     migrator,
     splitSqlStatements(readUpgradeSql("verify.sql")),
+    { readOnly: true },
   );
   return Object.fromEntries(
     checks.rows.map((row) => [row.check as string, row.items as number]),
