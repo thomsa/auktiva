@@ -2,6 +2,101 @@
 
 All notable changes to Auktiva will be documented in this file.
 
+## [1.23.0] - 2026-11-22
+
+### ⚙️ Miscellaneous
+
+- Prepare v1.23.0 release by @thomsa
+
+### 🐛 Bug Fixes
+
+- **scripts**: Commit every upgrade SQL file instead of guessing read-only ones by @thomsa
+- **scripts**: Queue items extended in the deploy window again in repair.sql by @thomsa
+- **db**: Record changed winners of long-ended items instead of re-queuing them by @thomsa
+- **auctions**: Leave the auction end alone when the settings field is untouched by @thomsa
+- **auctions**: Keep the settings end date in step and refuse invalid end dates by @thomsa
+- **auctions**: Use local time for the settings end date and send it as UTC by @thomsa
+- **auctions**: Make the reopen card's follow-the-auction list keyboard scrollable by @thomsa
+- **auctions**: Show items that follow the auction end as reopening by @thomsa
+- **auctions**: Tell only currently notified winners their win is no longer final by @thomsa
+- **notifications**: Only claim winner notifications for items that are still ended by @thomsa
+- **db**: Apply the winner record migration after the null-dated backfill by @thomsa
+- Re-render the auction overview when an item's own end passes by @thomsa
+- Do not notify winners of auctions that ended before this release by @thomsa
+- Explain the locked end date and date null-dated listings by @thomsa
+- Neutralise spreadsheet formulas in the results CSV export by @thomsa
+- End null-dated items with the auction everywhere by @thomsa
+- Keep the desktop navbar from overlapping between md and lg by @thomsa
+- End null-dated items with the auction on the item page by @thomsa
+- Close late bids, export per-currency totals (breaking export format), translate admin nav by @thomsa
+- Address results page review findings by @thomsa
+- Harden the auction results page by @thomsa
+
+### 📚 Documentation
+
+- Match the Vercel upgrade runbook to the migrating build by @thomsa
+- **openspec**: Note the repair re-queue and databases with the earlier migration by @thomsa
+- Cover window extensions, partial migrations and overlapping polls by @thomsa
+- **db**: Correct the stale-record and v1.22.0 notifier replica comments by @thomsa
+- Explain reopening bidding and winner notifications by @thomsa
+- **openspec**: Record the upgrade window rule in the winner backfill by @thomsa
+- Add the v1.23.0 upgrade runbook by @thomsa
+- **openspec**: Record the accepted claim release on failed winner sends by @thomsa
+- **openspec**: Record the accepted narrowing of reopen item selection by @thomsa
+- **openspec**: Check off the UI and integration tasks with their evidence by @thomsa
+- **openspec**: Note that untouched settings saves keep the auction end by @thomsa
+- **openspec**: Describe how the settings form handles the end date by @thomsa
+- **openspec**: Note the rebased dependency, adapter evidence and time zone fix by @thomsa
+- **openspec**: Record implementation notes for reopening bidding by @thomsa
+- **openspec**: Plan reopening bidding and re-notifying winners by @thomsa
+- Add Impeccable product and design context by @thomsa
+
+### 🚀 Features
+
+- **scripts**: Add v1.23.0 upgrade SQL and a runner by @thomsa
+- **auctions**: Add a reopen bidding card to auction settings by @thomsa
+- **notifications**: Record and re-notify auction item winners by @thomsa
+- **auctions**: Let owners reopen bidding by @thomsa
+- **notifications**: Tell bidders when bidding reopens by @thomsa
+- **db**: Record which winner was notified for each item by @thomsa
+- Add an organizer header and close-auction dialog to the auction overview by @thomsa
+
+### 🧪 Testing
+
+- **db**: Dry-run the v1.22.0 to v1.23.0 upgrade on libSQL by @thomsa
+- **notifications**: Cover win e-mails and the libSQL adapter by @thomsa
+- **notifications**: Pin a non-UTC zone and cover non-owner end date edits by @thomsa
+- Keep the winner backfill test working after later migrations by @thomsa
+
+## [1.22.0] - 2026-11-21
+
+### ⚙️ Miscellaneous
+
+- Prepare v1.22.0 release by @thomsa
+
+### 🐛 Bug Fixes
+
+- Keep the seasonal dashboard title readable on small phones by @thomsa
+- Keep demo controls accessible on tablets by @thomsa
+
+### 🚀 Features
+
+- Add Christmas scenes and an auction walkthrough by @thomsa
+
+## [1.21.4] - 2026-11-21
+
+### ⚙️ Miscellaneous
+
+- Prepare v1.21.4 release by @thomsa
+
+## [1.21.3] - 2026-11-21
+
+### ⚙️ Miscellaneous
+
+- Prepare v1.21.3 release by @thomsa
+
+## [1.21.2] - 2026-11-20
+
 ## [1.21.1] - 2026-11-20
 
 ### ⚙️ Miscellaneous
