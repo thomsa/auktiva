@@ -38,6 +38,7 @@
     "db:generate": "prisma generate",
     "seed:currencies": "npx tsx prisma/seed-currencies.ts",
     "seed:test-db": "npx tsx prisma/seed.ts",
+    "test": "tsx --test \"src/**/*.test.ts\" \"scripts/**/*.test.ts\"",
     "release": "tsx scripts/release.ts",
     "prepare": "husky"
   },

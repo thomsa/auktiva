@@ -392,6 +392,7 @@ Use a reverse proxy (nginx, caddy) for HTTPS.
 | `npm run dev`              | Start development server        |
 | `npm run build`            | Build for production            |
 | `npm start`                | Start production server         |
+| `npm test`                 | Run the test suite              |
 | `npm run db:push`          | Push schema to database         |
 | `npm run db:migrate`       | Create migration (local SQLite) |
 | `npm run db:migrate:turso` | Apply migrations to Turso       |
