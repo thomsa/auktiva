@@ -255,11 +255,12 @@ deployment when the build succeeds.
    `notifyAfterDeploy` is the number of "You won" messages to expect once
    v1.23.0 is live.
 
-3. **Cut the release.** From a clean checkout of `main` whose `HEAD` is
-   `origin/main`, preview the release first, then run it:
+3. **Cut the release.** From a clean checkout whose `HEAD` is
+   `origin/main` (a detached `HEAD` works), preview the release first, then
+   run it:
 
    ```bash
-   git checkout main && git pull --ff-only
+   git fetch origin && git switch --detach origin/main
    npm run release -- <version> --dry-run
    npm run release -- <version>
    ```
@@ -270,7 +271,11 @@ deployment when the build succeeds.
    `package-lock.json`, commits `chore: release vX.Y.Z`, creates the
    annotated tag `vX.Y.Z` and pushes the commit and the tag together with
    `git push --atomic`. The tag push starts the deploy workflow, so do not
-   merge anything into `main` until the deployment is live.
+   merge anything into `main` until the deployment is live. The push goes
+   straight to `main`, so `main`'s GitHub rules must allow it for you: a
+   ruleset that requires pull requests or signed commits rejects it unless
+   you can bypass it, and the atomic push then publishes neither the commit
+   nor the tag.
 
    **If the workflow fails at "Ensure tag is the head of main",** `main`
    moved between the release and the workflow run. Nothing was deployed and
@@ -279,6 +284,11 @@ deployment when the build succeeds.
    pre-check from the new head of `main` if the new commits change
    migrations or `scripts/upgrade/`, and cut a new release with
    `npm run release -- patch`. Its tag then names the head of `main`.
+   The workflow deploys the docs only when `docs/` changed since the
+   previous tag, and the refused tag counts as the previous one. If the
+   refused release changed `docs/`, redeploy the docs yourself after the
+   new release (**Redeploy** in the Vercel docs project, or its deploy
+   hook).
 
    In the Vercel build log, the migration step prints `Applying` for each
    new migration and then `Applied: 2 new migration(s)` on a database last
@@ -347,10 +357,13 @@ deployment when the build succeeds.
    `pending_ended_items` counts ended, published items with a highest
    bidder whose winner the notifier has not handled yet: the items repair
    statement 5 just queued again, and any item that ended since the last
-   run. The notifier runs whenever a signed-in user's open tab polls its
-   notifications (`GET /api/notifications`, every 5 to 30 seconds), and
-   handles up to 50 items per run.
-   Open the app signed in, wait a minute and run `verify.sql` again.
+   run. The notifier runs on every `GET /api/notifications`, up to 50
+   items per run. A signed-in page sends one when it loads. After that, a
+   visible tab polls every 5 seconds on auction pages and every 30 seconds
+   elsewhere when realtime is off, at least every 60 seconds when realtime
+   is configured but not connected, and not at all while realtime is
+   connected. Load or reload a page of the app while signed in, then run
+   `verify.sql` again.
 
    If a number differs:
 
@@ -510,7 +523,8 @@ runs from the migration until v1.23.0 serves all traffic. With this
 repository's Vercel build, that is from the build's migration step until the
 new deployment goes live, so it includes all of `next build`, and it lasts
 longer if the build fails. During the window, v1.22.0 keeps running its
-notifier on every notification poll, against the migrated database:
+notifier on every notification request (each signed-in page load, and the
+polling of open tabs), against the migrated database:
 
 - **Items without their own end date:** v1.22.0 ignores them. v1.23.0
   notifies their winners after the deploy.
@@ -536,8 +550,8 @@ notifier runs that overlap can still both message the same winner. This
 applies to two v1.22.0 polls at the same moment, or a v1.22.0 and a
 v1.23.0 poll around the promote, because v1.22.0 does not claim items
 before it sends. `MAINTENANCE_MODE=true` does not close the
-window. It does not apply to `/api` routes, so open tabs keep polling
-notifications and running the notifier. On Vercel, changing it also needs a
+window. It does not apply to `/api` routes, so page loads and open tabs
+keep requesting notifications and running the notifier. On Vercel, changing it also needs a
 new deployment. Keep the window short instead, for example by checking that
 the release commit builds before you release it, and run the repair.
 

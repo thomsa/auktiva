@@ -91,15 +91,15 @@ DATABASE_AUTH_TOKEN="eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9..."
 
 Auktiva provides several npm scripts for database management:
 
-| Command                   | Description                    |
-| ------------------------- | ------------------------------ |
-| `npm run db:generate`     | Generate Prisma client         |
-| `npx prisma migrate deploy` | Apply migrations (SQLite)    |
-| `npm run db:migrate:turso`  | Apply migrations (Turso)     |
-| `npm run db:push`         | Push schema without migrations (development only) |
-| `npm run db:studio`       | Open Prisma Studio (GUI)       |
-| `npm run seed:currencies` | Seed currency data             |
-| `npm run seed`            | Seed sample data (development) |
+| Command                     | Description                                       |
+| --------------------------- | ------------------------------------------------- |
+| `npm run db:generate`       | Generate Prisma client                            |
+| `npx prisma migrate deploy` | Apply migrations (SQLite)                         |
+| `npm run db:migrate:turso`  | Apply migrations (Turso)                          |
+| `npm run db:push`           | Push schema without migrations (development only) |
+| `npm run db:studio`         | Open Prisma Studio (GUI)                          |
+| `npm run seed:currencies`   | Seed currency data                                |
+| `npm run seed`              | Seed sample data (development)                    |
 
 ### Initial Setup
 
@@ -148,12 +148,12 @@ Auktiva uses the following main tables:
 
 Each row in **auction_items** records whether its winner has been told and who that was:
 
-| Field                  | Type        | Meaning                                                                                       |
-| ---------------------- | ----------- | --------------------------------------------------------------------------------------------- |
+| Field                  | Type        | Meaning                                                                                          |
+| ---------------------- | ----------- | ------------------------------------------------------------------------------------------------ |
 | `winnerNotified`       | `Boolean`   | `false` means a win notification is pending for whoever is the highest bidder when the item ends |
-| `winnerNotifiedUserId` | `String?`   | The user last told they won (a plain user ID, like `highestBidderId`)                         |
-| `winnerNotifiedAmount` | `Float?`    | The item's `currentBid` when that user was recorded                                           |
-| `winnerNotifiedAt`     | `DateTime?` | When the notified winner was recorded                                                         |
+| `winnerNotifiedUserId` | `String?`   | The user last told they won (a plain user ID, like `highestBidderId`)                            |
+| `winnerNotifiedAmount` | `Float?`    | The item's `currentBid` when that user was recorded                                              |
+| `winnerNotifiedAt`     | `DateTime?` | When the notified winner was recorded                                                            |
 
 The auction-end notifier (`src/lib/services/auction-end.service.ts`) selects published items that have ended, have a highest bidder and have `winnerNotified = false`. An item has ended when its own `endDate` has passed, or, if it has none, when its auction's `endDate` has passed. The notifier claims each item with one conditional update that sets `winnerNotified = true` and writes the three record fields. Only the run whose claim succeeds sends the in-app notification and the item-won e-mail, so overlapping runs notify a winner at most once. If creating the in-app notification fails before anything was stored, the claim is released for a later run.
 
