@@ -187,7 +187,8 @@ and leave edits to the orchestrator or an authorized task.
    the worktree, evidence, and remote tip immediately before pushing.
 4. Push only the verified candidate SHA with a normal fast-forward update to
    `refs/heads/main`, using `git push --no-follow-tags origin <verified-sha>:refs/heads/main`.
-   If `main` advances again, repeat integration and verification. If permissions
+   Do not create or push release tags; the maintainer cuts releases separately
+   with `npm run release`. If `main` advances again, repeat integration and verification. If permissions
    or required checks block the push, use an authorized publication path only
    if it can publish the same verified commit and meet the repository checks.
    Report the blocker if the available path would create a different commit.

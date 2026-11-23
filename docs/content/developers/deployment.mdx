@@ -225,6 +225,50 @@ deploys come from the deploy hook that the tag workflow
   Consider using Upstash Redis for production rate limiting.
 </Callout>
 
+## Releasing
+
+Maintainers cut releases of the hosted instance with the release script:
+
+```bash
+npm run release -- <patch|minor|major|X.Y.Z> [--dry-run]
+```
+
+The script fetches `origin` (including tags) and refuses to continue unless:
+
+- the working tree is clean, with no uncommitted changes or untracked files
+- `HEAD` is exactly `origin/main`. It works from a detached `HEAD` or a
+  linked worktree, so `git switch --detach origin/main` is enough
+- the tag `vX.Y.Z` does not exist locally or on `origin`
+- an explicit `X.Y.Z` is a valid semantic version greater than the current
+  version
+
+It then sets the version in `package.json` and `package-lock.json`, commits
+`chore: release vX.Y.Z`, creates the annotated tag `vX.Y.Z`, and pushes both
+in one atomic push:
+
+```bash
+git push --atomic --no-follow-tags origin HEAD:refs/heads/main refs/tags/vX.Y.Z
+```
+
+The push updates both refs or neither. If it fails, the script prints how
+to retry it or how to undo the local commit and tag. `--dry-run` runs every
+check, including the fetch and the remote tag lookup, and prints the next
+version and the exact commands without changing anything.
+
+The pushed tag starts two workflows:
+
+- **Vercel Production Deploy on Tag** (`.github/workflows/vercel-release.yml`)
+  calls the app deploy hook, and the docs deploy hook when `docs/` changed
+  since the previous tag. Both hooks build the current head of `main`, not the
+  tag, so the workflow fails unless the tag commit is the head of
+  `origin/main`. Main can still move between that check and the Vercel build,
+  so avoid merging to `main` while a release deploys.
+- **Release** (`.github/workflows/release.yml`) publishes the release notes,
+  generated with git-cliff, as a
+  [GitHub Release](https://github.com/thomsa/auktiva/releases).
+
+Release notes live in GitHub Releases. `CHANGELOG.md` is no longer updated.
+
 ## Updates
 
 ### Docker

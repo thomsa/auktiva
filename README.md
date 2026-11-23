@@ -400,6 +400,7 @@ Use a reverse proxy (nginx, caddy) for HTTPS.
 | `npm run db:generate`      | Regenerate Prisma client        |
 | `npm run seed:currencies`  | Seed currency data              |
 | `npm run seed:test-db`     | Seed test data                  |
+| `npm run release`          | Cut a release (maintainers)     |
 
 ## Screenshots
 
