@@ -59,6 +59,7 @@ commit_parsers = [
   { message = "^style", group = "🎨 Styling" },
   { message = "^test", group = "🧪 Testing" },
   { message = "^chore\\(release\\)", skip = true },
+  { message = "^chore: release v", skip = true },
   { message = "^chore\\(deps\\)", skip = true },
   { message = "^chore\\(pr\\)", skip = true },
   { message = "^chore\\(pull\\)", skip = true },

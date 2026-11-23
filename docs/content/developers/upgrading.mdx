@@ -307,7 +307,10 @@ deployment when the build succeeds.
    v1.22.0 with the migrated database, and the window stays open until a
    v1.23.0 build succeeds. Fix the cause and deploy again, for example with
    **Redeploy** on the failed deployment in the Vercel dashboard or by
-   re-running the workflow. The migration step then skips both migrations.
+   re-running the workflow. Re-running the workflow works only while the
+   tag is still the head of `main`; otherwise it stops at "Ensure tag is the
+   head of main", so cut a new release with `npm run release -- patch`.
+   The migration step then skips both migrations.
    Do not restore the database because of a failed build. Run the repair in
    step 5 once v1.23.0 is live; it also fixes what v1.22.0 did in the
    meantime.
