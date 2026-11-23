@@ -1,5 +1,9 @@
 {
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
+  "git": {
+    "deploymentEnabled": false
+  },
+  "ignoreCommand": "exit 1",
   "framework": "nextjs"
 }
