@@ -136,14 +136,14 @@ There are no new environment variables.
 
 v1.23.0 ships SQL files in `scripts/upgrade/v1.23.0/` and a runner for them:
 
-| File           | When                                               | Writes |
-| -------------- | -------------------------------------------------- | ------ |
-| `precheck.sql` | Before migrating: predicts what the upgrade does   | No     |
-| `repair.sql`   | After the v1.23.0 deploy: fixes what the window left | Yes  |
-| `verify.sql`   | After the repair: checks the result                | No     |
-| `backfill.sql` | Only if the schema was updated with `prisma db push` | Yes  |
+| File           | When                                                 | Writes |
+| -------------- | ---------------------------------------------------- | ------ |
+| `precheck.sql` | Before migrating: predicts what the upgrade does     | No     |
+| `repair.sql`   | After the v1.23.0 deploy: fixes what the window left | Yes    |
+| `verify.sql`   | After the repair: checks the result                  | No     |
+| `backfill.sql` | Only if the schema was updated with `prisma db push` | Yes    |
 
-Run them from a v1.23.0 checkout:
+Run them from a checkout of the release:
 
 ```bash
 DATABASE_URL="$DATABASE_URL" DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
@@ -153,9 +153,24 @@ DATABASE_URL="$DATABASE_URL" DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
 The runner accepts `libsql://`, `https://` and `file:` URLs, and reads
 `.env` like `npm run db:migrate:turso`. It runs the whole file in one
 transaction, so a file applies in full or not at all. Add `--dry-run` to
-see the affected row counts without changing anything. You can also run the
-files with `turso db shell <db-name> < scripts/upgrade/v1.23.0/<file>.sql`
-or `sqlite3 <path-to-db> < scripts/upgrade/v1.23.0/<file>.sql`.
+see the affected row counts of `repair.sql` or `backfill.sql` without
+changing anything.
+
+`precheck.sql` and `verify.sql` only read. In releases after v1.23.0 the
+runner runs them read-only by itself, because each file declares
+`-- run-sql: read-only` (`--read-only` does the same for any file). It then
+opens a read transaction and always rolls it back, so a read-only Turso
+token is enough (`turso db tokens create <db-name> --read-only`), and on a
+local SQLite file a write statement fails with `SQLITE_READONLY`. The
+runner in the v1.23.0 tag itself has no read-only mode: it runs every file
+in a write transaction, which a read-only token cannot open, so use a token
+that can write with it. The commands on this page work with both runners.
+`repair.sql` and `backfill.sql` always need a token that can write.
+
+You can also run the files with
+`turso db shell <db-name> < scripts/upgrade/v1.23.0/<file>.sql` or
+`sqlite3 <path-to-db> < scripts/upgrade/v1.23.0/<file>.sql`, but then
+nothing keeps a file to one transaction or to reads only.
 
 `precheck.sql` prints one row per outcome, and then the items whose winner
 changed or who will be messaged:
@@ -186,20 +201,34 @@ prisma generate && npx tsx scripts/migrate-turso.ts && npx tsx prisma/seed-curre
 Git deployments are turned off (`git.deploymentEnabled: false` and
 `ignoreCommand: "exit 1"`). A production deployment starts only when a `v*`
 tag is pushed. The **Vercel Production Deploy on Tag** workflow
-(`.github/workflows/vercel-release.yml`) checks that the tag is on `main`
-and calls the Vercel deploy hook. That build runs `scripts/migrate-turso.ts`
-against the production `DATABASE_URL`, so it applies both migrations. It
-then seeds currencies, which only adds them when the table is empty and
-does nothing otherwise, and runs `next build`. Vercel switches production to
-the new deployment when the build succeeds.
+(`.github/workflows/vercel-release.yml`) checks that the tag points to the
+head of `main` and calls the Vercel deploy hook, and the docs deploy hook
+when `docs/` changed. That build runs `scripts/migrate-turso.ts` against the
+production `DATABASE_URL`, so it applies both migrations. It then seeds
+currencies, which only adds them when the table is empty and does nothing
+otherwise, and runs `next build`. Vercel switches production to the new
+deployment when the build succeeds.
 
 <Callout type="warning">
   Pushing the tag starts the deploy, and with it the migration, within
-  seconds. Take the backup and run the pre-check before you push the tag.
+  seconds. Take the backup and run the pre-check before you release.
 </Callout>
 
-1. **Back up the database** before you push the tag. Take a dump, a copy,
-   or both:
+<Callout type="warning">
+  **Both deploy hooks build the head of `main`, not the tag.** A deploy hook
+  has no commit of its own: Vercel builds whatever `main` points to when the
+  hook runs. The workflow therefore refuses a tag that is not `main`'s head
+  (`The release tag points to <sha>, but origin/main is <sha>`), so a tag
+  can no longer deploy code it does not name. Merge nothing into `main` from
+  the moment you start the release until the deployment is live. A small
+  race remains: if `main` moves after the workflow's check and before Vercel
+  starts the build, production gets the newer `main`. Check the commit of
+  the new deployment in the Vercel dashboard against
+  `git rev-list -n 1 v<version>`.
+</Callout>
+
+1. **Back up the database** before you release. Take a dump, a copy, or
+   both:
 
    ```bash
    turso db shell <db-name> .dump > backup-<db-name>-$(date +%Y%m%d-%H%M%S).sql
@@ -211,24 +240,45 @@ the new deployment when the build succeeds.
    depending on your plan's retention. Check `turso db create --help` for
    the options your CLI version supports.
 
-2. **Run the read-only pre-check** from a checkout of the release commit
-   and review its output:
+2. **Run the read-only pre-check** from a checkout of the head of `main`,
+   which is the commit you are about to release, and review its output:
 
    ```bash
-   git fetch origin && git checkout <release-commit>
+   git fetch origin && git checkout --detach origin/main
    npm ci
    DATABASE_URL="$DATABASE_URL" DATABASE_AUTH_TOKEN="$DATABASE_AUTH_TOKEN" \
      npx tsx scripts/upgrade/run-sql.ts scripts/upgrade/v1.23.0/precheck.sql
    ```
 
-   It changes nothing. `notifyAfterDeploy` is the number of "You won"
-   messages to expect once v1.23.0 is live.
+   It changes nothing. Whether a read-only token is enough depends on the
+   runner in that checkout; see [Upgrade scripts](#upgrade-scripts).
+   `notifyAfterDeploy` is the number of "You won" messages to expect once
+   v1.23.0 is live.
 
-3. **Push the release tag.** This starts the deploy hook build:
+3. **Cut the release.** From a clean checkout of `main` whose `HEAD` is
+   `origin/main`, preview the release first, then run it:
 
    ```bash
-   git push origin v1.23.0
+   git checkout main && git pull --ff-only
+   npm run release -- <version> --dry-run
+   npm run release -- <version>
    ```
+
+   `<version>` is `patch`, `minor`, `major` or an exact `X.Y.Z`. The script
+   fetches `origin`, refuses a dirty tree, a `HEAD` other than
+   `origin/main` or a tag that already exists, bumps `package.json` and
+   `package-lock.json`, commits `chore: release vX.Y.Z`, creates the
+   annotated tag `vX.Y.Z` and pushes the commit and the tag together with
+   `git push --atomic`. The tag push starts the deploy workflow, so do not
+   merge anything into `main` until the deployment is live.
+
+   **If the workflow fails at "Ensure tag is the head of main",** `main`
+   moved between the release and the workflow run. Nothing was deployed and
+   nothing was migrated. Leave the published tag as it is (do not move or
+   delete it), make sure nothing else is about to be merged, re-run the
+   pre-check from the new head of `main` if the new commits change
+   migrations or `scripts/upgrade/`, and cut a new release with
+   `npm run release -- patch`. Its tag then names the head of `main`.
 
    In the Vercel build log, the migration step prints `Applying` for each
    new migration and then `Applied: 2 new migration(s)` on a database last
@@ -267,6 +317,9 @@ the new deployment when the build succeeds.
    turso db shell <db-name> "INSERT INTO _prisma_migrations (id, migration_name) VALUES (lower(hex(randomblob(16))), '20261122180000_add_winner_notification_record')"
    ```
 
+   This is the one hand edit of `_prisma_migrations` this runbook allows;
+   see [Rolling back](#rolling-back) for why it is safe here.
+
 5. **Repair and verify** once v1.23.0 serves all traffic:
 
    ```bash
@@ -278,8 +331,40 @@ the new deployment when the build succeeds.
    ```
 
    The repair is safe to run more than once. Each of its five statements
-   reports `rows affected: 0` when nothing needs fixing. Every check in
-   `verify.sql` should report 0.
+   reports `rows affected: 0` when nothing needs fixing. Statement 5 reports
+   how many items it queued again for their new winner.
+
+   `verify.sql` prints two tables. Expect exactly this:
+
+   | Table | Row                                  | Column                | Right after the repair         | After the next notifier run |
+   | ----- | ------------------------------------ | --------------------- | ------------------------------ | --------------------------- |
+   | 1     | (only row)                           | `winnerRecordColumns` | `3` (`expected` is `3`)        | `3`                         |
+   | 2     | `notified_without_record`            | `items`               | `0`                            | `0`                         |
+   | 2     | `notified_record_not_highest_bidder` | `items`               | `0`                            | `0`                         |
+   | 2     | `pending_ended_items`                | `items`               | `0` or more (see below)        | `0`                         |
+
+   `expected` is `0` on every row of the second table.
+   `pending_ended_items` counts ended, published items with a highest
+   bidder whose winner the notifier has not handled yet: the items repair
+   statement 5 just queued again, and any item that ended since the last
+   run. The notifier runs whenever a signed-in user's open tab polls its
+   notifications (`GET /api/notifications`, every 5 to 30 seconds), and
+   handles up to 50 items per run.
+   Open the app signed in, wait a minute and run `verify.sql` again.
+
+   If a number differs:
+
+   - `winnerRecordColumns` below `3`: migration
+     `20261122180000_add_winner_notification_record` is missing or partly
+     applied. Handle it as in step 4.
+   - `notified_without_record` or `notified_record_not_highest_bidder`
+     above `0`: v1.22.0 still serves some traffic (an old deployment, an
+     open preview, a second server), or the repair did not run against this
+     database. Make sure only v1.23.0 runs, then run `repair.sql` again.
+   - `pending_ended_items` still above `0` after a few notifier runs: look
+     in the runtime logs for `Failed to notify winner for item` or
+     `Failed to process ended items`. The notifier releases an item whose
+     notification failed, so it retries it on the next run.
 
 #### Vercel projects that do not migrate in the build
 
@@ -325,12 +410,18 @@ v1.23.0 must not serve traffic before the migration:
 ### Runbook: self-hosted
 
 <Callout type="warning">
-  The Deployment Admin updater and `scripts/update.sh` update the schema
-  with `prisma db push`. That adds the new columns but skips the data steps
-  of both migrations. With a Turso `DATABASE_URL`, `prisma db push` changes
-  only the local `./dev.db` fallback from `prisma.config.ts` and leaves
-  Turso unchanged. Use the steps below for this upgrade.
+  The updater runs the `scripts/update.sh` of the version you are on. Up to
+  v1.23.0, that script updates the schema with `prisma db push`. That adds
+  the new columns but skips the data steps of both migrations. With a Turso
+  `DATABASE_URL`, `prisma db push` changes only the local `./dev.db`
+  fallback from `prisma.config.ts` and leaves Turso unchanged. Use the steps
+  below for this upgrade. Later releases migrate instead; see
+  [Migration history and baselining](#migration-history-and-baselining).
 </Callout>
+
+The SQLite steps below apply the two migrations without recording them in
+`_prisma_migrations`. The first update with a later release's updater then
+stops once and asks you to baseline the history, which records them.
 
 #### SQLite with the Deployment Admin updater
 
@@ -377,8 +468,9 @@ winners.
 
 #### SQLite, manual upgrade
 
-Follow [Manual Upgrade](#manual-upgrade), but in Step 6 apply the two
-migration files instead of `npm run db:push`:
+Follow [Manual Upgrade](#manual-upgrade) and skip Step 3 (v1.22.0 and
+v1.23.0 do not have that check). In Step 7, apply the two migration files
+instead:
 
 ```bash
 npm run db:generate
@@ -388,7 +480,7 @@ npx prisma db execute --file prisma/migrations/20261122180000_add_winner_notific
 
 If the second command fails with
 `duplicate column name: winnerNotifiedAmount`, the schema was already pushed. Run
-`scripts/upgrade/v1.23.0/backfill.sql` instead. After Step 7, run the repair
+`scripts/upgrade/v1.23.0/backfill.sql` instead. After Step 8, run the repair
 and verify commands above.
 
 #### Turso on your own server
@@ -447,7 +539,7 @@ before it sends. `MAINTENANCE_MODE=true` does not close the
 window. It does not apply to `/api` routes, so open tabs keep polling
 notifications and running the notifier. On Vercel, changing it also needs a
 new deployment. Keep the window short instead, for example by checking that
-the release commit builds before you tag it, and run the repair.
+the release commit builds before you release it, and run the repair.
 
 ### Rolling back
 
@@ -472,8 +564,17 @@ the release commit builds before you tag it, and run the repair.
   `turso db shell <new-db-name> < backup-<db-name>-<date>.sql`. This loses
   everything written since the backup. Roll the code back with it, because
   v1.23.0 cannot run on the v1.22.0 schema.
-- Do not edit `_prisma_migrations` by hand. Both migrations stay recorded
-  unless you restore a backup taken before them.
+- **`_prisma_migrations`:** both migrations stay recorded unless you
+  restore a backup taken before them. Do not edit the table by hand, with
+  two exceptions this page documents: the `INSERT` in step 4 of the Vercel
+  runbook, and [baselining](#migration-history-and-baselining). Each
+  records a migration whose changes are already in the database, after you
+  made them yourself (step 4: the missing columns and `backfill.sql`) or
+  checked them (baselining: `prisma migrate diff`). That is safe because
+  `scripts/migrate-turso.ts` decides what to run only by the migration
+  names in the table. Never delete a row to undo a migration: the next build
+  would run that migration again and fail with `duplicate column name`, or
+  repeat its data steps.
 
 ## Automatic Updates (Recommended)
 
@@ -483,14 +584,29 @@ If you have a Deployment Admin configured, you can update directly from the Sett
 2. If an update is available, you'll see an "Install Update" button
 3. Click the button to start the update process
 
-The system will automatically:
+The update runs `scripts/update.sh` of the version you are on. Since the
+release after v1.23.0, it:
 
-- Fetch the latest release
-- Back up your database (SQLite only)
-- Install dependencies
-- Run database migrations
-- Rebuild the application
-- Restart the server (if PM2 is configured)
+- Fetches the latest release
+- Checks that the database's migration history matches its schema, and
+  stops before changing anything if it does not (see
+  [Migration history and baselining](#migration-history-and-baselining))
+- Checks out the release and installs its dependencies
+- Backs up your database (SQLite only)
+- Applies the new migrations: `prisma migrate deploy` for SQLite,
+  `npm run db:migrate:turso` for Turso
+- Rebuilds the application
+- Restarts the server (if PM2 is configured)
+
+<Callout type="warning">
+  Up to v1.23.0, the script updates the schema with
+  `prisma db push --accept-data-loss` instead, which skips the data steps of
+  migrations and changes only the local `./dev.db` fallback when
+  `DATABASE_URL` is a Turso URL. The update from v1.23.0 or earlier to a
+  newer release still runs that old script, because the updater always runs
+  the installed version's script. Read the release notes of the version you
+  install for steps that this skips.
+</Callout>
 
 <Callout type="info">
   See [Deployment Administration](/developers/deployment-admin) for details on
@@ -524,7 +640,7 @@ git fetch --tags origin
   changes.
 </Callout>
 
-### Step 2: Checkout the Latest Release
+### Step 2: Find the Latest Release
 
 ```bash
 # Get the latest release tag
@@ -532,16 +648,53 @@ LATEST_TAG=$(curl -fsSL "https://api.github.com/repos/thomsa/auktiva/releases/la
   grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
 echo "Latest version: $LATEST_TAG"
-
-# Checkout the release
-git checkout "$LATEST_TAG"
 ```
 
-### Step 3: Restore Your Local Changes
+### Step 3: Check the Migration History
 
-After checking out the new version, restore your stashed changes:
+Still on your current version, check that the migrations can update your
+database:
 
 ```bash
+npx tsx scripts/check-migration-history.ts
+```
+
+It only reads. `Safe to migrate.` means you can continue. Anything else
+means the database needs a one-time baseline first; see
+[Migration history and baselining](#migration-history-and-baselining).
+
+Versions up to v1.23.0 do not have this script. If the release you install
+has it, take it from there for this check, then remove it again so that the
+checkout in Step 5 is not blocked:
+
+```bash
+for f in check-migration-history.ts migration-history.ts; do
+  git show "$LATEST_TAG:scripts/$f" > "scripts/$f"
+done
+npx tsx scripts/check-migration-history.ts
+rm scripts/check-migration-history.ts scripts/migration-history.ts
+```
+
+### Step 4: Back Up Your Database
+
+For SQLite databases, create a backup before migrating. Use the file from
+`DATABASE_URL` (`.env` or the environment; `file:./dev.db` when unset):
+
+```bash
+mkdir -p backups
+cp dev.db backups/backup_$(date +%Y%m%d_%H%M%S).db
+```
+
+<Callout type="info">
+  For Turso databases, use Turso's built-in backup features instead, for
+  example `turso db create <db-name>-backup --from-db <db-name>`.
+</Callout>
+
+### Step 5: Check Out the Release and Restore Your Local Changes
+
+```bash
+git checkout "$LATEST_TAG"
+
 # Restore stashed changes
 git stash pop
 ```
@@ -558,37 +711,32 @@ git checkout --theirs <file>  # Keep the new version
 git checkout --ours <file>    # Keep your version
 ```
 
-### Step 4: Install Dependencies
+### Step 6: Install Dependencies
 
 ```bash
-npm ci --silent 2>/dev/null || npm install
+npm ci --include=dev
 ```
 
-### Step 5: Back Up Your Database
+`--include=dev` keeps the build tools when `NODE_ENV=production` is set.
 
-For SQLite databases, create a backup before migrating:
-
-```bash
-# Check your DATABASE_URL in .env
-# If using SQLite (file:./dev.db), back it up:
-cp dev.db backups/backup_$(date +%Y%m%d_%H%M%S).db
-```
-
-<Callout type="info">
-  For Turso databases, use Turso's built-in backup features instead.
-</Callout>
-
-### Step 6: Run Database Migrations
+### Step 7: Run Database Migrations
 
 ```bash
 # Generate the Prisma client
 npm run db:generate
 
-# Apply schema changes
-npm run db:push
+# SQLite (DATABASE_URL starts with file:)
+npx prisma migrate deploy
+
+# Turso (DATABASE_URL starts with libsql:// or https://)
+npm run db:migrate:turso
 ```
 
-### Step 7: Rebuild and Restart
+Both apply only the migrations that `_prisma_migrations` does not list yet.
+Do not use `npm run db:push` on a production database: it skips the data
+steps of migrations and leaves the migration history behind.
+
+### Step 8: Rebuild and Restart
 
 ```bash
 # Build the application
@@ -616,6 +764,114 @@ git stash
 git stash pop
 ```
 
+It reads `DATABASE_URL` from the environment, else from `.env`, else uses
+`file:./dev.db`, and backs up to `backups/` (set `AUKTIVA_BACKUP_DIR` to
+change that).
+
+## Migration history and baselining
+
+`prisma migrate deploy` and `npm run db:migrate:turso` apply the migrations
+that `_prisma_migrations` does not list. A database whose schema was
+created or changed with `prisma db push` has tables this history does not
+record, and the migrations then fail: `prisma migrate deploy` stops with
+`P3005` ("The database schema is not empty") when there is no history, or
+with an error like `table ... already exists` halfway through the pending
+migrations when the history is behind.
+
+That applies to:
+
+- installs that followed the manual installation steps (`npm run db:push`)
+  or used the setup wizard before v1.1.8;
+- every install that the Deployment Admin updater of v1.23.0 or earlier
+  updated across a schema change, because it ran `prisma db push`. This
+  includes the v1.23.0 self-hosted runbook, which applies its two
+  migrations with `prisma db execute`.
+
+The setup wizard creates a SQLite database with `prisma migrate deploy`
+since v1.1.8, so its history is complete until an update pushes the
+schema. For a Turso database the history is the one
+`npm run db:migrate:turso` keeps; only a Turso database with tables and an
+empty or missing history needs a baseline.
+
+The update script checks this before it changes anything, with
+`scripts/check-migration-history.ts`, and stops with a message like:
+
+```text
+The database schema is ahead of its migration history. It was updated with
+`prisma db push` (older setups and update scripts did this), so the
+migrations cannot update it until its history is baselined once.
+```
+
+Nothing is changed and the installed version keeps running. Baseline the
+history once, on the version you are running, then install the update
+again. The script never baselines by itself.
+
+### Baseline a SQLite database
+
+1. **Back up** the database file.
+2. **Check what matches.** In the Auktiva directory, on the installed
+   version:
+
+   ```bash
+   npx tsx scripts/check-migration-history.ts
+   ```
+
+   If the schema matches all migrations of this version, it says so and
+   prints one `npx prisma migrate resolve --applied <migration>` command
+   per migration the history is missing. It compares the schema with
+   `prisma migrate diff`. You can run that comparison yourself; it prints
+   `No difference detected.` on a match:
+
+   ```bash
+   npx prisma migrate diff --from-migrations prisma/migrations --to-config-datasource --exit-code
+   ```
+
+3. **Record the missing migrations** by running the printed commands, in
+   order. `prisma migrate resolve --applied` only adds the row to
+   `_prisma_migrations`. It does not run the migration.
+4. **Check again.** `npx tsx scripts/check-migration-history.ts` now prints
+   `The migration history matches the database schema. Safe to migrate.`
+   Install the update again.
+
+If the schema does not match all migrations of the installed version, do
+not record anything. `prisma migrate diff` (without `--exit-code`) shows
+the differences. Usually the database belongs to a different version than
+the checked-out code, for example after an update that failed halfway:
+check out the version the database was last updated to, or restore the
+backup that matches the code. Tables that Auktiva does not define also
+count as differences.
+
+<Callout type="warning">
+  Recording a migration as applied skips everything in it, including data
+  steps. The check compares the schema that `prisma db push` already
+  created, but a data step (like the two in v1.23.0) only ran if you ran it
+  yourself. Check the release notes of each version you pushed the schema
+  to. For v1.23.0, see [the self-hosted runbook](#runbook-self-hosted) and
+  `backfill.sql`.
+</Callout>
+
+### Baseline a Turso database
+
+`scripts/check-migration-history.ts` cannot compare a Turso schema with the
+migrations, so compare a local copy:
+
+```bash
+turso db shell <db-name> .dump > turso-dump.sql
+DATABASE_URL="file:./turso-copy.db" npx prisma db execute --file turso-dump.sql
+DATABASE_URL="file:./turso-copy.db" npx tsx scripts/check-migration-history.ts
+```
+
+If it reports that the schema matches all migrations, record each
+migration it lists in the Turso database's history, in the table and
+format `npm run db:migrate:turso` uses:
+
+```bash
+turso db shell <db-name> "CREATE TABLE IF NOT EXISTS _prisma_migrations (id TEXT PRIMARY KEY, migration_name TEXT NOT NULL UNIQUE, applied_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)"
+turso db shell <db-name> "INSERT INTO _prisma_migrations (id, migration_name) VALUES (lower(hex(randomblob(16))), '<migration>')"
+```
+
+Then delete `turso-dump.sql` and `turso-copy.db`, which hold your data.
+
 ## Troubleshooting
 
 ### "Your local changes would be overwritten"
@@ -637,14 +893,32 @@ If `git stash pop` results in conflicts:
 3. For other files, review the changes and merge manually
 4. After resolving, mark as resolved: `git add <file>`
 
+### The Update Stops at "Checking the database migration history"
+
+The database needs a one-time baseline. Nothing was changed; see
+[Migration history and baselining](#migration-history-and-baselining).
+
 ### Database Migration Errors
 
-If `npm run db:push` fails:
+If `npx prisma migrate deploy` or `npm run db:migrate:turso` fails:
 
 1. Check the error message for specific issues
-2. Ensure your database is accessible
-3. For SQLite, verify the file exists and has correct permissions
-4. For Turso, check your connection credentials
+2. `P3005` or `already exists`: the schema was pushed; see
+   [Migration history and baselining](#migration-history-and-baselining)
+3. `P3009` ("migrate found failed migrations"): a migration failed halfway.
+   Restore the backup, or finish the migration by hand and record it with
+   `npx prisma migrate resolve --applied <migration>` (or `--rolled-back`)
+4. Ensure your database is accessible
+5. For SQLite, verify the file exists and has correct permissions
+6. For Turso, check your connection credentials
+
+If the update script fails after it checked out the release, the code is
+on the new tag but the running application was not rebuilt, and running
+the script again does nothing because it is already on that tag. The
+script prints the backup it took and the commit it came from. Fix the
+cause, then finish with [Step 7](#step-7-run-database-migrations) and
+[Step 8](#step-8-rebuild-and-restart) of the manual upgrade, or check out
+the previous commit, restore the backup and rebuild.
 
 ### Build Failures
 
