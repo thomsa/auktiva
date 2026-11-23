@@ -357,7 +357,7 @@ accepted both on 2026-11-22.
   Items that backfill marks as notified get the highest bidder as the
   recorded winner.
 - **D7 upgrade window.** Added during production readiness on 2026-11-22,
-  awaiting the maintainer's review. Step 3 adds a 14-day date comparison
+  accepted by the maintainer on 2026-11-22. Step 3 adds a 14-day date comparison
   to the migration, which the first design ruled out. It keeps the v1.22.0
   notifier, which runs until v1.23.0 is deployed, from sending late "You
   won" messages. The repair script fixes winner records that notifier
