@@ -156,6 +156,21 @@ export function parseArgs(argv: readonly string[]): ReleaseArgs {
   return { help: false, dryRun, target: { kind: "explicit", version: value } };
 }
 
+/**
+ * True when npm consumed a `--dry-run` meant for the script: `npm run release
+ * patch --dry-run` (without `--`) sets npm_config_dry_run instead of passing
+ * the flag on. The release then has to stay a dry run.
+ */
+export function npmConsumedDryRun(
+  env: Readonly<Record<string, string | undefined>>,
+): boolean {
+  const value = env.npm_config_dry_run?.trim().toLowerCase();
+  return value === "true" || value === "1";
+}
+
+export const NPM_DRY_RUN_WARNING = `Warning: npm consumed --dry-run (npm_config_dry_run is set), so this run stays a dry run.
+Pass script options after "--": npm run release -- <patch|minor|major|X.Y.Z> --dry-run`;
+
 /** Computes the next version and rejects anything that is not an increase. */
 export function resolveVersion(current: string, target: ReleaseTarget): string {
   const currentVersion = parseSemver(current);

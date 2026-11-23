@@ -9,11 +9,13 @@ import {
   MAIN_BRANCH,
   REMOTE,
   REMOTE_MAIN_REF,
+  NPM_DRY_RUN_WARNING,
   ReleaseError,
   USAGE,
   buildPlan,
   checkPreconditions,
   formatCommand,
+  npmConsumedDryRun,
   parseArgs,
   recoveryInstructions,
   resolveVersion,
@@ -165,6 +167,10 @@ export function runRelease(
     log(USAGE);
     return 0;
   }
+  // Never escalate a dry run that npm swallowed into a real release.
+  const npmDryRun = npmConsumedDryRun(env);
+  if (npmDryRun) error(NPM_DRY_RUN_WARNING);
+  const dryRun = args.dryRun || npmDryRun;
 
   try {
     const root = capture(
@@ -199,7 +205,7 @@ export function runRelease(
     log(`HEAD:            ${state.head}`);
     log(`${REMOTE}/${MAIN_BRANCH}:     ${state.originMain ?? "(missing)"}`);
     log("");
-    log(args.dryRun ? "Plan (dry run, nothing will run):" : "Plan:");
+    log(dryRun ? "Plan (dry run, nothing will run):" : "Plan:");
     plan.forEach((step, index) => {
       log(`  ${index + 1}. ${step.description}`);
       log(`     ${formatCommand(step.command)}`);
@@ -212,7 +218,7 @@ export function runRelease(
       return 1;
     }
 
-    if (args.dryRun) {
+    if (dryRun) {
       log(
         "All checks passed. Dry run: nothing was changed. Rerun without --dry-run to release.",
       );

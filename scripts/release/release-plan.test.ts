@@ -6,6 +6,7 @@ import {
   checkPreconditions,
   compareSemver,
   formatCommand,
+  npmConsumedDryRun,
   parseArgs,
   parseSemver,
   recoveryInstructions,
@@ -271,4 +272,18 @@ test("recoveryInstructions explains each failure point", () => {
   );
   assert.match(pushFailed, /git tag -d v1\.23\.1/);
   assert.match(pushFailed, new RegExp(`git reset --keep ${SHA_A}`));
+});
+
+test("npmConsumedDryRun detects a --dry-run that npm kept for itself", () => {
+  for (const value of ["true", "TRUE", "True", " true ", "1"]) {
+    assert.equal(npmConsumedDryRun({ npm_config_dry_run: value }), true, value);
+  }
+  for (const value of ["false", "FALSE", "0", "", "yes"]) {
+    assert.equal(
+      npmConsumedDryRun({ npm_config_dry_run: value }),
+      false,
+      JSON.stringify(value),
+    );
+  }
+  assert.equal(npmConsumedDryRun({}), false);
 });

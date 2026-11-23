@@ -28,6 +28,8 @@ Object.assign(env, {
   GIT_COMMITTER_NAME: "Release Test",
   GIT_COMMITTER_EMAIL: "release-test@example.invalid",
 });
+// Each test sets npm's dry-run config explicitly when it needs it.
+delete env.npm_config_dry_run;
 
 after(() => {
   fs.rmSync(tmpRoot, { recursive: true, force: true });
@@ -84,11 +86,19 @@ function createFixture(): { origin: string; work: string } {
 }
 
 function release(work: string, ...argv: string[]) {
+  return releaseWithEnv(work, env, ...argv);
+}
+
+function releaseWithEnv(
+  work: string,
+  runEnv: NodeJS.ProcessEnv,
+  ...argv: string[]
+) {
   const out: string[] = [];
   const err: string[] = [];
   const code = runRelease(argv, {
     cwd: work,
-    env,
+    env: runEnv,
     log: (line) => out.push(line),
     error: (line) => err.push(line),
   });
@@ -165,6 +175,49 @@ test("a release commits, tags, and pushes both refs from a detached HEAD", () =>
     ),
     true,
   );
+});
+
+test("a --dry-run consumed by npm keeps the run a dry run", () => {
+  const { origin, work } = createFixture();
+  const head = git(work, "rev-parse", "HEAD");
+
+  // npm run release patch --dry-run (without --) sets npm_config_dry_run.
+  const result = releaseWithEnv(
+    work,
+    { ...env, npm_config_dry_run: "true" },
+    "patch",
+  );
+
+  assert.equal(result.code, 0, result.err);
+  assert.match(result.err, /npm consumed --dry-run/);
+  assert.match(
+    result.err,
+    /npm run release -- <patch\|minor\|major\|X\.Y\.Z> --dry-run/,
+  );
+  assert.match(result.out, /Dry run: nothing was changed/);
+  assert.equal(git(work, "rev-parse", "HEAD"), head);
+  assert.equal(git(work, "status", "--porcelain"), "");
+  assert.equal(git(work, "tag", "--list"), "");
+  assert.equal(git(origin, "rev-parse", "refs/heads/main"), head);
+  assert.equal(git(origin, "tag", "--list"), "");
+});
+
+test("npm_config_dry_run=false does not turn a release into a dry run", () => {
+  const { origin, work } = createFixture();
+
+  const result = releaseWithEnv(
+    work,
+    { ...env, npm_config_dry_run: "false" },
+    "patch",
+  );
+
+  assert.equal(result.code, 0, `${result.out}\n${result.err}`);
+  assert.doesNotMatch(result.err, /npm consumed --dry-run/);
+  assert.equal(
+    git(origin, "rev-parse", "refs/heads/main"),
+    git(work, "rev-parse", "HEAD"),
+  );
+  assert.equal(git(origin, "cat-file", "-t", "refs/tags/v1.0.1"), "tag");
 });
 
 test("refuses when HEAD is not origin/main or the tree is dirty", () => {
