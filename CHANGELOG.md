@@ -4,7 +4,7 @@
 > [GitHub Releases](https://github.com/thomsa/auktiva/releases). This file is
 > no longer updated and keeps the history up to 1.21.1.
 
-All notable changes to Auktiva will be documented in this file.
+All notable changes to Auktiva up to 1.21.1 were documented in this file.
 
 ## [1.21.1] - 2026-11-20
 

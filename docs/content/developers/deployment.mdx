@@ -253,7 +253,14 @@ git push --atomic --no-follow-tags origin HEAD:refs/heads/main refs/tags/vX.Y.Z
 The push updates both refs or neither. If it fails, the script prints how
 to retry it or how to undo the local commit and tag. `--dry-run` runs every
 check, including the fetch and the remote tag lookup, and prints the next
-version and the exact commands without changing anything.
+version and the exact commands without changing anything. Pass it after
+`--`. If npm takes `--dry-run` for itself (`npm run release patch --dry-run`),
+the script warns and still only does a dry run.
+
+The push goes directly to `refs/heads/main`, so `main`'s GitHub rules must
+allow it. Rulesets that require pull requests or signed commits reject the
+push unless the person pushing has bypass rights, and the atomic push then
+publishes nothing.
 
 The pushed tag starts two workflows:
 
