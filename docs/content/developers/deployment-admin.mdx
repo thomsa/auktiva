@@ -100,7 +100,7 @@ Triggers an update. Only accessible by the Deployment Admin.
 **What it does:**
 
 1. Runs `scripts/update.sh` in the background
-2. The script fetches the latest release tag, backs up the database, and rebuilds
+2. The script fetches the latest release tag, checks the database's migration history, backs up the database, applies the migrations, and rebuilds
 
 ### GET /api/version
 
@@ -162,12 +162,35 @@ If you're already on the latest release, the script exits early without making c
 Already on latest version (v1.6.8). Nothing to do.
 ```
 
-### 3. Database Backup (SQLite only)
+### 3. Check the Migration History
 
-For SQLite databases, the script creates a timestamped backup before running migrations:
+Before it checks out the release, the script runs
+`npx tsx scripts/check-migration-history.ts` with the installed version.
+It reads `DATABASE_URL` from the environment, else from `.env`, else uses
+`file:./dev.db`. If the database has tables that its migration history
+does not record (it was created or updated with `prisma db push`), the
+script stops before it changes anything:
+
+```
+Update stopped before anything was changed.
+```
+
+Baseline the history once as described in
+[Migration history and baselining](/developers/upgrading#migration-history-and-baselining),
+then install the update again. The script never baselines by itself.
+
+### 4. Install Dependencies & Back Up
 
 ```bash
-# Backup location: backups/backup_YYYYMMDD_HHMMSS.db
+git checkout "$LATEST_TAG"
+npm ci --include=dev   # falls back to npm install --include=dev
+```
+
+For SQLite databases, the script then creates a timestamped backup before
+running migrations:
+
+```bash
+# Backup location: backups/backup_YYYYMMDD_HHMMSS.db (AUKTIVA_BACKUP_DIR)
 cp "$DB_PATH" "backups/backup_$(date +%Y%m%d_%H%M%S).db"
 ```
 
@@ -176,15 +199,24 @@ cp "$DB_PATH" "backups/backup_$(date +%Y%m%d_%H%M%S).db"
   built-in backup features for production deployments.
 </Callout>
 
-### 4. Install Dependencies & Migrate
+### 5. Migrate
 
 ```bash
-npm install --production=false
 npx prisma generate
-npx prisma db push --accept-data-loss
+npx prisma migrate deploy   # SQLite
+npm run db:migrate:turso    # Turso
 ```
 
-### 5. Build & Restart
+Both apply only the migrations the database does not have yet.
+
+<Callout type="info">
+  Up to v1.23.0 the script ran `prisma db push --accept-data-loss` here. The
+  updater runs the script of the installed version, so an update from v1.23.0 or
+  earlier still uses `db push` once. See
+  [Upgrading](/developers/upgrading#automatic-updates-recommended).
+</Callout>
+
+### 6. Build & Restart
 
 ```bash
 npm run build
@@ -276,6 +308,7 @@ If you see "You must transfer deployment admin rights before deleting your accou
 Check the server logs for errors. Common issues:
 
 - Git conflicts (resolve manually)
+- "Update stopped before anything was changed": baseline the migration history (see [Upgrading](/developers/upgrading#migration-history-and-baselining))
 - Permission issues (check file ownership)
 - Missing dependencies (check Node.js version)
 - Process manager not configured (customize restart command)

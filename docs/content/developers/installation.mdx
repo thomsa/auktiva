@@ -66,7 +66,7 @@ The setup wizard guides you through configuring:
 After configuration, it automatically:
 
 1. Generates the Prisma client
-2. Pushes the database schema
+2. Applies the database migrations (`prisma migrate deploy`)
 3. Seeds initial data (currencies)
 4. Builds the application
 5. Optionally installs and starts PM2
@@ -106,11 +106,20 @@ Generate the Prisma client:
 npm run db:generate
 ```
 
-Push the schema to your database:
+Apply the migrations to your database:
 
 ```bash
-npm run db:push
+# SQLite (DATABASE_URL starts with file:)
+npx prisma migrate deploy
+
+# Turso (DATABASE_URL starts with libsql://)
+npm run db:migrate:turso
 ```
+
+Use migrations rather than `npm run db:push` for any database you will keep:
+updates apply migrations, and they stop on a database whose schema was
+pushed until its history is baselined (see
+[Migration history and baselining](/developers/upgrading#migration-history-and-baselining)).
 
 Seed initial data:
 

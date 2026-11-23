@@ -40,13 +40,21 @@ npx tsx cli/setup.ts </dev/tty
 
 ### "Table does not exist"
 
-**Cause:** Schema hasn't been pushed to database.
+**Cause:** The migrations have not been applied to the database.
 
 **Solution:**
 
 ```bash
-npm run db:push
+# SQLite
+npx prisma migrate deploy
+
+# Turso
+npm run db:migrate:turso
 ```
+
+If `prisma migrate deploy` stops with `P3005`, the schema was created with
+`prisma db push`. See
+[Migration history and baselining](/developers/upgrading#migration-history-and-baselining).
 
 ## Authentication Issues
 
