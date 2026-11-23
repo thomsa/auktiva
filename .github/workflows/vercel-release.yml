@@ -26,6 +26,21 @@ jobs:
             exit 1
           fi
 
+      # Both deploy hooks build the current head of main, not the tag, so a
+      # tag that is not main's head would deploy different code than it names.
+      # A small race remains: main can still move between this check and the
+      # moment Vercel builds the hook, and the hook always builds main's head.
+      - name: Ensure tag is the head of main
+        run: |
+          # actions/checkout checks out the commit the tag points to.
+          tag_commit=$(git rev-parse "HEAD^{commit}")
+          main_commit=$(git rev-parse "origin/main^{commit}")
+          if [ "$tag_commit" != "$main_commit" ]; then
+            echo "::error::The release tag points to $tag_commit, but origin/main is $main_commit. The deploy hooks build the head of main, so the tag must be main's head. Cut releases with npm run release."
+            exit 1
+          fi
+          echo "Tag commit $tag_commit is the head of origin/main."
+
       - name: Trigger Vercel Deploy Hook
         run: |
           response=$(curl --fail --silent --show-error --max-time 90 \
@@ -45,7 +60,7 @@ jobs:
           if [ -z "$PREVIOUS_TAG" ] || [ "$PREVIOUS_TAG" = "$CURRENT_TAG" ]; then
             # No previous tag found, check against first commit
             echo "No previous tag found, assuming docs changed"
-            echo "docs_changed=true" >> $GITHUB_OUTPUT
+            echo "docs_changed=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -56,10 +71,10 @@ jobs:
 
           if [ "$DOCS_CHANGES" -gt 0 ]; then
             echo "Found $DOCS_CHANGES changed files in docs/"
-            echo "docs_changed=true" >> $GITHUB_OUTPUT
+            echo "docs_changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "No changes in docs/"
-            echo "docs_changed=false" >> $GITHUB_OUTPUT
+            echo "docs_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
   deploy-docs:
@@ -70,7 +85,9 @@ jobs:
     steps:
       - name: Trigger Vercel Docs Deploy Hook
         run: |
-          echo "Deploying docs..."
-          curl -X POST "$VERCEL_DOCS_DEPLOY_HOOK_URL"
+          response=$(curl --fail --silent --show-error --max-time 90 \
+            --request POST "$VERCEL_DOCS_DEPLOY_HOOK_URL")
+          job_id=$(jq -er '.job.id | strings | select(length > 0)' <<< "$response")
+          echo "Vercel accepted docs deployment job $job_id."
         env:
           VERCEL_DOCS_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DOCS_DEPLOY_HOOK_URL }}
