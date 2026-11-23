@@ -6,9 +6,9 @@ This guide covers how to upgrade your Auktiva installation to the latest version
 
 <Callout type="warning">
   **Upgrading from v1.22.0 to v1.23.0?** Read [Upgrading to
-  v1.23.0](#upgrading-to-v1230) first. That release has two data migrations
-  that must run before the new code serves traffic, and the Deployment Admin
-  updater does not run them.
+  v1.23.0](#upgrading-to-v1230) first. That release has two data migrations that
+  must run before the new code serves traffic, and the Deployment Admin updater
+  does not run them.
 </Callout>
 
 ## Upgrading to v1.23.0
@@ -20,14 +20,12 @@ then repair and verify. On Vercel with this repository's `vercel.json`, the
 production build applies the migrations itself, right before `next build`.
 
 <Callout type="error">
-  Never deploy v1.23.0 before the migrations. The new code reads columns
-  that only the migration adds, so every page and API route that loads
-  auction items fails with
-  `no such column: main.auction_items.winnerNotifiedUserId`, and no winner
-  is notified. If
-  this happens, run the migration at once. It is safe to run while v1.23.0
-  is live. The Vercel build in this repository migrates before it builds, so
-  this only happens when you migrate by hand.
+  Never deploy v1.23.0 before the migrations. The new code reads columns that
+  only the migration adds, so every page and API route that loads auction items
+  fails with `no such column: main.auction_items.winnerNotifiedUserId`, and no
+  winner is notified. If this happens, run the migration at once. It is safe to
+  run while v1.23.0 is live. The Vercel build in this repository migrates before
+  it builds, so this only happens when you migrate by hand.
 </Callout>
 
 ### What changes for operators
@@ -63,13 +61,12 @@ There are no new environment variables.
 <Callout type="info">
   **For developers:** `20261122180000_add_winner_notification_record` was
   changed before release to add the 14-day step. It was never tagged or on
-  `main`. A development or QA database that applied the earlier version
-  keeps its re-queued rows for items that ended more than 14 days ago. The
-  notifier's 14-day rule then records their winners without messaging
-  anyone, so nothing needs fixing. `prisma migrate dev` reports that the
-  applied migration was modified and offers to reset the database. Reset
-  it, or recreate it from the migrations. `npm run db:migrate:turso` does
-  not check for changes.
+  `main`. A development or QA database that applied the earlier version keeps
+  its re-queued rows for items that ended more than 14 days ago. The notifier's
+  14-day rule then records their winners without messaging anyone, so nothing
+  needs fixing. `prisma migrate dev` reports that the applied migration was
+  modified and offers to reset the database. Reset it, or recreate it from the
+  migrations. `npm run db:migrate:turso` does not check for changes.
 </Callout>
 
 #### Behavior
@@ -96,8 +93,8 @@ There are no new environment variables.
 #### API and export changes
 
 <Callout type="warning">
-  The results export format changed in a way that breaks existing
-  consumers. Update any spreadsheet or script that reads it.
+  The results export format changed in a way that breaks existing consumers.
+  Update any spreadsheet or script that reads it.
 </Callout>
 
 - **Results export** (`GET /api/auctions/[id]/export`, admins only):
@@ -175,14 +172,14 @@ nothing keeps a file to one transaction or to reads only.
 `precheck.sql` prints one row per outcome, and then the items whose winner
 changed or who will be messaged:
 
-| Outcome                                 | What happens                                                    |
-| --------------------------------------- | --------------------------------------------------------------- |
-| `marked_notified_follows_ended_auction` | Marked as notified, nobody is messaged                          |
-| `notified_winner_unchanged`             | Keeps its winner, nothing is sent                               |
-| `pending`                               | Left as is                                                      |
-| `winner_changed_requeued_ended`         | The new winner is told they won right after the deploy          |
-| `winner_changed_requeued_open`          | The new winner is told once the item ends                       |
-| `winner_changed_recorded_over_14_days`  | The new winner is recorded, nobody is messaged                  |
+| Outcome                                 | What happens                                           |
+| --------------------------------------- | ------------------------------------------------------ |
+| `marked_notified_follows_ended_auction` | Marked as notified, nobody is messaged                 |
+| `notified_winner_unchanged`             | Keeps its winner, nothing is sent                      |
+| `pending`                               | Left as is                                             |
+| `winner_changed_requeued_ended`         | The new winner is told they won right after the deploy |
+| `winner_changed_requeued_open`          | The new winner is told once the item ends              |
+| `winner_changed_recorded_over_14_days`  | The new winner is recorded, nobody is messaged         |
 
 `notifyAfterDeploy` is the number of "You won" messages v1.23.0 sends right
 after the deploy. `recordedAfterDeploy` counts items that are still pending,
@@ -210,8 +207,8 @@ otherwise, and runs `next build`. Vercel switches production to the new
 deployment when the build succeeds.
 
 <Callout type="warning">
-  Pushing the tag starts the deploy, and with it the migration, within
-  seconds. Take the backup and run the pre-check before you release.
+  Pushing the tag starts the deploy, and with it the migration, within seconds.
+  Take the backup and run the pre-check before you release.
 </Callout>
 
 <Callout type="warning">
@@ -349,12 +346,12 @@ deployment when the build succeeds.
 
    `verify.sql` prints two tables. Expect exactly this:
 
-   | Table | Row                                  | Column                | Right after the repair         | After the next notifier run |
-   | ----- | ------------------------------------ | --------------------- | ------------------------------ | --------------------------- |
-   | 1     | (only row)                           | `winnerRecordColumns` | `3` (`expected` is `3`)        | `3`                         |
-   | 2     | `notified_without_record`            | `items`               | `0`                            | `0`                         |
-   | 2     | `notified_record_not_highest_bidder` | `items`               | `0`                            | `0`                         |
-   | 2     | `pending_ended_items`                | `items`               | `0` or more (see below)        | `0`                         |
+   | Table | Row                                  | Column                | Right after the repair  | After the next notifier run |
+   | ----- | ------------------------------------ | --------------------- | ----------------------- | --------------------------- |
+   | 1     | (only row)                           | `winnerRecordColumns` | `3` (`expected` is `3`) | `3`                         |
+   | 2     | `notified_without_record`            | `items`               | `0`                     | `0`                         |
+   | 2     | `notified_record_not_highest_bidder` | `items`               | `0`                     | `0`                         |
+   | 2     | `pending_ended_items`                | `items`               | `0` or more (see below) | `0`                         |
 
    `expected` is `0` on every row of the second table.
    `pending_ended_items` counts ended, published items with a highest
@@ -369,7 +366,6 @@ deployment when the build succeeds.
    `verify.sql` again.
 
    If a number differs:
-
    - `winnerRecordColumns` below `3`: migration
      `20261122180000_add_winner_notification_record` is missing or partly
      applied. Handle it as in step 4.
@@ -427,12 +423,12 @@ v1.23.0 must not serve traffic before the migration:
 
 <Callout type="warning">
   The updater runs the `scripts/update.sh` of the version you are on. Up to
-  v1.23.0, that script updates the schema with `prisma db push`. That adds
-  the new columns but skips the data steps of both migrations. With a Turso
-  `DATABASE_URL`, `prisma db push` changes only the local `./dev.db`
-  fallback from `prisma.config.ts` and leaves Turso unchanged. Use the steps
-  below for this upgrade. Later releases migrate instead; see
-  [Migration history and baselining](#migration-history-and-baselining).
+  v1.23.0, that script updates the schema with `prisma db push`. That adds the
+  new columns but skips the data steps of both migrations. With a Turso
+  `DATABASE_URL`, `prisma db push` changes only the local `./dev.db` fallback
+  from `prisma.config.ts` and leaves Turso unchanged. Use the steps below for
+  this upgrade. Later releases migrate instead; see [Migration history and
+  baselining](#migration-history-and-baselining).
 </Callout>
 
 The SQLite steps below apply the two migrations without recording them in
@@ -616,13 +612,12 @@ release after v1.23.0, it:
 - Restarts the server (if PM2 is configured)
 
 <Callout type="warning">
-  Up to v1.23.0, the script updates the schema with
-  `prisma db push --accept-data-loss` instead, which skips the data steps of
-  migrations and changes only the local `./dev.db` fallback when
-  `DATABASE_URL` is a Turso URL. The update from v1.23.0 or earlier to a
-  newer release still runs that old script, because the updater always runs
-  the installed version's script. Read the release notes of the version you
-  install for steps that this skips.
+  Up to v1.23.0, the script updates the schema with `prisma db push
+  --accept-data-loss` instead, which skips the data steps of migrations and
+  changes only the local `./dev.db` fallback when `DATABASE_URL` is a Turso URL.
+  The update from v1.23.0 or earlier to a newer release still runs that old
+  script, because the updater always runs the installed version's script. Read
+  the release notes of the version you install for steps that this skips.
 </Callout>
 
 <Callout type="info">
@@ -859,12 +854,11 @@ backup that matches the code. Tables that Auktiva does not define also
 count as differences.
 
 <Callout type="warning">
-  Recording a migration as applied skips everything in it, including data
-  steps. The check compares the schema that `prisma db push` already
-  created, but a data step (like the two in v1.23.0) only ran if you ran it
-  yourself. Check the release notes of each version you pushed the schema
-  to. For v1.23.0, see [the self-hosted runbook](#runbook-self-hosted) and
-  `backfill.sql`.
+  Recording a migration as applied skips everything in it, including data steps.
+  The check compares the schema that `prisma db push` already created, but a
+  data step (like the two in v1.23.0) only ran if you ran it yourself. Check the
+  release notes of each version you pushed the schema to. For v1.23.0, see [the
+  self-hosted runbook](#runbook-self-hosted) and `backfill.sql`.
 </Callout>
 
 ### Baseline a Turso database
