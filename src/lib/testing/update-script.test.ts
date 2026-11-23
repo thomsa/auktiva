@@ -10,8 +10,9 @@ import { parse } from "dotenv";
  * scripts/update.sh exports the DATABASE_URL it resolves to the migration,
  * build and restart steps, so it must find the same URL as the app's tools:
  * the environment first, then .env as dotenv parses it, then file:./dev.db.
- * Runs the sourced function in bash; skipped where no POSIX bash can reach
- * this machine's paths.
+ * Runs the sourced function in bash. Skipped only when no bash binary can be
+ * spawned at all, and never in CI; a bash that cannot source the script (for
+ * example because of CRLF line endings) fails every test.
  */
 
 const script = path
@@ -36,10 +37,34 @@ function bash(command: string, env: Record<string, string | undefined> = {}) {
 }
 
 const probe = bash(`cd "${posix(tmpDir)}" && source "${script}" && echo ok`);
+const bashMissing =
+  (probe.error as NodeJS.ErrnoException | undefined)?.code === "ENOENT";
 const skip =
-  probe.status === 0 && probe.stdout.trim() === "ok"
-    ? false
-    : "no bash that can source scripts/update.sh here";
+  bashMissing && process.env.CI !== "true"
+    ? "no bash binary to run scripts/update.sh"
+    : false;
+
+/** Fails the test when bash could not be spawned or could not source the script. */
+function assertProbe() {
+  assert.equal(
+    probe.error,
+    undefined,
+    `could not spawn bash: ${probe.error?.message}`,
+  );
+  assert.equal(
+    probe.status,
+    0,
+    `bash could not source ${script} (exit ${probe.status}):
+${probe.stderr}`,
+  );
+  assert.equal(
+    probe.stdout.trim(),
+    "ok",
+    `unexpected output sourcing ${script}:
+${probe.stdout}
+${probe.stderr}`,
+  );
+}
 
 let caseCount = 0;
 function resolveIn(
@@ -89,6 +114,7 @@ const ENV_FILES: [string, string, string][] = [
 
 for (const [name, envFile, expected] of ENV_FILES) {
   test(`.env with ${name}`, { skip }, () => {
+    assertProbe();
     const result = resolveIn(envFile);
     assert.equal(result.status, 0, result.stderr);
     assert.equal(result.stdout, `${expected}\n`);
@@ -98,6 +124,7 @@ for (const [name, envFile, expected] of ENV_FILES) {
 }
 
 test("the environment wins over .env", { skip }, () => {
+  assertProbe();
   const result = resolveIn(`DATABASE_URL=file:./from-env-file.db\n`, {
     DATABASE_URL: "file:./from-environment.db",
   });
@@ -109,6 +136,7 @@ test(
   "an empty DATABASE_URL in the environment means the default, as for dotenv",
   { skip },
   () => {
+    assertProbe();
     const result = resolveIn(`DATABASE_URL=file:./from-env-file.db\n`, {
       DATABASE_URL: "",
     });
@@ -118,12 +146,14 @@ test(
 );
 
 test("no .env means the default", { skip }, () => {
+  assertProbe();
   const result = resolveIn(null);
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout, "file:./dev.db\n");
 });
 
 test("without dotenv installed it fails instead of guessing", { skip }, () => {
+  assertProbe();
   const emptyRoot = path.join(tmpDir, "no-node-modules");
   fs.mkdirSync(emptyRoot);
   const result = resolveIn(
