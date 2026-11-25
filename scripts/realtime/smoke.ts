@@ -65,8 +65,8 @@ function readOptions() {
       appId,
       key,
       secret,
-      host: values.host?.trim() ?? config.host,
-      port: port ?? config.port,
+      host: values.host?.trim() || config.host || endpoint.host,
+      port: port ?? config.port ?? endpoint.port,
       useTLS: useTLS ?? config.useTLS,
       timeout: REALTIME_PUBLISH_TIMEOUT_MS,
     },
@@ -112,6 +112,8 @@ async function smoke() {
       enabledTransports: ["ws", "wss"],
       enableStats: false,
       channelAuthorization: {
+        transport: "ajax",
+        endpoint: "/api/pusher/auth",
         customHandler: ({ socketId, channelName }, callback) => {
           callback(null, publisher.authorizeChannel(socketId, channelName));
         },
