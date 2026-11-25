@@ -2,7 +2,13 @@
  * React hook for Pusher/Soketi realtime subscriptions
  */
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useSyncExternalStore,
+} from "react";
 import { useSession } from "next-auth/react";
 import PusherJS from "pusher-js";
 import type { Channel, Options as PusherOptions } from "pusher-js";
@@ -12,15 +18,19 @@ import {
 } from "@/lib/realtime/client";
 import { Events, Channels } from "@/lib/realtime/events";
 import type { EventPayloadMap, ChannelName } from "@/lib/realtime/events";
+import { resolveRealtimeSWRConfig } from "@/lib/realtime/fallback";
+import type { RealtimeSWRConfig } from "@/lib/realtime/fallback";
 
 // Debug logging - enabled in development or via localStorage
 // Use a function to avoid SSR/hydration issues with localStorage access
 function isDebugEnabled(): boolean {
   if (typeof window === "undefined") return false;
-  return (
-    process.env.NODE_ENV === "development" ||
-    localStorage.getItem("REALTIME_DEBUG") === "true"
-  );
+  if (process.env.NODE_ENV === "development") return true;
+  try {
+    return localStorage.getItem("REALTIME_DEBUG") === "true";
+  } catch {
+    return false;
+  }
 }
 
 function log(message: string, data?: unknown) {
@@ -42,20 +52,43 @@ function logError(message: string, error?: unknown) {
 
 // Singleton Pusher instance
 let pusherInstance: PusherJS | null = null;
-let connectionAttempted = false;
 let connectionFailed = false;
+let hasConnected = false;
+let reconnectCount = 0;
+const realtimeListeners = new Set<() => void>();
+
+function notifyRealtimeListeners() {
+  for (const listener of realtimeListeners) listener();
+}
+
+function handleConnectionState({
+  previous,
+  current,
+}: {
+  previous: string;
+  current: string;
+}) {
+  log(`Connection state: ${previous} → ${current}`);
+
+  if (current === "connected") {
+    if (hasConnected) reconnectCount += 1;
+    hasConnected = true;
+    log("Connected successfully!");
+  } else if (current === "unavailable") {
+    logError("Connection unavailable. Retrying.");
+  } else if (current === "failed") {
+    connectionFailed = true;
+    logError("Connection failed. Falling back to polling.");
+  }
+
+  notifyRealtimeListeners();
+}
 
 /**
  * Get or create the singleton Pusher client instance
  */
 function getPusherClient(): PusherJS | null {
-  if (!isClientRealtimeEnabled()) {
-    log("Realtime is disabled");
-    return null;
-  }
-
-  if (connectionFailed) {
-    log("Connection previously failed, returning null");
+  if (typeof window === "undefined" || connectionFailed) {
     return null;
   }
 
@@ -63,13 +96,11 @@ function getPusherClient(): PusherJS | null {
     return pusherInstance;
   }
 
-  if (connectionAttempted) {
-    log("Connection already attempted, returning null");
+  const config = getClientConfig();
+  if (config.driver === "disabled" || !config.key) {
     return null;
   }
 
-  connectionAttempted = true;
-  const config = getClientConfig();
   log("Initializing Pusher client", {
     driver: config.driver,
     wsHost: config.wsHost,
@@ -101,68 +132,48 @@ function getPusherClient(): PusherJS | null {
 
     pusherInstance = new PusherJS(config.key, options);
 
-    // Handle connection state changes
-    pusherInstance.connection.bind(
-      "state_change",
-      (states: { previous: string; current: string }) => {
-        log(`Connection state: ${states.previous} → ${states.current}`);
-      },
-    );
-
-    pusherInstance.connection.bind("connected", () => {
-      log("Connected successfully!");
+    const connection = pusherInstance.connection;
+    connection.bind("state_change", handleConnectionState);
+    connection.bind("error", (error: unknown) => {
+      logError("Connection error:", error);
     });
-
-    // Handle connection errors
-    pusherInstance.connection.bind("error", (err: Error) => {
-      logError("Connection error:", err);
-      connectionFailed = true;
-    });
-
-    pusherInstance.connection.bind("failed", () => {
-      logError("Connection failed. Falling back to polling.");
-      connectionFailed = true;
+    // Pusher can synchronously report unsupported transports in its constructor.
+    handleConnectionState({
+      previous: "initialized",
+      current: connection.state,
     });
 
     log("Pusher client created, connecting...");
   } catch (error) {
     logError("Failed to initialize Pusher client:", error);
-    connectionFailed = true;
     return null;
   }
 
-  return pusherInstance;
+  return connectionFailed ? null : pusherInstance;
+}
+
+function subscribeToRealtime(listener: () => void): () => void {
+  realtimeListeners.add(listener);
+  getPusherClient();
+  return () => {
+    realtimeListeners.delete(listener);
+  };
 }
 
 /**
  * Hook to check if realtime is connected
  */
-export function useRealtimeStatus(): {
+export function useRealtimeStatus(channel?: Channel | null): {
   isConnected: boolean;
   isEnabled: boolean;
 } {
-  const [isConnected, setIsConnected] = useState(() => {
-    // Initialize based on current state (avoids setState in effect)
-    const pusher = getPusherClient();
-    return pusher?.connection.state === "connected" || false;
-  });
-
-  useEffect(() => {
-    const pusher = getPusherClient();
-    if (!pusher) {
-      return;
-    }
-
-    const handleStateChange = (states: { current: string }) => {
-      setIsConnected(states.current === "connected");
-    };
-
-    pusher.connection.bind("state_change", handleStateChange);
-
-    return () => {
-      pusher.connection.unbind("state_change", handleStateChange);
-    };
-  }, []);
+  const isConnected = useSyncExternalStore(
+    subscribeToRealtime,
+    () =>
+      pusherInstance?.connection.state === "connected" &&
+      (channel === undefined || channel?.subscribed === true),
+    () => false,
+  );
 
   return {
     isConnected,
@@ -170,41 +181,67 @@ export function useRealtimeStatus(): {
   };
 }
 
-// Simple channel cache - no external store needed
-const channelCache = new Map<string, Channel>();
+/** Counts successful connections after the first one in this browser session. */
+export function useRealtimeReconnect(): number {
+  return useSyncExternalStore(
+    subscribeToRealtime,
+    () => reconnectCount,
+    () => 0,
+  );
+}
+
+/** Refresh a mounted consumer once when the client reconnects. */
+export function useOnRealtimeReconnect(
+  channel: Channel | null,
+  refresh: () => unknown,
+  enabled = true,
+) {
+  const reconnect = useRealtimeReconnect();
+  const { isConnected } = useRealtimeStatus(channel);
+  const lastReconnect = useRef(reconnect);
+
+  useEffect(() => {
+    if (lastReconnect.current === reconnect || (enabled && !isConnected)) {
+      return;
+    }
+    lastReconnect.current = reconnect;
+    if (enabled) void refresh();
+  }, [enabled, isConnected, reconnect, refresh]);
+}
 
 /**
  * Hook to subscribe to a channel and listen for events
  * @param channelName - Must be created using Channels.item(), Channels.privateUser(), or Channels.privateAuction()
  */
 export function useChannel(channelName: ChannelName | null): Channel | null {
-  // Use useMemo to get/create channel - this is derived state based on channelName
-  const channel = useMemo(() => {
-    if (!channelName) return null;
+  const subscribe = useCallback(
+    (listener: () => void) => {
+      if (!channelName) return () => {};
 
-    const pusher = getPusherClient();
-    if (!pusher) return null;
+      const unsubscribe = subscribeToRealtime(listener);
+      const pusher = pusherInstance;
+      if (pusher && !connectionFailed && !pusher.channel(channelName)) {
+        log(`Subscribing to channel: ${channelName}`);
+        const channel = pusher.subscribe(channelName);
+        channel.bind("pusher:subscription_succeeded", () => {
+          log(`Subscribed to channel: ${channelName}`);
+          notifyRealtimeListeners();
+        });
+        channel.bind("pusher:subscription_error", (error: unknown) => {
+          logError(`Failed to subscribe to channel: ${channelName}`, error);
+        });
+        notifyRealtimeListeners();
+      }
+      return unsubscribe;
+    },
+    [channelName],
+  );
 
-    // Check cache first
-    let ch = channelCache.get(channelName);
-    if (!ch) {
-      log(`Subscribing to channel: ${channelName}`);
-      ch = pusher.subscribe(channelName);
-      channelCache.set(channelName, ch);
-
-      // Log subscription success/failure for private channels
-      ch.bind("pusher:subscription_succeeded", () => {
-        log(`Subscribed to channel: ${channelName}`);
-      });
-      ch.bind("pusher:subscription_error", (error: unknown) => {
-        logError(`Failed to subscribe to channel: ${channelName}`, error);
-      });
-    }
-
-    return ch;
-  }, [channelName]);
-
-  return channel;
+  return useSyncExternalStore(
+    subscribe,
+    () => (channelName ? (pusherInstance?.channel(channelName) ?? null) : null),
+    () => null,
+  );
 }
 
 /**
@@ -233,8 +270,7 @@ export function useEvent<E extends keyof EventPayloadMap>(
       log(`Unbinding event: ${event} from channel: ${channel.name}`);
       channel.unbind(event, wrappedCallback);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel, event]);
+  }, [callback, channel, event]);
 }
 
 /**
@@ -275,20 +311,7 @@ export function useAuctionChannel(auctionId: string | null): Channel | null {
  * Returns 0 if realtime is connected (no polling needed)
  */
 export function useFallbackPollingInterval(baseInterval: number): number {
-  const { isConnected, isEnabled } = useRealtimeStatus();
-
-  // If realtime is enabled and connected, no polling needed
-  if (isEnabled && isConnected) {
-    return 0;
-  }
-
-  // If realtime is enabled but not connected, use longer interval
-  if (isEnabled && !isConnected) {
-    return Math.max(baseInterval, 60000); // At least 60s when falling back
-  }
-
-  // Realtime disabled, use base interval
-  return baseInterval;
+  return useRealtimeSWRConfig(baseInterval).refreshInterval;
 }
 
 /**
@@ -296,48 +319,18 @@ export function useFallbackPollingInterval(baseInterval: number): number {
  * When realtime is connected, disables all automatic revalidation
  * When realtime is disconnected/disabled, enables polling and focus revalidation
  */
-export interface RealtimeSWRConfig {
-  refreshInterval: number;
-  revalidateOnFocus: boolean;
-  revalidateOnReconnect: boolean;
-  revalidateIfStale: boolean;
-}
+export function useRealtimeSWRConfig(
+  baseInterval: number,
+  channel?: Channel | null,
+): RealtimeSWRConfig {
+  const { isConnected, isEnabled } = useRealtimeStatus(channel);
 
-export function useRealtimeSWRConfig(baseInterval: number): RealtimeSWRConfig {
-  const { isConnected, isEnabled } = useRealtimeStatus();
-
-  // Memoize the config to prevent unnecessary re-renders
-  return useMemo(() => {
-    // Realtime is enabled and connected - disable all automatic revalidation
-    // SWR will only fetch on mount, all updates come via realtime
-    if (isEnabled && isConnected) {
-      return {
-        refreshInterval: 0,
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false,
-        revalidateIfStale: false,
-      };
-    }
-
-    // Realtime is enabled but not connected - use longer polling as fallback
-    if (isEnabled && !isConnected) {
-      return {
-        refreshInterval: Math.max(baseInterval, 60000), // At least 60s
-        revalidateOnFocus: true,
-        revalidateOnReconnect: true,
-        revalidateIfStale: true,
-      };
-    }
-
-    // Realtime disabled - use normal polling
-    return {
-      refreshInterval: baseInterval,
-      revalidateOnFocus: true,
-      revalidateOnReconnect: true,
-      revalidateIfStale: false,
-    };
-  }, [isConnected, isEnabled, baseInterval]);
+  return useMemo(
+    () => resolveRealtimeSWRConfig({ isConnected, isEnabled, baseInterval }),
+    [isConnected, isEnabled, baseInterval],
+  );
 }
 
 // Re-export for convenience
 export { Events, Channels };
+export type { RealtimeSWRConfig };

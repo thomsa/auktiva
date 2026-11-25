@@ -7,6 +7,7 @@ import { usePollingInterval, type PollingPriority } from "@/hooks/ui";
 import {
   usePrivateUserChannel,
   useEvent,
+  useOnRealtimeReconnect,
   useRealtimeSWRConfig,
   Events,
 } from "@/hooks/realtime";
@@ -74,7 +75,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   // Get SWR config based on realtime connection status
   // When realtime is connected: disables all auto-revalidation (no polling, no focus refresh)
   // When realtime is disconnected: enables fallback polling
-  const swrConfig = useRealtimeSWRConfig(baseRefreshInterval);
+  const swrConfig = useRealtimeSWRConfig(baseRefreshInterval, userChannel);
 
   // Single shared SWR instance with realtime-aware configuration
   // Only fetch if user is authenticated (pass null key to disable)
@@ -100,13 +101,14 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       focusThrottleInterval: 5000,
     },
   );
+  useOnRealtimeReconnect(userChannel, mutate, isAuthenticated);
 
   // Handle realtime notification events - add new notification to list
   const handleNewNotification = useCallback(
     (event: NotificationNewEvent) => {
       mutate(
         (current) =>
-          current
+          current && !current.notifications.some(({ id }) => id === event.id)
             ? {
                 ...current,
                 notifications: [

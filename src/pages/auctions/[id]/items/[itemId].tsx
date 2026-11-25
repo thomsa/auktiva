@@ -16,6 +16,7 @@ import { usePollingInterval } from "@/hooks/ui";
 import {
   useItemChannel,
   useEvent,
+  useOnRealtimeReconnect,
   useRealtimeSWRConfig,
   Events,
 } from "@/hooks/realtime";
@@ -199,10 +200,12 @@ export default function ItemDetailPage({
     disabled: !!initialIsEnded,
   });
 
+  const itemChannel = useItemChannel(initialItem.id);
+
   // Get SWR config based on realtime connection status
   // When realtime is connected: disables polling (updates come via WebSocket)
   // When realtime is disconnected: falls back to polling
-  const swrConfig = useRealtimeSWRConfig(baseRefreshInterval);
+  const swrConfig = useRealtimeSWRConfig(baseRefreshInterval, itemChannel);
 
   // Fetch latest item data with SWR
   const { data, mutate } = useSWR<ItemResponse>(
@@ -216,6 +219,7 @@ export default function ItemDetailPage({
       revalidateIfStale: swrConfig.revalidateIfStale,
     },
   );
+  useOnRealtimeReconnect(itemChannel, mutate);
 
   const { data: currencyContext } = useSWR<AuctionCurrencyContextResponse>(
     `/api/auctions/${auction.id}/currencies`,
@@ -226,16 +230,14 @@ export default function ItemDetailPage({
     },
   );
 
-  // Subscribe to item channel for realtime bid updates
-  const itemChannel = useItemChannel(initialItem.id);
-
   // Handle realtime bid events - optimistically update UI with event data
   const handleNewBid = useCallback(
     (event: BidNewEvent) => {
       // Optimistically update SWR cache with the new bid data
       mutate(
-        (current) => {
-          if (!current) return current;
+        (cached) => {
+          // SWR renders fallbackData before storing a response in its cache.
+          const current = cached ?? { item: initialItem, bids: initialBids };
 
           // Skip if this bid already exists (dedup for own bids)
           if (current.bids.some((b) => b.id === event.bidId)) {
@@ -271,7 +273,7 @@ export default function ItemDetailPage({
         { revalidate: false }, // Don't refetch - we have all the data
       );
     },
-    [mutate],
+    [initialBids, initialItem, mutate],
   );
 
   useEvent(itemChannel, Events.BID_NEW, handleNewBid);

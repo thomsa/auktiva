@@ -1,8 +1,13 @@
 import { useTranslations } from "next-intl";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { DiscussionForm } from "./DiscussionForm";
 import { DiscussionItem } from "./DiscussionItem";
-import { useItemChannel, useEvent, Events } from "@/hooks/realtime";
+import {
+  Events,
+  useEvent,
+  useItemChannel,
+  useOnRealtimeReconnect,
+} from "@/hooks/realtime";
 import type {
   DiscussionNewEvent,
   DiscussionDeletedEvent,
@@ -55,6 +60,7 @@ export function DiscussionSection({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const discussionsRequest = useRef<AbortController | null>(null);
 
   // Subscribe to item channel for realtime discussion updates
   const itemChannel = useItemChannel(itemId);
@@ -66,6 +72,7 @@ export function DiscussionSection({
     setReplyingTo(null);
     setEditingId(null);
     setError(null);
+    return () => discussionsRequest.current?.abort();
   }, [itemId, initialDiscussions]);
 
   // Handle realtime new discussion events - optimistically add to list
@@ -167,19 +174,24 @@ export function DiscussionSection({
 
   const fetchDiscussions = useCallback(
     async (order: SortOrder) => {
+      discussionsRequest.current?.abort();
+      const request = new AbortController();
+      discussionsRequest.current = request;
       try {
         const res = await fetch(
           `/api/auctions/${auctionId}/items/${itemId}/discussions?order=${order}`,
+          { signal: request.signal },
         );
         if (!res.ok) throw new Error("Failed to fetch discussions");
         const data = await res.json();
-        setDiscussions(data.discussions);
+        if (!request.signal.aborted) setDiscussions(data.discussions);
       } catch {
-        setError(tErrors("generic"));
+        if (!request.signal.aborted) setError(tErrors("generic"));
       }
     },
     [auctionId, itemId, tErrors],
   );
+  useOnRealtimeReconnect(itemChannel, () => fetchDiscussions(sortOrder));
 
   const handleSortChange = async (order: SortOrder) => {
     setSortOrder(order);

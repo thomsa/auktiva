@@ -30,19 +30,11 @@ Your notification bell updates in real-time:
 
 ## Connection Status
 
-You can check if real-time is working by looking at your browser's developer console (F12). When connected, you'll see messages like:
-
-```
-[Realtime:Client] Connected successfully!
-```
+To check the live connection, open your browser's developer tools and look for a WebSocket connection in the Network tab.
 
 ## Fallback Behavior
 
-If real-time is not available (disabled by admin, connection issues, or unsupported browser), Auktiva automatically falls back to polling:
-
-- The page will refresh data every few seconds
-- You'll still see updates, just with a slight delay
-- No action needed on your part - it happens automatically
+While the live connection is unavailable, Auktiva checks for new bids and notifications at the same intervals it uses when real-time updates are disabled. An open item checks for new bids about every two seconds while the tab is visible. Auktiva reconnects automatically after a connection interruption and refreshes bids, discussions, and notifications when the connection returns.
 
 ## Privacy & Security
 
@@ -59,7 +51,7 @@ You cannot see other users' private notifications or access auctions you're not 
 ### Updates Not Appearing
 
 1. **Check your connection** - Ensure you have a stable internet connection
-2. **Refresh the page** - Sometimes a page refresh re-establishes the connection
+2. **Wait for the connection to return** - Auktiva retries automatically after a temporary outage
 3. **Check browser console** - Look for connection errors (F12 → Console tab)
 4. **Try a different browser** - Some older browsers may not support WebSockets
 
@@ -67,6 +59,6 @@ You cannot see other users' private notifications or access auctions you're not 
 
 If updates seem delayed:
 
-- Real-time may be disabled - the system falls back to polling (every 2-30 seconds)
+- When the live connection is unavailable, Auktiva checks for new bids and notifications every 2–30 seconds, depending on the page
 - Your network may have WebSocket restrictions (some corporate firewalls block them)
 - Contact your administrator if the issue persists
