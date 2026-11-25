@@ -1,7 +1,7 @@
 name: auktiva-realtime
 
 x-realtime: &realtime
-  image: ghcr.io/sockudo/sockudo:5.2.0
+  image: ghcr.io/sockudo/sockudo:master@sha256:a78a479bf105a06093982b41f23c86be0803ddc65e414dec4fad2b6a6fe1e9c6
   restart: unless-stopped
   environment:
     HOST: 0.0.0.0

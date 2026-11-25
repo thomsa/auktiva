@@ -83,7 +83,7 @@ After the redeploy, open the same item in two browser sessions and check that a 
 
 #### Update and rotate credentials
 
-Update by changing the pinned image tag in `deploy/realtime/docker-compose.yml`, then running `docker compose pull` and `docker compose up -d` on the VM. Repeat the health and smoke checks after the update.
+Update by changing the pinned image reference in `deploy/realtime/docker-compose.yml`, then running `docker compose pull` and `docker compose up -d` on the VM. Repeat the health and smoke checks after the update. The bundle pins an official Sockudo build by digest until the first stable release with the upstream private-channel security fixes is available. [Sockudo image pin](https://github.com/thomsa/auktiva/blob/main/deploy/realtime/README.md)
 
 To rotate the secret, change `REALTIME_APP_SECRET` in the VM’s `.env` and `SOKETI_APP_SECRET` in Vercel’s Production environment. Recreate the service with `docker compose up -d` and redeploy Auktiva. Schedule the change in a quiet window because private subscription authorization can fail while the two values differ. Run the smoke check with the new secret and check live updates in both browser sessions.
 
