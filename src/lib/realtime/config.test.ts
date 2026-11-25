@@ -3,9 +3,9 @@ import test from "node:test";
 import { getClientConfig } from "./client";
 import { getClientRealtimeConfig, getRealtimeConfig } from "./config";
 
-function clientConfig(env: NodeJS.ProcessEnv) {
+function clientConfig(env: Partial<NodeJS.ProcessEnv>) {
   const previousEnv = process.env;
-  process.env = env;
+  process.env = { ...env, NODE_ENV: "test" };
   try {
     return {
       client: getClientConfig(),

@@ -62,7 +62,9 @@ export function getPublicSoketiEndpoint(
 /**
  * Get realtime configuration from environment variables
  */
-export function getRealtimeConfig(env = process.env): RealtimeConfig {
+export function getRealtimeConfig(
+  env: Partial<NodeJS.ProcessEnv> = process.env,
+): RealtimeConfig {
   const rawDriver = env.NEXT_PUBLIC_REALTIME_DRIVER;
   const driver = parseRealtimeDriver(rawDriver);
 
