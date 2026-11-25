@@ -433,45 +433,9 @@ export default function ItemDetailPage({
           setError(result.message || tErrors("bid.placeFailed"));
         }
       } else {
-        // Optimistically update UI with the new bid
-        const isAnon =
-          auction.bidderVisibility === "PER_BID" ? bidAsAnonymous : false;
-        const effectiveBidAmount =
-          typeof result.amount === "number"
-            ? result.amount
-            : isDenominationMode
-              ? minBid
-              : amount;
-        const newBid: Bid = {
-          id: result.id,
-          amount: effectiveBidAmount,
-          normalizedAmount:
-            typeof result.normalizedAmount === "number"
-              ? result.normalizedAmount
-              : null,
-          enteredRepresentation: result.enteredRepresentation ?? null,
-          currencyProfile: null,
-          createdAt: new Date().toISOString(),
-          isAnonymous: isAnon,
-          user: isAnon ? null : { id: user.id, name: user.name },
-        };
-
-        mutate(
-          (current) => {
-            if (!current) return current;
-
-            return {
-              ...current,
-              item: {
-                ...current.item,
-                currentBid: effectiveBidAmount,
-                highestBidderId: user.id,
-              },
-              bids: [newBid, ...current.bids],
-            };
-          },
-          { revalidate: false },
-        );
+        // Refetch item and bids from the server so the page shows the
+        // authoritative state (current bid, bidder, extended end date).
+        await mutate();
         setBidAmount("");
         setDenominationBid({});
       }
