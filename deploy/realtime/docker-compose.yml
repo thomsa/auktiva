@@ -1,0 +1,71 @@
+name: auktiva-realtime
+
+x-realtime: &realtime
+  image: ghcr.io/sockudo/sockudo:5.2.0
+  restart: unless-stopped
+  environment:
+    HOST: 0.0.0.0
+    PORT: "6001"
+    METRICS_ENABLED: "true"
+    METRICS_HOST: 0.0.0.0
+    METRICS_PORT: "9601"
+    SOCKUDO_DEFAULT_APP_ENABLED: "true"
+    SOCKUDO_DEFAULT_APP_ID: "${REALTIME_APP_ID:?Set REALTIME_APP_ID}"
+    SOCKUDO_DEFAULT_APP_KEY: "${REALTIME_APP_KEY:?Set REALTIME_APP_KEY}"
+    SOCKUDO_DEFAULT_APP_SECRET: "${REALTIME_APP_SECRET:?Set REALTIME_APP_SECRET}"
+    SOCKUDO_DEFAULT_APP_ALLOWED_ORIGINS: "${REALTIME_ALLOWED_ORIGINS:?Set REALTIME_ALLOWED_ORIGINS}"
+    SOCKUDO_DEFAULT_APP_ENABLE_CLIENT_MESSAGES: "false"
+  healthcheck:
+    test: ["CMD", "curl", "-fsS", "http://127.0.0.1:6001/up"]
+    interval: 10s
+    timeout: 3s
+    retries: 3
+    start_period: 10s
+  logging: &bounded-logs
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: "3"
+
+services:
+  realtime:
+    <<: *realtime
+    profiles: [proxy]
+
+  caddy:
+    image: caddy:2.11.9-alpine
+    profiles: [proxy]
+    restart: unless-stopped
+    environment:
+      REALTIME_HOSTNAME: "${REALTIME_HOSTNAME:?Set REALTIME_HOSTNAME}"
+      ACME_EMAIL: "${ACME_EMAIL:?Set ACME_EMAIL}"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "-O",
+          "/dev/null",
+          "http://127.0.0.1:2019/config/",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    logging: *bounded-logs
+
+  realtime-local:
+    <<: *realtime
+    profiles: [no-proxy]
+    ports:
+      - "127.0.0.1:${REALTIME_BIND:-6001}:6001"
+
+volumes:
+  caddy-data:

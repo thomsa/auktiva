@@ -1,0 +1,9 @@
+{
+	email {$ACME_EMAIL}
+}
+
+{$REALTIME_HOSTNAME} {
+	@realtime path /app/* /apps/* /up
+	reverse_proxy @realtime realtime:6001
+	respond 404
+}

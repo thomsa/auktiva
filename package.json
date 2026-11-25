@@ -24,6 +24,8 @@
     "dev:realtime": "concurrently \"npm run soketi:docker\" \"next dev\"",
     "soketi:dev": "SOKETI_DEBUG=true SOKETI_DEFAULT_APP_ID=auktiva SOKETI_DEFAULT_APP_KEY=dev-key SOKETI_DEFAULT_APP_SECRET=dev-secret soketi start",
     "soketi:docker": "docker run --rm -p 6001:6001 -e SOKETI_DEBUG=true -e SOKETI_DEFAULT_APP_ID=auktiva -e SOKETI_DEFAULT_APP_KEY=dev-key -e SOKETI_DEFAULT_APP_SECRET=dev-secret -e SOKETI_DEFAULT_APP_HOST=0.0.0.0 quay.io/soketi/soketi:latest",
+    "realtime:local": "tsx scripts/realtime/local.ts",
+    "realtime:smoke": "tsx scripts/realtime/smoke.ts",
     "build": "prisma generate && next build",
     "analyze": "ANALYZE=true next build",
     "start": "next start",

@@ -167,20 +167,40 @@ server {
 }
 ```
 
-### WebSocket Server (Soketi)
+### WebSocket Server (Soketi or Sockudo)
 
-Soketi requires a **separate subdomain** for WebSocket connections:
+Use a separate hostname for the realtime server. If nginx already handles 80 and 443 on the VM, use the [stand-alone bundle’s no-proxy profile](/developers/realtime#prepare-the-hetzner-vm):
+
+```bash
+cd deploy/realtime
+docker compose --profile no-proxy up -d
+```
+
+This serves the WebSocket and signed publish API on `127.0.0.1:6001`. An existing Soketi instance can use the same nginx configuration if it listens there. Obtain the TLS certificate before installing the HTTPS block. If the hostname is new, add a temporary nginx HTTP site for it, reload nginx, and run `sudo certbot certonly --nginx -d ws.auctions.yourdomain.com`.
 
 ```nginx
+map $http_upgrade $realtime_connection {
+    default upgrade;
+    '' close;
+}
+
 server {
     listen 80;
     server_name ws.auctions.yourdomain.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name ws.auctions.yourdomain.com;
+    ssl_certificate /etc/letsencrypt/live/ws.auctions.yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/ws.auctions.yourdomain.com/privkey.pem;
 
     location / {
-        proxy_pass http://localhost:6001;
+        proxy_pass http://127.0.0.1:6001;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+        proxy_set_header Connection $realtime_connection;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -190,13 +210,13 @@ server {
 }
 ```
 
-Then set `NEXT_PUBLIC_SOKETI_HOST="ws.auctions.yourdomain.com"` in your `.env`.
+Check and reload nginx with `sudo nginx -t` and `sudo systemctl reload nginx`. Set `NEXT_PUBLIC_SOKETI_HOST=ws.auctions.yourdomain.com`, `NEXT_PUBLIC_SOKETI_PORT=443`, and `NEXT_PUBLIC_SOKETI_USE_TLS=true` in Auktiva. If the app server also runs on the VM, set its internal `SOKETI_HOST=127.0.0.1`, `SOKETI_PORT=6001`, and `SOKETI_USE_TLS=false`.
 
 ### Enable HTTPS
 
 ```bash
 sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d auctions.yourdomain.com -d ws.auctions.yourdomain.com
+sudo certbot --nginx -d auctions.yourdomain.com
 ```
 
 ## Vercel Deployment
@@ -224,6 +244,10 @@ deploys come from the deploy hook that the tag workflow
   Rate limiting uses in-memory storage which doesn't work reliably on Vercel.
   Consider using Upstash Redis for production rate limiting.
 </Callout>
+
+### Vercel app + self-hosted realtime server
+
+Keep the Auktiva app on Vercel and run the [realtime VM bundle](/developers/realtime#prepare-the-hetzner-vm) at a dedicated HTTPS hostname. Configure the Vercel functions to publish over HTTPS and browsers to connect over WSS on port 443. Follow the [Vercel cutover and rollback instructions](/developers/realtime#configure-auktiva-on-vercel).
 
 ## Releasing
 

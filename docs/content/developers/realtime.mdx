@@ -8,129 +8,84 @@ Auktiva supports real-time updates for bids, notifications, and discussions usin
 
 Auktiva uses a **Pusher-compatible** WebSocket protocol, which means you can choose between:
 
-- **Soketi** (self-hosted) - Free, unlimited connections. Recommended for PM2/self-hosted deployments.
-- **Pusher Channels** (cloud) - Managed service with free tier. Recommended for Vercel deployments.
+- **Sockudo or Soketi** (self-hosted) - Pusher-compatible servers you run on your own machine.
+- **Pusher Channels** (cloud) - Managed realtime service.
 
 Both options use the same client code, so you can switch between them by changing environment variables.
 
 ## Setup Options
 
-### Option 1: Soketi (Self-Hosted)
+### Option 1: Self-hosted realtime server
 
-Soketi is a free, open-source Pusher-compatible WebSocket server. It runs as a Docker container alongside Auktiva.
+The [stand-alone bundle](https://github.com/thomsa/auktiva/tree/main/deploy/realtime) runs Sockudo behind Caddy with automatic HTTPS and WSS. Use it for a stand-alone server while Auktiva stays on Vercel, or run it on the same VM as Auktiva. The Auktiva driver is called `soketi` for any Pusher-compatible server. Existing Soketi installations and the `soketi:*` npm scripts still work.
 
-#### Prerequisites
+#### Prepare the Hetzner VM
 
-- **Docker** (required - Soketi doesn't support Node.js 20+)
-- PM2 (for running Auktiva)
-
-#### Installation
-
-If you ran `npm run setup`, Soketi was offered as an option. The setup script will:
-
-1. Check if Docker is installed and running
-2. Generate secure credentials
-3. Start Soketi as a Docker container with auto-restart
-
-To install Docker: https://docs.docker.com/get-docker/
-
-To start Soketi manually:
+1. Start with a small shared-vCPU Hetzner Cloud instance. You can use an existing VM with room for the additional WebSocket connections.
+2. Create an A record and, if the VM serves IPv6, an AAAA record for `push.example.org` pointing to the VM.
+3. In the Hetzner Cloud Firewall, allow inbound TCP 80 and 443 from the internet and TCP 22 only from your admin IPs. Keep 6001 and 9601 closed on both public interfaces. Docker routes published ports before `ufw` rules, so use the cloud firewall for these restrictions. [Docker firewall documentation](https://docs.docker.com/engine/network/packet-filtering-firewalls/#docker-and-ufw)
+4. Install [Docker Engine](https://docs.docker.com/engine/install/) and the Docker Compose plugin. Enable the Docker service on boot.
+5. Copy `deploy/realtime/` from the Auktiva checkout to the VM, then create its private environment file:
 
 ```bash
-docker run -d --name soketi --restart unless-stopped \
-  -p 6001:6001 \
-  -e SOKETI_DEFAULT_APP_ID=auktiva \
-  -e SOKETI_DEFAULT_APP_KEY=your-key \
-  -e SOKETI_DEFAULT_APP_SECRET=your-secret \
-  -e SOKETI_DEFAULT_APP_HOST=0.0.0.0 \
-  quay.io/soketi/soketi:latest
+cd deploy/realtime
+install -m 600 .env.example .env
+openssl rand -hex 16
+openssl rand -hex 32
 ```
 
-#### Configuration
+In `.env`, set `REALTIME_HOSTNAME=push.example.org` and `ACME_EMAIL`. Set `REALTIME_APP_KEY` and `REALTIME_APP_SECRET` to the generated values respectively, and choose a `REALTIME_APP_ID`. Set `REALTIME_ALLOWED_ORIGINS` to the comma-separated list of Auktiva browser origins, for example `https://auctions.example.org`. Include the scheme and any non-default port, with no trailing slash. Keep the file readable only by the deployment user.
 
-Add these environment variables to your `.env` file:
+Start the bundle and inspect both services:
 
 ```bash
-# Shared config (used by both server and client)
-NEXT_PUBLIC_REALTIME_DRIVER="soketi"
-NEXT_PUBLIC_SOKETI_APP_KEY="your-app-key"   # Generate with: openssl rand -hex 16
-NEXT_PUBLIC_SOKETI_PORT="6001"
-NEXT_PUBLIC_SOKETI_USE_TLS="true"           # Use wss:// for public connections
-
-# Server-only config (not exposed to browser)
-SOKETI_APP_ID="auktiva"
-SOKETI_APP_SECRET="your-app-secret"         # Generate with: openssl rand -hex 32
-SOKETI_HOST="127.0.0.1"                     # Server connects internally
-
-# Client-only config (public host for browser connections)
-NEXT_PUBLIC_SOKETI_HOST="yourdomain.com"    # Public domain or IP - NOT localhost!
+docker compose up -d
+docker compose ps
+curl -fsS https://push.example.org/up
 ```
 
-<Callout type="warning">
-**Important: Server vs Client Host**
+Caddy redirects HTTP to HTTPS and manages certificate issuance and renewal. Point an external uptime monitor at `https://push.example.org/up`. Verify from outside the VM that 6001 and 9601 are closed. For troubleshooting, read logs with `docker compose logs --tail=100 realtime caddy` and inspect metrics inside the Sockudo container with `docker compose exec realtime curl -fsS http://127.0.0.1:9601/metrics`.
 
-`SOKETI_HOST` is for **server-side** connections. The Next.js server connects to Soketi on the same machine, so this should always be `127.0.0.1`.
+If nginx or another proxy already handles ports 80 and 443, start only Sockudo with `docker compose --profile no-proxy up -d` and proxy to `127.0.0.1:6001`. Add `--profile no-proxy` to subsequent Compose commands or set `COMPOSE_PROFILES=no-proxy` in the bundle’s `.env`. The service in this profile is named `realtime-local`. See the [nginx configuration](/developers/deployment#websocket-server-soketi-or-sockudo).
 
-`NEXT_PUBLIC_SOKETI_HOST` is for **browser** connections. Users' browsers need to connect from outside, so this must be your **public domain** or **public IP address**.
+Use Docker Engine 28 or newer for the no-proxy profile on a production VM. Earlier versions can expose localhost-published ports to hosts on the same network segment. [Docker port publishing documentation](https://docs.docker.com/engine/network/port-publishing/)
 
-Example: Server uses `SOKETI_HOST="127.0.0.1"` (internal), Browser uses `NEXT_PUBLIC_SOKETI_HOST="auctions.example.com"` (public).
+#### Verify the server
 
-</Callout>
-
-#### Managing Soketi
-
-Soketi runs as a Docker container, separate from PM2:
+On a workstation with the Auktiva checkout and its npm dependencies installed, set `SOKETI_APP_ID`, `NEXT_PUBLIC_SOKETI_APP_KEY`, and `SOKETI_APP_SECRET` in your local environment or Auktiva `.env`. Use an origin from the bundle’s `REALTIME_ALLOWED_ORIGINS` list:
 
 ```bash
-# Check if Soketi is running
-docker ps | grep soketi
-
-# View Soketi logs
-docker logs soketi
-docker logs -f soketi  # Follow logs
-
-# Restart Soketi
-docker restart soketi
-
-# Stop Soketi
-docker stop soketi
-
-# Start Soketi (if stopped)
-docker start soketi
-
-# Remove and recreate (to update config)
-docker stop soketi && docker rm soketi
-docker run -d --name soketi --restart unless-stopped \
-  -p 6001:6001 \
-  -e SOKETI_DEFAULT_APP_ID=auktiva \
-  -e SOKETI_DEFAULT_APP_KEY=your-key \
-  -e SOKETI_DEFAULT_APP_SECRET=your-secret \
-  -e SOKETI_DEFAULT_APP_HOST=0.0.0.0 \
-  quay.io/soketi/soketi:latest
+npm run realtime:smoke -- --host push.example.org --port 443 --tls true --origin https://auctions.example.org
 ```
 
-#### External Access (Optional)
+The check signs a private subscription, publishes a test event, and waits up to 10 seconds for its payload. It prints the round-trip time on success and names the failed step on error. Use `SOKETI_APP_SECRET` for production credentials to keep the secret out of command history and npm’s command output.
 
-If users connect from outside localhost (e.g., via a domain), you need to:
+#### Configure Auktiva on Vercel
 
-1. Update `NEXT_PUBLIC_SOKETI_HOST` to your domain or public IP
-2. Configure a reverse proxy (nginx) for WebSocket connections
-3. Optionally enable TLS
+Set these values in Vercel’s Production environment. Use the same ID, key, and secret configured in the bundle:
 
-Example nginx configuration:
-
-```nginx
-# WebSocket proxy for Soketi
-location /app {
-    proxy_pass http://127.0.0.1:6001;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_read_timeout 86400;
-}
+```dotenv
+NEXT_PUBLIC_REALTIME_DRIVER=soketi
+NEXT_PUBLIC_SOKETI_APP_KEY=your-app-key
+NEXT_PUBLIC_SOKETI_HOST=push.example.org
+NEXT_PUBLIC_SOKETI_PORT=443
+NEXT_PUBLIC_SOKETI_USE_TLS=true
+SOKETI_APP_ID=auktiva
+SOKETI_APP_SECRET=your-app-secret
+SOKETI_HOST=push.example.org
 ```
+
+Both Vercel and browsers connect over TLS on port 443. For a co-located Auktiva server that can reach Sockudo on the private network, set `SOKETI_HOST` to the internal service address, `SOKETI_PORT=6001`, and `SOKETI_USE_TLS=false`. Leave the public browser host, port, and TLS settings on the Caddy or nginx endpoint.
+
+Keep the Pusher credentials available for rollback. Cut over during a quiet window with no items closing soon. In the Vercel dashboard, select a production deployment, choose **Redeploy**, and clear **Use existing Build Cache**. The change needs a rebuild because the browser connection settings and CSP are set at build time. Tabs opened before the cutover keep their previous provider until reloaded. [Vercel deployment instructions](https://vercel.com/docs/deployments/troubleshoot-a-build#managing-build-cache)
+
+After the redeploy, open the same item in two browser sessions and check that a bid appears live, the outbid notification count updates, and the WebSocket connects to `push.example.org` without a CSP error. To roll back, set `NEXT_PUBLIC_REALTIME_DRIVER=pusher` and redeploy without the build cache.
+
+#### Update and rotate credentials
+
+Update by changing the pinned image tag in `deploy/realtime/docker-compose.yml`, then running `docker compose pull` and `docker compose up -d` on the VM. Repeat the health and smoke checks after the update.
+
+To rotate the secret, change `REALTIME_APP_SECRET` in the VM’s `.env` and `SOKETI_APP_SECRET` in Vercel’s Production environment. Recreate the service with `docker compose up -d` and redeploy Auktiva. Schedule the change in a quiet window because private subscription authorization can fail while the two values differ. Run the smoke check with the new secret and check live updates in both browser sessions.
 
 ### Option 2: Pusher Channels (Cloud)
 
@@ -161,12 +116,7 @@ PUSHER_SECRET="your-app-secret"
 
 ### Option 3: Disabled (Polling Fallback)
 
-If realtime is not configured, Auktiva falls back to polling:
-
-```bash
-REALTIME_DRIVER="disabled"
-# or simply don't set any realtime variables
-```
+Set `NEXT_PUBLIC_REALTIME_DRIVER=disabled` or leave realtime unconfigured to use polling. When realtime is enabled, the app polls at its normal intervals while the WebSocket is disconnected. The browser retries automatically and stops polling when it reconnects. The item page, discussions, and notifications then refetch once to catch up on missed events.
 
 Polling intervals:
 
@@ -181,20 +131,19 @@ All events are sent on private channels that require authentication.
 
 ### Item Events
 
-| Event                | Channel                 | Description                                                          |
-| -------------------- | ----------------------- | -------------------------------------------------------------------- |
-| `bid:new`            | `private-item-{itemId}` | New bid placed                                                       |
-| `item:updated`       | `private-item-{itemId}` | Item changed, for example reopened (`changes: { endDate: null }`)   |
-| `discussion:new`     | `private-item-{itemId}` | New comment posted                                                   |
-| `discussion:deleted` | `private-item-{itemId}` | Comment deleted                                                      |
+| Event                | Channel                 | Description                                                       |
+| -------------------- | ----------------------- | ----------------------------------------------------------------- |
+| `bid:new`            | `private-item-{itemId}` | New bid placed                                                    |
+| `item:updated`       | `private-item-{itemId}` | Item changed, for example reopened (`changes: { endDate: null }`) |
+| `discussion:new`     | `private-item-{itemId}` | New comment posted                                                |
+| `discussion:deleted` | `private-item-{itemId}` | Comment deleted                                                   |
 
 <Callout type="info">
-  `item:updated` is published when bidding reopens on an item and when a
-  member leaves or is removed and their bids are deleted. No client page
-  subscribes to it yet, so an open item page shows a reopened item as closed
-  until it is reloaded. Bidding-reopened and win notifications reach users
-  through `notification:new` and `notification:count`, like every other
-  notification.
+  `item:updated` is published when bidding reopens on an item and when a member
+  leaves or is removed and their bids are deleted. No client page subscribes to
+  it yet, so an open item page shows a reopened item as closed until it is
+  reloaded. Bidding-reopened and win notifications reach users through
+  `notification:new` and `notification:count`, like every other notification.
 </Callout>
 
 ### User Events
@@ -265,64 +214,9 @@ Users **cannot**:
 
 ## Troubleshooting
 
-### Soketi container not running
+### Self-hosted server is unreachable
 
-Soketi runs as a Docker container, not via PM2:
-
-```bash
-# Check if Soketi container is running
-docker ps | grep soketi
-
-# If not listed, check if it exists but is stopped
-docker ps -a | grep soketi
-
-# Start a stopped container
-docker start soketi
-
-# If container doesn't exist, create it
-docker run -d --name soketi --restart unless-stopped \
-  -p 6001:6001 \
-  -e SOKETI_DEFAULT_APP_ID=auktiva \
-  -e SOKETI_DEFAULT_APP_KEY=your-key \
-  -e SOKETI_DEFAULT_APP_SECRET=your-secret \
-  -e SOKETI_DEFAULT_APP_HOST=0.0.0.0 \
-  quay.io/soketi/soketi:latest
-```
-
-### Soketi won't start
-
-```bash
-# Check if port 6001 is in use
-lsof -i :6001
-
-# Check Soketi container logs
-docker logs soketi
-docker logs -f soketi  # Follow logs in real-time
-
-# Remove and recreate container
-docker stop soketi && docker rm soketi
-# Then run the docker run command above
-```
-
-### WebSocket connection fails
-
-**Symptoms:** Browser console shows WebSocket connection errors, realtime updates don't work.
-
-**Common causes and solutions:**
-
-1. **Soketi not running** - Check with `docker ps | grep soketi`
-
-2. **Wrong host configuration** - `NEXT_PUBLIC_SOKETI_HOST` must be your **public domain or IP**, not `localhost` or `127.0.0.1`
-
-3. **Firewall blocking port 6001** - Ensure port 6001 is open for WebSocket connections
-
-4. **Credentials mismatch** - Verify these match between `.env` and Docker:
-   - `NEXT_PUBLIC_SOKETI_APP_KEY` must match `SOKETI_DEFAULT_APP_KEY`
-   - `SOKETI_APP_SECRET` must match `SOKETI_DEFAULT_APP_SECRET`
-
-5. **TLS mismatch** - If your site uses HTTPS, set `NEXT_PUBLIC_SOKETI_USE_TLS="true"` and configure nginx to proxy WebSocket with TLS
-
-6. **Reverse proxy not configured** - If using nginx, ensure WebSocket upgrade headers are passed (see nginx config above)
+Check the external HTTPS health URL and the container state with `docker compose ps`. For nginx or the local profile, check `http://127.0.0.1:6001/up` from the VM or workstation. If the service is healthy, check that the hostname and TLS port match `NEXT_PUBLIC_SOKETI_HOST` and `NEXT_PUBLIC_SOKETI_PORT`. Confirm that the application’s browser origin appears in `REALTIME_ALLOWED_ORIGINS` and that the app credentials match the bundle. See [Troubleshooting](/developers/troubleshooting) for common configuration errors.
 
 ### Debug WebSocket connections
 
@@ -356,21 +250,18 @@ Private channels require authentication. Check:
 
 ## Local Development
 
-For local development, Auktiva provides convenient npm scripts to run Soketi alongside the Next.js dev server.
-
 ### Quick Start
 
+Start the same Sockudo image used by the VM bundle, then start Auktiva with the development settings below:
+
 ```bash
-# Start both Soketi and Next.js dev server with debug logging
-npm run dev:realtime
+npm run realtime:local
+curl -fsS http://127.0.0.1:6001/up
+npm run --silent realtime:smoke -- --host 127.0.0.1 --port 6001 --tls false --app-id auktiva --key dev-key --secret dev-secret --origin http://localhost:3000
+npm run dev
 ```
 
-This runs Soketi with debug mode enabled and pre-configured credentials:
-
-- App ID: `auktiva`
-- App Key: `dev-key`
-- App Secret: `dev-secret`
-- Port: `6001`
+Sockudo listens on loopback and accepts the `http://localhost:3000` browser origin. Set `REALTIME_ALLOWED_ORIGINS` before starting Sockudo if you use a different local origin. Use `npm run realtime:local -- down` to remove the local containers. The existing `npm run dev:realtime` command starts Soketi alongside Next.js.
 
 ### Environment Variables for Development
 
