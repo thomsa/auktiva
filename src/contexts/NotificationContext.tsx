@@ -11,10 +11,6 @@ import {
   useRealtimeSWRConfig,
   Events,
 } from "@/hooks/realtime";
-import type {
-  NotificationNewEvent,
-  NotificationCountEvent,
-} from "@/lib/realtime/events";
 
 export interface Notification {
   id: string;
@@ -101,59 +97,15 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       focusThrottleInterval: 5000,
     },
   );
-  useOnRealtimeReconnect(userChannel, mutate, isAuthenticated);
 
-  // Handle realtime notification events - add new notification to list
-  const handleNewNotification = useCallback(
-    (event: NotificationNewEvent) => {
-      mutate(
-        (current) =>
-          current && !current.notifications.some(({ id }) => id === event.id)
-            ? {
-                ...current,
-                notifications: [
-                  {
-                    id: event.id,
-                    type: event.type,
-                    title: event.title,
-                    message: event.message,
-                    imageUrl: event.imageUrl,
-                    auctionId: event.auctionId,
-                    itemId: event.itemId,
-                    read: false,
-                    createdAt: event.createdAt,
-                  },
-                  ...current.notifications,
-                ].slice(0, 20), // Keep max 20
-                unreadCount: current.unreadCount + 1,
-              }
-            : current,
-        false,
-      );
-    },
-    [mutate],
-  );
+  // The new-notification and count events can arrive in either order.
+  const refreshNotifications = useCallback(() => {
+    void mutate();
+  }, [mutate]);
 
-  // Handle realtime count update events
-  const handleCountUpdate = useCallback(
-    (event: NotificationCountEvent) => {
-      mutate(
-        (current) =>
-          current
-            ? {
-                ...current,
-                unreadCount: event.unreadCount,
-              }
-            : current,
-        false,
-      );
-    },
-    [mutate],
-  );
-
-  // Subscribe to realtime events
-  useEvent(userChannel, Events.NOTIFICATION_NEW, handleNewNotification);
-  useEvent(userChannel, Events.NOTIFICATION_COUNT, handleCountUpdate);
+  useOnRealtimeReconnect(userChannel, refreshNotifications, isAuthenticated);
+  useEvent(userChannel, Events.NOTIFICATION_NEW, refreshNotifications);
+  useEvent(userChannel, Events.NOTIFICATION_COUNT, refreshNotifications);
 
   const markAsRead = useCallback(
     async (id: string): Promise<void> => {
