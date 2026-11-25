@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 import bundleAnalyzer from "@next/bundle-analyzer";
+import { buildConnectSrc } from "./src/lib/realtime/csp";
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
@@ -85,7 +86,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://www.gstatic.com https:",
               "font-src 'self' data:",
-              "connect-src 'self' https://www.google.com https: ws://127.0.0.1:* wss://127.0.0.1:* ws://localhost:* wss://localhost:* wss://*.pusher.com",
+              buildConnectSrc(),
               "frame-src 'self' https://www.google.com https://www.recaptcha.net https://vercel.live",
               "frame-ancestors 'none'",
               "base-uri 'self'",
