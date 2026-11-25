@@ -59,6 +59,8 @@ services:
       - SOKETI_APP_ID=${SOKETI_APP_ID:-auktiva}
       - SOKETI_APP_SECRET=${SOKETI_APP_SECRET:-}
       - SOKETI_HOST=soketi
+      - SOKETI_PORT=6001
+      - SOKETI_USE_TLS=false
       # Features
       - ALLOW_OPEN_AUCTIONS=${ALLOW_OPEN_AUCTIONS:-false}
     volumes:

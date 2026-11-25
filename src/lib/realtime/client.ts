@@ -8,7 +8,11 @@
  * to ensure proper lifecycle management.
  */
 
-import type { RealtimeDriver } from "./config";
+import {
+  getPublicSoketiEndpoint,
+  parseRealtimeDriver,
+  type RealtimeDriver,
+} from "./config";
 
 export interface ClientRealtimeConfig {
   driver: RealtimeDriver;
@@ -29,8 +33,7 @@ export interface ClientRealtimeConfig {
  * These are NEXT_PUBLIC_ prefixed so they're available in the browser
  */
 export function getClientConfig(): ClientRealtimeConfig {
-  const driver = (process.env.NEXT_PUBLIC_REALTIME_DRIVER ||
-    "disabled") as RealtimeDriver;
+  const driver = parseRealtimeDriver(process.env.NEXT_PUBLIC_REALTIME_DRIVER);
 
   if (driver === "disabled") {
     return {
@@ -45,9 +48,11 @@ export function getClientConfig(): ClientRealtimeConfig {
   }
 
   if (driver === "soketi") {
-    const host = process.env.NEXT_PUBLIC_SOKETI_HOST || "127.0.0.1";
-    const port = parseInt(process.env.NEXT_PUBLIC_SOKETI_PORT || "6001", 10);
-    const useTLS = process.env.NEXT_PUBLIC_SOKETI_USE_TLS === "true";
+    const { host, port, useTLS } = getPublicSoketiEndpoint(
+      process.env.NEXT_PUBLIC_SOKETI_HOST,
+      process.env.NEXT_PUBLIC_SOKETI_PORT,
+      process.env.NEXT_PUBLIC_SOKETI_USE_TLS,
+    );
 
     return {
       driver: "soketi",
@@ -57,7 +62,8 @@ export function getClientConfig(): ClientRealtimeConfig {
       wsPort: useTLS ? undefined : port,
       wssPort: useTLS ? port : undefined,
       forceTLS: useTLS,
-      enabledTransports: useTLS ? ["wss"] : ["ws", "wss"],
+      // pusher-js uses the ws strategy with a secure URL when forceTLS is true.
+      enabledTransports: useTLS ? ["ws"] : ["ws", "wss"],
       disableStats: true,
       authEndpoint: "/api/pusher/auth",
     };

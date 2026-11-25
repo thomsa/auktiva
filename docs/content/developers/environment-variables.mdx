@@ -190,34 +190,39 @@ Get keys from [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin).
 
 ## Realtime (WebSocket)
 
-### Soketi (Self-Hosted)
+### Self-Hosted Pusher-Compatible Server
 
-| Variable                      | Required | Description                             | Example                |
-| ----------------------------- | -------- | --------------------------------------- | ---------------------- |
-| `NEXT_PUBLIC_REALTIME_DRIVER` | No       | Realtime driver                         | `soketi`               |
-| `NEXT_PUBLIC_SOKETI_APP_KEY`  | Soketi   | Public app key                          | `openssl rand -hex 16` |
-| `NEXT_PUBLIC_SOKETI_HOST`     | Soketi   | Public hostname for browser connections | `auctions.example.com` |
-| `NEXT_PUBLIC_SOKETI_PORT`     | No       | WebSocket port                          | `6001`                 |
-| `NEXT_PUBLIC_SOKETI_USE_TLS`  | No       | Use WSS (secure WebSocket)              | `true`                 |
-| `SOKETI_APP_ID`               | Soketi   | App ID for server                       | `auktiva`              |
-| `SOKETI_APP_SECRET`           | Soketi   | Secret for signing (server-only)        | `openssl rand -hex 32` |
-| `SOKETI_HOST`                 | No       | Internal host for server connections    | `127.0.0.1`            |
+Use the `soketi` driver with any self-hosted Pusher-compatible server, such as Sockudo or Soketi. The driver value accepts different casing and surrounding whitespace. An unset or unrecognized value disables realtime.
+
+| Variable                      | Required | Description                               | Example                |
+| ----------------------------- | -------- | ----------------------------------------- | ---------------------- |
+| `NEXT_PUBLIC_REALTIME_DRIVER` | Yes      | Selects the self-hosted driver            | `soketi`               |
+| `NEXT_PUBLIC_SOKETI_APP_KEY`  | Yes      | Public app key                            | `openssl rand -hex 16` |
+| `NEXT_PUBLIC_SOKETI_HOST`     | No       | Hostname for browser connections          | `push.example.com`     |
+| `NEXT_PUBLIC_SOKETI_PORT`     | No       | WebSocket port. Defaults to `6001`.       | `443`                  |
+| `NEXT_PUBLIC_SOKETI_USE_TLS`  | No       | Use WSS. Defaults to `false`.             | `true`                 |
+| `SOKETI_APP_ID`               | No       | Server app ID. Defaults to `auktiva`.     | `auktiva`              |
+| `SOKETI_APP_SECRET`           | Yes      | Secret for signing (server-only)          | `openssl rand -hex 32` |
+| `SOKETI_HOST`                 | No       | Optional server-side publish hostname     | `soketi`               |
+| `SOKETI_PORT`                 | No       | Optional server-side publish port         | `6001`                 |
+| `SOKETI_USE_TLS`              | No       | Optional server-side HTTPS publish toggle | `false`                |
+
+Server-side publishes use the `SOKETI_*` endpoint overrides first, then the matching `NEXT_PUBLIC_SOKETI_*` values. The defaults are `127.0.0.1`, port `6001`, and no TLS. The public hostname must be reachable by browsers. Rebuild the app after changing any `NEXT_PUBLIC_*` values.
+
+#### Vercel with a self-hosted realtime server
+
+Use the push server's public hostname for both HTTPS publishes and browser WebSockets. Set these variables in the Vercel environment, then redeploy without the build cache. See the [realtime deployment runbook](/developers/realtime).
 
 ```bash
 NEXT_PUBLIC_REALTIME_DRIVER="soketi"
-NEXT_PUBLIC_SOKETI_APP_KEY="a1b2c3d4e5f6g7h8"
-NEXT_PUBLIC_SOKETI_HOST="auctions.example.com"
-NEXT_PUBLIC_SOKETI_PORT="6001"
+NEXT_PUBLIC_SOKETI_APP_KEY="your-public-app-key"
+NEXT_PUBLIC_SOKETI_HOST="push.example.com"
+NEXT_PUBLIC_SOKETI_PORT="443"
 NEXT_PUBLIC_SOKETI_USE_TLS="true"
 SOKETI_APP_ID="auktiva"
-SOKETI_APP_SECRET="your-secret-key-here"
-SOKETI_HOST="127.0.0.1"
+SOKETI_APP_SECRET="your-app-secret"
+SOKETI_HOST="push.example.com"
 ```
-
-<Callout type="info">
-  SOKETI_HOST is for server-side connections (internal). NEXT_PUBLIC_SOKETI_HOST
-  is for browser connections (must be publicly accessible).
-</Callout>
 
 ### Pusher (Cloud)
 
@@ -284,15 +289,17 @@ MAIL_FROM_NAME="Auktiva"
 NEXT_PUBLIC_APP_URL="https://auctions.example.com"
 CRON_SECRET="your-cron-secret"
 
-# Realtime
+# Realtime. The reverse proxy terminates browser TLS on port 443.
 NEXT_PUBLIC_REALTIME_DRIVER="soketi"
 NEXT_PUBLIC_SOKETI_APP_KEY="a1b2c3d4e5f6g7h8"
 NEXT_PUBLIC_SOKETI_HOST="auctions.example.com"
-NEXT_PUBLIC_SOKETI_PORT="6001"
+NEXT_PUBLIC_SOKETI_PORT="443"
 NEXT_PUBLIC_SOKETI_USE_TLS="true"
 SOKETI_APP_ID="auktiva"
 SOKETI_APP_SECRET="your-soketi-secret"
 SOKETI_HOST="soketi"
+SOKETI_PORT="6001"
+SOKETI_USE_TLS="false"
 
 # Features
 ALLOW_OPEN_AUCTIONS="false"

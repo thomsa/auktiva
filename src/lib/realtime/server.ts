@@ -6,9 +6,18 @@
  */
 
 import Pusher from "pusher";
-import { getRealtimeConfig, isRealtimeEnabled } from "./config";
+import { createLogger } from "../logger";
+import {
+  DEFAULT_SOKETI_PORT,
+  getRealtimeConfig,
+  isRealtimeEnabled,
+  REALTIME_PUBLISH_TIMEOUT_MS,
+} from "./config";
 import type { EventPayloadMap, ChannelName } from "./events";
 import { Events } from "./events";
+
+const logger = createLogger("realtime");
+const PUBLISH_TIMEOUT_MESSAGE = `Publish timed out after ${REALTIME_PUBLISH_TIMEOUT_MS} ms`;
 
 // Debug logging - enabled via REALTIME_DEBUG=true
 const DEBUG =
@@ -21,11 +30,31 @@ function log(message: string, data?: unknown) {
   }
 }
 
-function logError(message: string, error?: unknown) {
-  console.error(
-    `[Realtime:Server] ${message}`,
-    error !== undefined ? error : "",
-  );
+function logPublishError(message: string, error: unknown) {
+  // SDK errors can include signed URLs or arbitrary provider response bodies.
+  const status =
+    typeof error === "object" &&
+    error &&
+    "status" in error &&
+    typeof error.status === "number"
+      ? error.status
+      : undefined;
+
+  if (status === 429) {
+    logger.error(
+      { status },
+      `${message}. Realtime provider rate limit exceeded.`,
+    );
+  } else if (status !== undefined) {
+    logger.error({ status }, message);
+  } else if (
+    error instanceof Error &&
+    error.message === PUBLISH_TIMEOUT_MESSAGE
+  ) {
+    logger.error(`${message}. ${PUBLISH_TIMEOUT_MESSAGE}.`);
+  } else {
+    logger.error(`${message}. Realtime request failed.`);
+  }
 }
 
 // Singleton instance
@@ -59,8 +88,9 @@ function getPusherInstance(): Pusher | null {
         key: config.key,
         secret: config.secret,
         host: config.host || "127.0.0.1",
-        port: String(config.port || 6001),
+        port: String(config.port ?? DEFAULT_SOKETI_PORT),
         useTLS: config.useTLS,
+        timeout: REALTIME_PUBLISH_TIMEOUT_MS,
       });
       log("Soketi client initialized", {
         host: config.host,
@@ -73,17 +103,39 @@ function getPusherInstance(): Pusher | null {
         secret: config.secret,
         cluster: config.cluster,
         useTLS: config.useTLS,
+        timeout: REALTIME_PUBLISH_TIMEOUT_MS,
       });
       log("Pusher client initialized", { cluster: config.cluster });
     }
 
     connectionError = null;
-  } catch (error) {
-    connectionError = error instanceof Error ? error.message : "Unknown error";
-    logError("Failed to initialize Pusher client:", error);
+  } catch {
+    connectionError = "Failed to initialize Pusher client";
+    logger.error(connectionError);
   }
 
   return pusherInstance;
+}
+
+async function trigger<E extends keyof EventPayloadMap>(
+  pusher: Pusher,
+  channels: ChannelName | ChannelName[],
+  event: E,
+  data: EventPayloadMap[E],
+): Promise<void> {
+  // The SDK clears its timeout at response headers, before reading error bodies.
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_, reject) => {
+    timeout = setTimeout(
+      () => reject(new Error(PUBLISH_TIMEOUT_MESSAGE)),
+      REALTIME_PUBLISH_TIMEOUT_MS,
+    );
+  });
+  try {
+    await Promise.race([deadline, pusher.trigger(channels, event, data)]);
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 /**
@@ -110,25 +162,11 @@ export async function publish<E extends keyof EventPayloadMap>(
   log(`Publishing: ${event} → ${channel}`, data);
 
   try {
-    await pusher.trigger(channel, event, data);
+    await trigger(pusher, channel, event, data);
     log(`Published successfully: ${event} → ${channel}`);
   } catch (error) {
     // Log error but don't throw - realtime failures shouldn't break the app
-    logError(`Failed to publish ${event} to ${channel}:`, error);
-
-    // Check for Pusher limit errors
-    if (error instanceof Error) {
-      const message = error.message.toLowerCase();
-      if (
-        message.includes("limit") ||
-        message.includes("quota") ||
-        message.includes("rate")
-      ) {
-        logError(
-          "PUSHER LIMIT EXCEEDED - Consider upgrading your plan or switching to self-hosted Soketi",
-        );
-      }
-    }
+    logPublishError(`Failed to publish ${event} to ${channel}`, error);
   }
 }
 
@@ -154,25 +192,11 @@ export async function publishToMany<E extends keyof EventPayloadMap>(
     const batchSize = 100;
     for (let i = 0; i < channels.length; i += batchSize) {
       const batch = channels.slice(i, i + batchSize);
-      await pusher.trigger(batch, event, data);
+      await trigger(pusher, batch, event, data);
     }
     log(`Published successfully to ${channels.length} channels: ${event}`);
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-
-    if (
-      errorMessage.includes("limit") ||
-      errorMessage.includes("quota") ||
-      errorMessage.includes("429")
-    ) {
-      logError(
-        `PUSHER LIMIT EXCEEDED: ${errorMessage}. ` +
-          `Consider upgrading your Pusher plan or switching to self-hosted Soketi.`,
-      );
-    } else {
-      logError(`Failed to publish event ${event}:`, error);
-    }
+    logPublishError(`Failed to publish event ${event}`, error);
   }
 }
 
@@ -195,8 +219,8 @@ export function authenticateChannel(
 
   try {
     return pusher.authorizeChannel(socketId, channel);
-  } catch (error) {
-    console.error("[Realtime] Channel authentication failed:", error);
+  } catch {
+    logger.error("Channel authentication failed");
     return null;
   }
 }
