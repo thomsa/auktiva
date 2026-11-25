@@ -1,5 +1,7 @@
 import "dotenv/config";
 import { randomUUID } from "node:crypto";
+import { Agent as HttpAgent } from "node:http";
+import { Agent as HttpsAgent } from "node:https";
 import { parseArgs } from "node:util";
 import Pusher from "pusher";
 import PusherClient from "pusher-js";
@@ -66,7 +68,7 @@ function readOptions() {
       key,
       secret,
       host: values.host?.trim() || config.host || endpoint.host,
-      port: port ?? config.port ?? endpoint.port,
+      port: String(port ?? config.port ?? endpoint.port),
       useTLS: useTLS ?? config.useTLS,
       timeout: REALTIME_PUBLISH_TIMEOUT_MS,
     },
@@ -96,10 +98,12 @@ async function smoke() {
   let step = "configuration";
   let timeout: ReturnType<typeof setTimeout> | undefined;
   let client: PusherClient | undefined;
+  let agent: HttpAgent | undefined;
 
   try {
     const options = readOptions();
-    const publisher = new Pusher(options.publish);
+    agent = options.publish.useTLS ? new HttpsAgent() : new HttpAgent();
+    const publisher = new Pusher({ ...options.publish, agent });
     const nonce = randomUUID();
     const channelName = `private-item-smoke-${nonce}`;
     const started = performance.now();
@@ -165,6 +169,7 @@ async function smoke() {
   } finally {
     clearTimeout(timeout);
     client?.disconnect();
+    agent?.destroy();
   }
 }
 
