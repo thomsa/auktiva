@@ -39,6 +39,12 @@ interface DiscussionSectionProps {
 }
 
 type SortOrder = "newest" | "oldest";
+type DiscussionUpdate = (items: Discussion[], order: SortOrder) => Discussion[];
+
+interface DiscussionRequest {
+  controller: AbortController;
+  updates: DiscussionUpdate[];
+}
 
 export function DiscussionSection({
   auctionId,
@@ -60,7 +66,7 @@ export function DiscussionSection({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const discussionsRequest = useRef<AbortController | null>(null);
+  const discussionsRequest = useRef<DiscussionRequest | null>(null);
 
   // Subscribe to item channel for realtime discussion updates
   const itemChannel = useItemChannel(itemId);
@@ -72,8 +78,19 @@ export function DiscussionSection({
     setReplyingTo(null);
     setEditingId(null);
     setError(null);
-    return () => discussionsRequest.current?.abort();
+    return () => {
+      discussionsRequest.current?.controller.abort();
+      discussionsRequest.current = null;
+    };
   }, [itemId, initialDiscussions]);
+
+  const applyDiscussionUpdate = useCallback(
+    (update: DiscussionUpdate) => {
+      discussionsRequest.current?.updates.push(update);
+      setDiscussions((items) => update(items, sortOrder));
+    },
+    [sortOrder],
+  );
 
   // Handle realtime new discussion events - optimistically add to list
   const handleNewDiscussion = useCallback(
@@ -96,7 +113,7 @@ export function DiscussionSection({
         replies: [],
       };
 
-      setDiscussions((current) => {
+      applyDiscussionUpdate((current, order) => {
         // Helper to check if discussion exists anywhere in the tree
         const existsInTree = (items: Discussion[], id: string): boolean => {
           for (const item of items) {
@@ -131,14 +148,14 @@ export function DiscussionSection({
         }
 
         // Top-level discussion - add based on sort order
-        if (sortOrder === "newest") {
+        if (order === "newest") {
           return [newDiscussion, ...current];
         } else {
           return [...current, newDiscussion];
         }
       });
     },
-    [currentUserId, sortOrder],
+    [applyDiscussionUpdate, currentUserId],
   );
 
   // Handle realtime discussion deleted events - remove from list
@@ -154,9 +171,9 @@ export function DiscussionSection({
           }));
       };
 
-      setDiscussions((current) => removeDiscussion(current));
+      applyDiscussionUpdate(removeDiscussion);
     },
-    [],
+    [applyDiscussionUpdate],
   );
 
   // Subscribe to realtime events
@@ -174,19 +191,34 @@ export function DiscussionSection({
 
   const fetchDiscussions = useCallback(
     async (order: SortOrder) => {
-      discussionsRequest.current?.abort();
-      const request = new AbortController();
+      discussionsRequest.current?.controller.abort();
+      const request: DiscussionRequest = {
+        controller: new AbortController(),
+        updates: [],
+      };
       discussionsRequest.current = request;
+      const { signal } = request.controller;
       try {
         const res = await fetch(
           `/api/auctions/${auctionId}/items/${itemId}/discussions?order=${order}`,
-          { signal: request.signal },
+          { signal },
         );
         if (!res.ok) throw new Error("Failed to fetch discussions");
-        const data = await res.json();
-        if (!request.signal.aborted) setDiscussions(data.discussions);
+        const data: { discussions: Discussion[] } = await res.json();
+        if (!signal.aborted) {
+          // The snapshot can predate events delivered after the channel reconnects.
+          const latest = request.updates.reduce(
+            (items, update) => update(items, order),
+            data.discussions,
+          );
+          setDiscussions(latest);
+        }
       } catch {
-        if (!request.signal.aborted) setError(tErrors("generic"));
+        if (!signal.aborted) setError(tErrors("generic"));
+      } finally {
+        if (discussionsRequest.current === request) {
+          discussionsRequest.current = null;
+        }
       }
     },
     [auctionId, itemId, tErrors],
